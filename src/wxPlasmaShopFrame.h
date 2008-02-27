@@ -9,15 +9,28 @@
     #include <wx/wx.h>
 #endif
 
+#include <wx/aui/aui.h>
+#include <wx/treectrl.h>
+#include "PubUtilLib/plResMgr/plResManager.h"
+
 class wxPlasmaShopFrame : public wxFrame {
 protected:
+    // UI Components
     wxApp* fOwner;
+    wxAuiManager* fAuiMgr;
+    wxTreeCtrl* fFileTree;
+    wxNotebook* fEditorBook;
+
+protected:
+    // Plasma Utilities
+    plResManager* fResMgr;
 
 public:
     wxPlasmaShopFrame(wxApp* owner);
     virtual ~wxPlasmaShopFrame();
 
 private:
+    // Event Handling
     DECLARE_EVENT_TABLE()
 };
 

@@ -4,8 +4,12 @@ CXX = g++
 CXXFLAGS = -fPIC -Wall -g -IPlasma -I3rdp -I3rdp/squish `wx-config --cxxflags`
 CXXLIBS = -L$(PLSLIBDIR) -lPlasmaCore -lPlasma -L3rdp/squish -lsquish `wx-config --libs std,gl`
 
+CC = gcc
+CCFLAGS = -fPIC -Wall -g -I3rdp
+CCLIBS =
+
 OBJFILES=out/wxPlasmaShopFrame.o \
-	out/wxDDSHandler.o
+	out/wx/imagdds.o out/wx/filter.o
 
 all: $(PLSLIBDIR)/libPlasmaCore.so $(PLSLIBDIR)/libPlasma.so \
 	3rdp/squish/libsquish.a \
@@ -25,8 +29,8 @@ distclean:
 	rm -f bin/PlasmaShop
 
 # Libs
-$(PLSLIBDIR)/libPlasmaCore.so:
-$(PLSLIBDIR)/libPlasma.so:
+$(PLSLIBDIR)/libPlasmaCore.so: Plasma/lib/.keep
+$(PLSLIBDIR)/libPlasma.so: Plasma/lib/.keep
 	(cd Plasma ; make)
 
 
@@ -34,13 +38,16 @@ $(PLSLIBDIR)/libPlasma.so:
 3rdp/squish/libsquish.a:
 	(cd 3rdp/squish ; make)
 
-out/wxDDSHandler.o: 3rdp/wx/imagdds.h 3rdp/wx/imagdds.cpp
-	$(CXX) $(CXXFLAGS) 3rdp/wx/imagdds.cpp -o out/wxDDSHandler.o
+out/wx/imagdds.o: 3rdp/wx/imagdds.h 3rdp/wx/imagdds.cpp
+	$(CXX) $(CXXFLAGS) -c 3rdp/wx/imagdds.cpp -o out/wx/imagdds.o
+
+out/wx/filter.o: 3rdp/wx/filter.c
+	$(CC) $(CCFLAGS) -c 3rdp/wx/filter.c -o out/wx/filter.o
 
 
 # PlasmaShop
-bin/PlasmaShop: $(OBJFILES) src/wxMain.cpp
-	$(CXX) $(CXXFLAGS) $(OBJFILES) src/wxMain.cpp $(CXXLIBS) -o bin/PlasmaShop
+bin/PlasmaShop: $(OBJFILES) src/Main.cpp
+	$(CXX) $(CXXFLAGS) $(OBJFILES) src/Main.cpp $(CXXLIBS) -o bin/PlasmaShop
 
 out/wxPlasmaShopFrame.o: src/wxPlasmaShopFrame.h src/wxPlasmaShopFrame.cpp
-	$(CXX) $(CXXFLAGS) src/wxPlasmaShopFrame.cpp -o out/wxPlasmaShopFrame.o
+	$(CXX) $(CXXFLAGS) -c src/wxPlasmaShopFrame.cpp -o out/wxPlasmaShopFrame.o
