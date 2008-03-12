@@ -11,7 +11,7 @@
 
 #include <wx/aui/aui.h>
 #include <wx/treectrl.h>
-#include "PubUtilLib/plResMgr/plResManager.h"
+#include <PubUtilLib/plResMgr/plResManager.h>
 
 class wxPlasmaShopFrame : public wxFrame {
 protected:
@@ -19,7 +19,7 @@ protected:
     wxApp* fOwner;
     wxAuiManager* fAuiMgr;
     wxTreeCtrl* fFileTree;
-    wxNotebook* fEditorBook;
+    wxAuiNotebook* fEditorBook;
 
 protected:
     // Plasma Utilities

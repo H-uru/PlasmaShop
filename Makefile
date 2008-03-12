@@ -8,8 +8,9 @@ CC = gcc
 CCFLAGS = -fPIC -Wall -g -I3rdp
 CCLIBS =
 
-OBJFILES=out/wxPlasmaShopFrame.o \
-	out/wx/imagdds.o out/wx/filter.o
+OBJFILES=out/wx/imagdds.o out/wx/filter.o \
+	out/wxPlasmaStream.o \
+	out/wxPlasmaShopFrame.o
 
 all: $(PLSLIBDIR)/libPlasmaCore.so $(PLSLIBDIR)/libPlasma.so \
 	3rdp/squish/libsquish.a \
@@ -51,3 +52,6 @@ bin/PlasmaShop: $(OBJFILES) src/Main.cpp
 
 out/wxPlasmaShopFrame.o: src/wxPlasmaShopFrame.h src/wxPlasmaShopFrame.cpp
 	$(CXX) $(CXXFLAGS) -c src/wxPlasmaShopFrame.cpp -o out/wxPlasmaShopFrame.o
+
+out/wxPlasmaStream.o: src/wxPlasmaStream.h src/wxPlasmaStream.cpp
+	$(CXX) $(CXXFLAGS) -c src/wxPlasmaStream.cpp -o out/wxPlasmaStream.o
