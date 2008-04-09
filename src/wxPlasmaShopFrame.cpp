@@ -1,7 +1,8 @@
 #include "wxPlasmaShopFrame.h"
 
 BEGIN_EVENT_TABLE(wxPlasmaShopFrame, wxFrame)
-    //
+    EVT_MENU(wxID_EXIT, wxPlasmaShopFrame::OnExitClick)
+    EVT_CLOSE(wxPlasmaShopFrame::OnClose)
 END_EVENT_TABLE()
 
 wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
@@ -30,21 +31,48 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     SetMenuBar(menuBar);
     SetStatusBar(new wxStatusBar(this, wxID_ANY));
 
+    // Test editors
+    wxPlasmaTextCtrl* stcPlasma = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcPlasma->SetSyntaxMode(wxPlasmaTextCtrl::kSynPlasma);
+    fEditorBook->AddPage(stcPlasma, wxT("Plasma"), true);
+    wxPlasmaTextCtrl* stcPython = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcPython->SetSyntaxMode(wxPlasmaTextCtrl::kSynPython);
+    fEditorBook->AddPage(stcPython, wxT("Python"), true);
+    wxPlasmaTextCtrl* stcSDL1 = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcSDL1->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Uru);
+    fEditorBook->AddPage(stcSDL1, wxT("SDL (Uru)"), true);
+    wxPlasmaTextCtrl* stcSDL2 = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcSDL2->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Eoa);
+    fEditorBook->AddPage(stcSDL2, wxT("SDL (Eoa)"), true);
+    wxPlasmaTextCtrl* stcAge = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcAge->SetSyntaxMode(wxPlasmaTextCtrl::kSynAgeIni);
+    fEditorBook->AddPage(stcAge, wxT("Age/Ini"), true);
+    wxPlasmaTextCtrl* stcConsole = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcConsole->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
+    fEditorBook->AddPage(stcConsole, wxT("Console"), true);
+
     // The AUI Manager
     fAuiMgr->AddPane(fEditorBook, wxCENTER, wxEmptyString);
     fAuiMgr->AddPane(fFileTree, wxLEFT, wxT("File Browser"));
     fAuiMgr->Update();
-
-    // Test
-    fEditorBook->AddPage(new wxTextCtrl(fEditorBook, wxID_ANY, wxEmptyString,
-                                        wxDefaultPosition, wxDefaultSize,
-                                        wxTE_MULTILINE),
-                         wxT("Test Editor"), true);
-    fEditorBook->AddPage(new wxPanel(fEditorBook, wxID_ANY),
-                         wxT("Blah"), false);
 }
 
 wxPlasmaShopFrame::~wxPlasmaShopFrame()
 {
     delete fResMgr;
+}
+
+void wxPlasmaShopFrame::OnExitClick(wxCommandEvent& evt)
+{
+    Close();
+}
+
+void wxPlasmaShopFrame::OnClose(wxCloseEvent& evt)
+{
+    if (evt.CanVeto()) {
+        // Check for unsaved work first
+        Destroy();
+    } else {
+        Destroy();
+    }
 }

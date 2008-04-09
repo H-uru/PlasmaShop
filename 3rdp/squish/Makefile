@@ -27,5 +27,3 @@ $(LIB) : $(OBJ)
 clean :
 	$(RM) $(OBJ) $(LIB)
 
-
-

@@ -26,9 +26,10 @@
 #include <OpenGL/glu.h>
 #else
 #include <GL/glu.h>
+#include <GL/glext.h>
 #endif
 
-#include <squish.h>
+#include <squish/squish.h>
 
 #include "math.h"
 #include <algorithm>
@@ -400,7 +401,7 @@ bool wxDDSHandler::SaveFile(wxImage *image, wxOutputStream& stream, bool verbose
 
 int wxDDSHandler::NumMipmaps(const wxImage &image)
 {
-    return (1 + (int) floor(log(std::max(image.GetWidth(), image.GetHeight())) / log(2)));
+    return (1 + (int) floor(log((double)std::max(image.GetWidth(), image.GetHeight())) / log(2.0)));
 }
 
 static vector<unsigned char> BuildRGBAImage(const wxImage& image)

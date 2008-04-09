@@ -13,6 +13,10 @@
 #include <string.h>
 #include <math.h>
 
+#ifndef M_PI
+#define M_PI  3.14159265358979323846
+#endif
+
 #define CLAMP(v,l,h)    ((v)<(l) ? (l) : (v) > (h) ? (h) : v)
 
 typedef	unsigned char	Pixel;

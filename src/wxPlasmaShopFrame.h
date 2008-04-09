@@ -13,6 +13,8 @@
 #include <wx/treectrl.h>
 #include <PubUtilLib/plResMgr/plResManager.h>
 
+#include "wxPlasmaTextCtrl.h"
+
 class wxPlasmaShopFrame : public wxFrame {
 protected:
     // UI Components
@@ -29,9 +31,12 @@ public:
     wxPlasmaShopFrame(wxApp* owner);
     virtual ~wxPlasmaShopFrame();
 
-private:
+protected:
     // Event Handling
     DECLARE_EVENT_TABLE()
+
+    void OnExitClick(wxCommandEvent& evt);
+    void OnClose(wxCloseEvent& evt);
 };
 
 #endif
