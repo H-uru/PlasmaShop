@@ -60,6 +60,7 @@ wxT("false true");
 BEGIN_EVENT_TABLE(wxPlasmaTextCtrl, wxStyledTextCtrl)
     EVT_STC_MARGINCLICK(wxID_ANY, wxPlasmaTextCtrl::OnMarginClick)
     EVT_STC_PAINTED(wxID_ANY, wxPlasmaTextCtrl::OnStcPainted)
+    EVT_STC_CHARADDED(wxID_ANY, wxPlasmaTextCtrl::OnCharAdded)
 END_EVENT_TABLE()
 
 wxPlasmaTextCtrl::wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id,
@@ -96,9 +97,12 @@ wxPlasmaTextCtrl::wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id,
     SetTabWidth(4);
     SetUseTabs(false);
     SetViewWhiteSpace(false);
+    SetEndAtLastLine(false);
+
+#if defined(wxSTC_VERSION) && (wxSTC_VERSION >= 175)
     SetScrollWidth(800);
     SetScrollWidthTracking(true);
-    SetEndAtLastLine(false);
+#endif
 
     fFontName = wxT("Courier New");
     fFontSize = 10;
@@ -213,6 +217,27 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetForeground(wxSTC_FNI_COMMAND, wxColour(0, 0, 0xFF));
         StyleSetForeground(wxSTC_FNI_COMMENT, wxColour(0, 0x80, 0));
         StyleSetForeground(wxSTC_FNI_GROUP, wxColour(0x80, 0, 0x80));
+        StyleSetForeground(wxSTC_FNI_NUMBER, wxColour(0, 0, 0x80));
+        StyleSetForeground(wxSTC_FNI_STRING, wxColour(0x80, 0, 0));
+        break;
+    case kSynXML:
+        SetSyntaxMode(kSynNone);
+        SetLexer(wxSTC_LEX_XML);
+        StyleSetForeground(wxSTC_H_ATTRIBUTE, wxColour(0, 0x80, 0));
+        StyleSetForeground(wxSTC_H_COMMENT, wxColour(0x80, 0x80, 0x80));
+        StyleSetFontAttr(wxSTC_H_COMMENT, fFontSize, fFontName, false, true, false);
+        StyleSetForeground(wxSTC_H_DOUBLESTRING, wxColour(0x80, 0, 0));
+        StyleSetForeground(wxSTC_H_NUMBER, wxColour(0, 0, 0xFF));
+        StyleSetForeground(wxSTC_H_SINGLESTRING, wxColour(0x80, 0, 0));
+        StyleSetForeground(wxSTC_H_TAG, wxColour(0, 0, 0x80));
+        StyleSetFontAttr(wxSTC_H_TAG, fFontSize, fFontName, true, false, false);
+        StyleSetForeground(wxSTC_H_TAGEND, wxColour(0, 0, 0x80));
+        StyleSetFontAttr(wxSTC_H_TAGEND, fFontSize, fFontName, true, false, false);
+        StyleSetForeground(wxSTC_H_XMLSTART, wxColour(0x80, 0x80, 0));
+        StyleSetForeground(wxSTC_H_XMLEND, wxColour(0x80, 0x80, 0));
+        break;
+    case kSynHex:
+        printf("TODO: kSynHex\n");
         break;
     }
 
@@ -243,4 +268,18 @@ void wxPlasmaTextCtrl::OnStcPainted(wxStyledTextEvent& evt)
     }
 
     SetMarginWidth(kMarginLineNumbers, nLineChars * fLineNumberWidth);
+}
+
+void wxPlasmaTextCtrl::OnCharAdded(wxStyledTextEvent& evt)
+{
+    if ((evt.GetKey() == '\n' || evt.GetKey() == '\r') && (GetCurrentLine() > 0)) {
+        // \r only on CRLF mode:
+        if (GetEOLMode() == wxSTC_EOL_CRLF && evt.GetKey() != '\n') {
+            wxString ln = GetLine(GetCurrentLine() - 1);
+            int i = 0;
+            while (ln[i] == ' ' || ln[i] == '\t')
+                i++;
+            AddText(ln.Left(i));
+        }
+    }
 }

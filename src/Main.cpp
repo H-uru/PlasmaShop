@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <wx/config.h>
 #include <wx/imagdds.h>
 #include <CoreLib/plDebug.h>
 #include "wxPlasmaShopFrame.h"
@@ -15,6 +16,9 @@ public:
         wxImage::AddHandler(new wxDDSHandler());
         wxImage::AddHandler(new wxPNGHandler());
         wxImage::AddHandler(new wxXPMHandler());
+
+        // Configuration manager
+        wxConfigBase::Set(new wxConfig(wxT("PlasmaShop")));
 
         // Create and show the main frame
         wxPlasmaShopFrame* frame = new wxPlasmaShopFrame(this);

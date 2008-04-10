@@ -25,14 +25,11 @@ clean:
 	(cd 3rdp/squish ; make clean)
 	(cd 3rdp/wx/stc ; make clean)
 	rm -f $(OBJFILES)
-
-distclean:
-	(cd Plasma ; make distclean)
 	rm -f bin/PlasmaShop
 
 # Libs
-$(PLSLIBDIR)/libPlasmaCore.so: Plasma/lib/.keep
-$(PLSLIBDIR)/libPlasma.so: Plasma/lib/.keep
+$(PLSLIBDIR)/libPlasmaCore.so:
+$(PLSLIBDIR)/libPlasma.so:
 	(cd Plasma ; make)
 
 

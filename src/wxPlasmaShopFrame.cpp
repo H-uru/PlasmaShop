@@ -50,6 +50,9 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     wxPlasmaTextCtrl* stcConsole = new wxPlasmaTextCtrl(this, wxID_ANY);
     stcConsole->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
     fEditorBook->AddPage(stcConsole, wxT("Console"), true);
+    wxPlasmaTextCtrl* stcXML = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcXML->SetSyntaxMode(wxPlasmaTextCtrl::kSynXML);
+    fEditorBook->AddPage(stcXML, wxT("XML"), true);
 
     // The AUI Manager
     fAuiMgr->AddPane(fEditorBook, wxCENTER, wxEmptyString);

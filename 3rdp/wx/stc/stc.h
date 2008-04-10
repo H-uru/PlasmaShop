@@ -33,6 +33,8 @@
     #define WXDLLIMPEXP_STC
 #endif
 
+// The version of Scintilla used (local addition)
+#define wxSTC_VERSION 176
 
 // SWIG can't handle "#if" type of conditionals, only "#ifdef"
 #ifdef SWIG
@@ -1739,9 +1741,12 @@
 // Lexical states for SCLEX_FNI
 #define wxSTC_FNI_DEFAULT 0
 #define wxSTC_FNI_COMMENT 1
-#define wxSTC_FNI_GROUP 2
-#define wxSTC_FNI_COMMAND 3
-#define wxSTC_FNI_OPERATOR 4
+#define wxSTC_FNI_STRING 2
+#define wxSTC_FNI_GROUP 3
+#define wxSTC_FNI_NUMBER 4
+#define wxSTC_FNI_COMMAND 5
+#define wxSTC_FNI_OPERATOR 6
+#define wxSTC_FNI_IDENTIFIER 7
 
 
 //-----------------------------------------

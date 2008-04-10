@@ -28,6 +28,16 @@ static inline bool AtEOL(Accessor &styler, unsigned int i) {
 	       ((styler[i] == '\r') && (styler.SafeGetCharAt(i + 1) != '\n'));
 }
 
+static inline bool IsOperator(char ch) {
+    return (ch == '=' || ch == '[' || ch == ']' || ch == '{' ||
+            ch == '}' || ch == '(' || ch == ')' || ch == ';' ||
+            ch == '+' || ch == '-' || ch == '/' || ch == '*');
+}
+
+static bool Is0To9(char ch) {
+	return (ch >= '0') && (ch <= '9');
+}
+
 static void ColouriseFniLine(
     char *lineBuffer,
     unsigned int lengthLine,
@@ -36,28 +46,62 @@ static void ColouriseFniLine(
     Accessor &styler) {
 
 	unsigned int i = 0;
-	while ((i < lengthLine) && isspacechar(lineBuffer[i]))	// Skip initial spaces
+    unsigned int area = 0;
+    unsigned int state = SCE_FNI_DEFAULT;
+	while ((i < lengthLine) && isspacechar(lineBuffer[i])) {
+        // Skip initial spaces
+        styler.ColourTo(startLine + i, SCE_FNI_DEFAULT);
 		i++;
-	if (i < lengthLine) {
+    }
+    while (i < lengthLine) {
 		if (lineBuffer[i] == '#') {
 			styler.ColourTo(endPos, SCE_FNI_COMMENT);
-		} else {
-			// Colo(u)rize the console command
-			while (i < lengthLine) {
-				if (lineBuffer[i] == '.') {
-					styler.ColourTo(startLine + i - 1, SCE_FNI_GROUP);
-					styler.ColourTo(startLine + i, SCE_FNI_OPERATOR);
-				} else if (isspacechar(lineBuffer[i])) {
-					styler.ColourTo(startLine + i - 1, SCE_FNI_COMMAND);
-					break;
-				}
-				i++;
-			}
-			// The argument is just default -- for now
-			styler.ColourTo(endPos, SCE_FNI_DEFAULT);
-		}
-	} else {
-		styler.ColourTo(endPos, SCE_FNI_DEFAULT);
+            break;
+		} else if (lineBuffer[i] == '.' && area == 0) {
+            styler.ColourTo(startLine + i - 1, SCE_FNI_GROUP);
+            styler.ColourTo(startLine + i, SCE_FNI_OPERATOR);
+        } else if (isspacechar(lineBuffer[i]) && area == 0) {
+		    styler.ColourTo(startLine + i - 1, SCE_FNI_COMMAND);
+		    styler.ColourTo(startLine + i, SCE_FNI_DEFAULT);
+            area = 1;
+        } else if (lineBuffer[i] == '"' && area == 1) {
+            if (state == SCE_FNI_STRING) {
+                styler.ColourTo(startLine + i, SCE_FNI_STRING);
+                state = SCE_FNI_DEFAULT;
+            } else {
+                styler.ColourTo(startLine + i - 1, state);
+                state = SCE_FNI_STRING;
+            }
+        } else if (Is0To9(lineBuffer[i]) && area == 1) {
+            if (state == SCE_FNI_DEFAULT)
+                state = SCE_FNI_NUMBER;
+        } else if (isspacechar(lineBuffer[i]) && area == 1) {
+            if (state == SCE_FNI_NUMBER || state == SCE_FNI_IDENTIFIER) {
+                styler.ColourTo(startLine + i - 1, state);
+                state = SCE_FNI_DEFAULT;
+            } else {
+                styler.ColourTo(startLine + i, state);
+            }
+        } else if (IsOperator(lineBuffer[i]) && area == 1) {
+            if (state != SCE_FNI_STRING) {
+                styler.ColourTo(startLine + i - 1, state);
+                styler.ColourTo(startLine + i, SCE_FNI_OPERATOR);
+                state = SCE_FNI_DEFAULT;
+            }
+        } else if (lineBuffer[i] == '.' && area == 1) {
+            if (state != SCE_FNI_STRING && state != SCE_FNI_NUMBER) {
+                if ((i+1) < lengthLine && Is0To9(lineBuffer[i+1])) {
+                    state = SCE_FNI_NUMBER;
+                } else {
+                    styler.ColourTo(startLine + i - 1, state);
+                    styler.ColourTo(startLine + i, SCE_FNI_OPERATOR);
+                }
+            }
+        } else if (area == 1) {
+            if (state != SCE_FNI_STRING)
+                state = SCE_FNI_IDENTIFIER;
+        }
+        i++;
 	}
 }
 

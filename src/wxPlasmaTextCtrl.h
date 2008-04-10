@@ -14,7 +14,7 @@ class wxPlasmaTextCtrl : public wxStyledTextCtrl {
 public:
     enum SyntaxMode {
         kSynNone, kSynPlasma, kSynPython, kSynSDL_Uru, kSynSDL_Eoa,
-        kSynAgeIni, kSynConsole
+        kSynAgeIni, kSynConsole, kSynXML, kSynHex
     };
 
     wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id=wxID_ANY,
@@ -38,6 +38,7 @@ protected:
 
     void OnMarginClick(wxStyledTextEvent& evt);
     void OnStcPainted(wxStyledTextEvent& evt);
+    void OnCharAdded(wxStyledTextEvent& evt);
 };
 
 #endif
