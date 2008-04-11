@@ -1,6 +1,6 @@
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_coords[] = {
+static const char* XPM_coords[] = {
 "16 16 3 1",
 "  c None",
 ". c #C0C0C0",
@@ -25,7 +25,7 @@ static char* XPM_coords[] = {
 
 /* XPM */
 /* Borrowed from Microsoft */
-static char* XPM_sound[] = {
+static const char* XPM_sound[] = {
 "16 16 7 1",
 "  c None",
 "X c #000000",
@@ -54,7 +54,7 @@ static char* XPM_sound[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_synch[] = {
+static const char* XPM_synch[] = {
 "16 16 2 1",
 "  c None",
 "X c #FF0000",
@@ -78,7 +78,7 @@ static char* XPM_synch[] = {
 
 /* XPM */
 /* Borrowed from Python */
-static char* XPM_python[] = {
+static const char* XPM_python[] = {
 "16 16 34 1",
 "  c None",
 "X c #000000",
@@ -134,7 +134,7 @@ static char* XPM_python[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_spans[] = {
+static const char* XPM_spans[] = {
 "16 16 3 1",
 "  c None",
 "X c #000000",
@@ -159,7 +159,7 @@ static char* XPM_spans[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_spans2[] = {
+static const char* XPM_spans2[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -186,7 +186,7 @@ static char* XPM_spans2[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_axes[] = {
+static const char* XPM_axes[] = {
 "16 16 2 1",
 "  c None",
 "X c #000000",
@@ -210,7 +210,7 @@ static char* XPM_axes[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_img[] = {
+static const char* XPM_img[] = {
 "16 16 11 1",
 "  c None",
 "X c #000000",
@@ -243,7 +243,7 @@ static char* XPM_img[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_layer[] = {
+static const char* XPM_layer[] = {
 "16 16 5 1",
 "  c None",
 "x c #808080",
@@ -270,7 +270,7 @@ static char* XPM_layer[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_material[] = {
+static const char* XPM_material[] = {
 "16 16 7 1",
 "  c None",
 "1 c #FF00FF",
@@ -299,7 +299,7 @@ static char* XPM_material[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_sceneobj[] = {
+static const char* XPM_sceneobj[] = {
 "16 16 8 1",
 "  c None",
 "x c #808080",
@@ -329,7 +329,7 @@ static char* XPM_sceneobj[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_scenenode[] = {
+static const char* XPM_scenenode[] = {
 "16 16 10 1",
 "  c None",
 "x c #808080",
@@ -361,7 +361,7 @@ static char* XPM_scenenode[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_sim[] = {
+static const char* XPM_sim[] = {
 "16 16 3 1",
 "  c None",
 "X c #000000",
@@ -386,7 +386,7 @@ static char* XPM_sim[] = {
 
 /* XPM */
 /* Borrowed from Microsoft */
-static char* XPM_sound[] = {
+static const char* XPM_sound[] = {
 "16 16 7 1",
 "  c None",
 "X c #000000",
@@ -415,7 +415,7 @@ static char* XPM_sound[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_spotlight[] = {
+static const char* XPM_spotlight[] = {
 "16 16 3 1",
 "  c None",
 "x c #C0C0C0",
@@ -440,7 +440,7 @@ static char* XPM_spotlight[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guibutton[] = {
+static const char* XPM_guibutton[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -467,7 +467,7 @@ static char* XPM_guibutton[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guicheckbox[] = {
+static const char* XPM_guicheckbox[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -494,7 +494,7 @@ static char* XPM_guicheckbox[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guidialog[] = {
+static const char* XPM_guidialog[] = {
 "16 16 6 1",
 "  c None",
 "X c #000000",
@@ -522,7 +522,7 @@ static char* XPM_guidialog[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guiedit[] = {
+static const char* XPM_guiedit[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -549,7 +549,7 @@ static char* XPM_guiedit[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guiedit2[] = {
+static const char* XPM_guiedit2[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -576,7 +576,7 @@ static char* XPM_guiedit2[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guiprogress[] = {
+static const char* XPM_guiprogress[] = {
 "16 16 6 1",
 "  c None",
 "X c #000000",
@@ -604,7 +604,7 @@ static char* XPM_guiprogress[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guiradio[] = {
+static const char* XPM_guiradio[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -631,7 +631,7 @@ static char* XPM_guiradio[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guitext[] = {
+static const char* XPM_guitext[] = {
 "16 16 2 1",
 "  c None",
 "X c #000000",
@@ -655,7 +655,7 @@ static char* XPM_guitext[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_guiupdown[] = {
+static const char* XPM_guiupdown[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",

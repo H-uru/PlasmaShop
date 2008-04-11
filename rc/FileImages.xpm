@@ -1,5 +1,5 @@
 /* XPM */
-static char* XPM_folder[] = {
+static const char* XPM_folder[] = {
 "16 16 6 1",
 "  c None",
 "X c #000000",
@@ -26,7 +26,7 @@ static char* XPM_folder[] = {
 };
 
 /* XPM */
-static char* XPM_font[] = {
+static const char* XPM_font[] = {
 "16 16 6 1",
 "  c None",
 "X c #000000",
@@ -53,7 +53,7 @@ static char* XPM_font[] = {
 };
 
 /* XPM */
-static char* XPM_init[] = {
+static const char* XPM_init[] = {
 "16 16 7 1",
 "  c None",
 "X c #000000",
@@ -82,7 +82,7 @@ static char* XPM_init[] = {
 
 /* XPM */
 /* Borrowed from Cyan :) */
-static char* XPM_age[] = {
+static const char* XPM_age[] = {
 "16 16 6 1",
 "  c None",
 "W c #FFFFFF",
@@ -110,7 +110,7 @@ static char* XPM_age[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_page[] = {
+static const char* XPM_page[] = {
 "16 16 8 1",
 "  c None",
 "X c #51220D",
@@ -140,7 +140,7 @@ static char* XPM_page[] = {
 
 /* XPM */
 /* Borrowed from Marck :) */
-static char* XPM_elf[] = {
+static const char* XPM_elf[] = {
 "16 16 6 1",
 "  c None",
 "X c #000000",
@@ -168,7 +168,7 @@ static char* XPM_elf[] = {
 
 /* XPM */
 /* Borrowed from Microsoft */
-static char* XPM_sdl[] = {
+static const char* XPM_sdl[] = {
 "16 16 12 1",
 "  c None",
 "X c #000000",
@@ -202,7 +202,7 @@ static char* XPM_sdl[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_sum[] = {
+static const char* XPM_sum[] = {
 "16 16 5 1",
 "  c None",
 "X c #000000",
@@ -229,7 +229,7 @@ static char* XPM_sum[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_pak[] = {
+static const char* XPM_pak[] = {
 "16 16 2 1",
 "  c None",
 "X c #008000",
@@ -253,7 +253,7 @@ static char* XPM_pak[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_fontpak[] = {
+static const char* XPM_fontpak[] = {
 "16 16 2 1",
 "  c None",
 "X c #FF0000",
@@ -277,7 +277,7 @@ static char* XPM_fontpak[] = {
 
 /* XPM */
 /* Author: Michael Hansen */
-static char* XPM_curpak[] = {
+static const char* XPM_curpak[] = {
 "16 16 2 1",
 "  c None",
 "X c #0000FF",

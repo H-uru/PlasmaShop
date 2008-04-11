@@ -1,5 +1,5 @@
 /* XPM */
-static char* XPM_PlasmaShop[] = {
+static const char* XPM_PlasmaShop[] = {
 "32 32 49 1",
 " 	c None",
 ".	c #5C769C",

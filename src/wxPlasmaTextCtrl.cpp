@@ -125,8 +125,11 @@ wxPlasmaTextCtrl::wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id,
     SetUseTabs(false);
     SetViewWhiteSpace(false);
     SetEndAtLastLine(false);
+
+#if defined(wxSTC_VERSION) && (wxSTC_VERSION >= 175)
     SetScrollWidth(800);
     SetScrollWidthTracking(true);
+#endif
 
 #if defined(__WXMSW__)
     fFont = wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -169,7 +172,9 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         SetKeyWords(0, kPlasmaKeywordKWs);
         SetKeyWords(1, kPlasmaTypeKWs);
         SetKeyWords(3, kPlasmaSpecialConstKWs);
+#if defined(wxSTC_VERSION) && (wxSTC_VERSION >= 175)
         SetKeyWords(4, kPlasmaClassNames);
+#endif
         StyleSetForeground(wxSTC_C_CHARACTER, wxColour(0x80, 0, 0));
         StyleSetForeground(wxSTC_C_COMMENT, wxColour(0, 0x80, 0));
         StyleSetForeground(wxSTC_C_COMMENTDOC, wxColour(0, 0x80, 0));
@@ -185,8 +190,10 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetForeground(wxSTC_C_WORD, wxColour(0, 0, 0));
         StyleSetFontAttr(wxSTC_C_WORD, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
         StyleSetForeground(wxSTC_C_WORD2, wxColour(0, 0, 0xFF));
+#if defined(wxSTC_VERSION) && (wxSTC_VERSION >= 175)
         StyleSetForeground(wxSTC_C_WORD3, wxColour(0, 0x80, 0x80));
         StyleSetHotSpot(wxSTC_C_WORD3, true);
+#endif
         break;
     case kSynPython:
         ResetSyntax();
@@ -212,6 +219,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         break;
     case kSynSDL_Uru:
         ResetSyntax();
+#ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_SDL);
         SetKeyWords(0, kSDL1KeywordKWs);
         SetKeyWords(1, kSDL1TypeKWs);
@@ -226,9 +234,11 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetFontAttr(wxSTC_SDL_WORD, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
         StyleSetForeground(wxSTC_SDL_WORD2, wxColour(0, 0, 0xFF));
         StyleSetForeground(wxSTC_SDL_WORD3, wxColour(0x80, 0x80, 0));
+#endif
         break;
     case kSynSDL_Eoa:
         ResetSyntax();
+#ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_SDL);
         SetKeyWords(0, kSDL2KeywordKWs);
         SetKeyWords(1, kSDL2TypeKWs);
@@ -243,6 +253,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetFontAttr(wxSTC_SDL_WORD, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
         StyleSetForeground(wxSTC_SDL_WORD2, wxColour(0, 0, 0xFF));
         StyleSetForeground(wxSTC_SDL_WORD3, wxColour(0x80, 0x80, 0));
+#endif
         break;
     case kSynAgeIni:
         ResetSyntax();
@@ -253,6 +264,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         break;
     case kSynConsole:
         ResetSyntax();
+#ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_FNI);
         SetKeyWords(0, kFniSpecialConstKWs);
         StyleSetForeground(wxSTC_FNI_COMMAND, wxColour(0, 0, 0xFF));
@@ -260,6 +272,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetForeground(wxSTC_FNI_GROUP, wxColour(0x80, 0, 0x80));
         StyleSetForeground(wxSTC_FNI_NUMBER, wxColour(0, 0, 0x80));
         StyleSetForeground(wxSTC_FNI_STRING, wxColour(0x80, 0, 0));
+#endif
         break;
     case kSynXML:
         ResetSyntax();
@@ -279,7 +292,9 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         break;
     case kSynHex:
         ResetSyntax();
+#ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_HEX);
+#endif
         printf("TODO: kSynHex\n");
         break;
     case kSynFX:

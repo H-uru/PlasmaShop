@@ -33,8 +33,9 @@
     #define WXDLLIMPEXP_STC
 #endif
 
-// The version of Scintilla used (local addition)
+// The version of Scintilla used (local additions)
 #define wxSTC_VERSION 176
+#define wxSTC_PLASMA_STC
 
 // SWIG can't handle "#if" type of conditionals, only "#ifdef"
 #ifdef SWIG
