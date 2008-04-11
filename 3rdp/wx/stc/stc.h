@@ -466,6 +466,7 @@
 #define wxSTC_C_COMMENTDOCKEYWORD 17
 #define wxSTC_C_COMMENTDOCKEYWORDERROR 18
 #define wxSTC_C_GLOBALCLASS 19
+#define wxSTC_C_WORD3 20
 
 // Lexical states for SCLEX_D
 #define wxSTC_D_DEFAULT 0

@@ -1,4 +1,5 @@
 #include "wxPlasmaShopFrame.h"
+#include "../../rc/PlasmaShop.xpm"
 
 BEGIN_EVENT_TABLE(wxPlasmaShopFrame, wxFrame)
     EVT_MENU(wxID_EXIT, wxPlasmaShopFrame::OnExitClick)
@@ -53,11 +54,17 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     wxPlasmaTextCtrl* stcXML = new wxPlasmaTextCtrl(this, wxID_ANY);
     stcXML->SetSyntaxMode(wxPlasmaTextCtrl::kSynXML);
     fEditorBook->AddPage(stcXML, wxT("XML"), true);
+    wxPlasmaTextCtrl* stcFX = new wxPlasmaTextCtrl(this, wxID_ANY);
+    stcFX->SetSyntaxMode(wxPlasmaTextCtrl::kSynFX);
+    fEditorBook->AddPage(stcFX, wxT("FX"), true);
 
     // The AUI Manager
     fAuiMgr->AddPane(fEditorBook, wxCENTER, wxEmptyString);
     fAuiMgr->AddPane(fFileTree, wxLEFT, wxT("File Browser"));
     fAuiMgr->Update();
+
+    // Miscellaneous
+    SetIcon(wxIcon(XPM_PlasmaShop));
 }
 
 wxPlasmaShopFrame::~wxPlasmaShopFrame()

@@ -57,6 +57,7 @@ static void ColouriseCppDoc(unsigned int startPos, int length, int initStyle, Wo
 	WordList &keywords2 = *keywordlists[1];
 	WordList &keywords3 = *keywordlists[2];
 	WordList &keywords4 = *keywordlists[3];
+	WordList &keywords5 = *keywordlists[4];
 
 	bool stylingWithinPreprocessor = styler.GetPropertyInt("styling.within.preprocessor") != 0;
 
@@ -158,6 +159,8 @@ static void ColouriseCppDoc(unsigned int startPos, int length, int initStyle, Wo
 						sc.ChangeState(SCE_C_WORD2);
 					} else if (keywords4.InList(s)) {
 						sc.ChangeState(SCE_C_GLOBALCLASS);
+					} else if (keywords5.InList(s)) {
+						sc.ChangeState(SCE_C_WORD3);
 					}
 					sc.SetState(SCE_C_DEFAULT);
 				}

@@ -14,7 +14,7 @@ class wxPlasmaTextCtrl : public wxStyledTextCtrl {
 public:
     enum SyntaxMode {
         kSynNone, kSynPlasma, kSynPython, kSynSDL_Uru, kSynSDL_Eoa,
-        kSynAgeIni, kSynConsole, kSynXML, kSynHex
+        kSynAgeIni, kSynConsole, kSynXML, kSynHex, kSynFX
     };
 
     wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id=wxID_ANY,
@@ -30,15 +30,19 @@ protected:
     enum { kMarginUNUSED, kMarginLineNumbers, kMarginFolders };
     unsigned int fLineNumberWidth;
     SyntaxMode fSyntaxMode;
-    wxString fFontName;
-    int fFontSize;
+    wxFont fFont;
+
+    void ResetSyntax();
+    void UpdateLineNumberWidth();
 
 protected:
     DECLARE_EVENT_TABLE()
 
     void OnMarginClick(wxStyledTextEvent& evt);
-    void OnStcPainted(wxStyledTextEvent& evt);
+    void OnUpdateUI(wxStyledTextEvent& evt);
     void OnCharAdded(wxStyledTextEvent& evt);
+    void OnModified(wxStyledTextEvent& evt);
+    void OnZoom(wxStyledTextEvent& evt);
 };
 
 #endif

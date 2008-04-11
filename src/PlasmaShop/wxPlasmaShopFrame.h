@@ -13,7 +13,7 @@
 #include <wx/treectrl.h>
 #include <PubUtilLib/plResMgr/plResManager.h>
 
-#include "wxPlasmaTextCtrl.h"
+#include "../wxPlasmaTextCtrl.h"
 
 class wxPlasmaShopFrame : public wxFrame {
 protected:

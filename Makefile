@@ -2,16 +2,19 @@ PLSLIBDIR=Plasma/lib
 
 CXX = g++
 CXXFLAGS = -fPIC -Wall -g -IPlasma -I3rdp -I3rdp/squish `wx-config --cxxflags`
-CXXLIBS = -L$(PLSLIBDIR) -lPlasmaCore -lPlasma -L3rdp/squish -lsquish -L3rdp/wx/stc -lwxstc `wx-config --libs std,gl`
+CXXLIBS_PLASMASHOP = -L$(PLSLIBDIR) -lPlasmaCore -lPlasma -L3rdp/wx/stc -lwxstc `wx-config --libs std`
 
 CC = gcc
 CCFLAGS = -fPIC -Wall -g -I3rdp
 CCLIBS =
 
-OBJFILES=out/wx/imagdds.o out/wx/filter.o \
+OBJFILES_3RDP=out/wx/imagdds.o out/wx/filter.o
+OBJFILES_PLASMASHOP=\
 	out/wxPlasmaShopFrame.o \
 	out/wxPlasmaStream.o \
 	out/wxPlasmaTextCtrl.o
+
+OBJFILES_ALL=$(OBJFILES_3RDP) $(OBJFILES_PLASMASHOP)
 
 all: $(PLSLIBDIR)/libPlasmaCore.so $(PLSLIBDIR)/libPlasma.so \
 	3rdp/squish/libsquish.a 3rdp/wx/stc/libwxstc.a \
@@ -24,7 +27,7 @@ install:
 clean:
 	(cd 3rdp/squish ; make clean)
 	(cd 3rdp/wx/stc ; make clean)
-	rm -f $(OBJFILES)
+	rm -f $(OBJFILES_ALL)
 	rm -f bin/PlasmaShop
 
 # Libs
@@ -48,11 +51,11 @@ out/wx/filter.o: 3rdp/wx/filter.c
 
 
 # PlasmaShop
-bin/PlasmaShop: $(OBJFILES) src/Main.cpp
-	$(CXX) $(CXXFLAGS) $(OBJFILES) src/Main.cpp $(CXXLIBS) -o bin/PlasmaShop
+bin/PlasmaShop: $(OBJFILES_PLASMASHOP) src/PlasmaShop/Main.cpp
+	$(CXX) $(CXXFLAGS) $(OBJFILES_PLASMASHOP) src/PlasmaShop/Main.cpp $(CXXLIBS_PLASMASHOP) -o bin/PlasmaShop
 
-out/wxPlasmaShopFrame.o: src/wxPlasmaShopFrame.h src/wxPlasmaShopFrame.cpp
-	$(CXX) $(CXXFLAGS) -c src/wxPlasmaShopFrame.cpp -o out/wxPlasmaShopFrame.o
+out/wxPlasmaShopFrame.o: src/PlasmaShop/wxPlasmaShopFrame.h src/PlasmaShop/wxPlasmaShopFrame.cpp
+	$(CXX) $(CXXFLAGS) -c src/PlasmaShop/wxPlasmaShopFrame.cpp -o out/wxPlasmaShopFrame.o
 
 out/wxPlasmaStream.o: src/wxPlasmaStream.h src/wxPlasmaStream.cpp
 	$(CXX) $(CXXFLAGS) -c src/wxPlasmaStream.cpp -o out/wxPlasmaStream.o

@@ -1,6 +1,5 @@
 #include <wx/wx.h>
 #include <wx/config.h>
-#include <wx/imagdds.h>
 #include <CoreLib/plDebug.h>
 #include "wxPlasmaShopFrame.h"
 
@@ -10,12 +9,6 @@ public:
     {
         // Set up libPlasma globals
         plDebug::InitFile(plDebug::kDLAll);
-
-        // Add various image format support to wxImage
-        wxImage::AddHandler(new wxJPEGHandler());
-        wxImage::AddHandler(new wxDDSHandler());
-        wxImage::AddHandler(new wxPNGHandler());
-        wxImage::AddHandler(new wxXPMHandler());
 
         // Configuration manager
         wxConfigBase::Set(new wxConfig(wxT("PlasmaShop")));
