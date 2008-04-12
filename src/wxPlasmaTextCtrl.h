@@ -8,7 +8,9 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
+
 #include <wx/stc/stc.h>
+#include <CoreLib/plEncryptedStream.h>
 
 class wxPlasmaTextCtrl : public wxStyledTextCtrl {
 public:
@@ -23,14 +25,28 @@ public:
                      const wxString& name = wxSTCNameStr);
     ~wxPlasmaTextCtrl();
 
-    void SetSyntaxMode(SyntaxMode mode);
     SyntaxMode GetSyntaxMode();
+    plEncryptedStream::EncryptionType GetEncryptionType();
+    wxString GetFilename();
+
+    void SetSyntaxMode(SyntaxMode mode);
+    void SetEncryptionType(plEncryptedStream::EncryptionType enc);
+    void SetFilename(const wxString& filename);
+
+    void DoLoad(const wxString& filename);
+    void DoSave(const wxString& filename = wxEmptyString);
+    void LoadElf(const wxString& filename);
+    void SaveElf(const wxString& filename = wxEmptyString);
 
 protected:
     enum { kMarginUNUSED, kMarginLineNumbers, kMarginFolders };
+    
     unsigned int fLineNumberWidth;
     SyntaxMode fSyntaxMode;
     wxFont fFont;
+
+    wxString fFileName;
+    plEncryptedStream::EncryptionType fEncryptionType;
 
     void ResetSyntax();
     void UpdateLineNumberWidth();

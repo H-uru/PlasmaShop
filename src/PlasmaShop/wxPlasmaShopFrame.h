@@ -31,12 +31,18 @@ public:
     wxPlasmaShopFrame(wxApp* owner);
     virtual ~wxPlasmaShopFrame();
 
+    void LoadFile(const wxString& filename);
+
 protected:
     // Event Handling
     DECLARE_EVENT_TABLE()
 
     void OnExitClick(wxCommandEvent& evt);
+    void OnOpenClick(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
+
+    void OnStcDirty(wxStyledTextEvent& evt);
+    void OnStcClean(wxStyledTextEvent& evt);
 };
 
 #endif

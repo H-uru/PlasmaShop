@@ -1,4 +1,6 @@
 #include "wxPlasmaTextCtrl.h"
+#include <CoreLib/hsElfStream.h>
+#include <CoreLib/plDebug.h>
 
 /* -------------------------------------------------------------------------- */
 
@@ -143,10 +145,80 @@ wxPlasmaTextCtrl::wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id,
 #endif
 
     SetSyntaxMode(kSynNone);
+    fEncryptionType = plEncryptedStream::kEncNone;
 }
 
 wxPlasmaTextCtrl::~wxPlasmaTextCtrl()
 { }
+
+void wxPlasmaTextCtrl::DoLoad(const wxString& filename)
+{
+    hsStream* S;
+    fEncryptionType = plEncryptedStream::kEncNone;
+    plString fn = (const char*)filename.mb_str(wxConvFile);
+    if (plEncryptedStream::IsFileEncrypted(fn)) {
+        S = new plEncryptedStream();
+        fEncryptionType = plEncryptedStream::kEncAuto;
+        ((plEncryptedStream*)S)->open(fn, fmRead, fEncryptionType);
+    } else {
+        S = new hsFileStream();
+        ((hsFileStream*)S)->open(fn, fmRead);
+    }
+
+    unsigned long bufSize = S->size();
+    char* buf = new char[bufSize + 1];
+    S->read(bufSize, buf);
+    buf[bufSize] = 0;
+    SetText(wxString::FromUTF8(buf));
+    delete[] buf;
+
+    fFileName = filename;
+    if (fEncryptionType != plEncryptedStream::kEncNone)
+        fEncryptionType = ((plEncryptedStream*)S)->getEncType();
+    delete S;
+
+    SetSavePoint();
+}
+
+void wxPlasmaTextCtrl::DoSave(const wxString& filename)
+{
+    hsStream* S;
+    wxString saveFilename = (filename == wxEmptyString) ? fFileName : filename;
+    plString fn = (const char*)saveFilename.mb_str(wxConvFile);
+    if (fEncryptionType == plEncryptedStream::kEncNone) {
+        S = new hsFileStream();
+        ((hsFileStream*)S)->open(fn, fmCreate);
+    } else {
+        S = new plEncryptedStream();
+        ((plEncryptedStream*)S)->open(fn, fmCreate, fEncryptionType);
+    }
+
+    plString text = (const char*)GetText().mb_str(wxConvUTF8);
+    S->write(text.len(), text.cstr());
+    delete S;
+
+    SetSavePoint();
+}
+
+void wxPlasmaTextCtrl::LoadElf(const wxString& filename)
+{
+    hsElfStream* S = new hsElfStream();
+    S->open(filename.mb_str(wxConvFile), fmRead);
+
+    while (!S->eof())
+        AddText(wxString::FromUTF8(S->readLine()) + wxT("\n"));
+
+    fFileName = filename;
+    fEncryptionType = plEncryptedStream::kEncNone;
+    delete S;
+
+    SetSavePoint();
+}
+
+void wxPlasmaTextCtrl::SaveElf(const wxString& filename)
+{
+    plDebug::Error("PlasmaShop: [ERR] ELF writing not supported");
+}
 
 void wxPlasmaTextCtrl::ResetSyntax()
 {
@@ -158,6 +230,11 @@ void wxPlasmaTextCtrl::ResetSyntax()
     StyleSetForeground(wxSTC_STYLE_BRACELIGHT, wxColour(0, 0, 0xC0));
     StyleSetFontAttr(wxSTC_STYLE_BRACELIGHT, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
     UpdateLineNumberWidth();
+}
+
+wxPlasmaTextCtrl::SyntaxMode wxPlasmaTextCtrl::GetSyntaxMode()
+{
+    return fSyntaxMode;
 }
 
 void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
@@ -324,9 +401,24 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
     fSyntaxMode = mode;
 }
 
-wxPlasmaTextCtrl::SyntaxMode wxPlasmaTextCtrl::GetSyntaxMode()
+plEncryptedStream::EncryptionType wxPlasmaTextCtrl::GetEncryptionType()
 {
-    return fSyntaxMode;
+    return fEncryptionType;
+}
+
+void wxPlasmaTextCtrl::SetEncryptionType(plEncryptedStream::EncryptionType enc)
+{
+    fEncryptionType = enc;
+}
+
+wxString wxPlasmaTextCtrl::GetFilename()
+{
+    return fFileName;
+}
+
+void wxPlasmaTextCtrl::SetFilename(const wxString& filename)
+{
+    fFileName = filename;
 }
 
 void wxPlasmaTextCtrl::UpdateLineNumberWidth()

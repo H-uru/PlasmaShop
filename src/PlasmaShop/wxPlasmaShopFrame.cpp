@@ -1,9 +1,14 @@
 #include "wxPlasmaShopFrame.h"
 #include "../../rc/PlasmaShop.xpm"
+#include <wx/filename.h>
+#include <CoreLib/plDebug.h>
 
 BEGIN_EVENT_TABLE(wxPlasmaShopFrame, wxFrame)
     EVT_MENU(wxID_EXIT, wxPlasmaShopFrame::OnExitClick)
+    EVT_MENU(wxID_OPEN, wxPlasmaShopFrame::OnOpenClick)
     EVT_CLOSE(wxPlasmaShopFrame::OnClose)
+    EVT_STC_SAVEPOINTLEFT(wxID_ANY, wxPlasmaShopFrame::OnStcDirty)
+    EVT_STC_SAVEPOINTREACHED(wxID_ANY, wxPlasmaShopFrame::OnStcClean)
 END_EVENT_TABLE()
 
 wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
@@ -32,32 +37,6 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     SetMenuBar(menuBar);
     SetStatusBar(new wxStatusBar(this, wxID_ANY));
 
-    // Test editors
-    wxPlasmaTextCtrl* stcPlasma = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcPlasma->SetSyntaxMode(wxPlasmaTextCtrl::kSynPlasma);
-    fEditorBook->AddPage(stcPlasma, wxT("Plasma"), true);
-    wxPlasmaTextCtrl* stcPython = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcPython->SetSyntaxMode(wxPlasmaTextCtrl::kSynPython);
-    fEditorBook->AddPage(stcPython, wxT("Python"), true);
-    wxPlasmaTextCtrl* stcSDL1 = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcSDL1->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Uru);
-    fEditorBook->AddPage(stcSDL1, wxT("SDL (Uru)"), true);
-    wxPlasmaTextCtrl* stcSDL2 = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcSDL2->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Eoa);
-    fEditorBook->AddPage(stcSDL2, wxT("SDL (Eoa)"), true);
-    wxPlasmaTextCtrl* stcAge = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcAge->SetSyntaxMode(wxPlasmaTextCtrl::kSynAgeIni);
-    fEditorBook->AddPage(stcAge, wxT("Age/Ini"), true);
-    wxPlasmaTextCtrl* stcConsole = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcConsole->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
-    fEditorBook->AddPage(stcConsole, wxT("Console"), true);
-    wxPlasmaTextCtrl* stcXML = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcXML->SetSyntaxMode(wxPlasmaTextCtrl::kSynXML);
-    fEditorBook->AddPage(stcXML, wxT("XML"), true);
-    wxPlasmaTextCtrl* stcFX = new wxPlasmaTextCtrl(this, wxID_ANY);
-    stcFX->SetSyntaxMode(wxPlasmaTextCtrl::kSynFX);
-    fEditorBook->AddPage(stcFX, wxT("FX"), true);
-
     // The AUI Manager
     fAuiMgr->AddPane(fEditorBook, wxCENTER, wxEmptyString);
     fAuiMgr->AddPane(fFileTree, wxLEFT, wxT("File Browser"));
@@ -72,9 +51,70 @@ wxPlasmaShopFrame::~wxPlasmaShopFrame()
     delete fResMgr;
 }
 
+void wxPlasmaShopFrame::LoadFile(const wxString& filename)
+{
+    wxFileName fn(filename);
+
+    if (!fn.FileExists()) {
+        wxMessageBox(wxString::Format(wxT("Error: File %s not found!"), filename.c_str()),
+                     wxT("Error"), wxOK | wxICON_ERROR);
+        return;
+    }
+
+    wxString ext = fn.GetExt();
+    if (ext == wxT("py")) {
+        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+        ptc->DoLoad(filename);
+        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynPython);
+        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    } else if (ext == wxT("age") || ext == wxT("ini")) {
+        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+        ptc->DoLoad(filename);
+        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynAgeIni);
+        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    } else if (ext == wxT("fni")) {
+        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+        ptc->DoLoad(filename);
+        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
+        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    } else if (ext == wxT("log") || ext == wxT("txt")) {
+        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+        ptc->DoLoad(filename);
+        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
+        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    } else if (ext == wxT("elf")) {
+        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+        ptc->LoadElf(filename);
+        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
+        ptc->SetReadOnly(true);
+        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    }
+}
+
 void wxPlasmaShopFrame::OnExitClick(wxCommandEvent& evt)
 {
     Close();
+}
+
+void wxPlasmaShopFrame::OnOpenClick(wxCommandEvent& evt)
+{
+    static const wxString kFilter =
+        wxT("All supported files|*.age;*.fni;*.sum;*.ini;*.tga;*.pfp;*.p2f;*.hex;*.elf;*.log*.pak;*.py;*.sdl;*.fx;*.txt|")
+        wxT("Age files (*.age, *.fni, *.sum)|*.age;*.fni;*.sum|")
+        wxT("Config files (*.ini, *.fni)|*.ini;*.fni|")
+        wxT("Cursor files (*.dat, *.tga)|*.dat;*.tga|")
+        wxT("Font files (*.pfp, *.p2f)|*.pfp;*.p2f|")
+        wxT("Hex Isle levels (*.hex)|*.hex|")
+        wxT("Log files (*.elf, *.log)|*.elf;*.log|")
+        wxT("Python files (*.pak, *.py)|*.pak;*.py|")
+        wxT("SDL files (*.sdl)|*.sdl|")
+        wxT("Shader files (*.fx)|*.fx|")
+        wxT("Text files (*.txt)|*.txt");
+
+    wxFileDialog fd(this, wxT("Open file"), wxEmptyString,
+                    wxEmptyString, kFilter, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (fd.ShowModal() != wxID_CANCEL)
+        LoadFile(fd.GetPath());
 }
 
 void wxPlasmaShopFrame::OnClose(wxCloseEvent& evt)
@@ -85,4 +125,26 @@ void wxPlasmaShopFrame::OnClose(wxCloseEvent& evt)
     } else {
         Destroy();
     }
+}
+
+void wxPlasmaShopFrame::OnStcDirty(wxStyledTextEvent& evt)
+{
+    int pid = fEditorBook->GetPageIndex((wxWindow*)evt.GetEventObject());
+    if (pid == wxNOT_FOUND)
+        return;
+
+    wxString pageText = fEditorBook->GetPageText(pid);
+    if (pageText.Right(1) != wxT("*"))
+        fEditorBook->SetPageText(pid, pageText + wxT(" *"));
+}
+
+void wxPlasmaShopFrame::OnStcClean(wxStyledTextEvent& evt)
+{
+    int pid = fEditorBook->GetPageIndex((wxWindow*)evt.GetEventObject());
+    if (pid == wxNOT_FOUND)
+        return;
+
+    wxString pageText = fEditorBook->GetPageText(pid);
+    if (pageText.Right(1) == wxT("*"))
+        fEditorBook->SetPageText(pid, pageText.Left(pageText.size() - 2));
 }
