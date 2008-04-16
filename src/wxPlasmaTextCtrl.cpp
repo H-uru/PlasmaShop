@@ -165,12 +165,89 @@ void wxPlasmaTextCtrl::DoLoad(const wxString& filename)
         ((hsFileStream*)S)->open(fn, fmRead);
     }
 
-    unsigned long bufSize = S->size();
-    char* buf = new char[bufSize + 1];
-    S->read(bufSize, buf);
-    buf[bufSize] = 0;
-    SetText(wxString::FromUTF8(buf));
-    delete[] buf;
+    unsigned int bom = S->readInt();
+    fEncoding = kUniNone;
+    if (bom == 0x0000FEFF) {
+        fEncoding = kUniUTF32LE;
+    } else if (bom == 0xFFFE0000) {
+        fEncoding = kUniUTF32BE;
+    } else if ((bom & 0xFFFF) == 0xFEFF) {
+        fEncoding = kUniUTF16LE;
+    } else if ((bom & 0xFFFF) == 0xFFFE) {
+        fEncoding = kUniUTF16BE;
+    } else if ((bom & 0xFFFFFF) == 0xBFBBEF) {
+        fEncoding = kUniUTF8;
+    }
+    S->rewind();
+
+    size_t bufSize = S->size();
+    if (fEncoding == kUniUTF32LE) {
+        S->skip(4); // BOM
+        bufSize -= 4;
+        hsUint32* buf = new hsUint32[(bufSize / 4)];
+        S->read(bufSize, buf);
+        wchar_t* wbuf = new wchar_t[(bufSize / 4) + 1];
+        for (size_t i=0; i<(bufSize / 4); i++)
+            wbuf[i] = (wchar_t)buf[i];
+        wbuf[(bufSize / 4)] = 0;
+        wxMBConvUTF32LE conv;
+        SetText(wxString(wbuf, conv));
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF32BE) {
+        S->skip(4); // BOM
+        bufSize -= 4;
+        hsUint32* buf = new hsUint32[(bufSize / 4)];
+        S->read(bufSize, buf);
+        wchar_t* wbuf = new wchar_t[(bufSize / 4) + 1];
+        for (size_t i=0; i<(bufSize / 4); i++)
+            wbuf[i] = (wchar_t)buf[i];
+        wbuf[(bufSize / 4)] = 0;
+        wxMBConvUTF32BE conv;
+        SetText(wxString(wbuf, conv));
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF16LE) {
+        S->skip(2); // BOM
+        bufSize -= 2;
+        hsUint16* buf = new hsUint16[(bufSize / 2)];
+        S->read(bufSize, buf);
+        wchar_t* wbuf = new wchar_t[(bufSize / 2) + 1];
+        for (size_t i=0; i<(bufSize / 2); i++)
+            wbuf[i] = (wchar_t)buf[i];
+        wbuf[(bufSize / 2)] = 0;
+        wxMBConvUTF16LE conv;
+        SetText(wxString(wbuf, conv));
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF16BE) {
+        S->skip(2); // BOM
+        bufSize -= 2;
+        hsUint16* buf = new hsUint16[(bufSize / 2)];
+        S->read(bufSize, buf);
+        wchar_t* wbuf = new wchar_t[(bufSize / 2) + 1];
+        for (size_t i=0; i<(bufSize / 2); i++)
+            wbuf[i] = (wchar_t)buf[i];
+        wbuf[(bufSize / 2)] = 0;
+        wxMBConvUTF16BE conv;
+        SetText(wxString(wbuf, conv));
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF8) {
+        S->skip(3); // BOM
+        bufSize -= 3;
+        char* buf = new char[bufSize + 1];
+        S->read(bufSize, buf);
+        buf[bufSize] = 0;
+        SetText(wxString(buf, wxConvUTF8));
+        delete[] buf;
+    } else {
+        char* buf = new char[bufSize + 1];
+        S->read(bufSize, buf);
+        buf[bufSize] = 0;
+        SetText(wxString(buf, wxConvISO8859_1));
+        delete[] buf;
+    }
 
     fFileName = filename;
     if (fEncryptionType != plEncryptedStream::kEncNone)
@@ -193,10 +270,71 @@ void wxPlasmaTextCtrl::DoSave(const wxString& filename)
         ((plEncryptedStream*)S)->open(fn, fmCreate, fEncryptionType);
     }
 
-    plString text = (const char*)GetText().mb_str(wxConvUTF8);
-    S->write(text.len(), text.cstr());
-    delete S;
+    wxString src = GetText();
+    if (fEncoding == kUniUTF32LE) {
+        S->writeInt(0x0000FEFF);    // BOM
+        wxMBConvUTF32LE conv;
+        size_t bufSize = wcslen(conv.cWX2WC(src));
+        wchar_t* wbuf = new wchar_t[bufSize + 1];
+        memcpy(wbuf, conv.cWX2WC(src), bufSize);
+        wbuf[bufSize] = 0;
+        hsUint32* buf = new hsUint32[bufSize];
+        for (size_t i=0; i<bufSize; i++)
+            buf[i] = (hsUint32)wbuf[i];
+        S->write(bufSize * 4, buf);
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF32BE) {
+        S->writeInt(0xFFFE0000);    // BOM
+        wxMBConvUTF32BE conv;
+        size_t bufSize = wcslen(conv.cWX2WC(src));
+        wchar_t* wbuf = new wchar_t[bufSize + 1];
+        memcpy(wbuf, conv.cWX2WC(src), bufSize);
+        wbuf[bufSize] = 0;
+        hsUint32* buf = new hsUint32[bufSize];
+        for (size_t i=0; i<bufSize; i++)
+            buf[i] = (hsUint32)wbuf[i];
+        S->write(bufSize * 4, buf);
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF16LE) {
+        S->writeShort(0xFEFF);  // BOM
+        wxMBConvUTF16LE conv;
+        size_t bufSize = wcslen(conv.cWX2WC(src));
+        wchar_t* wbuf = new wchar_t[bufSize + 1];
+        memcpy(wbuf, conv.cWX2WC(src), bufSize);
+        wbuf[bufSize] = 0;
+        hsUint16* buf = new hsUint16[bufSize];
+        for (size_t i=0; i<bufSize; i++)
+            buf[i] = (hsUint16)wbuf[i];
+        S->write(bufSize * 2, buf);
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF16BE) {
+        S->writeShort(0xFFFE);  // BOM
+        wxMBConvUTF16BE conv;
+        size_t bufSize = wcslen(conv.cWX2WC(src));
+        wchar_t* wbuf = new wchar_t[bufSize + 1];
+        memcpy(wbuf, conv.cWX2WC(src), bufSize);
+        wbuf[bufSize] = 0;
+        hsUint16* buf = new hsUint16[bufSize];
+        for (size_t i=0; i<bufSize; i++)
+            buf[i] = (hsUint16)wbuf[i];
+        S->write(bufSize * 2, buf);
+        delete[] buf;
+        delete[] wbuf;
+    } else if (fEncoding == kUniUTF8) {
+        S->writeByte(0xEF); // BOM: EF BB BF
+        S->writeByte(0xBB);
+        S->writeByte(0xBF);
+        size_t bufSize = strlen(wxConvUTF8.cWX2MB(src));
+        S->write(bufSize, wxConvUTF8.cWX2MB(src));
+    } else {
+        size_t bufSize = strlen(wxConvISO8859_1.cWX2MB(src));
+        S->write(bufSize, wxConvISO8859_1.cWX2MB(src));
+    }
 
+    delete S;
     SetSavePoint();
 }
 
@@ -372,7 +510,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
 #ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_HEX);
 #endif
-        printf("TODO: kSynHex\n");
+        plDebug::Debug("TODO: kSynHex");
         break;
     case kSynFX:
         ResetSyntax();
@@ -409,6 +547,16 @@ plEncryptedStream::EncryptionType wxPlasmaTextCtrl::GetEncryptionType()
 void wxPlasmaTextCtrl::SetEncryptionType(plEncryptedStream::EncryptionType enc)
 {
     fEncryptionType = enc;
+}
+
+wxPlasmaTextCtrl::EncodingType wxPlasmaTextCtrl::GetEncoding()
+{
+    return fEncoding;
+}
+
+void wxPlasmaTextCtrl::SetEncoding(wxPlasmaTextCtrl::EncodingType uni)
+{
+    fEncoding = uni;
 }
 
 wxString wxPlasmaTextCtrl::GetFilename()

@@ -11,7 +11,6 @@
 
 #include <wx/aui/aui.h>
 #include <wx/treectrl.h>
-#include <PubUtilLib/plResMgr/plResManager.h>
 
 #include "../wxPlasmaTextCtrl.h"
 
@@ -22,10 +21,6 @@ protected:
     wxAuiManager* fAuiMgr;
     wxTreeCtrl* fFileTree;
     wxAuiNotebook* fEditorBook;
-
-protected:
-    // Plasma Utilities
-    plResManager* fResMgr;
 
 public:
     wxPlasmaShopFrame(wxApp* owner);

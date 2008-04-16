@@ -15,7 +15,6 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     : wxFrame(NULL, wxID_ANY, wxT("PlasmaShop 3.0"), wxDefaultPosition, wxSize(640, 480)),
       fOwner(owner)
 {
-    fResMgr = new plResManager();
     fAuiMgr = new wxAuiManager(this);
 
     // GUI Elements
@@ -47,47 +46,78 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
 }
 
 wxPlasmaShopFrame::~wxPlasmaShopFrame()
-{
-    delete fResMgr;
-}
+{ }
 
 void wxPlasmaShopFrame::LoadFile(const wxString& filename)
 {
     wxFileName fn(filename);
 
     if (!fn.FileExists()) {
-        wxMessageBox(wxString::Format(wxT("Error: File %s not found!"), filename.c_str()),
+        wxMessageBox(wxString::Format(wxT("Error: File %s not found!"), filename.wx_str()),
                      wxT("Error"), wxOK | wxICON_ERROR);
         return;
     }
 
-    wxString ext = fn.GetExt();
-    if (ext == wxT("py")) {
-        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
-        ptc->DoLoad(filename);
-        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynPython);
-        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
-    } else if (ext == wxT("age") || ext == wxT("ini")) {
-        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
-        ptc->DoLoad(filename);
-        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynAgeIni);
-        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
-    } else if (ext == wxT("fni")) {
-        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
-        ptc->DoLoad(filename);
-        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
-        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
-    } else if (ext == wxT("log") || ext == wxT("txt")) {
-        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
-        ptc->DoLoad(filename);
-        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
-        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
-    } else if (ext == wxT("elf")) {
-        wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
-        ptc->LoadElf(filename);
-        ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
-        ptc->SetReadOnly(true);
-        fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+    try {
+        wxString ext = fn.GetExt();
+        if (ext.CmpNoCase(wxT("age")) == 0 || ext.CmpNoCase(wxT("ini")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynAgeIni);
+        } else if (ext.CmpNoCase(wxT("elf")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->LoadElf(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
+            ptc->SetReadOnly(true);
+        } else if (ext.CmpNoCase(wxT("fni")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynConsole);
+        } else if (ext.CmpNoCase(wxT("fx")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynFX);
+        } else if (ext.CmpNoCase(wxT("hex")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynHex);
+        } else if (ext.CmpNoCase(wxT("loc")) == 0 || ext.CmpNoCase(wxT("sub")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynXML);
+        } else if (ext.CmpNoCase(wxT("log")) == 0 || ext.CmpNoCase(wxT("txt")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynNone);
+        } else if (ext.CmpNoCase(wxT("py")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynPython);
+        } else if (ext.CmpNoCase(wxT("sdl")) == 0) {
+            wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
+            fEditorBook->AddPage(ptc, fn.GetFullName(), true);
+            ptc->DoLoad(filename);
+            wxString sdlTxt = ptc->GetText();
+            if (sdlTxt.Find(wxT("struct")) != wxNOT_FOUND)
+                ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Eoa);
+            else
+                ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynSDL_Uru);
+        } else {
+            wxMessageBox(wxString::Format(wxT("%s: Unsupported file type!"), filename.wx_str()),
+                         wxT("Error"), wxOK | wxICON_ERROR, this);
+        }
+    } catch (std::exception& e) {
+        wxMessageBox(wxString::Format(wxT("Error loading %s: %s"),
+                     filename.wx_str(), wxString(e.what(), wxConvUTF8).wx_str()),
+                     wxT("Error"), wxOK | wxICON_ERROR, this);
     }
 }
 
@@ -99,12 +129,13 @@ void wxPlasmaShopFrame::OnExitClick(wxCommandEvent& evt)
 void wxPlasmaShopFrame::OnOpenClick(wxCommandEvent& evt)
 {
     static const wxString kFilter =
-        wxT("All supported files|*.age;*.fni;*.sum;*.ini;*.tga;*.pfp;*.p2f;*.hex;*.elf;*.log*.pak;*.py;*.sdl;*.fx;*.txt|")
+        wxT("All supported files|*.age;*.fni;*.sum;*.ini;*.tga;*.pfp;*.p2f;*.hex;*.loc;*.sub;*.elf;*.log*.pak;*.py;*.sdl;*.fx;*.txt|")
         wxT("Age files (*.age, *.fni, *.sum)|*.age;*.fni;*.sum|")
         wxT("Config files (*.ini, *.fni)|*.ini;*.fni|")
         wxT("Cursor files (*.dat, *.tga)|*.dat;*.tga|")
         wxT("Font files (*.pfp, *.p2f)|*.pfp;*.p2f|")
         wxT("Hex Isle levels (*.hex)|*.hex|")
+        wxT("Localization files (*.loc, *.sub)|*.loc;*.sub|")
         wxT("Log files (*.elf, *.log)|*.elf;*.log|")
         wxT("Python files (*.pak, *.py)|*.pak;*.py|")
         wxT("SDL files (*.sdl)|*.sdl|")
@@ -112,9 +143,14 @@ void wxPlasmaShopFrame::OnOpenClick(wxCommandEvent& evt)
         wxT("Text files (*.txt)|*.txt");
 
     wxFileDialog fd(this, wxT("Open file"), wxEmptyString,
-                    wxEmptyString, kFilter, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-    if (fd.ShowModal() != wxID_CANCEL)
-        LoadFile(fd.GetPath());
+                    wxEmptyString, kFilter,
+                    wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
+    if (fd.ShowModal() != wxID_CANCEL) {
+        wxArrayString paths;
+        fd.GetPaths(paths);
+        for (size_t i=0; i<paths.GetCount(); i++)
+            LoadFile(paths[i]);
+    }
 }
 
 void wxPlasmaShopFrame::OnClose(wxCloseEvent& evt)

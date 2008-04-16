@@ -19,6 +19,10 @@ public:
         kSynAgeIni, kSynConsole, kSynXML, kSynHex, kSynFX
     };
 
+    enum EncodingType {
+        kUniNone, kUniUTF8, kUniUTF16LE, kUniUTF16BE, kUniUTF32LE, kUniUTF32BE
+    };
+
     wxPlasmaTextCtrl(wxWindow* parent, wxWindowID id=wxID_ANY,
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize, long style = 0,
@@ -27,10 +31,12 @@ public:
 
     SyntaxMode GetSyntaxMode();
     plEncryptedStream::EncryptionType GetEncryptionType();
+    EncodingType GetEncoding();
     wxString GetFilename();
 
     void SetSyntaxMode(SyntaxMode mode);
     void SetEncryptionType(plEncryptedStream::EncryptionType enc);
+    void SetEncoding(EncodingType uni);
     void SetFilename(const wxString& filename);
 
     void DoLoad(const wxString& filename);
@@ -47,6 +53,7 @@ protected:
 
     wxString fFileName;
     plEncryptedStream::EncryptionType fEncryptionType;
+    EncodingType fEncoding;
 
     void ResetSyntax();
     void UpdateLineNumberWidth();
