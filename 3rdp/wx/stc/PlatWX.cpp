@@ -13,6 +13,7 @@
 #include "wx/image.h"
 #include "wx/imaglist.h"
 #include "wx/tokenzr.h"
+#include "wx/display.h"
 
 #ifdef wxHAVE_RAW_BITMAP
 #include "wx/rawbmp.h"
@@ -707,7 +708,12 @@ void Window::SetTitle(const char *s) {
 }
 
 PRectangle Window::GetMonitorRect(Point pt) {
-    // TODO: Is multiple monitor info available in wx?
+    int dispNo = wxDisplay::GetFromPoint(wxPoint(pt.x, pt.y));
+    if (dispNo != 0) {
+        wxRect geom = wxDisplay(dispNo).GetGeometry();
+        return PRectangle(geom.GetLeft(), geom.GetTop(),
+                          geom.GetRight(), geom.GetBottom());
+    }
     return PRectangle();
 }
 

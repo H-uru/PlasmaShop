@@ -1,16 +1,14 @@
 #include <wx/wx.h>
 #include <wx/config.h>
-#include <CoreLib/plDebug.h>
+#include <Debug/plDebug.h>
 #include "wxPlasmaShopFrame.h"
 
 class wxPlasmaShopApp : public wxApp {
 public:
     virtual bool OnInit()
     {
-        // Set up libPlasma globals
+        // Initialize application globals
         plDebug::InitFile(plDebug::kDLAll);
-
-        // Configuration manager
         wxConfigBase::Set(new wxConfig(wxT("PlasmaShop")));
 
         // Create and show the main frame

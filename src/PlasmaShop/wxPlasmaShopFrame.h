@@ -33,6 +33,7 @@ protected:
     DECLARE_EVENT_TABLE()
 
     void OnExitClick(wxCommandEvent& evt);
+    void OnNewClick(wxCommandEvent& evt);
     void OnOpenClick(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
 

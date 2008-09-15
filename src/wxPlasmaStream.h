@@ -9,7 +9,7 @@
     #include <wx/wx.h>
 #endif
 
-#include <CoreLib/hsStream.h>
+#include <Stream/hsStream.h>
 
 class wxPlasmaInputStream : public wxInputStream {
 protected:

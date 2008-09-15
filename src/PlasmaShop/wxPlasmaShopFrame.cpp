@@ -1,10 +1,17 @@
 #include "wxPlasmaShopFrame.h"
 #include "../../rc/PlasmaShop.xpm"
+
+#include <Debug/plDebug.h>
 #include <wx/filename.h>
-#include <CoreLib/plDebug.h>
+#include <wx/sysopt.h>
+#include <wx/config.h>
+#include <wx/artprov.h>
+
+#include "wxNewFileFrame.h"
 
 BEGIN_EVENT_TABLE(wxPlasmaShopFrame, wxFrame)
     EVT_MENU(wxID_EXIT, wxPlasmaShopFrame::OnExitClick)
+    EVT_MENU(wxID_NEW, wxPlasmaShopFrame::OnNewClick)
     EVT_MENU(wxID_OPEN, wxPlasmaShopFrame::OnOpenClick)
     EVT_CLOSE(wxPlasmaShopFrame::OnClose)
     EVT_STC_SAVEPOINTLEFT(wxID_ANY, wxPlasmaShopFrame::OnStcDirty)
@@ -12,11 +19,9 @@ BEGIN_EVENT_TABLE(wxPlasmaShopFrame, wxFrame)
 END_EVENT_TABLE()
 
 wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
-    : wxFrame(NULL, wxID_ANY, wxT("PlasmaShop 3.0"), wxDefaultPosition, wxSize(640, 480)),
+    : wxFrame(NULL, wxID_ANY, wxT("PlasmaShop 3.0"), wxDefaultPosition, wxSize(800, 600)),
       fOwner(owner)
 {
-    fAuiMgr = new wxAuiManager(this);
-
     // GUI Elements
     fEditorBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition,
                                     wxSize(400, 400));
@@ -24,8 +29,24 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
                                wxSize(240, 400),
                                wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT);
 
+    // Toolbar
+    wxSystemOptions::SetOption(wxT("msw.remap"), 0);
+    wxToolBar* toolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition,
+                                       wxDefaultSize, wxTB_FLAT);
+    toolBar->AddTool(wxID_NEW, wxT("New"),
+                     wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR),
+                     wxNullBitmap, wxITEM_NORMAL, wxT("New..."),
+                     wxT("Create a new file..."));
+    toolBar->AddTool(wxID_OPEN, wxT("Open"),
+                     wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR),
+                     wxNullBitmap, wxITEM_NORMAL, wxT("Open File"),
+                     wxT("Open a file for editing"));
+    toolBar->Realize();
+    SetToolBar(toolBar);
+
     // Menu, Status Bar
     wxMenu* mnuFile = new wxMenu();
+    mnuFile->Append(wxID_NEW, wxT("&New..."), wxT("Create a new file..."));
     mnuFile->Append(wxID_OPEN, wxT("&Open"), wxT("Open a file for editing"));
     mnuFile->AppendSeparator();
     mnuFile->Append(wxID_EXIT, wxT("E&xit"), wxT("Exit PlasmaShop"));
@@ -36,9 +57,13 @@ wxPlasmaShopFrame::wxPlasmaShopFrame(wxApp* owner)
     SetMenuBar(menuBar);
     SetStatusBar(new wxStatusBar(this, wxID_ANY));
 
-    // The AUI Manager
-    fAuiMgr->AddPane(fEditorBook, wxCENTER, wxEmptyString);
-    fAuiMgr->AddPane(fFileTree, wxLEFT, wxT("File Browser"));
+    // The AUI Manager / Layout
+    fAuiMgr = new wxAuiManager(this);
+    fAuiMgr->AddPane(fEditorBook, wxAuiPaneInfo().CentrePane().Dockable(false));
+    fAuiMgr->AddPane(fFileTree, wxAuiPaneInfo().Layer(0).Left().
+                     TopDockable(false).BottomDockable(false).
+                     Caption(wxT("File Browser")));
+    //fAuiMgr->AddPane(toolBar, wxAuiPaneInfo().ToolbarPane());
     fAuiMgr->Update();
 
     // Miscellaneous
@@ -91,7 +116,8 @@ void wxPlasmaShopFrame::LoadFile(const wxString& filename)
             fEditorBook->AddPage(ptc, fn.GetFullName(), true);
             ptc->DoLoad(filename);
             ptc->SetSyntaxMode(wxPlasmaTextCtrl::kSynXML);
-        } else if (ext.CmpNoCase(wxT("log")) == 0 || ext.CmpNoCase(wxT("txt")) == 0) {
+        } else if (ext.CmpNoCase(wxT("log")) == 0 || ext.CmpNoCase(wxT("txt")) == 0 ||
+                   ext.CmpNoCase(wxT("csv")) == 0) {
             wxPlasmaTextCtrl* ptc = new wxPlasmaTextCtrl(this);
             fEditorBook->AddPage(ptc, fn.GetFullName(), true);
             ptc->DoLoad(filename);
@@ -126,11 +152,19 @@ void wxPlasmaShopFrame::OnExitClick(wxCommandEvent& evt)
     Close();
 }
 
+void wxPlasmaShopFrame::OnNewClick(wxCommandEvent& evt)
+{
+    wxNewFileFrame* frame = new wxNewFileFrame();
+    frame->ShowModal();
+    int sel = frame->GetSelection();
+    delete frame;
+}
+
 void wxPlasmaShopFrame::OnOpenClick(wxCommandEvent& evt)
 {
     static const wxString kFilter =
-        wxT("All supported files|*.age;*.fni;*.sum;*.ini;*.tga;*.pfp;*.p2f;*.hex;*.loc;*.sub;*.elf;*.log*.pak;*.py;*.sdl;*.fx;*.txt|")
-        wxT("Age files (*.age, *.fni, *.sum)|*.age;*.fni;*.sum|")
+        wxT("All supported files|*.age;*.fni;*.csv;*.sum;*.ini;*.tga;*.pfp;*.p2f;*.hex;*.loc;*.sub;*.elf;*.log*.pak;*.py;*.sdl;*.fx;*.txt|")
+        wxT("Age files (*.age, *.fni, *.csv, *.sum)|*.age;*.fni;*.csv;*.sum|")
         wxT("Config files (*.ini, *.fni)|*.ini;*.fni|")
         wxT("Cursor files (*.dat, *.tga)|*.dat;*.tga|")
         wxT("Font files (*.pfp, *.p2f)|*.pfp;*.p2f|")

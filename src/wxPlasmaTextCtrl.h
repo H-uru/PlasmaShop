@@ -10,7 +10,7 @@
 #endif
 
 #include <wx/stc/stc.h>
-#include <CoreLib/plEncryptedStream.h>
+#include <Stream/plEncryptedStream.h>
 
 class wxPlasmaTextCtrl : public wxStyledTextCtrl {
 public:

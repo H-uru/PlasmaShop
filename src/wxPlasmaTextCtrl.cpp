@@ -1,6 +1,6 @@
 #include "wxPlasmaTextCtrl.h"
-#include <CoreLib/hsElfStream.h>
-#include <CoreLib/plDebug.h>
+#include <Stream/hsElfStream.h>
+#include <Debug/plDebug.h>
 
 /* -------------------------------------------------------------------------- */
 

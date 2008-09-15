@@ -98,7 +98,7 @@
 			OutputDirectory="$(SolutionDir)bin"
 			IntermediateDirectory="$(SolutionDir)out"
 			ConfigurationType="1"
-			CharacterSet="0"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -118,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)3rdp&quot;;../Plasma/trunk;&quot;E:\Dev\Libs\wxWidgets-2.8.7\lib\vc_lib\mswu&quot;;&quot;E:\Dev\Libs\wxWidgets-2.8.7\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -136,7 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Plasma.lib wxbase28u.lib wxmsw28u_core.lib wxzlib.lib comctl32.lib rpcrt4.lib wxmsw28u_aui.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../Plasma/bin;&quot;E:\Dev\Libs\wxWidgets-2.8.7\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -179,6 +182,14 @@
 			>
 			<File
 				RelativePath=".\src\PlasmaShop\Main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PlasmaShop\wxNewFileFrame.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PlasmaShop\wxNewFileFrame.h"
 				>
 			</File>
 			<File
