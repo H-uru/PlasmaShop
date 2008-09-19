@@ -301,7 +301,7 @@ static const char* XPM_curpak[] = {
 
 /* XPM */
 /* Borrowed from Python */
-static const char* XPM_py[] = {
+static const char* XPM_python[] = {
 "16 16 34 1",
 "  c None",
 "X c #000000",

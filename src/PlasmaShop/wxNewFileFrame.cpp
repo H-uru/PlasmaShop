@@ -22,7 +22,7 @@ wxNewFileFrame::wxNewFileFrame()
     fileIList->Add(wxBitmap(XPM_fontpak));
     fileIList->Add(wxBitmap(XPM_init));
     fileIList->Add(wxBitmap(XPM_pak));
-    fileIList->Add(wxBitmap(XPM_py));
+    fileIList->Add(wxBitmap(XPM_python));
     fileIList->Add(wxBitmap(XPM_sdl));
     fileIList->Add(wxBitmap(XPM_sum));
 
