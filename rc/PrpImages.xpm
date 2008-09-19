@@ -329,35 +329,6 @@ static const char* XPM_sim[] = {
 };
 
 /* XPM */
-/* Borrowed from Microsoft */
-static const char* XPM_sound2[] = {
-"16 16 7 1",
-"  c None",
-"X c #000000",
-"x c #808080",
-", c #C0C0C0",
-". c #FFFFFF",
-"Y c #FFFF00",
-"y c #808000",
-"       XX       ",
-"      yxXx      ",
-"     yYX,,      ",
-"    yYxx,.x   x ",
-"   yY.X,..x  x  ",
-" yyY.YX,..x x   ",
-"y.,.Y.XX..x     ",
-"yY,Y.YX,X.x     ",
-"yY,.Y.XxX.x xxxx",
-"XyxY.YXX..x     ",
-" XXyY.X,..x     ",
-"   XyYX,..x x   ",
-"    Xyxx..x  x  ",
-"     XyX,,x   x ",
-"      XyXx      ",
-"       XX       "
-};
-
-/* XPM */
 /* Author: Michael Hansen */
 static const char* XPM_spotlight[] = {
 "16 16 3 1",
