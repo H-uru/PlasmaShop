@@ -1,9 +1,9 @@
-PLSLIBDIR=Plasma/lib
+PLSLIBDIR=../Plasma/core/lib
 
 CXX = g++
-CXXFLAGS = -fPIC -Wall -g -IPlasma -I3rdp -I3rdp/squish `wx-config --cxxflags`
+CXXFLAGS = -fPIC -Wall -g -I../Plasma/core -I3rdp -I3rdp/squish `wx-config --cxxflags`
 CXXLIBS_PLASMASHOP = -L$(PLSLIBDIR) -lPlasma -L3rdp/wx/stc -lwxstc `wx-config --libs std`
-CXXLIBS_PRPSHOP = -L$(PLSLIBDIR) -lPlasma `wx-config --libs std`
+CXXLIBS_PRPSHOP = -L$(PLSLIBDIR) -lPlasma `wx-config --libs std,gl`
 
 CC = gcc
 CCFLAGS = -fPIC -Wall -g -I3rdp
@@ -23,36 +23,39 @@ OBJFILES_PLASMASHOP=\
 OBJFILES_PRPSHOP=\
 	$(OBJFILES_SHARED) \
 	out/wxPrpShopFrame.o \
+	out/wxPrpCanvas.o \
 	out/PlasmaTreeItem.o \
 	out/wxPrpPlasma.o \
 	out/PRP/wxSceneNode.o \
 	out/PRP/wxSceneObject.o
 
-OBJFILES_ALL=$(OBJFILES_3RDP) $(OBJFILES_PLASMASHOP)
-
-all: $(PLSLIBDIR)/libPlasmaCore.so $(PLSLIBDIR)/libPlasma.so \
+all: $(PLSLIBDIR)/libPlasma.so \
 	3rdp/squish/libsquish.a 3rdp/wx/stc/libwxstc.a \
 	bin/PlasmaShop bin/PrpShop
 
 install:
-	(cd Plasma ; make install)
+	(cd ../Plasma/core ; make install)
+	cp bin/PrpShop /usr/local/bin/
 
 clean-all:
 	(cd 3rdp/squish ; make clean)
 	(cd 3rdp/wx/stc ; make clean)
-	rm -f $(OBJFILES_ALL)
+	rm -f $(OBJFILES_3RDP)
+	rm -f $(OBJFILES_PLASMASHOP)
+	rm -f $(OBJFILES_PRPSHOP)
 	rm -f bin/PlasmaShop
 	rm -f bin/PrpShop
 
 clean:
-	rm -f $(OBJFILES_ALL)
+	rm -f $(OBJFILES_PLASMASHOP)
+	rm -f $(OBJFILES_PRPSHOP)
 	rm -f bin/PlasmaShop
 	rm -f bin/PrpShop
 
+
 # Libs
-$(PLSLIBDIR)/libPlasmaCore.so:
 $(PLSLIBDIR)/libPlasma.so:
-	(cd Plasma ; make)
+	(cd ../Plasma/core ; make)
 
 
 # 3rd Party stuff
@@ -91,6 +94,9 @@ out/wxPlasmaShopFrame.o: src/PlasmaShop/wxPlasmaShopFrame.h src/PlasmaShop/wxPla
 # PrpShop
 bin/PrpShop: $(OBJFILES_PRPSHOP) src/PrpShop/Main.cpp
 	$(CXX) $(CXXFLAGS) $(OBJFILES_PRPSHOP) src/PrpShop/Main.cpp $(CXXLIBS_PRPSHOP) -o $@
+
+out/wxPrpCanvas.o: src/PrpShop/wxPrpCanvas.h src/PrpShop/wxPrpCanvas.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpCanvas.cpp -o out/wxPrpCanvas.o
 
 out/wxPrpShopFrame.o: src/PrpShop/wxPrpShopFrame.h src/PrpShop/wxPrpShopFrame.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpShopFrame.cpp -o $@

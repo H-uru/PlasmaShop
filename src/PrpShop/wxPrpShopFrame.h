@@ -13,6 +13,7 @@
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
 #include <ResManager/plResManager.h>
+#include "wxPrpCanvas.h"
 
 class wxPrpShopFrame : public wxFrame {
 protected:
