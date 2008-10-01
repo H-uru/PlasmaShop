@@ -52,13 +52,9 @@ size_t wxPlasmaInputStream::OnSysRead(void *buffer, size_t size) {
         m_lasterror = wxSTREAM_EOF;
         return 0;
     } else if (size + fStream->pos() > fStream->size()) {
-        size_t count = fStream->size() - fStream->pos();
-        fStream->read(count, buffer);
-        return count;
+        return fStream->read(fStream->size() - fStream->pos(), buffer);
     } else {
-        size_t begin = fStream->pos();
-        fStream->read(size, buffer);
-        return (fStream->pos() - begin);
+        return fStream->read(size, buffer);
     }
 }
 
@@ -96,7 +92,5 @@ wxOutputStream& wxPlasmaOutputStream::Write(const void* buffer, size_t size) {
 }
 
 size_t wxPlasmaOutputStream::OnSysWrite(const void* buffer, size_t size) {
-    size_t begin = fStream->pos();
-    fStream->write(size, buffer);
-    return (fStream->pos() - begin);
+    return fStream->write(size, buffer);
 }

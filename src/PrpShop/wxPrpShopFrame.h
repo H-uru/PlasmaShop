@@ -14,6 +14,7 @@
 #include <wx/notebook.h>
 #include <ResManager/plResManager.h>
 #include "wxPrpCanvas.h"
+#include "wxPrpPlasma.h"
 
 class wxPrpShopFrame : public wxFrame {
 protected:
@@ -23,6 +24,7 @@ protected:
     wxNotebook* fPropertyBook;
     plResManager* fResMgr;
     std::map<plLocation, wxTreeItemId> fLoadedLocations;
+    wxPrpPlasmaObject* fCurObject;
 
     enum { ID_OBJTREE, ID_PROPERTYBOOK };
 
@@ -41,6 +43,7 @@ protected:
     void OnNewClick(wxCommandEvent& evt);
     void OnOpenClick(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
+    void OnTreeChanged(wxTreeEvent& evt);
 };
 
 #endif

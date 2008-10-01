@@ -6,7 +6,7 @@ wxTreeItemId TreeAddSceneNode(wxTreeCtrl* tree, const wxTreeItemId& parent,
 {
     wxTreeItemId tid =
     tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                     ico_scenenode, -1, new PlasmaTreeItem(key->getObj()));
+                     ico_scenenode, -1, new PlasmaTreeItem(key));
 
     plSceneNode* node = plSceneNode::Convert(key->getObj());
     if (node->getNumSceneObjects() > 0) {

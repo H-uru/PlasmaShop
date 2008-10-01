@@ -1,12 +1,15 @@
 #include "wxSceneObject.h"
 #include <PRP/Object/plSceneObject.h>
+#include <wx/button.h>
+#include <wx/sizer.h>
+#include <wx/msgdlg.h>
 
 wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
                                 plResManager* mgr, plKey key)
 {
     wxTreeItemId tid =
     tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                     ico_sceneobj, -1, new PlasmaTreeItem(key->getObj()));
+                     ico_sceneobj, -1, new PlasmaTreeItem(key));
 
     plSceneObject* obj = plSceneObject::Convert(key->getObj());
     if (obj->getDrawInterface().Exists())
@@ -38,5 +41,17 @@ wxSceneObject::wxSceneObject(plKey key, plResManager* mgr)
 
 void wxSceneObject::AddPropPages(wxNotebook* nb)
 {
-    // TODO
+    wxPanel* pnl = new wxPanel(nb);
+    wxButton* btn = new wxButton(pnl, wxID_ANY, wxT("Blah"));
+    wxGridSizer* szr = new wxGridSizer(1, 1);
+    szr->Add(btn);
+    pnl->SetSizer(szr);
+    nb->AddPage(pnl, wxT("Test"));
+    btn->Connect(wxID_ANY, wxEVT_COMMAND_BUTTON_CLICKED,
+                 (wxObjectEventFunction)&wxSceneObject::OnButton1);
+}
+
+void wxSceneObject::OnButton1(wxCommandEvent& evt)
+{
+    wxMessageBox(wxT("Test"), wxT("Test"), wxID_OK);
 }

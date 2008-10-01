@@ -6,7 +6,10 @@
 class wxSceneObject : public wxPrpPlasmaObject {
 public:
     wxSceneObject(plKey key, plResManager* mgr);
-    void AddPropPages(wxNotebook* nb);
+    virtual void AddPropPages(wxNotebook* nb);
+
+protected:
+    void OnButton1(wxCommandEvent& evt);
 };
 
 wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);

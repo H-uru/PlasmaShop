@@ -8,7 +8,8 @@
 
 enum {
     // Image indices for the PrpShop Object Tree
-    ico_folder, ico_age, ico_page, ico_img, ico_scenenode, ico_sceneobj
+    ico_folder, ico_age, ico_page, ico_img, ico_scenenode, ico_sceneobj,
+    ico_spans, ico_sim, ico_coords, ico_sound, ico_spans2
 };
 
 class wxPrpPlasmaObject : public wxEvtHandler {
@@ -18,7 +19,9 @@ protected:
 
 public:
     wxPrpPlasmaObject(plKey key, plResManager* mgr);
-    void AddPropPages(wxNotebook* nb);
+    virtual void AddPropPages(wxNotebook* nb);
+
+    void AddKeyPage(wxNotebook* nb);
 };
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);

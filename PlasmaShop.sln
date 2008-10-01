@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlasmaShop", "PlasmaShop.vcproj", "{47123B14-EF41-4E13-88F4-BF4CD576633C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A242AD1C-56C9-4EF8-8372-22C7686AF10B} = {A242AD1C-56C9-4EF8-8372-22C7686AF10B}

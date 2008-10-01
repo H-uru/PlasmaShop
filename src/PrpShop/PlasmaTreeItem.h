@@ -21,17 +21,17 @@ protected:
     Type fType;
     TreeAgeInfo fAge;
     plPageInfo* fPage;
-    hsKeyedObject* fObject;
+    plKey fObject;
 
 public:
     PlasmaTreeItem();
     PlasmaTreeItem(const TreeAgeInfo& age);
     PlasmaTreeItem(plPageInfo* page);
-    PlasmaTreeItem(hsKeyedObject* obj);
+    PlasmaTreeItem(plKey obj);
 
     TreeAgeInfo* getAge();
     plPageInfo* getPage();
-    hsKeyedObject* getObject();
+    plKey getObject();
 };
 
 #endif

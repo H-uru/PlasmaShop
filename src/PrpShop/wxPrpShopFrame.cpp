@@ -1,5 +1,4 @@
 #include "wxPrpShopFrame.h"
-#include "wxPrpPlasma.h"
 #include "PlasmaTreeItem.h"
 #include "../../rc/PlasmaShop.xpm"
 #include "../../rc/PrpImages.xpm"
@@ -18,11 +17,13 @@ BEGIN_EVENT_TABLE(wxPrpShopFrame, wxFrame)
     EVT_MENU(wxID_EXIT, wxPrpShopFrame::OnExitClick)
     EVT_MENU(wxID_OPEN, wxPrpShopFrame::OnOpenClick)
     EVT_CLOSE(wxPrpShopFrame::OnClose)
+
+    EVT_TREE_SEL_CHANGED(ID_OBJTREE, wxPrpShopFrame::OnTreeChanged)
 END_EVENT_TABLE()
 
 wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     : wxFrame(NULL, wxID_ANY, wxT("PrpShop 1.0"), wxDefaultPosition, wxSize(800, 600)),
-      fOwner(owner)
+      fOwner(owner), fCurObject(NULL)
 {
     wxSplitterWindow* splitter = new wxSplitterWindow(this, wxID_ANY,
             wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
@@ -62,6 +63,10 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     SetStatusBar(new wxStatusBar(this, wxID_ANY));
 
     // Layout
+    fObjTree->SetMinSize(wxSize(0, 0));
+    fPropertyBook->SetMinSize(wxSize(0, 0));
+    splitterR->SetMinSize(wxSize(0, 0));
+
     splitterR->SetSashGravity(1.0);
     splitterR->SplitHorizontally(pnlBlah, fPropertyBook, -200);
     splitter->SetSashGravity(0.0);
@@ -77,6 +82,11 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     prpImages->Add(wxBitmap(XPM_img));
     prpImages->Add(wxBitmap(XPM_scenenode));
     prpImages->Add(wxBitmap(XPM_sceneobj));
+    prpImages->Add(wxBitmap(XPM_spans));
+    prpImages->Add(wxBitmap(XPM_sim));
+    prpImages->Add(wxBitmap(XPM_coords));
+    prpImages->Add(wxBitmap(XPM_sound));
+    prpImages->Add(wxBitmap(XPM_spans2));
     fObjTree->SetImageList(prpImages);
 
     // Set up the Resource Manager
@@ -184,7 +194,7 @@ wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
                 biFolderId = fObjTree->InsertItem(ageId, 0, wxT("Built-In"), ico_folder);
             TreeAddObject(fObjTree, biFolderId, fResMgr, keys[0]);
         }
-        
+
         ((PlasmaTreeItem*)fObjTree->GetItemData(ageId))->getAge()->fHasBuiltIn = true;
         fLoadedLocations[page->getLocation()] = biFolderId;
         return biFolderId;
@@ -231,5 +241,23 @@ void wxPrpShopFrame::OnClose(wxCloseEvent& evt)
         Destroy();
     } else {
         Destroy();
+    }
+}
+
+void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
+{
+    wxTreeItemId itm = evt.GetItem();
+    PlasmaTreeItem* data = (PlasmaTreeItem*)fObjTree->GetItemData(itm);
+    if (data == NULL)
+        return;
+
+    if (fCurObject != NULL)
+        delete fCurObject;
+    fCurObject = NULL;
+    fPropertyBook->DeleteAllPages();
+
+    if (data->getObject().Exists()) {
+        fCurObject = AddPropPages(fPropertyBook, fResMgr, data->getObject());
+        fCurObject->AddKeyPage(fPropertyBook);
     }
 }

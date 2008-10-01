@@ -24,7 +24,7 @@ PlasmaTreeItem::PlasmaTreeItem(plPageInfo* page)
               : fType(kTypePage), fPage(page)
 { }
 
-PlasmaTreeItem::PlasmaTreeItem(hsKeyedObject* obj)
+PlasmaTreeItem::PlasmaTreeItem(plKey obj)
               : fType(kTypeObject), fObject(obj)
 { }
 
@@ -34,5 +34,5 @@ TreeAgeInfo* PlasmaTreeItem::getAge()
 plPageInfo* PlasmaTreeItem::getPage()
 { return (fType == kTypePage) ? fPage : NULL; }
 
-hsKeyedObject* PlasmaTreeItem::getObject()
-{ return (fType == kTypeObject) ? fObject : NULL; }
+plKey PlasmaTreeItem::getObject()
+{ return (fType == kTypeObject) ? fObject : plKey(); }
