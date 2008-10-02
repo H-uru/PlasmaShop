@@ -8,8 +8,9 @@
 #include "PRP/wxSceneNode.h"
 #include "PRP/wxSceneObject.h"
 
-wxPrpPlasmaObject::wxPrpPlasmaObject(plKey key, plResManager* mgr)
-                 : fKey(key), fResMgr(mgr)
+wxPrpPlasmaObject::wxPrpPlasmaObject(plKey key, plResManager* mgr,
+                                     wxTreeCtrl* tree, const wxTreeItemId& tid)
+                 : fKey(key), fResMgr(mgr), fTree(tree), fTreeID(tid)
 { }
 
 void wxPrpPlasmaObject::AddPropPages(wxNotebook* nb)
@@ -26,9 +27,9 @@ void wxPrpPlasmaObject::AddKeyPage(wxNotebook* nb)
     wxStaticText* lbl1 = new wxStaticText(page, wxID_ANY, wxT("Name:"));
     wxStaticText* lbl2 = new wxStaticText(page, wxID_ANY, wxT("Type:"));
     wxStaticText* lbl3 = new wxStaticText(page, wxID_ANY, wxT("Load Mask:"));
-    wxTextCtrl* txtName = new wxTextCtrl(page, wxID_ANY, objName, wxDefaultPosition, wxSize(200, -1));
+    txtName = new wxTextCtrl(page, wxID_ANY, objName, wxDefaultPosition, wxSize(200, -1));
     wxStaticText* lblType = new wxStaticText(page, wxID_ANY, objType);
-    wxTextCtrl* txtMask = new wxTextCtrl(page, wxID_ANY, loadMask, wxDefaultPosition, wxSize(40, -1));
+    txtMask = new wxTextCtrl(page, wxID_ANY, loadMask, wxDefaultPosition, wxSize(40, -1));
 
     wxFlexGridSizer* props = new wxFlexGridSizer(4, 2, 4, 4);
     props->Add(lbl1);
@@ -43,7 +44,17 @@ void wxPrpPlasmaObject::AddKeyPage(wxNotebook* nb)
     wxBoxSizer* border = new wxBoxSizer(0);
     border->Add(props, 0, wxALL, 8);
     page->SetSizerAndFit(border);
-    nb->InsertPage(0, page, wxT("Basic"), true);
+    nb->InsertPage(0, page, wxT("Basic"));
+}
+
+void wxPrpPlasmaObject::SaveDamage()
+{
+    fKey->setName((const char*)txtName->GetValue().mb_str());
+    plLoadMask loadMask;
+    unsigned long mask;
+    txtMask->GetValue().ToULong(&mask, 16);
+    loadMask.setMask(mask);
+    fKey->setLoadMask(loadMask);
 }
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
@@ -68,19 +79,20 @@ wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
     }
 }
 
-wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key)
+wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key,
+                                wxTreeCtrl* tree, const wxTreeItemId& tid)
 {
     wxPrpPlasmaObject* obj = NULL;
 
     switch (key->getType()) {
     case kSceneNode:
-        obj = new wxSceneNode(key, mgr);
+        obj = new wxSceneNode(key, mgr, tree, tid);
         break;
     case kSceneObject:
-        obj = new wxSceneObject(key, mgr);
+        obj = new wxSceneObject(key, mgr, tree, tid);
         break;
     default:
-        obj = new wxPrpPlasmaObject(key, mgr);
+        obj = new wxPrpPlasmaObject(key, mgr, tree, tid);
         break;
     }
 

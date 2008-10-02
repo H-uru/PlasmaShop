@@ -23,7 +23,7 @@ END_EVENT_TABLE()
 
 wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     : wxFrame(NULL, wxID_ANY, wxT("PrpShop 1.0"), wxDefaultPosition, wxSize(800, 600)),
-      fOwner(owner), fCurObject(NULL)
+      fOwner(owner), fCurObject(NULL), fCurPage(NULL)
 {
     wxSplitterWindow* splitter = new wxSplitterWindow(this, wxID_ANY,
             wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
@@ -95,6 +95,8 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
 
 wxPrpShopFrame::~wxPrpShopFrame()
 {
+    if (fCurObject != NULL)
+        delete fCurObject;
     delete fResMgr;
 }
 
@@ -168,7 +170,8 @@ wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
 
     // Special cases: Textures and BuiltIn:
     if (page->getLocation().getPageNum() == -1) {
-        wxTreeItemId texFolderId = fObjTree->InsertItem(ageId, 0, wxT("Textures"), ico_folder);
+        wxTreeItemId texFolderId = fObjTree->InsertItem(ageId, 0, wxT("Textures"), ico_folder,
+                                                        -1, new PlasmaTreeItem(page));
         wxTreeItemId envmapId = fObjTree->AppendItem(texFolderId, wxT("Environment Maps"), ico_folder);
         wxTreeItemId mipmapId = fObjTree->AppendItem(texFolderId, wxT("Mipmaps"), ico_folder);
 
@@ -189,9 +192,11 @@ wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
             plDebug::Warning("Got multiple Scene Objects in a BuiltIn PRP");
         if (keys.size() >= 1) {
             if (((PlasmaTreeItem*)fObjTree->GetItemData(ageId))->getAge()->fHasTextures)
-                biFolderId = fObjTree->InsertItem(ageId, 1, wxT("Built-In"), ico_folder);
+                biFolderId = fObjTree->InsertItem(ageId, 1, wxT("Built-In"), ico_folder,
+                                                  -1, new PlasmaTreeItem(page));
             else
-                biFolderId = fObjTree->InsertItem(ageId, 0, wxT("Built-In"), ico_folder);
+                biFolderId = fObjTree->InsertItem(ageId, 0, wxT("Built-In"), ico_folder,
+                                                  -1, new PlasmaTreeItem(page));
             TreeAddObject(fObjTree, biFolderId, fResMgr, keys[0]);
         }
 
@@ -251,13 +256,110 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
     if (data == NULL)
         return;
 
-    if (fCurObject != NULL)
+    int propPageIdx = fPropertyBook->GetSelection();
+    if (propPageIdx < 0)
+        propPageIdx = 0;
+
+    if (fCurObject != NULL) {
+        fCurObject->SaveDamage();
         delete fCurObject;
-    fCurObject = NULL;
+        fCurObject = NULL;
+    }
+    if (fCurPage != NULL) {
+        fCurPage->setAge((const char*)txtAge->GetValue().mb_str());
+        fCurPage->setPage((const char*)txtPage->GetValue().mb_str());
+
+        plLocation newLoc;
+        long out;
+        txtSeqPre->GetValue().ToLong(&out);
+        newLoc.setSeqPrefix(out);
+        txtSeqSuf->GetValue().ToLong(&out);
+        newLoc.setPageNum(out);
+        unsigned short pgFlags = cbLocalOnly->GetValue() ? plLocation::kLocalOnly : 0
+                               | cbVolatile->GetValue() ? plLocation::kVolatile : 0
+                               | cbReserved->GetValue() ? plLocation::kReserved : 0
+                               | cbBuiltIn->GetValue() ? plLocation::kBuiltIn : 0
+                               | cbItinerant->GetValue() ? plLocation::kItinerant : 0;
+        newLoc.setFlags(pgFlags);
+        if (newLoc != fCurPage->getLocation()) {
+            fLoadedLocations[newLoc] = fLoadedLocations[fCurPage->getLocation()];
+            fLoadedLocations.erase(fLoadedLocations.find(fCurPage->getLocation()));
+            fResMgr->ChangeLocation(fCurPage->getLocation(), newLoc);
+        }
+
+        fCurPage = NULL;
+    }
     fPropertyBook->DeleteAllPages();
 
     if (data->getObject().Exists()) {
-        fCurObject = AddPropPages(fPropertyBook, fResMgr, data->getObject());
+        fCurObject = AddPropPages(fPropertyBook, fResMgr, data->getObject(), fObjTree, itm);
         fCurObject->AddKeyPage(fPropertyBook);
+    } else if (data->getPage() != NULL) {
+        fCurPage = data->getPage();
+        wxPanel* nbpage = new wxPanel(fPropertyBook);
+        wxString ageName(fCurPage->getAge().cstr(), wxConvUTF8);
+        wxString pageName(fCurPage->getPage().cstr(), wxConvUTF8);
+        wxString seqPrefix(wxString::Format(wxT("%d"), fCurPage->getLocation().getSeqPrefix()));
+        wxString seqSuffix(wxString::Format(wxT("%d"), fCurPage->getLocation().getPageNum()));
+
+        wxStaticText* lbl1 = new wxStaticText(nbpage, wxID_ANY, wxT("Age:"));
+        wxStaticText* lbl2 = new wxStaticText(nbpage, wxID_ANY, wxT("Page:"));
+        wxStaticText* lbl3 = new wxStaticText(nbpage, wxID_ANY, wxT("Sequence Prefix:"));
+        wxStaticText* lbl4 = new wxStaticText(nbpage, wxID_ANY, wxT("Page Number:"));
+        wxStaticText* lbl5 = new wxStaticText(nbpage, wxID_ANY, wxT("Flags:"));
+        txtAge = new wxTextCtrl(nbpage, wxID_ANY, ageName, wxDefaultPosition, wxSize(200, -1));
+        txtPage = new wxTextCtrl(nbpage, wxID_ANY, pageName, wxDefaultPosition, wxSize(200, -1));
+        txtSeqPre = new wxTextCtrl(nbpage, wxID_ANY, seqPrefix, wxDefaultPosition, wxSize(40, -1));
+        txtSeqSuf = new wxTextCtrl(nbpage, wxID_ANY, seqSuffix, wxDefaultPosition, wxSize(40, -1));
+        wxPanel* pnlFlags = new wxPanel(nbpage, wxID_ANY);
+        cbLocalOnly = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Local Only"));
+        cbLocalOnly->SetValue((fCurPage->getLocation().getFlags() & plLocation::kLocalOnly) != 0);
+        cbVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Volatile"));
+        cbVolatile->SetValue((fCurPage->getLocation().getFlags() & plLocation::kVolatile) != 0);
+        cbReserved = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Reserved"));
+        cbReserved->SetValue((fCurPage->getLocation().getFlags() & plLocation::kReserved) != 0);
+        cbBuiltIn = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Built-In"));
+        cbBuiltIn->SetValue((fCurPage->getLocation().getFlags() & plLocation::kBuiltIn) != 0);
+        cbItinerant = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Itinerant"));
+        cbItinerant->SetValue((fCurPage->getLocation().getFlags() & plLocation::kItinerant) != 0);
+
+        wxGridSizer* szrFlags = new wxGridSizer(3, 2, 4, 16);
+        szrFlags->Add(cbLocalOnly);
+        szrFlags->Add(cbVolatile);
+        szrFlags->Add(cbReserved);
+        szrFlags->Add(cbBuiltIn);
+        szrFlags->Add(cbItinerant);
+        szrFlags->Add(0, 0);
+        pnlFlags->SetSizer(szrFlags);
+
+        wxFlexGridSizer* props = new wxFlexGridSizer(4, 5, 4, 4);
+        props->Add(lbl1);
+        props->Add(txtAge);
+        props->Add(8, 0);
+        props->Add(lbl3);
+        props->Add(txtSeqPre);
+        props->Add(lbl2);
+        props->Add(txtPage);
+        props->Add(8, 0);
+        props->Add(lbl4);
+        props->Add(txtSeqSuf);
+        props->Add(0, 10);
+        props->Add(0, 10);
+        props->Add(0, 10);
+        props->Add(0, 10);
+        props->Add(0, 10);
+        props->Add(lbl5);
+        props->Add(pnlFlags);
+        props->Add(0, 0);
+        props->Add(0, 0);
+        props->Add(0, 0);
+
+        wxBoxSizer* border = new wxBoxSizer(0);
+        border->Add(props, 0, wxALL, 8);
+        nbpage->SetSizerAndFit(border);
+        fPropertyBook->AddPage(nbpage, wxT("PRP Settings"));
     }
+
+    if (propPageIdx < fPropertyBook->GetPageCount())
+        fPropertyBook->ChangeSelection(propPageIdx);
 }

@@ -27,7 +27,8 @@ OBJFILES_PRPSHOP=\
 	out/PlasmaTreeItem.o \
 	out/wxPrpPlasma.o \
 	out/PRP/wxSceneNode.o \
-	out/PRP/wxSceneObject.o
+	out/PRP/wxSceneObject.o \
+	out/PRP/wxSynchedObject.o
 
 all: $(PLSLIBDIR)/libPlasma.so \
 	3rdp/squish/libsquish.a 3rdp/wx/stc/libwxstc.a \
@@ -112,3 +113,6 @@ out/PRP/wxSceneNode.o: src/PrpShop/PRP/wxSceneNode.h src/PrpShop/PRP/wxSceneNode
 
 out/PRP/wxSceneObject.o: src/PrpShop/PRP/wxSceneObject.h src/PrpShop/PRP/wxSceneObject.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSceneObject.cpp -o $@
+
+out/PRP/wxSynchedObject.o: src/PrpShop/PRP/wxSynchedObject.h src/PrpShop/PRP/wxSynchedObject.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSynchedObject.cpp -o $@

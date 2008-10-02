@@ -16,15 +16,23 @@ class wxPrpPlasmaObject : public wxEvtHandler {
 protected:
     plKey fKey;
     plResManager* fResMgr;
+    wxTreeCtrl* fTree;
+    wxTreeItemId fTreeID;
+
+    // Editors
+    wxTextCtrl* txtName;
+    wxTextCtrl* txtMask;
 
 public:
-    wxPrpPlasmaObject(plKey key, plResManager* mgr);
+    wxPrpPlasmaObject(plKey key, plResManager* mgr, wxTreeCtrl* tree,
+                      const wxTreeItemId& tid);
     virtual void AddPropPages(wxNotebook* nb);
-
     void AddKeyPage(wxNotebook* nb);
+    virtual void SaveDamage();
 };
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);
-wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key);
+wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key,
+                                wxTreeCtrl* tree, const wxTreeItemId& tid);
 
 #endif

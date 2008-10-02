@@ -1,12 +1,13 @@
 #ifndef _WXSCENEOBJECT_H
 #define _WXSCENEOBJECT_H
 
-#include "../wxPrpPlasma.h"
+#include "wxSynchedObject.h"
 
-class wxSceneObject : public wxPrpPlasmaObject {
+class wxSceneObject : public wxSynchedObject {
 public:
-    wxSceneObject(plKey key, plResManager* mgr);
+    wxSceneObject(plKey key, plResManager* mgr, wxTreeCtrl* tree, const wxTreeItemId& tid);
     virtual void AddPropPages(wxNotebook* nb);
+    virtual void SaveDamage();
 
 protected:
     void OnButton1(wxCommandEvent& evt);

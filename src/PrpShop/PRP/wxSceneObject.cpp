@@ -35,12 +35,15 @@ wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
     return tid;
 }
 
-wxSceneObject::wxSceneObject(plKey key, plResManager* mgr)
-             : wxPrpPlasmaObject(key, mgr)
+wxSceneObject::wxSceneObject(plKey key, plResManager* mgr,
+                             wxTreeCtrl* tree, const wxTreeItemId& tid)
+             : wxSynchedObject(key, mgr, tree, tid)
 { }
 
 void wxSceneObject::AddPropPages(wxNotebook* nb)
 {
+    wxSynchedObject::AddPropPages(nb);
+
     wxPanel* pnl = new wxPanel(nb);
     wxButton* btn = new wxButton(pnl, wxID_ANY, wxT("Blah"));
     wxGridSizer* szr = new wxGridSizer(1, 1);
@@ -51,7 +54,13 @@ void wxSceneObject::AddPropPages(wxNotebook* nb)
                  (wxObjectEventFunction)&wxSceneObject::OnButton1);
 }
 
+void wxSceneObject::SaveDamage()
+{
+    wxSynchedObject::SaveDamage();
+    // TODO
+}
+
 void wxSceneObject::OnButton1(wxCommandEvent& evt)
 {
-    wxMessageBox(wxT("Test"), wxT("Test"), wxID_OK);
+    wxMessageBox(wxT("Clicking"), wxT("Test"), wxID_OK);
 }

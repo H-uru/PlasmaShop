@@ -28,6 +28,19 @@ protected:
 
     enum { ID_OBJTREE, ID_PROPERTYBOOK };
 
+private:
+    // Page Editor Components
+    plPageInfo* fCurPage;
+    wxTextCtrl* txtAge;
+    wxTextCtrl* txtPage;
+    wxTextCtrl* txtSeqPre;
+    wxTextCtrl* txtSeqSuf;
+    wxCheckBox* cbLocalOnly;
+    wxCheckBox* cbVolatile;
+    wxCheckBox* cbReserved;
+    wxCheckBox* cbBuiltIn;
+    wxCheckBox* cbItinerant;
+
 public:
     wxPrpShopFrame(wxApp* owner);
     virtual ~wxPrpShopFrame();

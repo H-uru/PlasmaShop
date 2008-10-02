@@ -244,6 +244,14 @@
 					RelativePath=".\src\PrpShop\PRP\wxSceneObject.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\PrpShop\PRP\wxSynchedObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PrpShop\PRP\wxSynchedObject.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>
