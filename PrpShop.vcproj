@@ -177,6 +177,10 @@
 		<Filter
 			Name="rc"
 			>
+			<File
+				RelativePath=".\rc\PrpShop.res"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="src"

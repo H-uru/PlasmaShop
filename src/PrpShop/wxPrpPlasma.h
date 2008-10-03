@@ -17,7 +17,7 @@ protected:
     plKey fKey;
     plResManager* fResMgr;
     wxTreeCtrl* fTree;
-    wxTreeItemId fTreeID;
+    wxTreeItemId fTreeId;
 
     // Editors
     wxTextCtrl* txtName;
@@ -29,6 +29,9 @@ public:
     virtual void AddPropPages(wxNotebook* nb);
     void AddKeyPage(wxNotebook* nb);
     virtual void SaveDamage();
+
+    plKey getKey();
+    wxTreeItemId getTreeId();
 };
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);

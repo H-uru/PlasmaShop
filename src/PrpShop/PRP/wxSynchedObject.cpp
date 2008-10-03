@@ -2,9 +2,8 @@
 #include <PRP/Object/plSynchedObject.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
-#include <wx/checkbox.h>
-#include <wx/listbox.h>
-#include <wx/stattext.h>
+#include <wx/menu.h>
+#include <wx/textdlg.h>
 
 wxSynchedObject::wxSynchedObject(plKey key, plResManager* mgr,
                                  wxTreeCtrl* tree, const wxTreeItemId& tid)
@@ -17,21 +16,21 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     plSynchedObject* obj = plSynchedObject::Convert(fKey->getObj());
 
     wxPanel* pnlFlags = new wxPanel(nbpage, wxID_ANY);
-    wxCheckBox* cbDontDirty = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Dirty"));
+    cbDontDirty = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Dirty"));
     cbDontDirty->SetValue((obj->getFlags() & plSynchedObject::kDontDirty) != 0);
-    wxCheckBox* cbSendReliably = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Send Reliably"));
+    cbSendReliably = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Send Reliably"));
     cbSendReliably->SetValue((obj->getFlags() & plSynchedObject::kSendReliably) != 0);
-    wxCheckBox* cbHasConstNetGroup = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Constant Net Group"));
+    cbHasConstNetGroup = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Constant Net Group"));
     cbHasConstNetGroup->SetValue((obj->getFlags() & plSynchedObject::kHasConstantNetGroup) != 0);
-    wxCheckBox* cbDontSynchGameMsgs = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Synch Game Messages"));
+    cbDontSynchGameMsgs = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Synch Game Messages"));
     cbDontSynchGameMsgs->SetValue((obj->getFlags() & plSynchedObject::kDontSynchGameMessages) != 0);
-    wxCheckBox* cbExcludePersistent = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude Persistent State"));
+    cbExcludePersistent = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude Persistent State"));
     cbExcludePersistent->SetValue((obj->getFlags() & plSynchedObject::kExcludePersistentState) != 0);
-    wxCheckBox* cbExcludeAllPersist = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude ALL Persistent States"));
+    cbExcludeAllPersist = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude ALL Persistent States"));
     cbExcludeAllPersist->SetValue((obj->getFlags() & plSynchedObject::kExcludeAllPersistentState) != 0);
-    wxCheckBox* cbHasVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Volatile State"));
+    cbHasVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Volatile State"));
     cbHasVolatile->SetValue((obj->getFlags() & plSynchedObject::kHasVolatileState) != 0);
-    wxCheckBox* cbAllVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("All States Volatile"));
+    cbAllVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("All States Volatile"));
     cbAllVolatile->SetValue((obj->getFlags() & plSynchedObject::kAllStateIsVolatile) != 0);
 
     wxGridSizer* szrFlags = new wxGridSizer(4, 2, 4, 10);
@@ -46,18 +45,18 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     pnlFlags->SetSizer(szrFlags);
 
     wxPanel* pnlStates = new wxPanel(nbpage, wxID_ANY);
-    wxStaticText* lbl1 = new wxStaticText(pnlStates, wxID_ANY, wxT("Excludes:"));
-    wxStaticText* lbl2 = new wxStaticText(pnlStates, wxID_ANY, wxT("Volatiles:"));
-    wxListBox* listExcludes = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 80));
-    wxListBox* listVolatiles = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 80));
+    lblExcludes = new wxStaticText(pnlStates, wxID_ANY, wxT("Excludes:"));
+    lblVolatiles = new wxStaticText(pnlStates, wxID_ANY, wxT("Volatiles:"));
+    listExcludes = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
+    listVolatiles = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
     for (size_t i=0; i<obj->getExcludes().getSize(); i++)
         listExcludes->AppendString(wxString(obj->getExcludes()[i].cstr(), wxConvUTF8));
     for (size_t i=0; i<obj->getVolatiles().getSize(); i++)
         listVolatiles->AppendString(wxString(obj->getVolatiles()[i].cstr(), wxConvUTF8));
 
     wxFlexGridSizer* szrStates = new wxFlexGridSizer(2, 2, 2, 10);
-    szrStates->Add(lbl1);
-    szrStates->Add(lbl2);
+    szrStates->Add(lblExcludes);
+    szrStates->Add(lblVolatiles);
     szrStates->Add(listExcludes);
     szrStates->Add(listVolatiles);
     pnlStates->SetSizer(szrStates);
@@ -70,10 +69,91 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     border->Add(split, 0, wxALL, 8);
     nbpage->SetSizerAndFit(border);
     nb->AddPage(nbpage, wxT("Synch State"));
+
+    // Event handling
+    listExcludes->Connect(wxEVT_CONTEXT_MENU,
+                          (wxObjectEventFunction)&wxSynchedObject::OnExcludeContextMenu,
+                          NULL, this);
+    listVolatiles->Connect(wxEVT_CONTEXT_MENU,
+                           (wxObjectEventFunction)&wxSynchedObject::OnVolatileContextMenu,
+                           NULL, this);
 }
 
 void wxSynchedObject::SaveDamage()
 {
     wxPrpPlasmaObject::SaveDamage();
-    // TODO
+    
+    plSynchedObject* obj = plSynchedObject::Convert(fKey->getObj());
+    obj->setFlags(cbDontDirty->GetValue() ? plSynchedObject::kDontDirty : 0
+                | cbSendReliably->GetValue() ? plSynchedObject::kSendReliably : 0
+                | cbHasConstNetGroup->GetValue() ? plSynchedObject::kHasConstantNetGroup : 0
+                | cbDontSynchGameMsgs->GetValue() ? plSynchedObject::kDontSynchGameMessages : 0
+                | cbExcludePersistent->GetValue() ? plSynchedObject::kExcludePersistentState : 0
+                | cbExcludeAllPersist->GetValue() ? plSynchedObject::kExcludeAllPersistentState : 0
+                | cbHasVolatile->GetValue() ? plSynchedObject::kHasVolatileState : 0
+                | cbAllVolatile->GetValue() ? plSynchedObject::kAllStateIsVolatile : 0);
+    obj->clearExcludes();
+    obj->clearVolatiles();
+    for (size_t i=0; i<listExcludes->GetCount(); i++)
+        obj->setExclude((const char*)listExcludes->GetString(i).mb_str());
+    for (size_t i=0; i<listVolatiles->GetCount(); i++)
+        obj->setVolatile((const char*)listVolatiles->GetString(i).mb_str());
+}
+
+void wxSynchedObject::OnExcludeContextMenu(wxCommandEvent& evt)
+{
+    wxMenu menu(wxT(""));
+    menu.Append(ID_MENU_ADD, wxT("Add Exclusion..."));
+    menu.Append(ID_MENU_DELETE, wxT("Delete"));
+    if (listExcludes->GetSelection() < 0)
+        menu.Enable(ID_MENU_DELETE, false);
+    menu.Connect(ID_MENU_ADD, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSynchedObject::OnExcludeAddClick,
+                 NULL, this);
+    menu.Connect(ID_MENU_DELETE, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSynchedObject::OnExcludeDeleteClick,
+                 NULL, this);
+    listExcludes->PopupMenu(&menu);
+}
+
+void wxSynchedObject::OnVolatileContextMenu(wxCommandEvent& evt)
+{
+    wxMenu menu(wxT(""));
+    menu.Append(ID_MENU_ADD, wxT("Add Volatile..."));
+    menu.Append(ID_MENU_DELETE, wxT("Delete"));
+    if (listVolatiles->GetSelection() < 0)
+        menu.Enable(ID_MENU_DELETE, false);
+    menu.Connect(ID_MENU_ADD, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSynchedObject::OnVolatileAddClick,
+                 NULL, this);
+    menu.Connect(ID_MENU_DELETE, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSynchedObject::OnVolatileDeleteClick,
+                 NULL, this);
+    listVolatiles->PopupMenu(&menu);
+}
+
+void wxSynchedObject::OnExcludeAddClick(wxCommandEvent& evt)
+{
+    wxString var = wxGetTextFromUser(wxT("Enter Exclude Variable"), wxT("Add SDL Exclusion"));
+    if (var != wxEmptyString)
+        listExcludes->AppendString(var);
+}
+
+void wxSynchedObject::OnExcludeDeleteClick(wxCommandEvent& evt)
+{
+    if (listExcludes->GetSelection() >= 0)
+        listExcludes->Delete(listExcludes->GetSelection());
+}
+
+void wxSynchedObject::OnVolatileAddClick(wxCommandEvent& evt)
+{
+    wxString var = wxGetTextFromUser(wxT("Enter Volatile Variable"), wxT("Add SDL Volatile"));
+    if (var != wxEmptyString)
+        listVolatiles->AppendString(var);
+}
+
+void wxSynchedObject::OnVolatileDeleteClick(wxCommandEvent& evt)
+{
+    if (listVolatiles->GetSelection() >= 0)
+        listVolatiles->Delete(listVolatiles->GetSelection());
 }

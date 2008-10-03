@@ -6,16 +6,30 @@
 
 #include <Debug/plDebug.h>
 #include <PRP/plSceneNode.h>
+#include <wx/config.h>
 #include <wx/filename.h>
 #include <wx/sysopt.h>
 #include <wx/config.h>
 #include <wx/artprov.h>
-#include <wx/splitter.h>
 #include <wx/imaglist.h>
+
+wxLocationInfo::wxLocationInfo(const wxTreeItemId& tid, const wxString& filename)
+              : fTreeId(tid), fFilename(filename)
+{ }
+
+wxLocationInfo::wxLocationInfo(const wxLocationInfo& init)
+              : fTreeId(init.fTreeId), fFilename(init.fFilename)
+{ }
+
+wxLocationInfo::wxLocationInfo()
+{ }
+
 
 BEGIN_EVENT_TABLE(wxPrpShopFrame, wxFrame)
     EVT_MENU(wxID_EXIT, wxPrpShopFrame::OnExitClick)
     EVT_MENU(wxID_OPEN, wxPrpShopFrame::OnOpenClick)
+    EVT_MENU(wxID_SAVE, wxPrpShopFrame::OnSaveClick)
+    EVT_MENU(wxID_SAVEAS, wxPrpShopFrame::OnSaveAsClick)
     EVT_CLOSE(wxPrpShopFrame::OnClose)
 
     EVT_TREE_SEL_CHANGED(ID_OBJTREE, wxPrpShopFrame::OnTreeChanged)
@@ -25,19 +39,19 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     : wxFrame(NULL, wxID_ANY, wxT("PrpShop 1.0"), wxDefaultPosition, wxSize(800, 600)),
       fOwner(owner), fCurObject(NULL), fCurPage(NULL)
 {
-    wxSplitterWindow* splitter = new wxSplitterWindow(this, wxID_ANY,
-            wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
-    wxSplitterWindow* splitterR = new wxSplitterWindow(splitter, wxID_ANY,
-            wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
+    fHSplitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
+                                      wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
+    fVSplitter = new wxSplitterWindow(fHSplitter, wxID_ANY, wxDefaultPosition,
+                                      wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
 
     // GUI Elements
-    fObjTree = new wxTreeCtrl(splitter, ID_OBJTREE, wxDefaultPosition,
+    fObjTree = new wxTreeCtrl(fHSplitter, ID_OBJTREE, wxDefaultPosition,
                               wxSize(240, -1),
                               wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT);
     fObjTree->AddRoot(wxT(""));
-    wxPanel* pnlBlah = new wxPanel(splitterR, wxID_ANY);
-    fPropertyBook = new wxNotebook(splitterR, ID_PROPERTYBOOK, wxDefaultPosition,
-                                   wxSize(-1, 200), wxNB_TOP);
+    wxPanel* pnlBlah = new wxPanel(fVSplitter, wxID_ANY);
+    fPropertyBook = new wxNotebook(fVSplitter, ID_PROPERTYBOOK, wxDefaultPosition,
+                                   wxSize(-1, 204), wxNB_TOP);
 
     // Toolbar
     wxSystemOptions::SetOption(wxT("msw.remap"), 0);
@@ -47,14 +61,20 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
                      wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR),
                      wxNullBitmap, wxITEM_NORMAL, wxT("Open PRP"),
                      wxT("Open a page for editing"));
+    toolBar->AddTool(wxID_SAVE, wxT("Save"),
+                     wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_TOOLBAR),
+                     wxNullBitmap, wxITEM_NORMAL, wxT("Save PRP"),
+                     wxT("Save changes to active PRP"));
     toolBar->Realize();
     SetToolBar(toolBar);
 
     // Menu, Status Bar
     wxMenu* mnuFile = new wxMenu();
-    mnuFile->Append(wxID_OPEN, wxT("&Open"), wxT("Open a page for editing"));
+    mnuFile->Append(wxID_OPEN, wxT("&Open...\tCtrl+O"), wxT("Open a page for editing"));
+    mnuFile->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save chages to active PRP"));
+    mnuFile->Append(wxID_SAVEAS, wxT("Save &As..."), wxT("Save chages to a different PRP file"));
     mnuFile->AppendSeparator();
-    mnuFile->Append(wxID_EXIT, wxT("E&xit"), wxT("Exit PrpShop"));
+    mnuFile->Append(wxID_EXIT, wxT("E&xit\tAlt+F4"), wxT("Exit PrpShop"));
 
     wxMenuBar* menuBar = new wxMenuBar();
     menuBar->Append(mnuFile, wxT("&File"));
@@ -65,12 +85,12 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     // Layout
     fObjTree->SetMinSize(wxSize(0, 0));
     fPropertyBook->SetMinSize(wxSize(0, 0));
-    splitterR->SetMinSize(wxSize(0, 0));
+    fVSplitter->SetMinSize(wxSize(0, 0));
 
-    splitterR->SetSashGravity(1.0);
-    splitterR->SplitHorizontally(pnlBlah, fPropertyBook, -200);
-    splitter->SetSashGravity(0.0);
-    splitter->SplitVertically(fObjTree, splitterR, 240);
+    fVSplitter->SetSashGravity(1.0);
+    fVSplitter->SplitHorizontally(pnlBlah, fPropertyBook, -204);
+    fHSplitter->SetSashGravity(0.0);
+    fHSplitter->SplitVertically(fObjTree, fVSplitter, 240);
 
     // Miscellaneous
     SetIcon(wxIcon(XPM_PlasmaShop));
@@ -91,10 +111,52 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
 
     // Set up the Resource Manager
     fResMgr = new plResManager();
+
+    // User configuration stuff
+    wxConfigBase* cfg = new wxConfig(wxT("PlasmaShop"));
+    wxConfigBase::Set(cfg);
+    cfg->SetPath(wxT("/PrpShop"));
+
+    long width, height, left, top;
+    bool maximized;
+    cfg->Read(wxT("Width"), &width, -1);
+    cfg->Read(wxT("Height"), &height, -1);
+    cfg->Read(wxT("Left"), &left, -1);
+    cfg->Read(wxT("Top"), &top, -1);
+    cfg->Read(wxT("Maximized"), &maximized, false);
+    if (height != -1 && width != -1)
+        SetSize(width, height);
+    if (left != -1 && top != -1)
+        SetPosition(wxPoint(left, top));
+    Maximize(maximized);
+
+    long vSplitPos, hSplitPos;
+    cfg->Read(wxT("VSplit"), &vSplitPos, -1);
+    cfg->Read(wxT("HSplit"), &hSplitPos, -1);
+    if (vSplitPos != -1)
+        fVSplitter->SetSashPosition(vSplitPos);
+    if (hSplitPos != -1)
+        fHSplitter->SetSashPosition(hSplitPos);
 }
 
 wxPrpShopFrame::~wxPrpShopFrame()
 {
+    // Save the configuration
+    wxConfigBase* cfg = wxConfigBase::Get();
+    cfg->SetPath(wxT("/PrpShop"));
+
+    if (!IsMaximized()) {
+        cfg->Write(wxT("Width"), GetSize().GetWidth());
+        cfg->Write(wxT("Height"), GetSize().GetHeight());
+        cfg->Write(wxT("Left"), GetPosition().x);
+        cfg->Write(wxT("Top"), GetPosition().y);
+    }
+    cfg->Write(wxT("Maximized"), IsMaximized());
+
+    cfg->Write(wxT("VSplit"), fVSplitter->GetSashPosition());
+    cfg->Write(wxT("HSplit"), fHSplitter->GetSashPosition());
+
+    // Now clean up what's left on the form
     if (fCurObject != NULL)
         delete fCurObject;
     delete fResMgr;
@@ -115,10 +177,11 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
         if (ext.CmpNoCase(wxT("age")) == 0) {
             plAgeInfo* age = fResMgr->ReadAge(fn.GetFullPath().mb_str(), true);
             for (size_t i=0; i<age->getNumPages(); i++)
-                LoadPage(fResMgr->FindPage(age->getPageLoc(i)));
+                LoadPage(fResMgr->FindPage(age->getPageLoc(i)),
+                                           wxString(age->getPageFilename(i, fResMgr->getVer()), wxConvUTF8));
         } else if (ext.CmpNoCase(wxT("prp")) == 0) {
             plPageInfo* page = fResMgr->ReadPage(fn.GetFullPath().mb_str());
-            wxTreeItemId pageId = LoadPage(page);
+            wxTreeItemId pageId = LoadPage(page, fn.GetFullPath()).fTreeId;
             wxTreeItemId ageId = fObjTree->GetItemParent(pageId);
             PlasmaTreeItem* ageInfo = (PlasmaTreeItem*)fObjTree->GetItemData(ageId);
             if (ageInfo != NULL && ageInfo->getAge() != NULL) {
@@ -126,13 +189,13 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
                     plString texPath = (const char*)fn.GetFullPath().mb_str();
                     texPath = texPath.beforeLast('_') + "_Textures.prp";
                     if (wxFileExists(wxString(texPath, wxConvUTF8)))
-                        LoadPage(fResMgr->ReadPage(texPath));
+                        LoadPage(fResMgr->ReadPage(texPath), wxString(texPath, wxConvUTF8));
                 }
                 if (!ageInfo->getAge()->fHasBuiltIn) {
                     plString biPath = (const char*)fn.GetFullPath().mb_str();
                     biPath = biPath.beforeLast('_') + "_BuiltIn.prp";
                     if (wxFileExists(wxString(biPath, wxConvUTF8)))
-                        LoadPage(fResMgr->ReadPage(biPath));
+                        LoadPage(fResMgr->ReadPage(biPath), wxString(biPath, wxConvUTF8));
                 }
             }
         } else {
@@ -148,10 +211,12 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
     fObjTree->SortChildren(fObjTree->GetRootItem());
 }
 
-wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
+wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filename)
 {
-    if (fLoadedLocations[page->getLocation()].IsOk())
+    if (fLoadedLocations[page->getLocation()].fTreeId.IsOk()) {
+        fLoadedLocations[page->getLocation()].fFilename = filename;
         return fLoadedLocations[page->getLocation()];
+    }
 
     wxString ageName = wxString(page->getAge().cstr(), wxConvUTF8);
     wxString pageName = wxString(page->getPage().cstr(), wxConvUTF8);
@@ -183,8 +248,7 @@ wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
             TreeAddObject(fObjTree, mipmapId, fResMgr, keys[i]);
 
         ((PlasmaTreeItem*)fObjTree->GetItemData(ageId))->getAge()->fHasTextures = true;
-        fLoadedLocations[page->getLocation()] = texFolderId;
-        return texFolderId;
+        fLoadedLocations[page->getLocation()] = wxLocationInfo(texFolderId, filename);
     } else if (page->getLocation().getPageNum() == -2) {
         keys = fResMgr->getKeys(page->getLocation(), kSceneObject);
         wxTreeItemId biFolderId;
@@ -201,19 +265,18 @@ wxTreeItemId wxPrpShopFrame::LoadPage(plPageInfo* page)
         }
 
         ((PlasmaTreeItem*)fObjTree->GetItemData(ageId))->getAge()->fHasBuiltIn = true;
-        fLoadedLocations[page->getLocation()] = biFolderId;
-        return biFolderId;
+        fLoadedLocations[page->getLocation()] = wxLocationInfo(biFolderId, filename);
+    } else {
+        // Normal page
+        wxTreeItemId pageId = fObjTree->AppendItem(ageId, pageName, ico_page, -1,
+                                                   new PlasmaTreeItem(page));
+        fLoadedLocations[page->getLocation()] = wxLocationInfo(pageId, filename);
+
+        // The Scene Node
+        TreeAddObject(fObjTree, pageId, fResMgr, fResMgr->getSceneNode(page->getLocation())->getKey());
     }
 
-    // Normal page
-    wxTreeItemId pageId = fObjTree->AppendItem(ageId, pageName, ico_page, -1,
-                                               new PlasmaTreeItem(page));
-    fLoadedLocations[page->getLocation()] = pageId;
-
-    // The Scene Node
-    TreeAddObject(fObjTree, pageId, fResMgr, fResMgr->getSceneNode(page->getLocation())->getKey());
-
-    return pageId;
+    return fLoadedLocations[page->getLocation()];
 }
 
 void wxPrpShopFrame::OnExitClick(wxCommandEvent& evt)
@@ -239,11 +302,52 @@ void wxPrpShopFrame::OnOpenClick(wxCommandEvent& evt)
     }
 }
 
+void wxPrpShopFrame::OnSaveClick(wxCommandEvent& evt)
+{
+    DoDataSave(false);
+    plLocation loc = GetActiveLocation();
+    if (!loc.isValid()) {
+        wxMessageBox(wxT("No PRP file or object selected!"), wxT("Error"),
+                     wxOK | wxICON_ERROR);
+        return;
+    }
+    if (fLoadedLocations[loc].fFilename == wxEmptyString) {
+        OnSaveAsClick(evt);
+        return;
+    }
+    fResMgr->WritePage((const char*)fLoadedLocations[loc].fFilename.mb_str(),
+                       fResMgr->FindPage(loc));
+}
+
+void wxPrpShopFrame::OnSaveAsClick(wxCommandEvent& evt)
+{
+    static const wxString kFilter =
+        wxT("Page files (*.prp)|*.prp");
+
+    DoDataSave(false);
+    plLocation loc = GetActiveLocation();
+    if (!loc.isValid()) {
+        wxMessageBox(wxT("No PRP file or object selected!"), wxT("Error"),
+                     wxOK | wxICON_ERROR);
+        return;
+    }
+    wxFileName name(fLoadedLocations[loc].fFilename);
+    wxFileDialog fd(this, wxT("Save PRP"), name.GetPath(),
+                    name.GetName(), kFilter,
+                    wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    if (fd.ShowModal() != wxID_CANCEL) {
+        fResMgr->WritePage((const char*)fd.GetPath().mb_str(), fResMgr->FindPage(loc));
+        fLoadedLocations[loc].fFilename = fd.GetPath();
+    }
+}
+
 void wxPrpShopFrame::OnClose(wxCloseEvent& evt)
 {
     if (evt.CanVeto()) {
-        // Check for unsaved work first
-        Destroy();
+        int confirm = wxMessageBox(wxT("Any unsaved changes will be lost.  Are you sure you want to quit?"),
+                                   wxT("Close PrpShop"), wxYES | wxNO | wxICON_QUESTION);
+        if (confirm == wxYES)
+            Destroy();
     } else {
         Destroy();
     }
@@ -260,35 +364,7 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
     if (propPageIdx < 0)
         propPageIdx = 0;
 
-    if (fCurObject != NULL) {
-        fCurObject->SaveDamage();
-        delete fCurObject;
-        fCurObject = NULL;
-    }
-    if (fCurPage != NULL) {
-        fCurPage->setAge((const char*)txtAge->GetValue().mb_str());
-        fCurPage->setPage((const char*)txtPage->GetValue().mb_str());
-
-        plLocation newLoc;
-        long out;
-        txtSeqPre->GetValue().ToLong(&out);
-        newLoc.setSeqPrefix(out);
-        txtSeqSuf->GetValue().ToLong(&out);
-        newLoc.setPageNum(out);
-        unsigned short pgFlags = cbLocalOnly->GetValue() ? plLocation::kLocalOnly : 0
-                               | cbVolatile->GetValue() ? plLocation::kVolatile : 0
-                               | cbReserved->GetValue() ? plLocation::kReserved : 0
-                               | cbBuiltIn->GetValue() ? plLocation::kBuiltIn : 0
-                               | cbItinerant->GetValue() ? plLocation::kItinerant : 0;
-        newLoc.setFlags(pgFlags);
-        if (newLoc != fCurPage->getLocation()) {
-            fLoadedLocations[newLoc] = fLoadedLocations[fCurPage->getLocation()];
-            fLoadedLocations.erase(fLoadedLocations.find(fCurPage->getLocation()));
-            fResMgr->ChangeLocation(fCurPage->getLocation(), newLoc);
-        }
-
-        fCurPage = NULL;
-    }
+    DoDataSave(true);
     fPropertyBook->DeleteAllPages();
 
     if (data->getObject().Exists()) {
@@ -360,6 +436,52 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
         fPropertyBook->AddPage(nbpage, wxT("PRP Settings"));
     }
 
-    if (propPageIdx < fPropertyBook->GetPageCount())
+    if (propPageIdx < (int)fPropertyBook->GetPageCount())
         fPropertyBook->ChangeSelection(propPageIdx);
+}
+
+plLocation wxPrpShopFrame::GetActiveLocation()
+{
+    if (fCurPage != NULL)
+        return fCurPage->getLocation();
+    else if (fCurObject != NULL)
+        return fCurObject->getKey()->getLocation();
+    else
+        return plLocation();
+}
+
+void wxPrpShopFrame::DoDataSave(bool doDelete)
+{
+    if (fCurObject != NULL) {
+        fCurObject->SaveDamage();
+        if (doDelete) {
+            delete fCurObject;
+            fCurObject = NULL;
+        }
+    }
+    if (fCurPage != NULL) {
+        fCurPage->setAge((const char*)txtAge->GetValue().mb_str());
+        fCurPage->setPage((const char*)txtPage->GetValue().mb_str());
+
+        plLocation newLoc;
+        long out;
+        txtSeqPre->GetValue().ToLong(&out);
+        newLoc.setSeqPrefix(out);
+        txtSeqSuf->GetValue().ToLong(&out);
+        newLoc.setPageNum(out);
+        unsigned short pgFlags = cbLocalOnly->GetValue() ? plLocation::kLocalOnly : 0
+                               | cbVolatile->GetValue() ? plLocation::kVolatile : 0
+                               | cbReserved->GetValue() ? plLocation::kReserved : 0
+                               | cbBuiltIn->GetValue() ? plLocation::kBuiltIn : 0
+                               | cbItinerant->GetValue() ? plLocation::kItinerant : 0;
+        newLoc.setFlags(pgFlags);
+        if (newLoc != fCurPage->getLocation()) {
+            fLoadedLocations[newLoc] = fLoadedLocations[fCurPage->getLocation()];
+            fLoadedLocations.erase(fLoadedLocations.find(fCurPage->getLocation()));
+            fResMgr->ChangeLocation(fCurPage->getLocation(), newLoc);
+        }
+
+        if (doDelete)
+            fCurPage = NULL;
+    }
 }

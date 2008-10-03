@@ -12,9 +12,19 @@
 #include <list>
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
+#include <wx/splitter.h>
 #include <ResManager/plResManager.h>
 #include "wxPrpCanvas.h"
 #include "wxPrpPlasma.h"
+
+struct wxLocationInfo {
+    wxTreeItemId fTreeId;
+    wxString fFilename;
+
+    explicit wxLocationInfo(const wxTreeItemId& tid, const wxString& filename);
+    wxLocationInfo(const wxLocationInfo& init);
+    wxLocationInfo(); // To make std::map happy
+};
 
 class wxPrpShopFrame : public wxFrame {
 protected:
@@ -22,8 +32,11 @@ protected:
     wxApp* fOwner;
     wxTreeCtrl* fObjTree;
     wxNotebook* fPropertyBook;
+    wxSplitterWindow* fHSplitter;
+    wxSplitterWindow* fVSplitter;
+
     plResManager* fResMgr;
-    std::map<plLocation, wxTreeItemId> fLoadedLocations;
+    std::map<plLocation, wxLocationInfo> fLoadedLocations;
     wxPrpPlasmaObject* fCurObject;
 
     enum { ID_OBJTREE, ID_PROPERTYBOOK };
@@ -46,7 +59,7 @@ public:
     virtual ~wxPrpShopFrame();
 
     void LoadFile(const wxString& filename);
-    wxTreeItemId LoadPage(plPageInfo* page);
+    wxLocationInfo LoadPage(plPageInfo* page, const wxString& filename);
 
 protected:
     // Event Handling
@@ -55,8 +68,13 @@ protected:
     void OnExitClick(wxCommandEvent& evt);
     void OnNewClick(wxCommandEvent& evt);
     void OnOpenClick(wxCommandEvent& evt);
+    void OnSaveClick(wxCommandEvent& evt);
+    void OnSaveAsClick(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnTreeChanged(wxTreeEvent& evt);
+
+    plLocation GetActiveLocation();
+    void DoDataSave(bool doDelete);
 };
 
 #endif

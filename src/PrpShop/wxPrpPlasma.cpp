@@ -10,7 +10,7 @@
 
 wxPrpPlasmaObject::wxPrpPlasmaObject(plKey key, plResManager* mgr,
                                      wxTreeCtrl* tree, const wxTreeItemId& tid)
-                 : fKey(key), fResMgr(mgr), fTree(tree), fTreeID(tid)
+                 : fKey(key), fResMgr(mgr), fTree(tree), fTreeId(tid)
 { }
 
 void wxPrpPlasmaObject::AddPropPages(wxNotebook* nb)
@@ -55,7 +55,15 @@ void wxPrpPlasmaObject::SaveDamage()
     txtMask->GetValue().ToULong(&mask, 16);
     loadMask.setMask(mask);
     fKey->setLoadMask(loadMask);
+
+    fTree->SetItemText(fTreeId, txtName->GetValue());
 }
+
+plKey wxPrpPlasmaObject::getKey()
+{ return fKey; }
+
+wxTreeItemId wxPrpPlasmaObject::getTreeId()
+{ return fTreeId; }
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
                            plResManager* mgr, plKey key)
