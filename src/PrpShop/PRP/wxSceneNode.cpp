@@ -32,6 +32,7 @@ wxSceneNode::wxSceneNode(plKey key, plResManager* mgr,
 
 void wxSceneNode::AddPropPages(wxNotebook* nb)
 {
+    wxPrpPlasmaObject::AddPropPages(nb);
     // TODO
 }
 

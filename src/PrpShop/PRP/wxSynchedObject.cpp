@@ -12,6 +12,8 @@ wxSynchedObject::wxSynchedObject(plKey key, plResManager* mgr,
 
 void wxSynchedObject::AddPropPages(wxNotebook* nb)
 {
+    wxPrpPlasmaObject::AddPropPages(nb);
+
     wxPanel* nbpage = new wxPanel(nb);
     plSynchedObject* obj = plSynchedObject::Convert(fKey->getObj());
 

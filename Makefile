@@ -9,7 +9,8 @@ CC = gcc
 CCFLAGS = -fPIC -Wall -g -I3rdp
 CCLIBS =
 
-OBJFILES_3RDP=out/wx/imagdds.o out/wx/filter.o
+OBJFILES_DDS=out/wx/imagdds.o out/wx/filter.o \
+	3rdp/squish/libsquish.a
 
 OBJFILES_SHARED=\
 	out/wxPlasmaStream.o
@@ -26,6 +27,7 @@ OBJFILES_PRPSHOP=\
 	out/wxPrpCanvas.o \
 	out/PlasmaTreeItem.o \
 	out/wxPrpPlasma.o \
+	out/PRP/wxMipmap.o \
 	out/PRP/wxSceneNode.o \
 	out/PRP/wxSceneObject.o \
 	out/PRP/wxSynchedObject.o
@@ -41,7 +43,7 @@ install:
 clean-all:
 	(cd 3rdp/squish ; make clean)
 	(cd 3rdp/wx/stc ; make clean)
-	rm -f $(OBJFILES_3RDP)
+	rm -f $(OBJFILES_DDS)
 	rm -f $(OBJFILES_PLASMASHOP)
 	rm -f $(OBJFILES_PRPSHOP)
 	rm -f bin/PlasmaShop
@@ -93,8 +95,8 @@ out/wxPlasmaShopFrame.o: src/PlasmaShop/wxPlasmaShopFrame.h src/PlasmaShop/wxPla
 
 
 # PrpShop
-bin/PrpShop: $(OBJFILES_PRPSHOP) src/PrpShop/Main.cpp
-	$(CXX) $(CXXFLAGS) $(OBJFILES_PRPSHOP) src/PrpShop/Main.cpp $(CXXLIBS_PRPSHOP) -o $@
+bin/PrpShop: $(OBJFILES_PRPSHOP) $(OBJFILES_DDS) src/PrpShop/Main.cpp
+	$(CXX) $(CXXFLAGS) $(OBJFILES_PRPSHOP) $(OBJFILES_DDS) src/PrpShop/Main.cpp $(CXXLIBS_PRPSHOP) -o $@
 
 out/wxPrpCanvas.o: src/PrpShop/wxPrpCanvas.h src/PrpShop/wxPrpCanvas.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpCanvas.cpp -o out/wxPrpCanvas.o
@@ -107,6 +109,9 @@ out/PlasmaTreeItem.o: src/PrpShop/PlasmaTreeItem.h src/PrpShop/PlasmaTreeItem.cp
 
 out/wxPrpPlasma.o: src/PrpShop/wxPrpPlasma.h src/PrpShop/wxPrpPlasma.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpPlasma.cpp -o $@
+
+out/PRP/wxMipmap.o: src/PrpShop/PRP/wxMipmap.h src/PrpShop/PRP/wxMipmap.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxMipmap.cpp -o $@
 
 out/PRP/wxSceneNode.o: src/PrpShop/PRP/wxSceneNode.h src/PrpShop/PRP/wxSceneNode.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSceneNode.cpp -o $@

@@ -28,7 +28,7 @@ public:
     virtual wxInputStream& Read(void* buffer, size_t size);
 
 protected:
-    virtual size_t OnSysRead(void *buffer, size_t size) = 0;
+    virtual size_t OnSysRead(void *buffer, size_t size);
     DECLARE_NO_COPY_CLASS(wxPlasmaInputStream)
 };
 

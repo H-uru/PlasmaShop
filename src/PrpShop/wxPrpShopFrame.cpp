@@ -49,7 +49,7 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
                               wxSize(240, -1),
                               wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT);
     fObjTree->AddRoot(wxT(""));
-    wxPanel* pnlBlah = new wxPanel(fVSplitter, wxID_ANY);
+    fViewerPane = new wxPanel(fVSplitter, wxID_ANY);
     fPropertyBook = new wxNotebook(fVSplitter, ID_PROPERTYBOOK, wxDefaultPosition,
                                    wxSize(-1, 204), wxNB_TOP);
 
@@ -88,7 +88,7 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     fVSplitter->SetMinSize(wxSize(0, 0));
 
     fVSplitter->SetSashGravity(1.0);
-    fVSplitter->SplitHorizontally(pnlBlah, fPropertyBook, -204);
+    fVSplitter->SplitHorizontally(fViewerPane, fPropertyBook, -204);
     fHSplitter->SetSashGravity(0.0);
     fHSplitter->SplitVertically(fObjTree, fVSplitter, 240);
 
@@ -113,8 +113,7 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     fResMgr = new plResManager();
 
     // User configuration stuff
-    wxConfigBase* cfg = new wxConfig(wxT("PlasmaShop"));
-    wxConfigBase::Set(cfg);
+    wxConfigBase* cfg = wxConfigBase::Get();
     cfg->SetPath(wxT("/PrpShop"));
 
     long width, height, left, top;
@@ -246,6 +245,8 @@ wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filena
         keys = fResMgr->getKeys(page->getLocation(), kMipmap);
         for (size_t i=0; i<keys.size(); i++)
             TreeAddObject(fObjTree, mipmapId, fResMgr, keys[i]);
+        fObjTree->SortChildren(envmapId);
+        fObjTree->SortChildren(mipmapId);
 
         ((PlasmaTreeItem*)fObjTree->GetItemData(ageId))->getAge()->fHasTextures = true;
         fLoadedLocations[page->getLocation()] = wxLocationInfo(texFolderId, filename);
@@ -271,6 +272,16 @@ wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filena
         wxTreeItemId pageId = fObjTree->AppendItem(ageId, pageName, ico_page, -1,
                                                    new PlasmaTreeItem(page));
         fLoadedLocations[page->getLocation()] = wxLocationInfo(pageId, filename);
+
+        // Local Textures (for GUI pages and such)
+        keys = fResMgr->getKeys(page->getLocation(), kMipmap);
+        if (keys.size() > 0) {
+            wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Textures"), ico_folder,
+                                                            -1, new PlasmaTreeItem(page));
+            for (size_t i=0; i<keys.size(); i++)
+                TreeAddObject(fObjTree, texFolderId, fResMgr, keys[i]);
+            fObjTree->SortChildren(texFolderId);
+        }
 
         // The Scene Node
         TreeAddObject(fObjTree, pageId, fResMgr, fResMgr->getSceneNode(page->getLocation())->getKey());
@@ -368,8 +379,12 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
     fPropertyBook->DeleteAllPages();
 
     if (data->getObject().Exists()) {
-        fCurObject = AddPropPages(fPropertyBook, fResMgr, data->getObject(), fObjTree, itm);
-        fCurObject->AddKeyPage(fPropertyBook);
+        fCurObject = MakeEditor(fResMgr, data->getObject(), fObjTree, itm);
+        fCurObject->AddPropPages(fPropertyBook);
+        wxWindow* newPane = fCurObject->MakePreviewPane(fVSplitter);
+        fVSplitter->ReplaceWindow(fViewerPane, newPane);
+        delete fViewerPane;
+        fViewerPane = newPane;
     } else if (data->getPage() != NULL) {
         fCurPage = data->getPage();
         wxPanel* nbpage = new wxPanel(fPropertyBook);
@@ -438,6 +453,7 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
 
     if (propPageIdx < (int)fPropertyBook->GetPageCount())
         fPropertyBook->ChangeSelection(propPageIdx);
+    fPropertyBook->Refresh();
 }
 
 plLocation wxPrpShopFrame::GetActiveLocation()

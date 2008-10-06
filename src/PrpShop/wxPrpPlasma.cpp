@@ -5,6 +5,7 @@
 #include <wx/textctrl.h>
 #include <wx/panel.h>
 
+#include "PRP/wxMipmap.h"
 #include "PRP/wxSceneNode.h"
 #include "PRP/wxSceneObject.h"
 
@@ -13,10 +14,10 @@ wxPrpPlasmaObject::wxPrpPlasmaObject(plKey key, plResManager* mgr,
                  : fKey(key), fResMgr(mgr), fTree(tree), fTreeId(tid)
 { }
 
-void wxPrpPlasmaObject::AddPropPages(wxNotebook* nb)
+wxPrpPlasmaObject::~wxPrpPlasmaObject()
 { }
 
-void wxPrpPlasmaObject::AddKeyPage(wxNotebook* nb)
+void wxPrpPlasmaObject::AddPropPages(wxNotebook* nb)
 {
     wxPanel* page = new wxPanel(nb);
     wxString objName(fKey->getName(), wxConvUTF8);
@@ -44,7 +45,18 @@ void wxPrpPlasmaObject::AddKeyPage(wxNotebook* nb)
     wxBoxSizer* border = new wxBoxSizer(0);
     border->Add(props, 0, wxALL, 8);
     page->SetSizerAndFit(border);
-    nb->InsertPage(0, page, wxT("Basic"));
+    nb->AddPage(page, wxT("Basic"));
+}
+
+wxWindow* wxPrpPlasmaObject::MakePreviewPane(wxWindow* parent)
+{
+    /*
+    wxBoxSizer* box = new wxBoxSizer(0);
+    box->Add(new wxStaticText(parent, wxID_ANY, wxT("No preview available")),
+             0, wxEXPAND | wxCENTER | wxALL, 4);
+    parent->SetSizerAndFit(box);
+    */
+    return new wxStaticText(parent, wxID_ANY, wxT("No preview available"));
 }
 
 void wxPrpPlasmaObject::SaveDamage()
@@ -87,8 +99,8 @@ wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
     }
 }
 
-wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key,
-                                wxTreeCtrl* tree, const wxTreeItemId& tid)
+wxPrpPlasmaObject* MakeEditor(plResManager* mgr, plKey key,
+                              wxTreeCtrl* tree, const wxTreeItemId& tid)
 {
     wxPrpPlasmaObject* obj = NULL;
 
@@ -99,11 +111,12 @@ wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key,
     case kSceneObject:
         obj = new wxSceneObject(key, mgr, tree, tid);
         break;
+    case kMipmap:
+        obj = new wxMipmap(key, mgr, tree, tid);
+        break;
     default:
         obj = new wxPrpPlasmaObject(key, mgr, tree, tid);
         break;
     }
-
-    obj->AddPropPages(nb);
     return obj;
 }

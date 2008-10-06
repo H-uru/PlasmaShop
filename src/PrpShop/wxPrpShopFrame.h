@@ -32,6 +32,7 @@ protected:
     wxApp* fOwner;
     wxTreeCtrl* fObjTree;
     wxNotebook* fPropertyBook;
+    wxWindow* fViewerPane;
     wxSplitterWindow* fHSplitter;
     wxSplitterWindow* fVSplitter;
 

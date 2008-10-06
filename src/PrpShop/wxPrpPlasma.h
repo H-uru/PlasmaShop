@@ -26,8 +26,9 @@ protected:
 public:
     wxPrpPlasmaObject(plKey key, plResManager* mgr, wxTreeCtrl* tree,
                       const wxTreeItemId& tid);
+    virtual ~wxPrpPlasmaObject();
     virtual void AddPropPages(wxNotebook* nb);
-    void AddKeyPage(wxNotebook* nb);
+    virtual wxWindow* MakePreviewPane(wxWindow* parent);
     virtual void SaveDamage();
 
     plKey getKey();
@@ -35,7 +36,7 @@ public:
 };
 
 wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);
-wxPrpPlasmaObject* AddPropPages(wxNotebook* nb, plResManager* mgr, plKey key,
-                                wxTreeCtrl* tree, const wxTreeItemId& tid);
+wxPrpPlasmaObject* MakeEditor(plResManager* mgr, plKey key,
+                              wxTreeCtrl* tree, const wxTreeItemId& tid);
 
 #endif
