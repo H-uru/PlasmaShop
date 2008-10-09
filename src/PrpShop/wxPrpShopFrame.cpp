@@ -1,8 +1,6 @@
 #include "wxPrpShopFrame.h"
 #include "PlasmaTreeItem.h"
 #include "../../rc/PlasmaShop.xpm"
-#include "../../rc/PrpImages.xpm"
-#include "../../rc/FileImages.xpm"
 
 #include <Debug/plDebug.h>
 #include <PRP/plSceneNode.h>
@@ -11,7 +9,6 @@
 #include <wx/sysopt.h>
 #include <wx/config.h>
 #include <wx/artprov.h>
-#include <wx/imaglist.h>
 
 wxLocationInfo::wxLocationInfo(const wxTreeItemId& tid, const wxString& filename)
               : fTreeId(tid), fFilename(filename)
@@ -51,7 +48,7 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     fObjTree->AddRoot(wxT(""));
     fViewerPane = new wxPanel(fVSplitter, wxID_ANY);
     fPropertyBook = new wxNotebook(fVSplitter, ID_PROPERTYBOOK, wxDefaultPosition,
-                                   wxSize(-1, 204), wxNB_TOP);
+                                   wxSize(-1, 220), wxNB_TOP);
 
     // Toolbar
     wxSystemOptions::SetOption(wxT("msw.remap"), 0);
@@ -88,26 +85,13 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     fVSplitter->SetMinSize(wxSize(0, 0));
 
     fVSplitter->SetSashGravity(1.0);
-    fVSplitter->SplitHorizontally(fViewerPane, fPropertyBook, -204);
+    fVSplitter->SplitHorizontally(fViewerPane, fPropertyBook, -220);
     fHSplitter->SetSashGravity(0.0);
     fHSplitter->SplitVertically(fObjTree, fVSplitter, 240);
 
     // Miscellaneous
     SetIcon(wxIcon(XPM_PlasmaShop));
-
-    wxImageList* prpImages = new wxImageList(16, 16);
-    prpImages->Add(wxBitmap(XPM_folder));
-    prpImages->Add(wxBitmap(XPM_age));
-    prpImages->Add(wxBitmap(XPM_page));
-    prpImages->Add(wxBitmap(XPM_img));
-    prpImages->Add(wxBitmap(XPM_scenenode));
-    prpImages->Add(wxBitmap(XPM_sceneobj));
-    prpImages->Add(wxBitmap(XPM_spans));
-    prpImages->Add(wxBitmap(XPM_sim));
-    prpImages->Add(wxBitmap(XPM_coords));
-    prpImages->Add(wxBitmap(XPM_sound));
-    prpImages->Add(wxBitmap(XPM_spans2));
-    fObjTree->SetImageList(prpImages);
+    fObjTree->SetImageList(GetTypeImgList());
 
     // Set up the Resource Manager
     fResMgr = new plResManager();
@@ -125,6 +109,8 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     cfg->Read(wxT("Maximized"), &maximized, false);
     if (height != -1 && width != -1)
         SetSize(width, height);
+    else if (wxGetDisplaySize().GetHeight() > 768)
+        SetSize(1024, 768);
     if (left != -1 && top != -1)
         SetPosition(wxPoint(left, top));
     Maximize(maximized);
@@ -276,8 +262,7 @@ wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filena
         // Local Textures (for GUI pages and such)
         keys = fResMgr->getKeys(page->getLocation(), kMipmap);
         if (keys.size() > 0) {
-            wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Textures"), ico_folder,
-                                                            -1, new PlasmaTreeItem(page));
+            wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Textures"), ico_folder);
             for (size_t i=0; i<keys.size(); i++)
                 TreeAddObject(fObjTree, texFolderId, fResMgr, keys[i]);
             fObjTree->SortChildren(texFolderId);
@@ -377,14 +362,20 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
 
     DoDataSave(true);
     fPropertyBook->DeleteAllPages();
+    wxWindow* noPreview = new wxStaticText(fVSplitter, wxID_ANY, wxT("No preview available"));
+    fVSplitter->ReplaceWindow(fViewerPane, noPreview);
+    delete fViewerPane;
+    fViewerPane = noPreview;
 
     if (data->getObject().Exists()) {
         fCurObject = MakeEditor(fResMgr, data->getObject(), fObjTree, itm);
         fCurObject->AddPropPages(fPropertyBook);
         wxWindow* newPane = fCurObject->MakePreviewPane(fVSplitter);
-        fVSplitter->ReplaceWindow(fViewerPane, newPane);
-        delete fViewerPane;
-        fViewerPane = newPane;
+        if (newPane != NULL) {
+            fVSplitter->ReplaceWindow(fViewerPane, newPane);
+            delete fViewerPane;
+            fViewerPane = newPane;
+        }
     } else if (data->getPage() != NULL) {
         fCurPage = data->getPage();
         wxPanel* nbpage = new wxPanel(fPropertyBook);
@@ -402,16 +393,16 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
         txtPage = new wxTextCtrl(nbpage, wxID_ANY, pageName, wxDefaultPosition, wxSize(200, -1));
         txtSeqPre = new wxTextCtrl(nbpage, wxID_ANY, seqPrefix, wxDefaultPosition, wxSize(40, -1));
         txtSeqSuf = new wxTextCtrl(nbpage, wxID_ANY, seqSuffix, wxDefaultPosition, wxSize(40, -1));
-        wxPanel* pnlFlags = new wxPanel(nbpage, wxID_ANY);
-        cbLocalOnly = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Local Only"));
+
+        cbLocalOnly = new wxCheckBox(nbpage, wxID_ANY, wxT("Local Only"));
         cbLocalOnly->SetValue((fCurPage->getLocation().getFlags() & plLocation::kLocalOnly) != 0);
-        cbVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Volatile"));
+        cbVolatile = new wxCheckBox(nbpage, wxID_ANY, wxT("Volatile"));
         cbVolatile->SetValue((fCurPage->getLocation().getFlags() & plLocation::kVolatile) != 0);
-        cbReserved = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Reserved"));
+        cbReserved = new wxCheckBox(nbpage, wxID_ANY, wxT("Reserved"));
         cbReserved->SetValue((fCurPage->getLocation().getFlags() & plLocation::kReserved) != 0);
-        cbBuiltIn = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Built-In"));
+        cbBuiltIn = new wxCheckBox(nbpage, wxID_ANY, wxT("Built-In"));
         cbBuiltIn->SetValue((fCurPage->getLocation().getFlags() & plLocation::kBuiltIn) != 0);
-        cbItinerant = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Itinerant"));
+        cbItinerant = new wxCheckBox(nbpage, wxID_ANY, wxT("Itinerant"));
         cbItinerant->SetValue((fCurPage->getLocation().getFlags() & plLocation::kItinerant) != 0);
 
         wxGridSizer* szrFlags = new wxGridSizer(3, 2, 4, 16);
@@ -421,7 +412,6 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
         szrFlags->Add(cbBuiltIn);
         szrFlags->Add(cbItinerant);
         szrFlags->Add(0, 0);
-        pnlFlags->SetSizer(szrFlags);
 
         wxFlexGridSizer* props = new wxFlexGridSizer(4, 5, 4, 4);
         props->Add(lbl1);
@@ -440,7 +430,7 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
         props->Add(0, 10);
         props->Add(0, 10);
         props->Add(lbl5);
-        props->Add(pnlFlags);
+        props->Add(szrFlags);
         props->Add(0, 0);
         props->Add(0, 0);
         props->Add(0, 0);
@@ -485,11 +475,11 @@ void wxPrpShopFrame::DoDataSave(bool doDelete)
         newLoc.setSeqPrefix(out);
         txtSeqSuf->GetValue().ToLong(&out);
         newLoc.setPageNum(out);
-        unsigned short pgFlags = cbLocalOnly->GetValue() ? plLocation::kLocalOnly : 0
-                               | cbVolatile->GetValue() ? plLocation::kVolatile : 0
-                               | cbReserved->GetValue() ? plLocation::kReserved : 0
-                               | cbBuiltIn->GetValue() ? plLocation::kBuiltIn : 0
-                               | cbItinerant->GetValue() ? plLocation::kItinerant : 0;
+        unsigned short pgFlags = (cbLocalOnly->GetValue() ? plLocation::kLocalOnly : 0)
+                               | (cbVolatile->GetValue() ? plLocation::kVolatile : 0)
+                               | (cbReserved->GetValue() ? plLocation::kReserved : 0)
+                               | (cbBuiltIn->GetValue() ? plLocation::kBuiltIn : 0)
+                               | (cbItinerant->GetValue() ? plLocation::kItinerant : 0);
         newLoc.setFlags(pgFlags);
         if (newLoc != fCurPage->getLocation()) {
             fLoadedLocations[newLoc] = fLoadedLocations[fCurPage->getLocation()];

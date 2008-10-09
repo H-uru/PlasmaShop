@@ -17,22 +17,21 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     wxPanel* nbpage = new wxPanel(nb);
     plSynchedObject* obj = plSynchedObject::Convert(fKey->getObj());
 
-    wxPanel* pnlFlags = new wxPanel(nbpage, wxID_ANY);
-    cbDontDirty = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Dirty"));
+    cbDontDirty = new wxCheckBox(nbpage, wxID_ANY, wxT("Don't Dirty"));
     cbDontDirty->SetValue((obj->getFlags() & plSynchedObject::kDontDirty) != 0);
-    cbSendReliably = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Send Reliably"));
+    cbSendReliably = new wxCheckBox(nbpage, wxID_ANY, wxT("Send Reliably"));
     cbSendReliably->SetValue((obj->getFlags() & plSynchedObject::kSendReliably) != 0);
-    cbHasConstNetGroup = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Constant Net Group"));
+    cbHasConstNetGroup = new wxCheckBox(nbpage, wxID_ANY, wxT("Has Constant Net Group"));
     cbHasConstNetGroup->SetValue((obj->getFlags() & plSynchedObject::kHasConstantNetGroup) != 0);
-    cbDontSynchGameMsgs = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Don't Synch Game Messages"));
+    cbDontSynchGameMsgs = new wxCheckBox(nbpage, wxID_ANY, wxT("Don't Synch Game Messages"));
     cbDontSynchGameMsgs->SetValue((obj->getFlags() & plSynchedObject::kDontSynchGameMessages) != 0);
-    cbExcludePersistent = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude Persistent State"));
+    cbExcludePersistent = new wxCheckBox(nbpage, wxID_ANY, wxT("Exclude Persistent State"));
     cbExcludePersistent->SetValue((obj->getFlags() & plSynchedObject::kExcludePersistentState) != 0);
-    cbExcludeAllPersist = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Exclude ALL Persistent States"));
+    cbExcludeAllPersist = new wxCheckBox(nbpage, wxID_ANY, wxT("Exclude ALL Persistent States"));
     cbExcludeAllPersist->SetValue((obj->getFlags() & plSynchedObject::kExcludeAllPersistentState) != 0);
-    cbHasVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("Has Volatile State"));
+    cbHasVolatile = new wxCheckBox(nbpage, wxID_ANY, wxT("Has Volatile State"));
     cbHasVolatile->SetValue((obj->getFlags() & plSynchedObject::kHasVolatileState) != 0);
-    cbAllVolatile = new wxCheckBox(pnlFlags, wxID_ANY, wxT("All States Volatile"));
+    cbAllVolatile = new wxCheckBox(nbpage, wxID_ANY, wxT("All States Volatile"));
     cbAllVolatile->SetValue((obj->getFlags() & plSynchedObject::kAllStateIsVolatile) != 0);
 
     wxGridSizer* szrFlags = new wxGridSizer(4, 2, 4, 10);
@@ -44,13 +43,11 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     szrFlags->Add(cbHasVolatile);
     szrFlags->Add(cbDontSynchGameMsgs);
     szrFlags->Add(cbAllVolatile);
-    pnlFlags->SetSizer(szrFlags);
 
-    wxPanel* pnlStates = new wxPanel(nbpage, wxID_ANY);
-    lblExcludes = new wxStaticText(pnlStates, wxID_ANY, wxT("Excludes:"));
-    lblVolatiles = new wxStaticText(pnlStates, wxID_ANY, wxT("Volatiles:"));
-    listExcludes = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
-    listVolatiles = new wxListBox(pnlStates, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
+    lblExcludes = new wxStaticText(nbpage, wxID_ANY, wxT("Excludes:"));
+    lblVolatiles = new wxStaticText(nbpage, wxID_ANY, wxT("Volatiles:"));
+    listExcludes = new wxListBox(nbpage, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
+    listVolatiles = new wxListBox(nbpage, wxID_ANY, wxDefaultPosition, wxSize(200, 72));
     for (size_t i=0; i<obj->getExcludes().getSize(); i++)
         listExcludes->AppendString(wxString(obj->getExcludes()[i].cstr(), wxConvUTF8));
     for (size_t i=0; i<obj->getVolatiles().getSize(); i++)
@@ -61,11 +58,10 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
     szrStates->Add(lblVolatiles);
     szrStates->Add(listExcludes);
     szrStates->Add(listVolatiles);
-    pnlStates->SetSizer(szrStates);
 
     wxFlexGridSizer* split = new wxFlexGridSizer(2, 1, 10, 0);
-    split->Add(pnlFlags);
-    split->Add(pnlStates);
+    split->Add(szrFlags);
+    split->Add(szrStates);
 
     wxBoxSizer* border = new wxBoxSizer(0);
     border->Add(split, 0, wxALL, 8);
@@ -84,16 +80,16 @@ void wxSynchedObject::AddPropPages(wxNotebook* nb)
 void wxSynchedObject::SaveDamage()
 {
     wxPrpPlasmaObject::SaveDamage();
-    
     plSynchedObject* obj = plSynchedObject::Convert(fKey->getObj());
-    obj->setFlags(cbDontDirty->GetValue() ? plSynchedObject::kDontDirty : 0
-                | cbSendReliably->GetValue() ? plSynchedObject::kSendReliably : 0
-                | cbHasConstNetGroup->GetValue() ? plSynchedObject::kHasConstantNetGroup : 0
-                | cbDontSynchGameMsgs->GetValue() ? plSynchedObject::kDontSynchGameMessages : 0
-                | cbExcludePersistent->GetValue() ? plSynchedObject::kExcludePersistentState : 0
-                | cbExcludeAllPersist->GetValue() ? plSynchedObject::kExcludeAllPersistentState : 0
-                | cbHasVolatile->GetValue() ? plSynchedObject::kHasVolatileState : 0
-                | cbAllVolatile->GetValue() ? plSynchedObject::kAllStateIsVolatile : 0);
+
+    obj->setFlags((cbDontDirty->GetValue() ? plSynchedObject::kDontDirty : 0)
+                | (cbSendReliably->GetValue() ? plSynchedObject::kSendReliably : 0)
+                | (cbHasConstNetGroup->GetValue() ? plSynchedObject::kHasConstantNetGroup : 0)
+                | (cbDontSynchGameMsgs->GetValue() ? plSynchedObject::kDontSynchGameMessages : 0)
+                | (cbExcludePersistent->GetValue() ? plSynchedObject::kExcludePersistentState : 0)
+                | (cbExcludeAllPersist->GetValue() ? plSynchedObject::kExcludeAllPersistentState : 0)
+                | (cbHasVolatile->GetValue() ? plSynchedObject::kHasVolatileState : 0)
+                | (cbAllVolatile->GetValue() ? plSynchedObject::kAllStateIsVolatile : 0));
     obj->clearExcludes();
     obj->clearVolatiles();
     for (size_t i=0; i<listExcludes->GetCount(); i++)

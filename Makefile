@@ -26,6 +26,7 @@ OBJFILES_PRPSHOP=\
 	out/wxPrpShopFrame.o \
 	out/wxPrpCanvas.o \
 	out/PlasmaTreeItem.o \
+	out/wxPrpGUI.o \
 	out/wxPrpPlasma.o \
 	out/PRP/wxMipmap.o \
 	out/PRP/wxSceneNode.o \
@@ -38,7 +39,6 @@ all: $(PLSLIBDIR)/libPlasma.so \
 
 install:
 	(cd ../Plasma/core ; make install)
-	cp bin/PrpShop /usr/local/bin/
 
 clean-all:
 	(cd 3rdp/squish ; make clean)
@@ -106,6 +106,9 @@ out/wxPrpShopFrame.o: src/PrpShop/wxPrpShopFrame.h src/PrpShop/wxPrpShopFrame.cp
 
 out/PlasmaTreeItem.o: src/PrpShop/PlasmaTreeItem.h src/PrpShop/PlasmaTreeItem.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PlasmaTreeItem.cpp -o $@
+
+out/wxPrpGUI.o: src/PrpShop/wxPrpGUI.h src/PrpShop/wxPrpGUI.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpGUI.cpp -o $@
 
 out/wxPrpPlasma.o: src/PrpShop/wxPrpPlasma.h src/PrpShop/wxPrpPlasma.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpPlasma.cpp -o $@

@@ -222,6 +222,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\PrpShop\wxPrpGUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PrpShop\wxPrpGUI.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\PrpShop\wxPrpPlasma.cpp"
 				>
 			</File>

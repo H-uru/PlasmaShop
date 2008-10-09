@@ -4,10 +4,14 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/panel.h>
+#include <wx/imaglist.h>
 
 #include "PRP/wxMipmap.h"
 #include "PRP/wxSceneNode.h"
 #include "PRP/wxSceneObject.h"
+
+#include "../../rc/PrpImages.xpm"
+#include "../../rc/FileImages.xpm"
 
 wxPrpPlasmaObject::wxPrpPlasmaObject(plKey key, plResManager* mgr,
                                      wxTreeCtrl* tree, const wxTreeItemId& tid)
@@ -50,13 +54,7 @@ void wxPrpPlasmaObject::AddPropPages(wxNotebook* nb)
 
 wxWindow* wxPrpPlasmaObject::MakePreviewPane(wxWindow* parent)
 {
-    /*
-    wxBoxSizer* box = new wxBoxSizer(0);
-    box->Add(new wxStaticText(parent, wxID_ANY, wxT("No preview available")),
-             0, wxEXPAND | wxCENTER | wxALL, 4);
-    parent->SetSizerAndFit(box);
-    */
-    return new wxStaticText(parent, wxID_ANY, wxT("No preview available"));
+    return NULL;
 }
 
 void wxPrpPlasmaObject::SaveDamage()
@@ -85,17 +83,9 @@ wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
         return TreeAddSceneNode(tree, parent, mgr, key);
     case kSceneObject:
         return TreeAddSceneObject(tree, parent, mgr, key);
-    case kMipmap:
-        return tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                                ico_img, -1, new PlasmaTreeItem(key));
-    case kCubicEnvironmap:
-        return tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                                ico_img, -1, new PlasmaTreeItem(key));
     default:
-        return tree->AppendItem(parent,
-                                wxT("[") + wxString(plFactory::ClassName(key->getType()), wxConvUTF8) + wxT("] ") +
-                                wxString(key->getName().cstr(), wxConvUTF8),
-                                -1, -1, new PlasmaTreeItem(key));
+        return tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
+                                GetTypeIcon(key->getType()), -1, new PlasmaTreeItem(key));
     }
 }
 
@@ -119,4 +109,79 @@ wxPrpPlasmaObject* MakeEditor(plResManager* mgr, plKey key,
         break;
     }
     return obj;
+}
+
+int GetTypeIcon(unsigned short type)
+{
+    switch (type) {
+    case kMipmap: return ico_img;
+    case kCubicEnvironmap: return ico_img;
+    case kSceneNode: return ico_scenenode;
+    case kSceneObject: return ico_sceneobj;
+    case kDrawableSpans: return ico_spans;
+    case kSimulationInterface: return ico_sim;
+    case kCoordinateInterface: return ico_coords;
+    case kAudioInterface: return ico_sound;
+    case kDrawInterface: return ico_spans2;
+    case kPythonFileMod: return ico_python;
+    case kLayer: return ico_layer;
+    case kGMaterial: return ico_material;
+    default: return -1;
+    }
+}
+
+static wxImageList* s_typeImgList = NULL;
+
+void DestroyTypeImgList() {
+    if (s_typeImgList != NULL)
+        delete s_typeImgList;
+}
+
+wxImageList* GetTypeImgList()
+{
+    if (s_typeImgList == NULL) {
+        s_typeImgList = new wxImageList(16, 16);
+        s_typeImgList->Add(wxBitmap(XPM_folder));
+        s_typeImgList->Add(wxBitmap(XPM_age));
+        s_typeImgList->Add(wxBitmap(XPM_page));
+        s_typeImgList->Add(wxBitmap(XPM_img));
+        s_typeImgList->Add(wxBitmap(XPM_scenenode));
+        s_typeImgList->Add(wxBitmap(XPM_sceneobj));
+        s_typeImgList->Add(wxBitmap(XPM_spans));
+        s_typeImgList->Add(wxBitmap(XPM_sim));
+        s_typeImgList->Add(wxBitmap(XPM_coords));
+        s_typeImgList->Add(wxBitmap(XPM_sound));
+        s_typeImgList->Add(wxBitmap(XPM_spans2));
+        s_typeImgList->Add(wxBitmap(XPM_python));
+        s_typeImgList->Add(wxBitmap(XPM_layer));
+        s_typeImgList->Add(wxBitmap(XPM_material));
+        atexit(&DestroyTypeImgList);
+    }
+    return s_typeImgList;
+}
+
+wxTreeItemId TreeFindKey(wxTreeCtrl* tree, wxTreeItemId parent, plKey key)
+{
+    wxTreeItemIdValue cookie;
+    wxTreeItemId tid = tree->GetFirstChild(parent, cookie);
+    while (tid.IsOk()) {
+        PlasmaTreeItem* data = (PlasmaTreeItem*)tree->GetItemData(tid);
+        if ((data != NULL) && (data->getObject() == key))
+            return tid;
+        tid = tree->GetNextChild(parent, cookie);
+    }
+    return wxTreeItemId();
+}
+
+wxTreeItemId TreeFindFolder(wxTreeCtrl* tree, wxTreeItemId parent, const wxString& name)
+{
+    wxTreeItemIdValue cookie;
+    wxTreeItemId tid = tree->GetFirstChild(parent, cookie);
+    while (tid.IsOk()) {
+        PlasmaTreeItem* data = (PlasmaTreeItem*)tree->GetItemData(tid);
+        if ((data == NULL) && (tree->GetItemText(tid) == name))
+            return tid;
+        tid = tree->GetNextChild(parent, cookie);
+    }
+    return wxTreeItemId();
 }
