@@ -28,7 +28,7 @@ bool wxLinkText::Enable(bool enable)
     wxFont fnt = GetFont();
     fnt.SetUnderlined(enable);
     SetFont(fnt);
-    SetCursor(wxCursor(enable ? wxCURSOR_HAND : wxCURSOR_DEFAULT));
+    SetCursor(enable ? wxCursor(wxCURSOR_HAND) : wxNullCursor);
 
     return wxStaticText::Enable(enable);
 }

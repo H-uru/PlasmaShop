@@ -3,6 +3,7 @@
 
 #include "wxSynchedObject.h"
 #include "../wxPrpGUI.h"
+#include "../wxPrpCanvas.h"
 
 class wxSceneObject : public wxSynchedObject {
 protected:
@@ -14,15 +15,17 @@ protected:
     wxLinkText* lblADSim;
     wxLinkText* lblADCoord;
     wxLinkText* lblADAudio;
+    void UpdateIntfLinks();
 
     wxKeyListCtrl* lsInterfaces;
     wxKeyListCtrl* lsModifiers;
 
-    void UpdateIntfLinks();
+    wxPrpCanvas* fPreviewCanvas;
 
 public:
     wxSceneObject(plKey key, plResManager* mgr, wxTreeCtrl* tree, const wxTreeItemId& tid);
     virtual void AddPropPages(wxNotebook* nb);
+    virtual wxWindow* MakePreviewPane(wxWindow* parent);
     //virtual void SaveDamage();
 
 protected:
@@ -38,7 +41,10 @@ protected:
     void OnADAudioClick(wxCommandEvent& evt);
 
     // Interface and Modifier popup items
-    enum { ID_OBJ_DELETE, ID_INTF_NEW_XYZ };
+    enum {
+        ID_OBJ_DELETE,
+        ID_MOD_NEW_RESPONDER, ID_MOD_NEW_PYTHON,
+    };
 
     void OnIntfContextMenu(wxCommandEvent& evt);
     void OnModContextMenu(wxCommandEvent& evt);
@@ -48,6 +54,8 @@ protected:
 
     void OnModItemActivated(wxListEvent& evt);
     void OnModDeleteClick(wxCommandEvent& evt);
+    void OnNewPythonClick(wxCommandEvent& evt);
+    void OnNewResponderClick(wxCommandEvent& evt);
 };
 
 wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent, plResManager* mgr, plKey key);

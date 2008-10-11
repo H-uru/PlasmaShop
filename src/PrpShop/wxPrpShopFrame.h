@@ -39,6 +39,7 @@ protected:
     plResManager* fResMgr;
     std::map<plLocation, wxLocationInfo> fLoadedLocations;
     wxPrpPlasmaObject* fCurObject;
+    std::map<size_t, int> fEditorPageMemory;
 
     enum { ID_OBJTREE, ID_PROPERTYBOOK };
 

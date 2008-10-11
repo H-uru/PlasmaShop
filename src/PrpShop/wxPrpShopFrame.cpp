@@ -36,6 +36,9 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     : wxFrame(NULL, wxID_ANY, wxT("PrpShop 1.0"), wxDefaultPosition, wxSize(800, 600)),
       fOwner(owner), fCurObject(NULL), fCurPage(NULL)
 {
+    for (size_t i=0; i<TYPESPACE_MAX; i++)
+        fEditorPageMemory[i] = 0;
+
     fHSplitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
                                       wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
     fVSplitter = new wxSplitterWindow(fHSplitter, wxID_ANY, wxDefaultPosition,
@@ -357,7 +360,9 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
         return;
 
     int propPageIdx = fPropertyBook->GetSelection();
-    if (propPageIdx < 0)
+    if (fCurObject != NULL && propPageIdx >= 0)
+        fEditorPageMemory[fCurObject->getKey()->getType()] = propPageIdx;
+    else
         propPageIdx = 0;
 
     DoDataSave(true);
@@ -376,6 +381,7 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
             delete fViewerPane;
             fViewerPane = newPane;
         }
+        propPageIdx = fEditorPageMemory[fCurObject->getKey()->getType()];
     } else if (data->getPage() != NULL) {
         fCurPage = data->getPage();
         wxPanel* nbpage = new wxPanel(fPropertyBook);

@@ -4,12 +4,15 @@
 #include <wx/imaglist.h>
 #include <wx/sizer.h>
 #include <wx/menu.h>
+#include <wx/textdlg.h>
 
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Object/plDrawInterface.h>
 #include <PRP/Object/plSimulationInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
 #include <PRP/Object/plAudioInterface.h>
+#include <PRP/Modifier/plPythonFileMod.h>
+#include <PRP/Modifier/plResponderModifier.h>
 
 #include "../../../rc/PrpImages.xpm"
 
@@ -152,6 +155,16 @@ void wxSceneObject::AddPropPages(wxNotebook* nb)
     lsModifiers->Connect(wxEVT_COMMAND_LIST_ITEM_ACTIVATED,
                          (wxObjectEventFunction)&wxSceneObject::OnModItemActivated,
                          NULL, this);
+}
+
+wxWindow* wxSceneObject::MakePreviewPane(wxWindow* parent)
+{
+    fPreviewCanvas = new wxPrpCanvas(parent);
+    fPreviewCanvas->AddObject(fKey);
+    fPreviewCanvas->Center(fKey);
+    fPreviewCanvas->Build(wxPrpCanvas::MODE_MODEL);
+    
+    return fPreviewCanvas;
 }
 
 void wxSceneObject::UpdateIntfLinks()
@@ -318,7 +331,7 @@ void wxSceneObject::OnADAudioClick(wxCommandEvent& evt)
 void wxSceneObject::OnIntfContextMenu(wxCommandEvent& evt)
 {
     wxMenu* menuAddIntf = new wxMenu(wxT(""));
-    menuAddIntf->Append(ID_INTF_NEW_XYZ, wxT("plBlahBlahInterface"));
+    menuAddIntf->Append(wxID_ANY, wxT("plBlahBlahInterface"));
 
     wxMenu menu(wxT(""));
     menu.AppendSubMenu(menuAddIntf, wxT("Add..."));
@@ -336,7 +349,8 @@ void wxSceneObject::OnIntfContextMenu(wxCommandEvent& evt)
 void wxSceneObject::OnModContextMenu(wxCommandEvent& evt)
 {
     wxMenu* menuAddMod = new wxMenu(wxT(""));
-    menuAddMod->Append(ID_INTF_NEW_XYZ, wxT("plBlahBlahModifier"));
+    menuAddMod->Append(ID_MOD_NEW_PYTHON, wxT("plPythonFileMod"));
+    menuAddMod->Append(ID_MOD_NEW_RESPONDER, wxT("plResponderModifier"));
 
     wxMenu menu(wxT(""));
     menu.AppendSubMenu(menuAddMod, wxT("Add..."));
@@ -346,6 +360,12 @@ void wxSceneObject::OnModContextMenu(wxCommandEvent& evt)
 
     menu.Connect(ID_OBJ_DELETE, wxEVT_COMMAND_MENU_SELECTED,
                  (wxObjectEventFunction)&wxSceneObject::OnModDeleteClick,
+                 NULL, this);
+    menu.Connect(ID_MOD_NEW_PYTHON, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSceneObject::OnNewPythonClick,
+                 NULL, this);
+    menu.Connect(ID_MOD_NEW_RESPONDER, wxEVT_COMMAND_MENU_SELECTED,
+                 (wxObjectEventFunction)&wxSceneObject::OnNewResponderClick,
                  NULL, this);
 
     lsModifiers->PopupMenu(&menu);
@@ -415,4 +435,42 @@ void wxSceneObject::OnModDeleteClick(wxCommandEvent& evt)
             i++;
         }
     }
+}
+
+void wxSceneObject::OnNewPythonClick(wxCommandEvent& evt)
+{
+    wxString name = wxGetTextFromUser(wxT("Object Name"), wxT("Add plPythonFileMod"));
+    if (name == wxEmptyString)
+        return;
+
+    plSceneObject* obj = plSceneObject::Convert(fKey->getObj());
+    plPythonFileMod* mod = new plPythonFileMod();
+    mod->init((const char*)name.mb_str());
+    fResMgr->AddObject(fKey->getLocation(), mod);
+    obj->addModifier(mod->getKey());
+
+    wxTreeItemId folder = TreeFindFolder(fTree, fTreeId, wxT("Modifiers"));
+    if (!folder.IsOk())
+        folder = fTree->AppendItem(fTreeId, wxT("Modifiers"), ico_folder);
+    TreeAddObject(fTree, folder, fResMgr, mod->getKey());
+    lsModifiers->AddKey(mod->getKey());
+}
+
+void wxSceneObject::OnNewResponderClick(wxCommandEvent& evt)
+{
+    wxString name = wxGetTextFromUser(wxT("Object Name"), wxT("Add plResponderModifier"));
+    if (name == wxEmptyString)
+        return;
+
+    plSceneObject* obj = plSceneObject::Convert(fKey->getObj());
+    plResponderModifier* mod = new plResponderModifier();
+    mod->init((const char*)name.mb_str());
+    fResMgr->AddObject(fKey->getLocation(), mod);
+    obj->addModifier(mod->getKey());
+
+    wxTreeItemId folder = TreeFindFolder(fTree, fTreeId, wxT("Modifiers"));
+    if (!folder.IsOk())
+        folder = fTree->AppendItem(fTreeId, wxT("Modifiers"), ico_folder);
+    TreeAddObject(fTree, folder, fResMgr, mod->getKey());
+    lsModifiers->AddKey(mod->getKey());
 }

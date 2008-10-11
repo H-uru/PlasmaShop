@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Plasma.lib wxbase28ud.lib wxmsw28ud_core.lib wxzlibd.lib comctl32.lib rpcrt4.lib wxjpegd.lib"
+				AdditionalDependencies="Plasma.lib wxbase28ud.lib wxmsw28ud_core.lib wxzlibd.lib comctl32.lib rpcrt4.lib wxjpegd.lib wxmsw28ud_gl.lib opengl32.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../Plasma/bin;&quot;D:\Dev\Libs\wxWidgets-2.8.7\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Plasma.lib wxbase28u.lib wxmsw28u_core.lib wxzlib.lib comctl32.lib rpcrt4.lib wxjpeg.lib"
+				AdditionalDependencies="Plasma.lib wxbase28u.lib wxmsw28u_core.lib wxzlib.lib comctl32.lib rpcrt4.lib wxjpeg.lib wxmsw28u_gl.lib opengl32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../Plasma/bin;&quot;D:\Dev\Libs\wxWidgets-2.8.7\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
@@ -219,6 +219,14 @@
 			</File>
 			<File
 				RelativePath=".\src\wxPlasmaStream.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PrpShop\wxPrpCanvas.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PrpShop\wxPrpCanvas.h"
 				>
 			</File>
 			<File

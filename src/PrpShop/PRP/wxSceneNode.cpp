@@ -1,5 +1,6 @@
 #include "wxSceneNode.h"
 #include <PRP/plSceneNode.h>
+#include <PRP/Object/plCoordinateInterface.h>
 
 wxTreeItemId TreeAddSceneNode(wxTreeCtrl* tree, const wxTreeItemId& parent,
                               plResManager* mgr, plKey key)
@@ -36,8 +37,25 @@ void wxSceneNode::AddPropPages(wxNotebook* nb)
     // TODO
 }
 
-void wxSceneNode::SaveDamage()
+wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
 {
-    wxPrpPlasmaObject::SaveDamage();
-    // TODO
+    plSceneNode* node = plSceneNode::Convert(fKey->getObj());
+    fPreviewCanvas = new wxPrpCanvas(parent);
+
+    hsVector3 spawn;
+    for (size_t i=0; i<node->getNumSceneObjects(); i++) {
+        fPreviewCanvas->AddObject(node->getSceneObject(i));
+        if (node->getSceneObject(i)->getName() == "LinkInPointDefault") {
+            plSceneObject* obj = plSceneObject::Convert(node->getSceneObject(i)->getObj());
+            if (obj->getCoordInterface().Exists()) {
+                plCoordinateInterface* ci = plCoordinateInterface::Convert(obj->getCoordInterface()->getObj());
+                hsMatrix44 mat = ci->getLocalToWorld();
+                spawn = hsVector3(mat(0, 3), mat(1, 3), mat(2, 3) + 5.0f);
+            }
+        }
+    }
+    fPreviewCanvas->Build(wxPrpCanvas::MODE_SCENE);
+    fPreviewCanvas->SetView(spawn, 0.0f);
+
+    return fPreviewCanvas;
 }
