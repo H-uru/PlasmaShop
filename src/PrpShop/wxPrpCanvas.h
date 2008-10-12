@@ -11,6 +11,7 @@
     #include <wx/wx.h>
 #endif
 
+#include <map>
 #include <wx/glcanvas.h>
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
@@ -22,7 +23,10 @@ public:
 private:
     bool fInited;
     hsTArray<plKey> fObjects;
+    hsTArray<plKey> fTextures;
+    std::map<plKey, size_t> fTexNames;
     GLuint fList;
+    GLuint* fTexList;
     
     int fMode;
     float fRotZ, fRotX, fModelDist;
@@ -40,10 +44,11 @@ public:
     void InitGL();
 
     void AddObject(plKey obj);
-    void ClearObjects();
-    void Build(int mode);
     void SetView(hsVector3 view, float angle=0.0f);
     void Center(plKey obj);
+
+    void AddTexture(plKey tex);
+    void Build(int mode);
 
 protected:
     DECLARE_EVENT_TABLE()
@@ -54,6 +59,7 @@ protected:
     void OnMouse(wxMouseEvent& evt);
 
     void CompileObject(plKey obj);
+    void CompileTexture(plKey tex, GLuint id);
 
 private:
     wxPoint fMouseFrom;

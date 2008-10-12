@@ -13,6 +13,7 @@
 #include <PRP/Object/plAudioInterface.h>
 #include <PRP/Modifier/plPythonFileMod.h>
 #include <PRP/Modifier/plResponderModifier.h>
+#include <PRP/Surface/plLayerInterface.h>
 
 #include "../../../rc/PrpImages.xpm"
 
@@ -162,6 +163,30 @@ wxWindow* wxSceneObject::MakePreviewPane(wxWindow* parent)
     fPreviewCanvas = new wxPrpCanvas(parent);
     fPreviewCanvas->AddObject(fKey);
     fPreviewCanvas->Center(fKey);
+
+    plSceneObject* obj = plSceneObject::Convert(fKey->getObj());
+    plDrawInterface* draw = NULL;
+    if (obj->getDrawInterface().Exists())
+        draw = plDrawInterface::Convert(obj->getDrawInterface()->getObj());
+    if (draw != NULL) {
+        for (size_t i=0; i<draw->getNumDrawables(); i++) {
+            if (draw->getDrawableKey(i) == -1)
+                continue;
+            plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(i)->getObj());
+            plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(i));
+            if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
+                continue;
+            
+            for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
+                plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
+                hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
+                for (size_t lay = 0; lay < mat->getNumLayers(); lay++) {
+                    plLayerInterface* layer = plLayerInterface::Convert(mat->getLayer(lay)->getObj());
+                    fPreviewCanvas->AddTexture(layer->getTexture());
+                }
+            }
+        }
+    }
     fPreviewCanvas->Build(wxPrpCanvas::MODE_MODEL);
     
     return fPreviewCanvas;

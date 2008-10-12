@@ -1,9 +1,16 @@
 #include "wxPrpCanvas.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
 #include <Debug/plDebug.h>
 #include <PRP/Object/plDrawInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
+#include <PRP/Surface/hsGMaterial.h>
+#include <PRP/Surface/plLayerAnimation.h>
+#include <PRP/Surface/plMipmap.h>
+#include <PRP/Surface/plCubicEnvironmap.h>
+
+PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
 const float RADS = 0.0174532925f;
 
@@ -19,13 +26,17 @@ wxPrpCanvas::wxPrpCanvas(wxWindow* parent, wxWindowID id,
                          const wxPoint& pos, const wxSize& size,
                          long style, const wxString& name)
            : wxGLCanvas(parent, id, pos, size, style | wxFULL_REPAINT_ON_RESIZE, name),
-             fInited(false), fRotZ(0.0f), fRotX(0.0f), fModelDist(0.0f),
-             fMouseBtn(0)
+             fInited(false), fList(0), fTexList(NULL),
+             fRotZ(0.0f), fRotX(0.0f), fModelDist(0.0f), fMouseBtn(0)
 { }
 
 wxPrpCanvas::~wxPrpCanvas()
 {
     glDeleteLists(fList, fObjects.getSize());
+    if (fTexList != NULL) {
+        glDeleteTextures(fTextures.getSize(), fTexList);
+        delete[] fTexList;
+    }
 }
 
 void wxPrpCanvas::OnPaint(wxPaintEvent& evt)
@@ -90,8 +101,8 @@ void wxPrpCanvas::OnMouse(wxMouseEvent& evt)
         } else if (fMouseBtn == 3) {
             if (fMode == MODE_SCENE) {
                 fViewPos.Z += (fMouseFrom.y - evt.GetPosition().y);
-                fViewPos.X += cosf(fRotZ * RADS) * (evt.GetPosition().x - fMouseFrom.x);
-                fViewPos.Y += sinf(fRotZ * RADS) * (evt.GetPosition().x - fMouseFrom.x);
+                fViewPos.X += sinf((fRotZ + 90.0f) * RADS) * (evt.GetPosition().x - fMouseFrom.x);
+                fViewPos.Y += cosf((fRotZ + 90.0f) * RADS) * (evt.GetPosition().x - fMouseFrom.x);
             }
         }
     } else {
@@ -109,6 +120,13 @@ void wxPrpCanvas::InitGL()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+#ifdef WIN32
+    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
+#else
+    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)glXGetProcAddress((const GLubyte*)"glCompressedTexImage2DARB");
+#endif
+
     fInited = true;
 }
 
@@ -132,13 +150,8 @@ void wxPrpCanvas::Render()
         glTranslatef(-fViewPos.X, -fViewPos.Y, -fViewPos.Z);
     }
     
-    //*
     for (size_t i=0; i<fObjects.getSize(); i++)
         glCallList(fList+i);
-    /*/
-    for (size_t i=0; i<fObjects.getSize(); i++)
-        CompileObject(fObjects[i]);
-    //*/
 
     SwapBuffers();
 }
@@ -146,27 +159,6 @@ void wxPrpCanvas::Render()
 void wxPrpCanvas::AddObject(plKey obj)
 {
     fObjects.append(obj);
-}
-
-void wxPrpCanvas::ClearObjects()
-{
-    fObjects.clear();
-}
-
-void wxPrpCanvas::Build(int mode)
-{
-    SetCurrent();
-    if (!fInited)
-        InitGL();
-
-    fMode = mode;
-    fList = glGenLists(fObjects.getSize());
-    
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        glNewList(fList+i, GL_COMPILE);
-        CompileObject(fObjects[i]);
-        glEndList();
-    }
 }
 
 void wxPrpCanvas::SetView(hsVector3 view, float angle)
@@ -182,10 +174,6 @@ void wxPrpCanvas::Center(plKey obj)
     plSceneObject* sceneObj = plSceneObject::Convert(obj->getObj());
     if (sceneObj == NULL || !sceneObj->getDrawInterface().Exists())
         return;
-    if (!sceneObj->getDrawInterface().isLoaded()) {
-        plDebug::Warning("Could not get DrawInterface for %s", sceneObj->getKey()->getName().cstr());
-        return;
-    }
 
     bool mset = false;
     plDrawInterface* draw = plDrawInterface::Convert(sceneObj->getDrawInterface()->getObj());
@@ -226,15 +214,41 @@ void wxPrpCanvas::Center(plKey obj)
     fModelDist = sqrt((szX * szX) + (szY * szY) + (szZ * szZ));
 }
 
+void wxPrpCanvas::AddTexture(plKey tex)
+{
+    if (tex.Exists() && tex.isLoaded())
+        fTextures.append(tex);
+}
+
+void wxPrpCanvas::Build(int mode)
+{
+    SetCurrent();
+    if (!fInited)
+        InitGL();
+    fMode = mode;
+
+    if (fTexList != NULL)
+        delete[] fTexList;
+    fTexList = new GLuint[fTextures.getSize()];
+    glGenTextures(fTextures.getSize(), fTexList);
+    for (size_t i=0; i<fTextures.getSize(); i++) {
+        fTexNames[fTextures[i]] = fTexList[i];
+        CompileTexture(fTextures[i], fTexList[i]);
+    }
+    
+    fList = glGenLists(fObjects.getSize());
+    for (size_t i=0; i<fObjects.getSize(); i++) {
+        glNewList(fList+i, GL_COMPILE);
+        CompileObject(fObjects[i]);
+        glEndList();
+    }
+}
+
 void wxPrpCanvas::CompileObject(plKey key)
 {
     plSceneObject* obj = plSceneObject::Convert(key->getObj());
     if (obj == NULL || !obj->getDrawInterface().Exists())
         return;
-    if (!obj->getDrawInterface().isLoaded()) {
-        plDebug::Warning("Could not get DrawInterface for %s", obj->getKey()->getName().cstr());
-        return;
-    }
 
     plDrawInterface* draw = plDrawInterface::Convert(obj->getDrawInterface()->getObj());
     plCoordinateInterface* coord = NULL;
@@ -247,6 +261,9 @@ void wxPrpCanvas::CompileObject(plKey key)
 
         plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(i)->getObj());
         plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(i));
+        if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
+            continue;
+
         for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
             plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
             hsTArray<plGBufferVertex> verts = span->getVerts(ice);
@@ -261,7 +278,7 @@ void wxPrpCanvas::CompileObject(plKey key)
             }
 
             if (fMode == MODE_MODEL) {
-                glColor3f(0.0f, 0.0f, 0.0f);
+                glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 
                 glBegin(GL_LINES);
                 glVertex3f(fModelMins.X, fModelMins.Y, fModelMins.Z);
@@ -294,21 +311,154 @@ void wxPrpCanvas::CompileObject(plKey key)
                 glEnd();
             }
 
-            glBegin(GL_TRIANGLES);
-            for (size_t j = 0; j < indices.getSize(); j++) {
-                hsColor32 color(verts[indices[j]].fColor);
-                glTexCoord3f(verts[indices[j]].fUVWs[0].X, verts[indices[j]].fUVWs[0].Y, verts[indices[j]].fUVWs[0].Z);
-                glColor4ub(color.r, color.g, color.b, color.a);
-                glNormal3f(verts[indices[j]].fNormal.X, verts[indices[j]].fNormal.Y, verts[indices[j]].fNormal.Z);
+            hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
+            for (size_t lay = 0; lay < mat->getNumLayers(); lay++) {
+            //size_t lay = 0 ; {
+                plLayerInterface* layer = plLayerInterface::Convert(mat->getLayer(lay)->getObj());
+
+                bool is2Sided = (layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0;
+                float amb[4] = { layer->getAmbient().r, layer->getAmbient().g,
+                                 layer->getAmbient().b, layer->getAmbient().b };
+                float dif[4] = { layer->getRuntime().r, layer->getRuntime().g,
+                                 layer->getRuntime().b, layer->getRuntime().b };
+                float spec[4] = { layer->getSpecular().r, layer->getSpecular().g,
+                                  layer->getSpecular().b, layer->getSpecular().b };
+                glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+                glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+                glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+                if (layer->getState().fShadeFlags & hsGMatState::kShadeEmissive)
+                    glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_EMISSION, amb);
+                //glPixelTransferf(GL_ALPHA_SCALE, layer->getOpacity());
                 
-                hsVector3 vert;
-                if (!xform.IsIdentity())
-                    vert = verts[indices[j]].fPos * xform;
-                else
-                    vert = verts[indices[j]].fPos;
-                glVertex3f(vert.X, vert.Y, vert.Z);
+                glDisable(GL_BLEND);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+                if ((layer->getState().fBlendFlags & hsGMatState::kBlendAlpha) != 0) {
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                }
+                if ((layer->getState().fBlendFlags & hsGMatState::kBlendAdd) != 0) {
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_ONE, GL_ONE);
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                }
+                if ((layer->getState().fBlendFlags & hsGMatState::kBlendNoTexColor) != 0) {
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
+                }
+
+                plLayerInterface* lp = layer;
+                glDisable(GL_TEXTURE_CUBE_MAP);
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, 0);
+                while (lp != NULL) {
+                    if (lp->getTexture().Exists()) {
+                        GLuint target;
+                        if (lp->getTexture()->getType() == kMipmap) {
+                            target = GL_TEXTURE_2D;
+                        } else if (lp->getTexture()->getType() == kCubicEnvironmap) {
+                            glDisable(GL_TEXTURE_2D);
+                            glEnable(GL_TEXTURE_CUBE_MAP);
+                            target = GL_TEXTURE_CUBE_MAP;
+                        } else {
+                            lp = NULL;
+                            continue;
+                        }
+                        glBindTexture(target, fTexNames[lp->getTexture()]);
+                        lp = NULL;
+                    } else {
+                        if (lp->getUnderLay().Exists())
+                            lp = plLayerInterface::Convert(lp->getUnderLay()->getObj());
+                        else
+                            lp = NULL;
+                    }
+                }
+
+                glBegin(GL_TRIANGLES);
+                for (size_t j = 0; j < indices.getSize(); j++) {
+                    hsColor32 color(verts[indices[j]].fColor);
+                    
+                    size_t uvwSrc = layer->getUVWSrc() & 0xFFFF;
+                    hsVector3 uvw = verts[indices[j]].fUVWs[uvwSrc] * layer->getTransform();
+                    glTexCoord3f(uvw.X, uvw.Y, uvw.Z);
+                    
+                    glColor4ub(color.r, color.g, color.b, color.a);
+                    glNormal3f(verts[indices[j]].fNormal.X, verts[indices[j]].fNormal.Y, verts[indices[j]].fNormal.Z);
+                    
+                    hsVector3 vert;
+                    if (!xform.IsIdentity())
+                        vert = verts[indices[j]].fPos * xform;
+                    else
+                        vert = verts[indices[j]].fPos;
+                    glVertex3f(vert.X, vert.Y, vert.Z);
+                }
+                glEnd();
+                glDisable(GL_BLEND);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
             }
-            glEnd();
         }
+    }
+}
+
+bool BuildMipmap(plMipmap* map, GLuint id, GLuint target) {
+    glBindTexture(target, id);
+    glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    if (map->getCompressionType() == plBitmap::kDirectXCompression) {
+        GLuint dxCompression = 0;
+        if (map->getDXCompression() == plBitmap::kDXT1)
+            dxCompression = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        else if (map->getDXCompression() == plBitmap::kDXT3)
+            dxCompression = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+        else if (map->getDXCompression() == plBitmap::kDXT5)
+            dxCompression = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+
+        if (glCompressedTexImage2DARB != NULL) {
+            for (size_t i=0; i<map->getNumLevels(); i++) {
+                glCompressedTexImage2DARB(target, i, dxCompression, map->getLevelWidth(i),
+                                          map->getLevelHeight(i), 0, map->getLevelSize(i),
+                                          map->getLevelData(i));
+            }
+        } else {
+            return false;
+        }
+    } else if (map->getCompressionType() == plBitmap::kJPEGCompression) {
+        return false;
+    } else {
+        for (size_t i=0; i<map->getNumLevels(); i++) {
+            glTexImage2D(target, i, GL_RGBA, map->getLevelWidth(i),
+                         map->getLevelHeight(i), 0, GL_RGBA,
+                         GL_UNSIGNED_INT_8_8_8_8, map->getLevelData(i));
+        }
+    }
+    return true;
+}
+
+void wxPrpCanvas::CompileTexture(plKey tex, GLuint id)
+{
+    if (plMipmap* map = plMipmap::Convert(tex->getObj())) {
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_CUBE_MAP);
+        if (!BuildMipmap(map, id, GL_TEXTURE_2D))
+            fTexNames[tex] = 0;
+    } else if (plCubicEnvironmap* envMap = plCubicEnvironmap::Convert(tex->getObj())) {
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_CUBE_MAP);
+        if (!BuildMipmap(envMap->getFace(0), id, GL_TEXTURE_CUBE_MAP_POSITIVE_X))
+            fTexNames[tex] = 0;
+        if (!BuildMipmap(envMap->getFace(1), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_X))
+            fTexNames[tex] = 0;
+        if (!BuildMipmap(envMap->getFace(2), id, GL_TEXTURE_CUBE_MAP_POSITIVE_Y))
+            fTexNames[tex] = 0;
+        if (!BuildMipmap(envMap->getFace(3), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y))
+            fTexNames[tex] = 0;
+        if (!BuildMipmap(envMap->getFace(4), id, GL_TEXTURE_CUBE_MAP_POSITIVE_Z))
+            fTexNames[tex] = 0;
+        if (!BuildMipmap(envMap->getFace(5), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z))
+            fTexNames[tex] = 0;
     }
 }

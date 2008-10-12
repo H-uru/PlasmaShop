@@ -42,18 +42,32 @@ wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
     plSceneNode* node = plSceneNode::Convert(fKey->getObj());
     fPreviewCanvas = new wxPrpCanvas(parent);
 
+    plLocation texLoc = fKey->getLocation();
+    texLoc.setPageNum(-1);
+    std::vector<plKey> mipmaps = fResMgr->getKeys(texLoc, kMipmap);
+    for (size_t i=0; i<mipmaps.size(); i++)
+        fPreviewCanvas->AddTexture(mipmaps[i]);
+    std::vector<plKey> envmaps = fResMgr->getKeys(texLoc, kCubicEnvironmap);
+    for (size_t i=0; i<envmaps.size(); i++)
+        fPreviewCanvas->AddTexture(envmaps[i]);
+
     hsVector3 spawn;
+    bool haveSpawn = false;
     for (size_t i=0; i<node->getNumSceneObjects(); i++) {
         fPreviewCanvas->AddObject(node->getSceneObject(i));
-        if (node->getSceneObject(i)->getName() == "LinkInPointDefault") {
-            plSceneObject* obj = plSceneObject::Convert(node->getSceneObject(i)->getObj());
-            if (obj->getCoordInterface().Exists()) {
-                plCoordinateInterface* ci = plCoordinateInterface::Convert(obj->getCoordInterface()->getObj());
-                hsMatrix44 mat = ci->getLocalToWorld();
-                spawn = hsVector3(mat(0, 3), mat(1, 3), mat(2, 3) + 5.0f);
+        plSceneObject* obj = plSceneObject::Convert(node->getSceneObject(i)->getObj());
+        for (size_t j=0; j<obj->getNumModifiers(); j++) {
+            if (obj->getModifier(j)->getType() == kSpawnModifier) {
+                if (!haveSpawn || obj->getKey()->getName() == "LinkInPointDefault") {
+                    plCoordinateInterface* coord = plCoordinateInterface::Convert(obj->getCoordInterface()->getObj());
+                    hsMatrix44 mat = coord->getLocalToWorld();
+                    spawn = hsVector3(mat(0, 3), mat(1, 3), mat(2, 3) + 5.0f);
+                    haveSpawn = true;
+                }
             }
         }
     }
+
     fPreviewCanvas->Build(wxPrpCanvas::MODE_SCENE);
     fPreviewCanvas->SetView(spawn, 0.0f);
 
