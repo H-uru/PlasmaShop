@@ -16,6 +16,14 @@
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
 
+struct LayerInfo {
+    LayerInfo();
+    LayerInfo(size_t nameId, GLuint target);
+
+    size_t fTexNameId;
+    GLuint fTexTarget;
+};
+
 class wxPrpCanvas : public wxGLCanvas {
 public:
     enum { MODE_MODEL, MODE_SCENE };
@@ -23,9 +31,8 @@ public:
 private:
     bool fInited;
     hsTArray<plKey> fObjects;
-    hsTArray<plKey> fTextures;
-    std::map<plKey, size_t> fTexNames;
-    GLuint fList;
+    std::map<plKey, LayerInfo> fLayers;
+    GLuint fRenderListBase;
     GLuint* fTexList;
     
     int fMode;
@@ -40,14 +47,12 @@ public:
                 long style = 0, const wxString& name = wxT("AgeViewer"));
     ~wxPrpCanvas();
 
-    void Render();
     void InitGL();
+    void Render();
 
     void AddObject(plKey obj);
     void SetView(hsVector3 view, float angle=0.0f);
     void Center(plKey obj);
-
-    void AddTexture(plKey tex);
     void Build(int mode);
 
 protected:
@@ -59,7 +64,7 @@ protected:
     void OnMouse(wxMouseEvent& evt);
 
     void CompileObject(plKey obj);
-    void CompileTexture(plKey tex, GLuint id);
+    void CompileTexture(plKey layer, size_t id);
 
 private:
     wxPoint fMouseFrom;

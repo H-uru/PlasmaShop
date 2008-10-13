@@ -44,7 +44,7 @@ public:
     wxKeyListCtrl(wxWindow* parent, wxWindowID id,
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxDefaultSize,
-                  long style = wxLC_REPORT | wxLC_NO_HEADER,
+                  long style = wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_SUNKEN,
                   const wxValidator& validator = wxDefaultValidator,
                   const wxString& name = wxT("wxKeyList"));
     void AddKey(plKey key);

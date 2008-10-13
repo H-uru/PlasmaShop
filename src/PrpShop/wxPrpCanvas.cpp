@@ -1,7 +1,14 @@
 #include "wxPrpCanvas.h"
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
+#ifdef WIN32
+  #include <GL/wglext.h>
+#else
+  #include <GL/glxext.h>
+#endif
+
 #include <Debug/plDebug.h>
 #include <PRP/Object/plDrawInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
@@ -14,6 +21,16 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
 const float RADS = 0.0174532925f;
 
+
+LayerInfo::LayerInfo()
+         : fTexNameId(0), fTexTarget(0)
+{ }
+
+LayerInfo::LayerInfo(size_t nameId, GLuint target)
+         : fTexNameId(nameId), fTexTarget(target)
+{ }
+
+
 BEGIN_EVENT_TABLE(wxPrpCanvas, wxGLCanvas)
     EVT_SIZE(wxPrpCanvas::OnSize)
     EVT_PAINT(wxPrpCanvas::OnPaint)
@@ -25,18 +42,36 @@ END_EVENT_TABLE()
 wxPrpCanvas::wxPrpCanvas(wxWindow* parent, wxWindowID id,
                          const wxPoint& pos, const wxSize& size,
                          long style, const wxString& name)
-           : wxGLCanvas(parent, id, pos, size, style | wxFULL_REPAINT_ON_RESIZE, name),
-             fInited(false), fList(0), fTexList(NULL),
+           : wxGLCanvas(parent, id, pos, size, style | wxFULL_REPAINT_ON_RESIZE,
+                        name, NULL),
+             fInited(false), fRenderListBase(0), fTexList(NULL),
              fRotZ(0.0f), fRotX(0.0f), fModelDist(0.0f), fMouseBtn(0)
 { }
 
 wxPrpCanvas::~wxPrpCanvas()
 {
-    glDeleteLists(fList, fObjects.getSize());
+    glDeleteLists(fRenderListBase, fObjects.getSize());
     if (fTexList != NULL) {
-        glDeleteTextures(fTextures.getSize(), fTexList);
+        glDeleteTextures(fLayers.size(), fTexList);
         delete[] fTexList;
     }
+}
+
+void wxPrpCanvas::InitGL()
+{
+    glShadeModel(GL_SMOOTH);
+    glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+#ifdef WIN32
+    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
+#else
+    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)glXGetProcAddress((const GLubyte*)"glCompressedTexImage2DARB");
+#endif
+
+    fInited = true;
 }
 
 void wxPrpCanvas::OnPaint(wxPaintEvent& evt)
@@ -113,23 +148,6 @@ void wxPrpCanvas::OnMouse(wxMouseEvent& evt)
     Render();
 }
 
-void wxPrpCanvas::InitGL()
-{
-    glShadeModel(GL_SMOOTH);
-    glClearDepth(1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-#ifdef WIN32
-    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
-#else
-    glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)glXGetProcAddress((const GLubyte*)"glCompressedTexImage2DARB");
-#endif
-
-    fInited = true;
-}
-
 void wxPrpCanvas::Render()
 {
     SetCurrent();
@@ -151,7 +169,7 @@ void wxPrpCanvas::Render()
     }
     
     for (size_t i=0; i<fObjects.getSize(); i++)
-        glCallList(fList+i);
+        glCallList(fRenderListBase+i);
 
     SwapBuffers();
 }
@@ -214,12 +232,6 @@ void wxPrpCanvas::Center(plKey obj)
     fModelDist = sqrt((szX * szX) + (szY * szY) + (szZ * szZ));
 }
 
-void wxPrpCanvas::AddTexture(plKey tex)
-{
-    if (tex.Exists() && tex.isLoaded())
-        fTextures.append(tex);
-}
-
 void wxPrpCanvas::Build(int mode)
 {
     SetCurrent();
@@ -227,18 +239,44 @@ void wxPrpCanvas::Build(int mode)
         InitGL();
     fMode = mode;
 
+    fLayers.clear();
+    size_t layIdx = 0;
+    for (size_t i=0; i<fObjects.getSize(); i++) {
+        plSceneObject* obj = plSceneObject::Convert(fObjects[i]->getObj());
+        plDrawInterface* draw = GET_KEY_OBJECT(obj->getDrawInterface(), plDrawInterface);
+        if (draw == NULL)
+            continue;
+
+        for (size_t j=0; j<draw->getNumDrawables(); j++) {
+            if (draw->getDrawableKey(j) == -1)
+                continue;
+            plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(j)->getObj());
+            plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(j));
+            for (size_t idx=0; idx<di.fIndices.getSize(); idx++) {
+                plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
+                hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
+                for (size_t lay = 0; lay < mat->getNumLayers(); lay++) {
+                    if (fLayers.find(mat->getLayer(lay)) == fLayers.end()) {
+                        fLayers[mat->getLayer(lay)] = LayerInfo(layIdx, 0);
+                        layIdx++;
+                    }
+                }
+            }
+        }
+    }
+
+    assert(fLayers.size() == layIdx);
     if (fTexList != NULL)
         delete[] fTexList;
-    fTexList = new GLuint[fTextures.getSize()];
-    glGenTextures(fTextures.getSize(), fTexList);
-    for (size_t i=0; i<fTextures.getSize(); i++) {
-        fTexNames[fTextures[i]] = fTexList[i];
-        CompileTexture(fTextures[i], fTexList[i]);
-    }
+    fTexList = new GLuint[layIdx];
+    glGenTextures(layIdx, fTexList);
+    std::map<plKey, LayerInfo>::iterator it;
+    for (it = fLayers.begin(); it != fLayers.end(); it++)
+        CompileTexture((*it).first, (*it).second.fTexNameId);
     
-    fList = glGenLists(fObjects.getSize());
+    fRenderListBase = glGenLists(fObjects.getSize());
     for (size_t i=0; i<fObjects.getSize(); i++) {
-        glNewList(fList+i, GL_COMPILE);
+        glNewList(fRenderListBase+i, GL_COMPILE);
         CompileObject(fObjects[i]);
         glEndList();
     }
@@ -316,7 +354,8 @@ void wxPrpCanvas::CompileObject(plKey key)
             //size_t lay = 0 ; {
                 plLayerInterface* layer = plLayerInterface::Convert(mat->getLayer(lay)->getObj());
 
-                bool is2Sided = (layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0;
+                bool is2Sided = ((layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0)
+                             || ((mat->getCompFlags() & hsGMaterial::kCompTwoSided) != 0);
                 float amb[4] = { layer->getAmbient().r, layer->getAmbient().g,
                                  layer->getAmbient().b, layer->getAmbient().b };
                 float dif[4] = { layer->getRuntime().r, layer->getRuntime().g,
@@ -328,7 +367,13 @@ void wxPrpCanvas::CompileObject(plKey key)
                 glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_SPECULAR, spec);
                 if (layer->getState().fShadeFlags & hsGMatState::kShadeEmissive)
                     glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_EMISSION, amb);
-                //glPixelTransferf(GL_ALPHA_SCALE, layer->getOpacity());
+                
+                if (is2Sided) {
+                    glDisable(GL_CULL_FACE);
+                } else {
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                }
                 
                 glDisable(GL_BLEND);
                 glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
@@ -348,32 +393,13 @@ void wxPrpCanvas::CompileObject(plKey key)
                     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
                 }
 
-                plLayerInterface* lp = layer;
-                glDisable(GL_TEXTURE_CUBE_MAP);
-                glEnable(GL_TEXTURE_2D);
-                glBindTexture(GL_TEXTURE_2D, 0);
-                while (lp != NULL) {
-                    if (lp->getTexture().Exists()) {
-                        GLuint target;
-                        if (lp->getTexture()->getType() == kMipmap) {
-                            target = GL_TEXTURE_2D;
-                        } else if (lp->getTexture()->getType() == kCubicEnvironmap) {
-                            glDisable(GL_TEXTURE_2D);
-                            glEnable(GL_TEXTURE_CUBE_MAP);
-                            target = GL_TEXTURE_CUBE_MAP;
-                        } else {
-                            lp = NULL;
-                            continue;
-                        }
-                        glBindTexture(target, fTexNames[lp->getTexture()]);
-                        lp = NULL;
-                    } else {
-                        if (lp->getUnderLay().Exists())
-                            lp = plLayerInterface::Convert(lp->getUnderLay()->getObj());
-                        else
-                            lp = NULL;
-                    }
-                }
+                LayerInfo linf = fLayers[layer->getKey()];
+                if (linf.fTexTarget != GL_TEXTURE_2D)
+                    glDisable(GL_TEXTURE_2D);
+                if (linf.fTexTarget != GL_TEXTURE_CUBE_MAP)
+                    glDisable(GL_TEXTURE_CUBE_MAP);
+                glEnable(linf.fTexTarget);
+                glBindTexture(linf.fTexTarget, fTexList[linf.fTexNameId]);
 
                 glBegin(GL_TRIANGLES);
                 for (size_t j = 0; j < indices.getSize(); j++) {
@@ -427,7 +453,20 @@ bool BuildMipmap(plMipmap* map, GLuint id, GLuint target) {
             return false;
         }
     } else if (map->getCompressionType() == plBitmap::kJPEGCompression) {
-        return false;
+        size_t imgsize = map->GetUncompressedSize();
+        unsigned char* imgbuf = new unsigned char[imgsize];
+        try {
+            map->DecompressImage(imgbuf, imgsize);
+            glTexImage2D(target, 0, GL_RGBA, map->getLevelWidth(0),
+                         map->getLevelHeight(0), 0, GL_RGBA,
+                         GL_UNSIGNED_INT_8_8_8_8, imgbuf);
+        } catch (hsException& e) {
+            wxMessageBox(wxT("Error decompressing ") + wxString(map->getKey()->getName().cstr(), wxConvUTF8) +
+                         wxT(": ") + wxString(e.what(), wxConvUTF8));
+            delete[] imgbuf;
+            return false;
+        }
+        delete[] imgbuf;
     } else {
         for (size_t i=0; i<map->getNumLevels(); i++) {
             glTexImage2D(target, i, GL_RGBA, map->getLevelWidth(i),
@@ -438,27 +477,46 @@ bool BuildMipmap(plMipmap* map, GLuint id, GLuint target) {
     return true;
 }
 
-void wxPrpCanvas::CompileTexture(plKey tex, GLuint id)
+void wxPrpCanvas::CompileTexture(plKey lay, size_t id)
 {
-    if (plMipmap* map = plMipmap::Convert(tex->getObj())) {
+    plLayerInterface* layer = plLayerInterface::Convert(lay->getObj());
+    glPixelTransferf(GL_ALPHA_SCALE, layer->getOpacity());
+
+    plLayerInterface* lp = layer;
+    plKey layTex;
+    while (lp != NULL) {
+        if (lp->getTexture().Exists()) {
+            layTex = lp->getTexture();
+            lp = NULL;
+        } else {
+            lp = GET_KEY_OBJECT(lp->getUnderLay(), plLayerInterface);
+        }
+    }
+
+    if (plMipmap* map = GET_KEY_OBJECT(layTex, plMipmap)) {
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_CUBE_MAP);
-        if (!BuildMipmap(map, id, GL_TEXTURE_2D))
-            fTexNames[tex] = 0;
-    } else if (plCubicEnvironmap* envMap = plCubicEnvironmap::Convert(tex->getObj())) {
+        fLayers[lay].fTexTarget = GL_TEXTURE_2D;
+        if (!BuildMipmap(map, fTexList[id], GL_TEXTURE_2D))
+            fLayers[lay].fTexNameId = 0;
+    } else if (plCubicEnvironmap* envMap = GET_KEY_OBJECT(layTex, plCubicEnvironmap)) {
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_CUBE_MAP);
-        if (!BuildMipmap(envMap->getFace(0), id, GL_TEXTURE_CUBE_MAP_POSITIVE_X))
-            fTexNames[tex] = 0;
-        if (!BuildMipmap(envMap->getFace(1), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_X))
-            fTexNames[tex] = 0;
-        if (!BuildMipmap(envMap->getFace(2), id, GL_TEXTURE_CUBE_MAP_POSITIVE_Y))
-            fTexNames[tex] = 0;
-        if (!BuildMipmap(envMap->getFace(3), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y))
-            fTexNames[tex] = 0;
-        if (!BuildMipmap(envMap->getFace(4), id, GL_TEXTURE_CUBE_MAP_POSITIVE_Z))
-            fTexNames[tex] = 0;
-        if (!BuildMipmap(envMap->getFace(5), id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z))
-            fTexNames[tex] = 0;
+        fLayers[lay].fTexTarget = GL_TEXTURE_CUBE_MAP;
+        if (!BuildMipmap(envMap->getFace(0), fTexList[id], GL_TEXTURE_CUBE_MAP_POSITIVE_X))
+            fLayers[lay].fTexNameId = 0;
+        if (!BuildMipmap(envMap->getFace(1), fTexList[id], GL_TEXTURE_CUBE_MAP_NEGATIVE_X))
+            fLayers[lay].fTexNameId = 0;
+        if (!BuildMipmap(envMap->getFace(2), fTexList[id], GL_TEXTURE_CUBE_MAP_POSITIVE_Y))
+            fLayers[lay].fTexNameId = 0;
+        if (!BuildMipmap(envMap->getFace(3), fTexList[id], GL_TEXTURE_CUBE_MAP_NEGATIVE_Y))
+            fLayers[lay].fTexNameId = 0;
+        if (!BuildMipmap(envMap->getFace(4), fTexList[id], GL_TEXTURE_CUBE_MAP_POSITIVE_Z))
+            fLayers[lay].fTexNameId = 0;
+        if (!BuildMipmap(envMap->getFace(5), fTexList[id], GL_TEXTURE_CUBE_MAP_NEGATIVE_Z))
+            fLayers[lay].fTexNameId = 0;
+    } else if (layTex.Exists()) {
+        plDebug::Debug("Got unrecognized texture type for %s",
+                       layTex->toString().cstr());
     }
 }

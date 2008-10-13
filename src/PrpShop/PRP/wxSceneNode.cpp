@@ -42,16 +42,8 @@ wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
     plSceneNode* node = plSceneNode::Convert(fKey->getObj());
     fPreviewCanvas = new wxPrpCanvas(parent);
 
-    plLocation texLoc = fKey->getLocation();
-    texLoc.setPageNum(-1);
-    std::vector<plKey> mipmaps = fResMgr->getKeys(texLoc, kMipmap);
-    for (size_t i=0; i<mipmaps.size(); i++)
-        fPreviewCanvas->AddTexture(mipmaps[i]);
-    std::vector<plKey> envmaps = fResMgr->getKeys(texLoc, kCubicEnvironmap);
-    for (size_t i=0; i<envmaps.size(); i++)
-        fPreviewCanvas->AddTexture(envmaps[i]);
-
     hsVector3 spawn;
+    float spawnAngle = 0.0f;
     bool haveSpawn = false;
     for (size_t i=0; i<node->getNumSceneObjects(); i++) {
         fPreviewCanvas->AddObject(node->getSceneObject(i));
@@ -62,6 +54,7 @@ wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
                     plCoordinateInterface* coord = plCoordinateInterface::Convert(obj->getCoordInterface()->getObj());
                     hsMatrix44 mat = coord->getLocalToWorld();
                     spawn = hsVector3(mat(0, 3), mat(1, 3), mat(2, 3) + 5.0f);
+                    spawnAngle = atan2f(mat(1, 0), mat(0, 0));
                     haveSpawn = true;
                 }
             }
@@ -69,7 +62,7 @@ wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
     }
 
     fPreviewCanvas->Build(wxPrpCanvas::MODE_SCENE);
-    fPreviewCanvas->SetView(spawn, 0.0f);
+    fPreviewCanvas->SetView(spawn, spawnAngle);
 
     return fPreviewCanvas;
 }

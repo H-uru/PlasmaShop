@@ -165,7 +165,7 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
         if (ext.CmpNoCase(wxT("age")) == 0) {
             plAgeInfo* age = fResMgr->ReadAge(fn.GetFullPath().mb_str(), true);
             for (size_t i=0; i<age->getNumPages(); i++)
-                LoadPage(fResMgr->FindPage(age->getPageLoc(i)),
+                LoadPage(fResMgr->FindPage(age->getPageLoc(i, fResMgr->getVer())),
                                            wxString(age->getPageFilename(i, fResMgr->getVer()), wxConvUTF8));
         } else if (ext.CmpNoCase(wxT("prp")) == 0) {
             plPageInfo* page = fResMgr->ReadPage(fn.GetFullPath().mb_str());
@@ -372,7 +372,7 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
     delete fViewerPane;
     fViewerPane = noPreview;
 
-    if (data->getObject().Exists()) {
+    if (data->getObject().Exists() && data->getObject().isLoaded()) {
         fCurObject = MakeEditor(fResMgr, data->getObject(), fObjTree, itm);
         fCurObject->AddPropPages(fPropertyBook);
         wxWindow* newPane = fCurObject->MakePreviewPane(fVSplitter);
