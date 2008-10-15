@@ -6,10 +6,10 @@
 #include <wx/panel.h>
 #include <wx/imaglist.h>
 
-#include "PRP/wxMipmap.h"
 #include "PRP/wxSceneNode.h"
-#include "PRP/wxSceneObject.h"
-#include "PRP/wxCoordinateInterface.h"
+#include "PRP/Object/wxSceneObject.h"
+#include "PRP/Object/wxCoordinateInterface.h"
+#include "PRP/Surface/wxMipmap.h"
 
 #include "../../rc/PrpImages.xpm"
 #include "../../rc/FileImages.xpm"

@@ -1,7 +1,7 @@
 #ifndef _WXMIPMAP_H
 #define _WXMIPMAP_H
 
-#include "../wxPrpPlasma.h"
+#include "../../wxPrpPlasma.h"
 #include <wx/checkbox.h>
 #include <wx/scrolwin.h>
 #include <wx/image.h>

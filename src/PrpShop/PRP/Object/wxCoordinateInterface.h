@@ -3,7 +3,7 @@
 
 #include "wxSynchedObject.h"
 #include "../wxPrpGUI.h"
-#include "../wxPrpCanvas.h"
+#include "../../wxPrpCanvas.h"
 
 class wxCoordinateInterface : public wxSynchedObject {
 protected:

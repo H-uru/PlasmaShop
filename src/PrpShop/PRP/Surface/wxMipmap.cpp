@@ -1,7 +1,7 @@
 #include "wxMipmap.h"
 #include <PRP/Surface/plMipmap.h>
 #include <Stream/hsRAMStream.h>
-#include "../../wxPlasmaStream.h"
+#include "../../../wxPlasmaStream.h"
 
 #include <wx/sizer.h>
 #include <wx/stattext.h>

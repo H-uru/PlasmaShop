@@ -1,7 +1,7 @@
 #ifndef _WXSYNCHEDOBJECT_H
 #define _WXSYNCHEDOBJECT_H
 
-#include "../wxPrpPlasma.h"
+#include "../../wxPrpPlasma.h"
 #include <wx/checkbox.h>
 #include <wx/stattext.h>
 #include <wx/listbox.h>

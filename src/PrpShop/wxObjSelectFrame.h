@@ -9,7 +9,7 @@
     #include <wx/wx.h>
 #endif
 
-#include "wxPrpGUI.h"
+#include "PRP/wxPrpGUI.h"
 #include <ResManager/plResManager.h>
 
 class wxObjSelectFrame : public wxDialog {

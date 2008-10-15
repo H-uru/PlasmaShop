@@ -26,9 +26,9 @@ OBJFILES_PRPSHOP=\
 	out/wxPrpShopFrame.o \
 	out/wxPrpCanvas.o \
 	out/PlasmaTreeItem.o \
-	out/wxPrpGUI.o \
 	out/wxPrpPlasma.o \
 	out/wxObjSelectFrame.o \
+	out/PRP/wxPrpGUI.o \
 	out/PRP/wxCoordinateInterface.o \
 	out/PRP/wxMipmap.o \
 	out/PRP/wxSceneNode.o \
@@ -109,26 +109,26 @@ out/wxPrpShopFrame.o: src/PrpShop/wxPrpShopFrame.h src/PrpShop/wxPrpShopFrame.cp
 out/PlasmaTreeItem.o: src/PrpShop/PlasmaTreeItem.h src/PrpShop/PlasmaTreeItem.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PlasmaTreeItem.cpp -o $@
 
-out/wxPrpGUI.o: src/PrpShop/wxPrpGUI.h src/PrpShop/wxPrpGUI.cpp
-	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpGUI.cpp -o $@
-
 out/wxPrpPlasma.o: src/PrpShop/wxPrpPlasma.h src/PrpShop/wxPrpPlasma.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpPlasma.cpp -o $@
 
 out/wxObjSelectFrame.o: src/PrpShop/wxObjSelectFrame.h src/PrpShop/wxObjSelectFrame.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxObjSelectFrame.cpp -o $@
 
-out/PRP/wxCoordinateInterface.o: src/PrpShop/PRP/wxCoordinateInterface.h src/PrpShop/PRP/wxCoordinateInterface.cpp
-	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxCoordinateInterface.cpp -o $@
+out/PRP/wxPrpGUI.o: src/PrpShop/PRP/wxPrpGUI.h src/PrpShop/PRP/wxPrpGUI.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxPrpGUI.cpp -o $@
 
-out/PRP/wxMipmap.o: src/PrpShop/PRP/wxMipmap.h src/PrpShop/PRP/wxMipmap.cpp
-	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxMipmap.cpp -o $@
+out/PRP/wxCoordinateInterface.o: src/PrpShop/PRP/Object/wxCoordinateInterface.h src/PrpShop/PRP/Object/wxCoordinateInterface.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Object/wxCoordinateInterface.cpp -o $@
+
+out/PRP/wxMipmap.o: src/PrpShop/PRP/Surface/wxMipmap.h src/PrpShop/PRP/Surface/wxMipmap.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Surface/wxMipmap.cpp -o $@
 
 out/PRP/wxSceneNode.o: src/PrpShop/PRP/wxSceneNode.h src/PrpShop/PRP/wxSceneNode.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSceneNode.cpp -o $@
 
-out/PRP/wxSceneObject.o: src/PrpShop/PRP/wxSceneObject.h src/PrpShop/PRP/wxSceneObject.cpp
-	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSceneObject.cpp -o $@
+out/PRP/wxSceneObject.o: src/PrpShop/PRP/Object/wxSceneObject.h src/PrpShop/PRP/Object/wxSceneObject.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Object/wxSceneObject.cpp -o $@
 
-out/PRP/wxSynchedObject.o: src/PrpShop/PRP/wxSynchedObject.h src/PrpShop/PRP/wxSynchedObject.cpp
-	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxSynchedObject.cpp -o $@
+out/PRP/wxSynchedObject.o: src/PrpShop/PRP/Object/wxSynchedObject.h src/PrpShop/PRP/Object/wxSynchedObject.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Object/wxSynchedObject.cpp -o $@

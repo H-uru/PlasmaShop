@@ -1,6 +1,7 @@
 #include "wxObjSelectFrame.h"
 #include "wxPrpPlasma.h"
 #include <wx/sizer.h>
+#include <wx/imaglist.h>
 
 BEGIN_EVENT_TABLE(wxObjSelectFrame, wxDialog)
     EVT_BUTTON(wxID_OK, wxObjSelectFrame::OnOk)

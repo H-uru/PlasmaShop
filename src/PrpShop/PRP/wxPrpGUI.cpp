@@ -1,5 +1,5 @@
 #include "wxPrpGUI.h"
-#include "wxPrpPlasma.h"
+#include "../wxPrpPlasma.h"
 #include <ResManager/plFactory.h>
 
 /* wxLinkText */

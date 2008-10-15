@@ -15,7 +15,7 @@
 #include <PRP/Modifier/plResponderModifier.h>
 #include <PRP/Surface/plLayerInterface.h>
 
-#include "../../../rc/PrpImages.xpm"
+#include "../../../../rc/PrpImages.xpm"
 
 wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
                                 plResManager* mgr, plKey key)
