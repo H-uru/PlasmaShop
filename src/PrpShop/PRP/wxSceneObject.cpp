@@ -162,7 +162,7 @@ wxWindow* wxSceneObject::MakePreviewPane(wxWindow* parent)
 {
     fPreviewCanvas = new wxPrpCanvas(parent);
     fPreviewCanvas->AddObject(fKey);
-    fPreviewCanvas->Center(fKey);
+    fPreviewCanvas->Center(fKey, false);
     fPreviewCanvas->Build(wxPrpCanvas::MODE_MODEL);
     
     return fPreviewCanvas;

@@ -28,6 +28,8 @@ OBJFILES_PRPSHOP=\
 	out/PlasmaTreeItem.o \
 	out/wxPrpGUI.o \
 	out/wxPrpPlasma.o \
+	out/wxObjSelectFrame.o \
+	out/PRP/wxCoordinateInterface.o \
 	out/PRP/wxMipmap.o \
 	out/PRP/wxSceneNode.o \
 	out/PRP/wxSceneObject.o \
@@ -112,6 +114,12 @@ out/wxPrpGUI.o: src/PrpShop/wxPrpGUI.h src/PrpShop/wxPrpGUI.cpp
 
 out/wxPrpPlasma.o: src/PrpShop/wxPrpPlasma.h src/PrpShop/wxPrpPlasma.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxPrpPlasma.cpp -o $@
+
+out/wxObjSelectFrame.o: src/PrpShop/wxObjSelectFrame.h src/PrpShop/wxObjSelectFrame.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/wxObjSelectFrame.cpp -o $@
+
+out/PRP/wxCoordinateInterface.o: src/PrpShop/PRP/wxCoordinateInterface.h src/PrpShop/PRP/wxCoordinateInterface.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxCoordinateInterface.cpp -o $@
 
 out/PRP/wxMipmap.o: src/PrpShop/PRP/wxMipmap.h src/PrpShop/PRP/wxMipmap.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/wxMipmap.cpp -o $@

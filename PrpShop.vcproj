@@ -214,6 +214,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\PrpShop\wxObjSelectFrame.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PrpShop\wxObjSelectFrame.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\wxPlasmaStream.cpp"
 				>
 			</File>
@@ -256,6 +264,14 @@
 			<Filter
 				Name="PRP"
 				>
+				<File
+					RelativePath=".\src\PrpShop\PRP\wxCoordinateInterface.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PrpShop\PRP\wxCoordinateInterface.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\PrpShop\PRP\wxMipmap.cpp"
 					>

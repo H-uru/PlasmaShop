@@ -24,9 +24,11 @@ struct LayerInfo {
     GLuint fTexTarget;
 };
 
+const wxChar wxPrpCanvasClassName[] = wxT("PrpCanvas");
+
 class wxPrpCanvas : public wxGLCanvas {
 public:
-    enum { MODE_MODEL, MODE_SCENE };
+    enum { MODE_MODEL, MODE_SCENE, MODE_MODEL_IN_SCENE };
 
 private:
     bool fInited;
@@ -39,12 +41,13 @@ private:
     float fRotZ, fRotX, fModelDist;
     hsVector3 fViewPos;
     hsVector3 fModelMins, fModelMaxs;
+    plKey fCenterObj;
 
 public:
     wxPrpCanvas(wxWindow* parent, wxWindowID id = wxID_ANY,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize,
-                long style = 0, const wxString& name = wxT("AgeViewer"));
+                long style = 0, const wxString& name = wxPrpCanvasClassName);
     ~wxPrpCanvas();
 
     void InitGL();
@@ -52,8 +55,9 @@ public:
 
     void AddObject(plKey obj);
     void SetView(hsVector3 view, float angle=0.0f);
-    void Center(plKey obj);
+    void Center(plKey obj, bool world);
     void Build(int mode);
+    void ReBuildObject(plKey obj);
 
 protected:
     DECLARE_EVENT_TABLE()

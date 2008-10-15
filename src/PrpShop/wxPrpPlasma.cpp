@@ -9,6 +9,7 @@
 #include "PRP/wxMipmap.h"
 #include "PRP/wxSceneNode.h"
 #include "PRP/wxSceneObject.h"
+#include "PRP/wxCoordinateInterface.h"
 
 #include "../../rc/PrpImages.xpm"
 #include "../../rc/FileImages.xpm"
@@ -103,6 +104,9 @@ wxPrpPlasmaObject* MakeEditor(plResManager* mgr, plKey key,
         break;
     case kMipmap:
         obj = new wxMipmap(key, mgr, tree, tid);
+        break;
+    case kCoordinateInterface:
+        obj = new wxCoordinateInterface(key, mgr, tree, tid);
         break;
     default:
         obj = new wxPrpPlasmaObject(key, mgr, tree, tid);

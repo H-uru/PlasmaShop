@@ -262,7 +262,7 @@ wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filena
                                                    new PlasmaTreeItem(page));
         fLoadedLocations[page->getLocation()] = wxLocationInfo(pageId, filename);
 
-        // Local Textures (for GUI pages and such)
+        // Local Textures (for PyPRP pages and such)
         keys = fResMgr->getKeys(page->getLocation(), kMipmap);
         if (keys.size() > 0) {
             wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Textures"), ico_folder);

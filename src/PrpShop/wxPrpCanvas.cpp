@@ -118,14 +118,14 @@ void wxPrpCanvas::OnMouse(wxMouseEvent& evt)
                 fViewPos.Y += cosf(fRotZ * RADS) * (fMouseFrom.y - evt.GetPosition().y);
             }
             fRotZ += (evt.GetPosition().x - fMouseFrom.x);
-            if (fMode == MODE_MODEL) {
+            if (fMode == MODE_MODEL || fMode == MODE_MODEL_IN_SCENE) {
                 fRotX -= (fMouseFrom.y - evt.GetPosition().y);
                 if (fRotX < -90.0f) fRotX = -90.0f;
                 if (fRotX > 90.0f) fRotX = 90.0f;
             }
         } else if (fMouseBtn == 2) {
             fRotZ += (evt.GetPosition().x - fMouseFrom.x);
-            if (fMode == MODE_MODEL) {
+            if (fMode == MODE_MODEL || fMode == MODE_MODEL_IN_SCENE) {
                 fModelDist += (evt.GetPosition().y - fMouseFrom.y) / 4.0f;
                 if (fModelDist < 0.0f) fModelDist = 0.0f;
             } else {
@@ -157,7 +157,7 @@ void wxPrpCanvas::Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    if (fMode == MODE_MODEL) {
+    if (fMode == MODE_MODEL || fMode == MODE_MODEL_IN_SCENE) {
         glTranslatef(0.0f, 0.0f, -fModelDist);
         glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
         glRotatef(fRotZ, 0.0f, 0.0f, 1.0f);
@@ -187,42 +187,57 @@ void wxPrpCanvas::SetView(hsVector3 view, float angle)
     Render();
 }
 
-void wxPrpCanvas::Center(plKey obj)
+void wxPrpCanvas::Center(plKey obj, bool world)
 {
+    fCenterObj = obj;
     plSceneObject* sceneObj = plSceneObject::Convert(obj->getObj());
-    if (sceneObj == NULL || !sceneObj->getDrawInterface().Exists())
+    if (sceneObj == NULL)
         return;
 
     bool mset = false;
-    plDrawInterface* draw = plDrawInterface::Convert(sceneObj->getDrawInterface()->getObj());
-    for (size_t i = 0; i < draw->getNumDrawables(); i++) {
-        if (draw->getDrawableKey(i) == -1)
-            continue;
+    plDrawInterface* draw = GET_KEY_OBJECT(sceneObj->getDrawInterface(), plDrawInterface);
+    plCoordinateInterface* coord = GET_KEY_OBJECT(sceneObj->getCoordInterface(), plCoordinateInterface);
+    if (draw != NULL) {
+        for (size_t i = 0; i < draw->getNumDrawables(); i++) {
+            if (draw->getDrawableKey(i) == -1)
+                continue;
 
-        plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(i)->getObj());
-        plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(i));
-        for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
-            plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
-            if (!mset) {
-                fModelMins = ice->getLocalBounds().getMins();
-                fModelMaxs = ice->getLocalBounds().getMaxs();
-                mset = true;
-            } else {
-                if (fModelMins.X > ice->getLocalBounds().getMins().X)
-                    fModelMins.X = ice->getLocalBounds().getMins().X;
-                if (fModelMins.Y > ice->getLocalBounds().getMins().Y)
-                    fModelMins.Y = ice->getLocalBounds().getMins().Y;
-                if (fModelMins.Z > ice->getLocalBounds().getMins().Z)
-                    fModelMins.Z = ice->getLocalBounds().getMins().Z;
-                if (fModelMaxs.X < ice->getLocalBounds().getMaxs().X)
-                    fModelMaxs.X = ice->getLocalBounds().getMaxs().X;
-                if (fModelMaxs.Y < ice->getLocalBounds().getMaxs().Y)
-                    fModelMaxs.Y = ice->getLocalBounds().getMaxs().Y;
-                if (fModelMaxs.Z < ice->getLocalBounds().getMaxs().Z)
-                    fModelMaxs.Z = ice->getLocalBounds().getMaxs().Z;
+            plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(i)->getObj());
+            plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(i));
+            for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
+                plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
+                hsBounds3Ext bounds = ice->getLocalBounds();
+                
+                if (!mset) {
+                    fModelMins = bounds.getMins();
+                    fModelMaxs = bounds.getMaxs();
+                    mset = true;
+                } else {
+                    if (fModelMins.X > bounds.getMins().X)
+                        fModelMins.X = bounds.getMins().X;
+                    if (fModelMins.Y > bounds.getMins().Y)
+                        fModelMins.Y = bounds.getMins().Y;
+                    if (fModelMins.Z > bounds.getMins().Z)
+                        fModelMins.Z = bounds.getMins().Z;
+                    if (fModelMaxs.X < bounds.getMaxs().X)
+                        fModelMaxs.X = bounds.getMaxs().X;
+                    if (fModelMaxs.Y < bounds.getMaxs().Y)
+                        fModelMaxs.Y = bounds.getMaxs().Y;
+                    if (fModelMaxs.Z < bounds.getMaxs().Z)
+                        fModelMaxs.Z = bounds.getMaxs().Z;
+                }
             }
         }
+    } else if (coord != NULL) {
+        fModelMins = hsVector3(-0.5f, -0.5f, -0.5f);
+        fModelMaxs = hsVector3( 0.5f,  0.5f,  0.5f);
     }
+
+    if (world && coord != NULL) {
+        fModelMins = fModelMins * coord->getLocalToWorld();
+        fModelMaxs = fModelMaxs * coord->getLocalToWorld();
+    }
+
     fViewPos = hsVector3((fModelMaxs.X + fModelMins.X) / 2.0f,
                          (fModelMaxs.Y + fModelMins.Y) / 2.0f,
                          (fModelMaxs.Z + fModelMins.Z) / 2.0f);
@@ -282,16 +297,115 @@ void wxPrpCanvas::Build(int mode)
     }
 }
 
+void wxPrpCanvas::ReBuildObject(plKey obj)
+{
+    SetCurrent();
+
+    for (size_t i=0; i<fObjects.getSize(); i++) {
+        if (fObjects[i] == obj) {
+            glNewList(fRenderListBase+i, GL_COMPILE);
+            CompileObject(obj);
+            glEndList();
+        }
+    }
+}
+
+void DrawBounds(const hsVector3& mins, const hsVector3& maxs)
+{
+    glBegin(GL_LINES);
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+    
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glEnd();
+}
+
+void DrawBoundCube(const hsVector3& mins, const hsVector3& maxs)
+{
+    glBegin(GL_QUADS);
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+
+    glVertex3f(mins.X, mins.Y, mins.Z);
+    glVertex3f(mins.X, maxs.Y, mins.Z);
+    glVertex3f(mins.X, maxs.Y, maxs.Z);
+    glVertex3f(mins.X, mins.Y, maxs.Z);
+
+    glVertex3f(maxs.X, mins.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, mins.Z);
+    glVertex3f(maxs.X, maxs.Y, maxs.Z);
+    glVertex3f(maxs.X, mins.Y, maxs.Z);
+    glEnd();
+}
+
 void wxPrpCanvas::CompileObject(plKey key)
 {
     plSceneObject* obj = plSceneObject::Convert(key->getObj());
-    if (obj == NULL || !obj->getDrawInterface().Exists())
+    if (obj == NULL)
         return;
 
-    plDrawInterface* draw = plDrawInterface::Convert(obj->getDrawInterface()->getObj());
-    plCoordinateInterface* coord = NULL;
-    if (obj->getCoordInterface().Exists())
-        coord = plCoordinateInterface::Convert(obj->getCoordInterface()->getObj());
+    plDrawInterface* draw = GET_KEY_OBJECT(obj->getDrawInterface(), plDrawInterface);
+    plCoordinateInterface* coord = GET_KEY_OBJECT(obj->getCoordInterface(), plCoordinateInterface);
+
+    bool isFocused = (key == fCenterObj);   // Performance
+    if (isFocused) {
+        if ((draw != NULL && fMode == MODE_MODEL) || fMode == MODE_MODEL_IN_SCENE) {
+            glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+            DrawBounds(fModelMins, fModelMaxs);
+        }
+        if (draw == NULL && coord != NULL && fMode == MODE_MODEL_IN_SCENE) {
+            glColor4f(1.0f, 0.0f, 1.0f, 1.0f);
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_TEXTURE_CUBE_MAP);
+            glDisable(GL_BLEND);
+            DrawBoundCube(fModelMins, fModelMaxs);
+        }
+    }
+
+    if (draw == NULL)
+        // The rest is Drawable stuff
+        return;
 
     for (size_t i = 0; i < draw->getNumDrawables(); i++) {
         if (draw->getDrawableKey(i) == -1)
@@ -308,45 +422,11 @@ void wxPrpCanvas::CompileObject(plKey key)
             hsTArray<unsigned short> indices = span->getIndices(ice);
 
             hsMatrix44 xform;
-            if (fMode == MODE_SCENE) {
+            if (fMode == MODE_SCENE || fMode == MODE_MODEL_IN_SCENE) {
                 if (coord != NULL)
                     xform = coord->getLocalToWorld();
                 else
                     xform = ice->getLocalToWorld();
-            }
-
-            if (fMode == MODE_MODEL) {
-                glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-
-                glBegin(GL_LINES);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMins.Z);
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMins.Z);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMins.Z);
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMins.Z);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMins.Z);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMaxs.Z);
-
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMins.Z);
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMins.Z);
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMins.Z);
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMins.Z);
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMins.Z);
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMaxs.Z);
-                
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMaxs.Z);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMaxs.Z);
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMaxs.Z);
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMaxs.Z);
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMaxs.Z);
-                glVertex3f(fModelMins.X, fModelMaxs.Y, fModelMins.Z);
-                
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMaxs.Z);
-                glVertex3f(fModelMins.X, fModelMins.Y, fModelMaxs.Z);
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMaxs.Z);
-                glVertex3f(fModelMaxs.X, fModelMaxs.Y, fModelMaxs.Z);
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMaxs.Z);
-                glVertex3f(fModelMaxs.X, fModelMins.Y, fModelMins.Z);
-                glEnd();
             }
 
             hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
@@ -367,6 +447,7 @@ void wxPrpCanvas::CompileObject(plKey key)
                 glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_SPECULAR, spec);
                 if (layer->getState().fShadeFlags & hsGMatState::kShadeEmissive)
                     glMaterialfv(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_EMISSION, amb);
+                glMaterialf(is2Sided ? GL_FRONT : GL_FRONT_AND_BACK, GL_SHININESS, layer->getSpecularPower());
                 
                 if (is2Sided) {
                     glDisable(GL_CULL_FACE);

@@ -39,12 +39,14 @@ public:
     void SetKey(plKey key);
 };
 
+#define wxKEYLIST_DEFAULT_STYLE (wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_SUNKEN)
+
 class wxKeyListCtrl : public wxListCtrl {
 public:
     wxKeyListCtrl(wxWindow* parent, wxWindowID id,
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxDefaultSize,
-                  long style = wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_SUNKEN,
+                  long style = wxKEYLIST_DEFAULT_STYLE,
                   const wxValidator& validator = wxDefaultValidator,
                   const wxString& name = wxT("wxKeyList"));
     void AddKey(plKey key);

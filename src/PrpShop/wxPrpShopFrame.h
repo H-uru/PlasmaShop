@@ -41,7 +41,9 @@ protected:
     wxPrpPlasmaObject* fCurObject;
     std::map<size_t, int> fEditorPageMemory;
 
-    enum { ID_OBJTREE, ID_PROPERTYBOOK };
+    enum {
+        ID_OBJTREE, ID_PROPERTYBOOK
+    };
 
 private:
     // Page Editor Components
