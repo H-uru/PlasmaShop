@@ -30,6 +30,7 @@ OBJFILES_PRPSHOP=\
 	out/wxObjSelectFrame.o \
 	out/PRP/wxPrpGUI.o \
 	out/PRP/wxCoordinateInterface.o \
+	out/PRP/wxGMaterial.o \
 	out/PRP/wxMipmap.o \
 	out/PRP/wxSceneNode.o \
 	out/PRP/wxSceneObject.o \
@@ -120,6 +121,9 @@ out/PRP/wxPrpGUI.o: src/PrpShop/PRP/wxPrpGUI.h src/PrpShop/PRP/wxPrpGUI.cpp
 
 out/PRP/wxCoordinateInterface.o: src/PrpShop/PRP/Object/wxCoordinateInterface.h src/PrpShop/PRP/Object/wxCoordinateInterface.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Object/wxCoordinateInterface.cpp -o $@
+
+out/PRP/wxGMaterial.o: src/PrpShop/PRP/Surface/wxGMaterial.h src/PrpShop/PRP/Surface/wxGMaterial.cpp
+	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Surface/wxGMaterial.cpp -o $@
 
 out/PRP/wxMipmap.o: src/PrpShop/PRP/Surface/wxMipmap.h src/PrpShop/PRP/Surface/wxMipmap.cpp
 	$(CXX) $(CXXFLAGS) -c src/PrpShop/PRP/Surface/wxMipmap.cpp -o $@
