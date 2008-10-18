@@ -22,7 +22,7 @@ wxTreeItemId TreeAddSceneObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
 {
     wxTreeItemId tid =
     tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                     ico_sceneobj, -1, new PlasmaTreeItem(key));
+                     GetTypeIcon(key->getType()), -1, new PlasmaTreeItem(key));
 
     plSceneObject* obj = plSceneObject::Convert(key->getObj());
     if (obj->getDrawInterface().Exists())
@@ -166,6 +166,12 @@ wxWindow* wxSceneObject::MakePreviewPane(wxWindow* parent)
     fPreviewCanvas->Build(wxPrpCanvas::MODE_MODEL);
     
     return fPreviewCanvas;
+}
+
+void wxSceneObject::Refresh()
+{
+    fPreviewCanvas->ReBuild();
+    fPreviewCanvas->Refresh();
 }
 
 void wxSceneObject::UpdateIntfLinks()

@@ -1,4 +1,5 @@
 #include "wxPrpCanvas.h"
+#include <wx/config.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -253,6 +254,7 @@ void wxPrpCanvas::Build(int mode)
     if (!fInited)
         InitGL();
     fMode = mode;
+    wxConfigBase::Get()->Read(wxT("DrawMode"), &fDrawMode, wxPrpCanvas::DRAW_TEXTURED);
 
     fLayers.clear();
     size_t layIdx = 0;
@@ -297,9 +299,22 @@ void wxPrpCanvas::Build(int mode)
     }
 }
 
+void wxPrpCanvas::ReBuild()
+{
+    SetCurrent();
+    wxConfigBase::Get()->Read(wxT("DrawMode"), &fDrawMode, wxPrpCanvas::DRAW_TEXTURED);
+
+    for (size_t i=0; i<fObjects.getSize(); i++) {
+        glNewList(fRenderListBase+i, GL_COMPILE);
+        CompileObject(fObjects[i]);
+        glEndList();
+    }
+}
+
 void wxPrpCanvas::ReBuildObject(plKey obj)
 {
     SetCurrent();
+    wxConfigBase::Get()->Read(wxT("DrawMode"), &fDrawMode, wxPrpCanvas::DRAW_TEXTURED);
 
     for (size_t i=0; i<fObjects.getSize(); i++) {
         if (fObjects[i] == obj) {
@@ -434,7 +449,8 @@ void wxPrpCanvas::CompileObject(plKey key)
             //size_t lay = 0 ; {
                 plLayerInterface* layer = plLayerInterface::Convert(mat->getLayer(lay)->getObj());
 
-                bool is2Sided = ((layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0)
+                bool is2Sided = ((fDrawMode & DRAW_FORCE2SIDED) != 0)
+                             || ((layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0)
                              || ((mat->getCompFlags() & hsGMaterial::kCompTwoSided) != 0);
                 float amb[4] = { layer->getAmbient().r, layer->getAmbient().g,
                                  layer->getAmbient().b, layer->getAmbient().b };
@@ -474,38 +490,109 @@ void wxPrpCanvas::CompileObject(plKey key)
                     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
                 }
 
+                /*
+                if (isFocused) {
+                    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+                    glColor4f(1.0f, 0.3f, 1.0f, 1.0f);
+                } else {
+                    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+                }*/
+
                 LayerInfo linf = fLayers[layer->getKey()];
                 if (linf.fTexTarget != GL_TEXTURE_2D)
                     glDisable(GL_TEXTURE_2D);
                 if (linf.fTexTarget != GL_TEXTURE_CUBE_MAP)
                     glDisable(GL_TEXTURE_CUBE_MAP);
-                glEnable(linf.fTexTarget);
-                glBindTexture(linf.fTexTarget, fTexList[linf.fTexNameId]);
-
-                glBegin(GL_TRIANGLES);
-                for (size_t j = 0; j < indices.getSize(); j++) {
-                    hsColor32 color(verts[indices[j]].fColor);
-                    
-                    size_t uvwSrc = layer->getUVWSrc() & 0xFFFF;
-                    hsVector3 uvw = verts[indices[j]].fUVWs[uvwSrc] * layer->getTransform();
-                    glTexCoord3f(uvw.X, uvw.Y, uvw.Z);
-                    
-                    glColor4ub(color.r, color.g, color.b, color.a);
-                    glNormal3f(verts[indices[j]].fNormal.X, verts[indices[j]].fNormal.Y, verts[indices[j]].fNormal.Z);
-                    
-                    hsVector3 vert;
-                    if (!xform.IsIdentity())
-                        vert = verts[indices[j]].fPos * xform;
-                    else
-                        vert = verts[indices[j]].fPos;
-                    glVertex3f(vert.X, vert.Y, vert.Z);
+                if ((fDrawMode & DRAW_MODEMASK) == DRAW_TEXTURED) {
+                    glEnable(linf.fTexTarget);
+                    glBindTexture(linf.fTexTarget, fTexList[linf.fTexNameId]);
                 }
-                glEnd();
+
+                if ((fDrawMode & DRAW_MODEMASK) == DRAW_POINTS) {
+                    glBegin(GL_POINTS);
+                    for (size_t j = 0; j < verts.getSize(); j++) {
+                        hsColor32 color(verts[j].fColor);
+                        glColor4ub(color.r, color.g, color.b, color.a);
+                        
+                        hsVector3 vert;
+                        if (!xform.IsIdentity())
+                            vert = verts[j].fPos * xform;
+                        else
+                            vert = verts[j].fPos;
+                        glVertex3f(vert.X, vert.Y, vert.Z);
+                    }
+                    glEnd();
+                } else if ((fDrawMode & DRAW_MODEMASK) == DRAW_WIRE) {
+                    glBegin(GL_LINES);
+                    for (size_t j = 0; j < indices.getSize(); j+=3) {
+                        hsColor32 color[3] = { verts[indices[j+0]].fColor,
+                                               verts[indices[j+1]].fColor,
+                                               verts[indices[j+2]].fColor };
+                        hsVector3 vert[3];
+                        if (!xform.IsIdentity()) {
+                            vert[0] = verts[indices[j+0]].fPos * xform;
+                            vert[1] = verts[indices[j+1]].fPos * xform;
+                            vert[2] = verts[indices[j+2]].fPos * xform;
+                        } else {
+                            vert[0] = verts[indices[j+0]].fPos;
+                            vert[1] = verts[indices[j+1]].fPos;
+                            vert[2] = verts[indices[j+2]].fPos;
+                        }
+
+                        glColor4ub(color[0].r, color[0].g, color[0].b, color[0].a);
+                        glVertex3f(vert[0].X, vert[0].Y, vert[0].Z);
+                        glColor4ub(color[1].r, color[1].g, color[1].b, color[1].a);
+                        glVertex3f(vert[1].X, vert[1].Y, vert[1].Z);
+
+                        glColor4ub(color[1].r, color[1].g, color[1].b, color[1].a);
+                        glVertex3f(vert[1].X, vert[1].Y, vert[1].Z);
+                        glColor4ub(color[2].r, color[2].g, color[2].b, color[2].a);
+                        glVertex3f(vert[2].X, vert[2].Y, vert[2].Z);
+
+                        glColor4ub(color[2].r, color[2].g, color[2].b, color[2].a);
+                        glVertex3f(vert[2].X, vert[2].Y, vert[2].Z);
+                        glColor4ub(color[0].r, color[0].g, color[0].b, color[0].a);
+                        glVertex3f(vert[0].X, vert[0].Y, vert[0].Z);
+                    }
+                    glEnd();
+                } else {
+                    glBegin(GL_TRIANGLES);
+                    for (size_t j = 0; j < indices.getSize(); j++) {
+                        hsColor32 color(verts[indices[j]].fColor);
+                        
+                        size_t uvwSrc = layer->getUVWSrc() & 0xFFFF;
+                        hsVector3 uvw = verts[indices[j]].fUVWs[uvwSrc] * layer->getTransform();
+                        glTexCoord3f(uvw.X, uvw.Y, uvw.Z);
+                        
+                        glColor4ub(color.r, color.g, color.b, color.a);
+                        glNormal3f(verts[indices[j]].fNormal.X, verts[indices[j]].fNormal.Y, verts[indices[j]].fNormal.Z);
+                        
+                        hsVector3 vert;
+                        if (!xform.IsIdentity())
+                            vert = verts[indices[j]].fPos * xform;
+                        else
+                            vert = verts[indices[j]].fPos;
+                        glVertex3f(vert.X, vert.Y, vert.Z);
+                    }
+                    glEnd();
+                }
                 glDisable(GL_BLEND);
                 glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
             }
         }
     }
+
+    /*
+    if (fMode == MODE_MODEL_IN_SCENE && isFocused) {
+        glColor4f(1.0f, 0.0f, 1.0f, 0.3f);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_CUBE_MAP);
+        glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        DrawBoundCube(fModelMins, fModelMaxs);
+        glEnable(GL_DEPTH_TEST);
+    }*/
 }
 
 bool BuildMipmap(plMipmap* map, GLuint id, GLuint target) {

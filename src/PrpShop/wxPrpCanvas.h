@@ -28,7 +28,15 @@ const wxChar wxPrpCanvasClassName[] = wxT("PrpCanvas");
 
 class wxPrpCanvas : public wxGLCanvas {
 public:
+    // Scene Mode
     enum { MODE_MODEL, MODE_SCENE, MODE_MODEL_IN_SCENE };
+
+    // Draw Mode
+    enum {
+        DRAW_POINTS, DRAW_WIRE, DRAW_FLAT, DRAW_TEXTURED,
+        DRAW_MODEMASK = 0x00000003,
+        DRAW_FORCE2SIDED = 0x4
+    };
 
 private:
     bool fInited;
@@ -37,7 +45,7 @@ private:
     GLuint fRenderListBase;
     GLuint* fTexList;
     
-    int fMode;
+    int fMode, fDrawMode;
     float fRotZ, fRotX, fModelDist;
     hsVector3 fViewPos;
     hsVector3 fModelMins, fModelMaxs;
@@ -57,6 +65,7 @@ public:
     void SetView(hsVector3 view, float angle=0.0f);
     void Center(plKey obj, bool world);
     void Build(int mode);
+    void ReBuild();
     void ReBuildObject(plKey obj);
 
 protected:

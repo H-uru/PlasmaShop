@@ -10,6 +10,7 @@
 #include "PRP/Object/wxSceneObject.h"
 #include "PRP/Object/wxCoordinateInterface.h"
 #include "PRP/Surface/wxMipmap.h"
+#include "PRP/Surface/wxGMaterial.h"
 
 #include "../../rc/PrpImages.xpm"
 #include "../../rc/FileImages.xpm"
@@ -70,6 +71,9 @@ void wxPrpPlasmaObject::SaveDamage()
     fTree->SetItemText(fTreeId, txtName->GetValue());
 }
 
+void wxPrpPlasmaObject::Refresh()
+{ }
+
 plKey wxPrpPlasmaObject::getKey()
 { return fKey; }
 
@@ -84,6 +88,8 @@ wxTreeItemId TreeAddObject(wxTreeCtrl* tree, const wxTreeItemId& parent,
         return TreeAddSceneNode(tree, parent, mgr, key);
     case kSceneObject:
         return TreeAddSceneObject(tree, parent, mgr, key);
+    case kGMaterial:
+        return TreeAddMaterial(tree, parent, mgr, key);
     default:
         return tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
                                 GetTypeIcon(key->getType()), -1, new PlasmaTreeItem(key));
@@ -108,6 +114,9 @@ wxPrpPlasmaObject* MakeEditor(plResManager* mgr, plKey key,
     case kCoordinateInterface:
         obj = new wxCoordinateInterface(key, mgr, tree, tid);
         break;
+    case kGMaterial:
+        obj = new wxGMaterial(key, mgr, tree, tid);
+        break;
     default:
         obj = new wxPrpPlasmaObject(key, mgr, tree, tid);
         break;
@@ -130,13 +139,24 @@ int GetTypeIcon(unsigned short type)
     case kPythonFileMod: return ico_python;
     case kLayer: return ico_layer;
     case kGMaterial: return ico_material;
+    case kSpotLightInfo: return ico_spotlight;
+    case kGUIButtonMod: return ico_guibutton;
+    case kGUICheckBoxCtrl: return ico_guicheckbox;
+    case kGUIDialogMod: return ico_guidialog;
+    case kGUIEditBoxMod: return ico_guiedit;
+    case kGUIMultiLineEditCtrl: return ico_guiedit2;
+    case kGUIProgressCtrl: return ico_guiprogress;
+    case kGUIRadioGroupCtrl: return ico_guiradio;
+    case kGUITextBoxMod: return ico_guitext;
+    case kGUIUpDownPairMod: return ico_guiupdown;
     default: return -1;
     }
 }
 
 static wxImageList* s_typeImgList = NULL;
 
-void DestroyTypeImgList() {
+static void DestroyTypeImgList()
+{
     if (s_typeImgList != NULL)
         delete s_typeImgList;
 }
@@ -159,6 +179,16 @@ wxImageList* GetTypeImgList()
         s_typeImgList->Add(wxBitmap(XPM_python));
         s_typeImgList->Add(wxBitmap(XPM_layer));
         s_typeImgList->Add(wxBitmap(XPM_material));
+        s_typeImgList->Add(wxBitmap(XPM_spotlight));
+        s_typeImgList->Add(wxBitmap(XPM_guibutton));
+        s_typeImgList->Add(wxBitmap(XPM_guicheckbox));
+        s_typeImgList->Add(wxBitmap(XPM_guidialog));
+        s_typeImgList->Add(wxBitmap(XPM_guiedit));
+        s_typeImgList->Add(wxBitmap(XPM_guiedit2));
+        s_typeImgList->Add(wxBitmap(XPM_guiprogress));
+        s_typeImgList->Add(wxBitmap(XPM_guiradio));
+        s_typeImgList->Add(wxBitmap(XPM_guitext));
+        s_typeImgList->Add(wxBitmap(XPM_guiupdown));
         atexit(&DestroyTypeImgList);
     }
     return s_typeImgList;

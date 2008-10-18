@@ -27,6 +27,7 @@ public:
     virtual void AddPropPages(wxNotebook* nb);
     virtual wxWindow* MakePreviewPane(wxWindow* parent);
     //virtual void SaveDamage();
+    virtual void Refresh();
 
 protected:
     // Events

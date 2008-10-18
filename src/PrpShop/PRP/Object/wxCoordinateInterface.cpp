@@ -82,6 +82,12 @@ void wxCoordinateInterface::SaveDamage()
     intf->setProperty(plCoordinateInterface::kDelayedTransformEval, cbDelayedTransformEval->GetValue());
 }
 
+void wxCoordinateInterface::Refresh()
+{
+    fPreviewCanvas->ReBuild();
+    fPreviewCanvas->Refresh();
+}
+
 void wxCoordinateInterface::OnChildrenMenu(wxCommandEvent& evt)
 {
     wxMenu menu(wxT(""));
@@ -114,15 +120,14 @@ void wxCoordinateInterface::OnAddChildClick(wxMenuEvent& evt)
     wxObjSelectFrame addFrame(NULL, wxID_ANY, wxT("Add CoordinateInterface Child"));
 
     plCoordinateInterface* intf = plCoordinateInterface::Convert(fKey->getObj());
-    plSceneObject* obj = plSceneObject::Convert(intf->getOwner()->getObj());
-    plSceneNode* node = plSceneNode::Convert(obj->getSceneNode()->getObj());
-    for (size_t i=0; i<node->getNumSceneObjects(); i++)
-        addFrame.AddObject(node->getSceneObject(i));
+    std::vector<plKey> keys = fResMgr->getKeys(fKey->getLocation(), kSceneObject);
+    for (size_t i=0; i<keys.size(); i++)
+        addFrame.AddObject(keys[i]);
 
     int which = addFrame.ShowModal();
     if (which != -1) {
-        intf->addChild(node->getSceneObject(which));
-        lsChildren->AddKey(node->getSceneObject(which));
+        intf->addChild(keys[which]);
+        lsChildren->AddKey(keys[which]);
     }
 }
 

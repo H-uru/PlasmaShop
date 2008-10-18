@@ -40,9 +40,12 @@ protected:
     std::map<plLocation, wxLocationInfo> fLoadedLocations;
     wxPrpPlasmaObject* fCurObject;
     std::map<size_t, int> fEditorPageMemory;
+    int fCachedDrawMode;
 
     enum {
-        ID_OBJTREE, ID_PROPERTYBOOK
+        ID_OBJTREE, ID_PROPERTYBOOK,
+        ID_VIEW_POINTS, ID_VIEW_WIRE, ID_VIEW_FLAT, ID_VIEW_TEXTURED,
+        ID_VIEW_FORCE2SIDED
     };
 
 private:
@@ -74,9 +77,15 @@ protected:
     void OnOpenClick(wxCommandEvent& evt);
     void OnSaveClick(wxCommandEvent& evt);
     void OnSaveAsClick(wxCommandEvent& evt);
+    void OnViewPointsClick(wxCommandEvent& evt);
+    void OnViewWireClick(wxCommandEvent& evt);
+    void OnViewFlatClick(wxCommandEvent& evt);
+    void OnViewTexturedClick(wxCommandEvent& evt);
+    void OnViewForce2SidedClick(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnTreeChanged(wxTreeEvent& evt);
 
+    void UpdateMenuAndToolbar();
     plLocation GetActiveLocation();
     void DoDataSave(bool doDelete);
 };

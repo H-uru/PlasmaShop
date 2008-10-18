@@ -304,6 +304,14 @@
 					Name="Surface"
 					>
 					<File
+						RelativePath=".\src\PrpShop\PRP\Surface\wxGMaterial.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\PrpShop\PRP\Surface\wxGMaterial.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\PrpShop\PRP\Surface\wxMipmap.cpp"
 						>
 					</File>

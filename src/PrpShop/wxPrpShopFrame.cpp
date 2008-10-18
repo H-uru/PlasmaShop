@@ -1,6 +1,7 @@
 #include "wxPrpShopFrame.h"
 #include "PlasmaTreeItem.h"
 #include "../../rc/PlasmaShop.xpm"
+#include "../../rc/Toolbar.xpm"
 
 #include <Debug/plDebug.h>
 #include <PRP/plSceneNode.h>
@@ -27,6 +28,11 @@ BEGIN_EVENT_TABLE(wxPrpShopFrame, wxFrame)
     EVT_MENU(wxID_OPEN, wxPrpShopFrame::OnOpenClick)
     EVT_MENU(wxID_SAVE, wxPrpShopFrame::OnSaveClick)
     EVT_MENU(wxID_SAVEAS, wxPrpShopFrame::OnSaveAsClick)
+    EVT_MENU(ID_VIEW_POINTS, wxPrpShopFrame::OnViewPointsClick)
+    EVT_MENU(ID_VIEW_WIRE, wxPrpShopFrame::OnViewWireClick)
+    EVT_MENU(ID_VIEW_FLAT, wxPrpShopFrame::OnViewFlatClick)
+    EVT_MENU(ID_VIEW_TEXTURED, wxPrpShopFrame::OnViewTexturedClick)
+    EVT_MENU(ID_VIEW_FORCE2SIDED, wxPrpShopFrame::OnViewForce2SidedClick)
     EVT_CLOSE(wxPrpShopFrame::OnClose)
 
     EVT_TREE_SEL_CHANGED(ID_OBJTREE, wxPrpShopFrame::OnTreeChanged)
@@ -65,6 +71,15 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
                      wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_TOOLBAR),
                      wxNullBitmap, wxITEM_NORMAL, wxT("Save PRP"),
                      wxT("Save changes to active PRP"));
+    toolBar->AddSeparator();
+    toolBar->AddCheckTool(ID_VIEW_POINTS, wxT("Points"), wxBitmap(XPM_point), wxNullBitmap,
+                          wxT("Points"), wxT("Render as points"));
+    toolBar->AddCheckTool(ID_VIEW_WIRE, wxT("Wireframe"), wxBitmap(XPM_wire), wxNullBitmap,
+                          wxT("Wireframe"), wxT("Render as wireframe"));
+    toolBar->AddCheckTool(ID_VIEW_FLAT, wxT("Flat"), wxBitmap(XPM_flat), wxNullBitmap,
+                          wxT("Flat"), wxT("Render as flat polygons"));
+    toolBar->AddCheckTool(ID_VIEW_TEXTURED, wxT("Textured"), wxBitmap(XPM_tex), wxNullBitmap,
+                          wxT("Textured"), wxT("Render as textured polygons"));
     toolBar->Realize();
     SetToolBar(toolBar);
 
@@ -76,8 +91,19 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
     mnuFile->AppendSeparator();
     mnuFile->Append(wxID_EXIT, wxT("E&xit\tAlt+F4"), wxT("Exit PrpShop"));
 
+    wxMenu* mnuViewRender = new wxMenu();
+    mnuViewRender->AppendCheckItem(ID_VIEW_POINTS, wxT("&Points"), wxT("Render as points"));
+    mnuViewRender->AppendCheckItem(ID_VIEW_WIRE, wxT("&Wireframe"), wxT("Render as wireframe"));
+    mnuViewRender->AppendCheckItem(ID_VIEW_FLAT, wxT("&Flat"), wxT("Render as flat polygons"));
+    mnuViewRender->AppendCheckItem(ID_VIEW_TEXTURED, wxT("&Textured"), wxT("Render as textured polygons"));
+
+    wxMenu* mnuView = new wxMenu();
+    mnuView->AppendSubMenu(mnuViewRender, wxT("&Render As"));
+    mnuView->AppendCheckItem(ID_VIEW_FORCE2SIDED, wxT("Force &2-Sided"), wxT("Always render polygons 2-sided"));
+
     wxMenuBar* menuBar = new wxMenuBar();
     menuBar->Append(mnuFile, wxT("&File"));
+    menuBar->Append(mnuView, wxT("&View"));
 
     SetMenuBar(menuBar);
     SetStatusBar(new wxStatusBar(this, wxID_ANY));
@@ -125,6 +151,10 @@ wxPrpShopFrame::wxPrpShopFrame(wxApp* owner)
         fVSplitter->SetSashPosition(vSplitPos);
     if (hSplitPos != -1)
         fHSplitter->SetSashPosition(hSplitPos);
+
+    // Menu options
+    cfg->Read(wxT("DrawMode"), &fCachedDrawMode, wxPrpCanvas::DRAW_TEXTURED);
+    UpdateMenuAndToolbar();
 }
 
 wxPrpShopFrame::~wxPrpShopFrame()
@@ -143,6 +173,9 @@ wxPrpShopFrame::~wxPrpShopFrame()
 
     cfg->Write(wxT("VSplit"), fVSplitter->GetSashPosition());
     cfg->Write(wxT("HSplit"), fHSplitter->GetSashPosition());
+
+    // Menu settings
+    cfg->Write(wxT("DrawMode"), fCachedDrawMode);
 
     // Now clean up what's left on the form
     if (fCurObject != NULL)
@@ -263,12 +296,28 @@ wxLocationInfo wxPrpShopFrame::LoadPage(plPageInfo* page, const wxString& filena
         fLoadedLocations[page->getLocation()] = wxLocationInfo(pageId, filename);
 
         // Local Textures (for PyPRP pages and such)
+        keys = fResMgr->getKeys(page->getLocation(), kCubicEnvironmap);
+        if (keys.size() > 0) {
+            wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Environment Maps"), ico_folder);
+            for (size_t i=0; i<keys.size(); i++)
+                TreeAddObject(fObjTree, texFolderId, fResMgr, keys[i]);
+            fObjTree->SortChildren(texFolderId);
+        }
         keys = fResMgr->getKeys(page->getLocation(), kMipmap);
         if (keys.size() > 0) {
             wxTreeItemId texFolderId = fObjTree->InsertItem(pageId, 0, wxT("Textures"), ico_folder);
             for (size_t i=0; i<keys.size(); i++)
                 TreeAddObject(fObjTree, texFolderId, fResMgr, keys[i]);
             fObjTree->SortChildren(texFolderId);
+        }
+
+        // All materials
+        keys = fResMgr->getKeys(page->getLocation(), kGMaterial);
+        if (keys.size() > 0) {
+            wxTreeItemId folder = fObjTree->InsertItem(pageId, 0, wxT("Materials"), ico_folder);
+            for (size_t i=0; i<keys.size(); i++)
+                TreeAddObject(fObjTree, folder, fResMgr, keys[i]);
+            fObjTree->SortChildren(folder);
         }
 
         // The Scene Node
@@ -338,6 +387,56 @@ void wxPrpShopFrame::OnSaveAsClick(wxCommandEvent& evt)
         fResMgr->WritePage((const char*)fd.GetPath().mb_str(), fResMgr->FindPage(loc));
         fLoadedLocations[loc].fFilename = fd.GetPath();
     }
+}
+
+void wxPrpShopFrame::OnViewPointsClick(wxCommandEvent& evt)
+{
+    fCachedDrawMode = (fCachedDrawMode & ~wxPrpCanvas::DRAW_MODEMASK)
+                    | wxPrpCanvas::DRAW_POINTS;
+    wxConfigBase::Get()->Write(wxT("DrawMode"), fCachedDrawMode);
+    UpdateMenuAndToolbar();
+    if (fCurObject != NULL)
+        fCurObject->Refresh();
+}
+
+void wxPrpShopFrame::OnViewWireClick(wxCommandEvent& evt)
+{
+    fCachedDrawMode = (fCachedDrawMode & ~wxPrpCanvas::DRAW_MODEMASK)
+                    | wxPrpCanvas::DRAW_WIRE;
+    wxConfigBase::Get()->Write(wxT("DrawMode"), fCachedDrawMode);
+    UpdateMenuAndToolbar();
+    if (fCurObject != NULL)
+        fCurObject->Refresh();
+}
+
+void wxPrpShopFrame::OnViewFlatClick(wxCommandEvent& evt)
+{
+    fCachedDrawMode = (fCachedDrawMode & ~wxPrpCanvas::DRAW_MODEMASK)
+                    | wxPrpCanvas::DRAW_FLAT;
+    wxConfigBase::Get()->Write(wxT("DrawMode"), fCachedDrawMode);
+    UpdateMenuAndToolbar();
+    if (fCurObject != NULL)
+        fCurObject->Refresh();
+}
+
+void wxPrpShopFrame::OnViewTexturedClick(wxCommandEvent& evt)
+{
+    fCachedDrawMode = (fCachedDrawMode & ~wxPrpCanvas::DRAW_MODEMASK)
+                    | wxPrpCanvas::DRAW_TEXTURED;
+    wxConfigBase::Get()->Write(wxT("DrawMode"), fCachedDrawMode);
+    UpdateMenuAndToolbar();
+    if (fCurObject != NULL)
+        fCurObject->Refresh();
+}
+
+void wxPrpShopFrame::OnViewForce2SidedClick(wxCommandEvent& evt)
+{
+    fCachedDrawMode = (fCachedDrawMode & wxPrpCanvas::DRAW_MODEMASK)
+                    | (evt.IsChecked() ? wxPrpCanvas::DRAW_FORCE2SIDED : 0);
+    wxConfigBase::Get()->Write(wxT("DrawMode"), fCachedDrawMode);
+    UpdateMenuAndToolbar();
+    if (fCurObject != NULL)
+        fCurObject->Refresh();
 }
 
 void wxPrpShopFrame::OnClose(wxCloseEvent& evt)
@@ -450,6 +549,8 @@ void wxPrpShopFrame::OnTreeChanged(wxTreeEvent& evt)
     if (propPageIdx < (int)fPropertyBook->GetPageCount())
         fPropertyBook->ChangeSelection(propPageIdx);
     fPropertyBook->Refresh();
+
+    fObjTree->SetFocus();
 }
 
 plLocation wxPrpShopFrame::GetActiveLocation()
@@ -460,6 +561,41 @@ plLocation wxPrpShopFrame::GetActiveLocation()
         return fCurObject->getKey()->getLocation();
     else
         return plLocation();
+}
+
+void wxPrpShopFrame::UpdateMenuAndToolbar()
+{
+    wxMenuBar* menuBar = GetMenuBar();
+    wxToolBar* toolBar = GetToolBar();
+
+    menuBar->Check(ID_VIEW_POINTS, false);
+    menuBar->Check(ID_VIEW_WIRE, false);
+    menuBar->Check(ID_VIEW_FLAT, false);
+    menuBar->Check(ID_VIEW_TEXTURED, false);
+    toolBar->ToggleTool(ID_VIEW_POINTS, false);
+    toolBar->ToggleTool(ID_VIEW_WIRE, false);
+    toolBar->ToggleTool(ID_VIEW_FLAT, false);
+    toolBar->ToggleTool(ID_VIEW_TEXTURED, false);
+
+    menuBar->Check(ID_VIEW_FORCE2SIDED, (fCachedDrawMode & wxPrpCanvas::DRAW_FORCE2SIDED) != 0);
+    switch (fCachedDrawMode & wxPrpCanvas::DRAW_MODEMASK) {
+    case wxPrpCanvas::DRAW_POINTS:
+        menuBar->Check(ID_VIEW_POINTS, true);
+        toolBar->ToggleTool(ID_VIEW_POINTS, true);
+        break;
+    case wxPrpCanvas::DRAW_WIRE:
+        menuBar->Check(ID_VIEW_WIRE, true);
+        toolBar->ToggleTool(ID_VIEW_WIRE, true);
+        break;
+    case wxPrpCanvas::DRAW_FLAT:
+        menuBar->Check(ID_VIEW_FLAT, true);
+        toolBar->ToggleTool(ID_VIEW_FLAT, true);
+        break;
+    case wxPrpCanvas::DRAW_TEXTURED:
+        menuBar->Check(ID_VIEW_TEXTURED, true);
+        toolBar->ToggleTool(ID_VIEW_TEXTURED, true);
+        break;
+    }
 }
 
 void wxPrpShopFrame::DoDataSave(bool doDelete)

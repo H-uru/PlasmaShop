@@ -8,7 +8,7 @@ wxTreeItemId TreeAddSceneNode(wxTreeCtrl* tree, const wxTreeItemId& parent,
 {
     wxTreeItemId tid =
     tree->AppendItem(parent, wxString(key->getName().cstr(), wxConvUTF8),
-                     ico_scenenode, -1, new PlasmaTreeItem(key));
+                     GetTypeIcon(key->getType()), -1, new PlasmaTreeItem(key));
 
     plSceneNode* node = plSceneNode::Convert(key->getObj());
     if (node->getNumSceneObjects() > 0) {
@@ -66,4 +66,10 @@ wxWindow* wxSceneNode::MakePreviewPane(wxWindow* parent)
     fPreviewCanvas->SetView(spawn, spawnAngle);
 
     return fPreviewCanvas;
+}
+
+void wxSceneNode::Refresh()
+{
+    fPreviewCanvas->ReBuild();
+    fPreviewCanvas->Refresh();
 }
