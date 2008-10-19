@@ -92,7 +92,7 @@ void wxPrpCanvas::OnSize(wxSizeEvent& evt)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)width/(float)height, 0.1f, 10000.0f);
+    gluPerspective(45.0f, (float)width/(float)height, 1.0f, 10000.0f);
 }
 
 void wxPrpCanvas::OnEraseBackground(wxEraseEvent& evt)
@@ -269,6 +269,8 @@ void wxPrpCanvas::Build(int mode)
                 continue;
             plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(j)->getObj());
             plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(j));
+            if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
+                continue;
             for (size_t idx=0; idx<di.fIndices.getSize(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
                 hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
@@ -555,7 +557,21 @@ void wxPrpCanvas::CompileObject(plKey key)
                         glVertex3f(vert[0].X, vert[0].Y, vert[0].Z);
                     }
                     glEnd();
-                } else {
+                } else if ((fDrawMode & DRAW_MODEMASK) == DRAW_FLAT) {
+                    glBegin(GL_TRIANGLES);
+                    for (size_t j = 0; j < indices.getSize(); j++) {
+                        hsColor32 color(verts[indices[j]].fColor);
+                        glColor4ub(color.r, color.g, color.b, color.a);
+                        
+                        hsVector3 vert;
+                        if (!xform.IsIdentity())
+                            vert = verts[indices[j]].fPos * xform;
+                        else
+                            vert = verts[indices[j]].fPos;
+                        glVertex3f(vert.X, vert.Y, vert.Z);
+                    }
+                    glEnd();
+                } else if ((fDrawMode & DRAW_MODEMASK) == DRAW_TEXTURED) {
                     glBegin(GL_TRIANGLES);
                     for (size_t j = 0; j < indices.getSize(); j++) {
                         hsColor32 color(verts[indices[j]].fColor);
