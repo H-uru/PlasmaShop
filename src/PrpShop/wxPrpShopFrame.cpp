@@ -208,13 +208,19 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
             if (ageInfo != NULL && ageInfo->getAge() != NULL) {
                 if (!ageInfo->getAge()->fHasTextures) {
                     plString texPath = (const char*)fn.GetFullPath().mb_str();
-                    texPath = texPath.beforeLast('_') + "_Textures.prp";
+                    texPath = texPath.beforeLast(PATHSEP) + PATHSEP + page->getAge();
+                    if (fResMgr->getVer() < pvEoa)
+                        texPath += "_District";
+                    texPath += "_Textures.prp";
                     if (wxFileExists(wxString(texPath, wxConvUTF8)))
                         LoadPage(fResMgr->ReadPage(texPath), wxString(texPath, wxConvUTF8));
                 }
                 if (!ageInfo->getAge()->fHasBuiltIn) {
                     plString biPath = (const char*)fn.GetFullPath().mb_str();
-                    biPath = biPath.beforeLast('_') + "_BuiltIn.prp";
+                    biPath = biPath.beforeLast(PATHSEP) + PATHSEP + page->getAge();
+                    if (fResMgr->getVer() < pvEoa)
+                        biPath += "_District";
+                    biPath += "_BuiltIn.prp";
                     if (wxFileExists(wxString(biPath, wxConvUTF8)))
                         LoadPage(fResMgr->ReadPage(biPath), wxString(biPath, wxConvUTF8));
                 }
@@ -370,7 +376,11 @@ void wxPrpShopFrame::OnSaveClick(wxCommandEvent& evt)
 void wxPrpShopFrame::OnSaveAsClick(wxCommandEvent& evt)
 {
     static const wxString kFilter =
-        wxT("Page files (*.prp)|*.prp");
+        wxT("Uru Prime / UU Page|*.prp|")
+        wxT("Path of the Shell / CC Page|*.prp|")
+        wxT("Myst Online Uru Live Page|*.prp|")
+        wxT("Myst 5 / Crowthistle Page|*.prp|")
+        wxT("Hex Isle Page|*.prp");
 
     DoDataSave(false);
     plLocation loc = GetActiveLocation();
@@ -383,10 +393,60 @@ void wxPrpShopFrame::OnSaveAsClick(wxCommandEvent& evt)
     wxFileDialog fd(this, wxT("Save PRP"), name.GetPath(),
                     name.GetName(), kFilter,
                     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (fd.ShowModal() != wxID_CANCEL) {
-        fResMgr->WritePage((const char*)fd.GetPath().mb_str(), fResMgr->FindPage(loc));
-        fLoadedLocations[loc].fFilename = fd.GetPath();
+    
+    switch (fResMgr->getVer()) {
+    case pvPrime:
+        fd.SetFilterIndex(0);
+        break;
+    case pvPots:
+        fd.SetFilterIndex(1);
+        break;
+    case pvLive:
+        fd.SetFilterIndex(2);
+        break;
+    case pvEoa:
+        fd.SetFilterIndex(3);
+        break;
+    case pvHex:
+        fd.SetFilterIndex(4);
+        break;
+    default:
+        fd.SetFilterIndex(1);
+        break;
     }
+
+    if (fd.ShowModal() == wxID_CANCEL)
+        return;
+
+    switch (fd.GetFilterIndex()) {
+    case 0:
+        fResMgr->setVer(pvPrime, true);
+        break;
+    case 1:
+        fResMgr->setVer(pvPots, true);
+        break;
+    case 2:
+        if (wxMessageBox(wxT("Saving in this format WILL result in loss of PhysX data!"),
+                         wxT("Warning"), wxOK | wxCANCEL | wxICON_EXCLAMATION) != wxOK)
+            return;
+        fResMgr->setVer(pvLive, true);
+        break;
+    case 3:
+        if (wxMessageBox(wxT("Saving in this format may result in loss or corruption of data!"),
+                         wxT("Warning"), wxOK | wxCANCEL | wxICON_EXCLAMATION) != wxOK)
+            return;
+        fResMgr->setVer(pvEoa, true);
+        break;
+    case 4:
+        if (wxMessageBox(wxT("Saving in this format may result in loss or corruption of data!"),
+                         wxT("Warning"), wxOK | wxCANCEL | wxICON_EXCLAMATION) != wxOK)
+            return;
+        fResMgr->setVer(pvHex, true);
+        break;
+    }
+
+    fResMgr->WritePage((const char*)fd.GetPath().mb_str(), fResMgr->FindPage(loc));
+    fLoadedLocations[loc].fFilename = fd.GetPath();
 }
 
 void wxPrpShopFrame::OnViewPointsClick(wxCommandEvent& evt)

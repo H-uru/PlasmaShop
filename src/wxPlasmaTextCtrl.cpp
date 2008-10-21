@@ -254,6 +254,7 @@ void wxPlasmaTextCtrl::DoLoad(const wxString& filename)
         fEncryptionType = ((plEncryptedStream*)S)->getEncType();
     delete S;
 
+    EmptyUndoBuffer();
     SetSavePoint();
 }
 
@@ -350,6 +351,7 @@ void wxPlasmaTextCtrl::LoadElf(const wxString& filename)
     fEncryptionType = plEncryptedStream::kEncNone;
     delete S;
 
+    EmptyUndoBuffer();
     SetSavePoint();
 }
 
@@ -360,6 +362,7 @@ void wxPlasmaTextCtrl::SaveElf(const wxString& filename)
 
 void wxPlasmaTextCtrl::ResetSyntax()
 {
+    ClearDocumentStyle();
     StyleResetDefault();
     StyleSetFaceName(wxSTC_STYLE_DEFAULT, fFont.GetFaceName());
     StyleSetSize(wxSTC_STYLE_DEFAULT, fFont.GetPointSize());
@@ -367,6 +370,7 @@ void wxPlasmaTextCtrl::ResetSyntax()
     StyleSetFontAttr(wxSTC_STYLE_BRACEBAD, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
     StyleSetForeground(wxSTC_STYLE_BRACELIGHT, wxColour(0, 0, 0xC0));
     StyleSetFontAttr(wxSTC_STYLE_BRACELIGHT, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
+    StyleClearAll();
     UpdateLineNumberWidth();
 }
 
@@ -375,14 +379,15 @@ wxPlasmaTextCtrl::SyntaxMode wxPlasmaTextCtrl::GetSyntaxMode()
     return fSyntaxMode;
 }
 
-void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
+void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode)
+{
+    ResetSyntax();
+
     switch (mode) {
     case kSynNone:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_NULL);
         break;
     case kSynPlasma:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_CPP);
         SetKeyWords(0, kPlasmaKeywordKWs);
         SetKeyWords(1, kPlasmaTypeKWs);
@@ -411,7 +416,6 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
 #endif
         break;
     case kSynPython:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_PYTHON);
         SetKeyWords(0, kPythonKeywordKWs);
         SetKeyWords(1, kPythonSpecialConstKWs);
@@ -433,7 +437,6 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetFontAttr(wxSTC_P_WORD2, fFont.GetPointSize(), fFont.GetFaceName(), true, false, false);
         break;
     case kSynSDL_Uru:
-        ResetSyntax();
 #ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_SDL);
         SetKeyWords(0, kSDL1KeywordKWs);
@@ -452,7 +455,6 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
 #endif
         break;
     case kSynSDL_Eoa:
-        ResetSyntax();
 #ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_SDL);
         SetKeyWords(0, kSDL2KeywordKWs);
@@ -471,14 +473,12 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
 #endif
         break;
     case kSynAgeIni:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_PROPERTIES);
         StyleSetForeground(wxSTC_PROPS_COMMENT, wxColour(0, 0x80, 0));
         StyleSetForeground(wxSTC_PROPS_KEY, wxColour(0, 0, 0xFF));
         StyleSetForeground(wxSTC_PROPS_SECTION, wxColour(0x80, 0x80, 0));
         break;
     case kSynConsole:
-        ResetSyntax();
 #ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_FNI);
         SetKeyWords(0, kFniSpecialConstKWs);
@@ -490,7 +490,6 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
 #endif
         break;
     case kSynXML:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_XML);
         StyleSetForeground(wxSTC_H_ATTRIBUTE, wxColour(0, 0x80, 0));
         StyleSetForeground(wxSTC_H_COMMENT, wxColour(0x80, 0x80, 0x80));
@@ -506,14 +505,12 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
         StyleSetForeground(wxSTC_H_XMLEND, wxColour(0x80, 0x80, 0));
         break;
     case kSynHex:
-        ResetSyntax();
 #ifdef wxSTC_PLASMA_STC
         SetLexer(wxSTC_LEX_HEX);
 #endif
         plDebug::Debug("TODO: kSynHex");
         break;
     case kSynFX:
-        ResetSyntax();
         SetLexer(wxSTC_LEX_CPP);
         SetKeyWords(0, kFXKeywordKWs);
         SetKeyWords(1, kFXTypeKWs);
@@ -537,6 +534,7 @@ void wxPlasmaTextCtrl::SetSyntaxMode(SyntaxMode mode) {
     }
 
     fSyntaxMode = mode;
+    Colourise(0, -1);
 }
 
 plEncryptedStream::EncryptionType wxPlasmaTextCtrl::GetEncryptionType()

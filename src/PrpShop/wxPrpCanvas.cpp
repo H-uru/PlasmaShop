@@ -205,6 +205,9 @@ void wxPrpCanvas::Center(plKey obj, bool world)
 
             plDrawableSpans* span = plDrawableSpans::Convert(draw->getDrawable(i)->getObj());
             plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(i));
+            if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
+                continue;
+
             for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
                 hsBounds3Ext bounds = ice->getLocalBounds();
