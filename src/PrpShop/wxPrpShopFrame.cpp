@@ -200,6 +200,9 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
             for (size_t i=0; i<age->getNumPages(); i++)
                 LoadPage(fResMgr->FindPage(age->getPageLoc(i, fResMgr->getVer())),
                                            wxString(age->getPageFilename(i, fResMgr->getVer()), wxConvUTF8));
+            for (size_t i=0; i<age->getNumCommonPages(fResMgr->getVer()); i++)
+                LoadPage(fResMgr->FindPage(age->getCommonPageLoc(i, fResMgr->getVer())),
+                                           wxString(age->getCommonPageFilename(i, fResMgr->getVer()), wxConvUTF8));
         } else if (ext.CmpNoCase(wxT("prp")) == 0) {
             plPageInfo* page = fResMgr->ReadPage(fn.GetFullPath().mb_str());
             wxTreeItemId pageId = LoadPage(page, fn.GetFullPath()).fTreeId;
