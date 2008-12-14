@@ -1,0 +1,34 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <!-- App Images -->
+    <file>res/filenew.png</file>
+    <file>res/fileopen.png</file>
+    <file>res/filesave.png</file>
+    <file>res/PrpShop.png</file>
+
+    <!-- Images for the Object Tree -->
+    <file>img/folder.png</file>
+    <file>img/age.png</file>
+    <file>img/page.png</file>
+    <file>img/sceneobj.png</file>
+    <file>img/scenenode.png</file>
+    <file>img/coords.png</file>
+    <file>img/drawspans.png</file>
+    <file>img/drawspans2.png</file>
+    <file>img/sim.png</file>
+    <file>img/snd.png</file>
+    <file>img/layer.png</file>
+    <file>img/material.png</file>
+    <file>img/img.png</file>
+    <file>img/py.png</file>
+    <file>img/gui_button.png</file>
+    <file>img/gui_check.png</file>
+    <file>img/gui_dialog.png</file>
+    <file>img/gui_edit.png</file>
+    <file>img/gui_edit2.png</file>
+    <file>img/gui_progress.png</file>
+    <file>img/gui_radiogroup.png</file>
+    <file>img/gui_text.png</file>
+    <file>img/gui_updown.png</file>
+</qresource>
+</RCC>
