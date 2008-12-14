@@ -15,8 +15,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(hsKeyedObject* obj)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
-    : QTreeWidgetItem(kTypeAge), fAge(age), fHasBuiltIn(false),
-      fHasTextures(false)
+    : QTreeWidgetItem(kTypeAge), fHasBuiltIn(false), fHasTextures(false),
+      fAge(age)
 {
     setText(0, age);
     setIcon(0, QIcon(":/img/age.png"));
@@ -43,8 +43,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, hsKeyedObject* obj)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age)
-    : QTreeWidgetItem(parent, kTypeAge), fAge(age), fHasBuiltIn(false),
-      fHasTextures(false)
+    : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
+      fHasTextures(false), fAge(age)
 {
     setText(0, age);
     setIcon(0, QIcon(":/img/age.png"));
@@ -71,8 +71,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, hsKeyedObject* obj)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
-    : QTreeWidgetItem(parent, kTypeAge), fAge(age), fHasBuiltIn(false),
-      fHasTextures(false)
+    : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
+      fHasTextures(false), fAge(age)
 {
     setText(0, age);
     setIcon(0, QIcon(":/img/age.png"));

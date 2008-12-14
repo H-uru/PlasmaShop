@@ -509,9 +509,9 @@ QString pqGetFriendlyClassName(short classType)
         S_INVALID, S_INVALID, S_INVALID, S_INVALID, S_INVALID
     };
 
-    if (classType == 0x8000)
+    if ((unsigned short)classType == 0x8000)
         return "(NULL)";
-    if (classType < TYPESPACE_MAX)
+    if (classType >= 0 && classType < TYPESPACE_MAX)
         return s_names[classType];
     return S_INVALID;
 }
