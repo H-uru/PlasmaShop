@@ -92,7 +92,7 @@ void wxPrpCanvas::OnSize(wxSizeEvent& evt)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)width/(float)height, 1.0f, 10000.0f);
+    gluPerspective(45.0f, (float)width/(float)height, 0.1f, 10000.0f);
 }
 
 void wxPrpCanvas::OnEraseBackground(wxEraseEvent& evt)

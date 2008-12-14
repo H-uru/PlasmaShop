@@ -11,12 +11,21 @@
 
 #include "Main.h"
 #include "QPlasmaUtils.h"
-#include "QCreatable.h"
+#include "PRP/QCreatable.h"
+
+PrpShopMain* PrpShopMain::sInstance = NULL;
+PrpShopMain* PrpShopMain::Instance()
+{ return sInstance; }
 
 PrpShopMain::PrpShopMain()
 {
+    // Set up the "Magic" instance
+    if (sInstance != NULL)
+        throw hsBadParamException(__FILE__, __LINE__, "PrpShop broke...");
+    sInstance = this;
+
     // Basic Form Settings
-    setWindowTitle("PrpShop 1.0 (build 31)");
+    setWindowTitle("PrpShop " PRPSHOP_VERSION);
     setWindowIcon(QIcon(":/res/PrpShop.png"));
     setDockOptions(QMainWindow::AnimatedDocks);
 
@@ -147,7 +156,7 @@ PrpShopMain::PrpShopMain()
     fPropertyDock->setVisible(settings.value("PropertyShow", true).toBool());
 }
 
-void PrpShopMain::closeEvent(QCloseEvent* evt)
+void PrpShopMain::closeEvent(QCloseEvent*)
 {
     // Save UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -270,7 +279,7 @@ void PrpShopMain::setPropertyPage(PropWhich which)
     fPropertyContainer->setFixedHeight(group->sizeHint().height() + 8);
 }
 
-void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*)
 {
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)current;
     if (item == NULL) {
@@ -304,14 +313,30 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
     }
 }
 
-void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int column)
+void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int)
 {
     if (item == NULL || ((QPlasmaTreeItem*)item)->obj() == NULL)
         return;
+    editCreatable(((QPlasmaTreeItem*)item)->obj());
+}
 
-    QCreatable* win = new QCreatable(((QPlasmaTreeItem*)item)->obj(), this);
-    fMdiArea->addSubWindow(win);
-    win->show();
+void PrpShopMain::editCreatable(plCreatable* pCre)
+{
+    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
+    QList<QMdiSubWindow*>::Iterator it;
+    for (it = windows.begin(); it != windows.end(); it++) {
+        if (((QCreatable*)(*it))->isMatch(pCre)) {
+            fMdiArea->setActiveSubWindow(*it);
+            break;
+        }
+    }
+    if (it == windows.end()) {
+        QCreatable* win = pqMakeCreatableForm(pCre, this);
+        if (win != NULL) {
+            fMdiArea->addSubWindow(win);
+            win->show();
+        }
+    }
 }
 
 void PrpShopMain::openFiles()
@@ -337,8 +362,8 @@ void PrpShopMain::loadFile(const QString& filename)
                 loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), filename);
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-                            tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
-                            QMessageBox::Ok, this);
+                               tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
+                               QMessageBox::Ok, this);
             msgBox.exec();
         }
     } else if (filename.endsWith(".prp", Qt::CaseInsensitive)) {
@@ -370,8 +395,8 @@ void PrpShopMain::loadFile(const QString& filename)
             }
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
-                            tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
-                            QMessageBox::Ok, this);
+                               tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
+                               QMessageBox::Ok, this);
             msgBox.exec();
         }
     } else {

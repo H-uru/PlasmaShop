@@ -13,6 +13,7 @@
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
 #include <wx/splitter.h>
+#include <wx/progdlg.h>
 #include <ResManager/plResManager.h>
 #include "wxPrpCanvas.h"
 #include "wxPrpPlasma.h"
@@ -88,6 +89,19 @@ protected:
     void UpdateMenuAndToolbar();
     plLocation GetActiveLocation();
     void DoDataSave(bool doDelete);
+};
+
+class wxPrpProgressDialog : public wxProgressDialog {
+private:
+    static wxPrpProgressDialog* fCurrent;
+    int fMaximum;
+
+public:
+    wxPrpProgressDialog(const wxString& title, const wxString& message, int maximum = 100,
+                        wxWindow* parent = NULL, int style = wxPD_APP_MODAL | wxPD_SMOOTH);
+    ~wxPrpProgressDialog();
+
+    static void PlasmaUpdate(float progress);
 };
 
 #endif

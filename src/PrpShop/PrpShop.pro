@@ -14,9 +14,13 @@ LIBS += -L../../../Plasma/bin -lPlasma
 HEADERS += Main.h \
            QPlasmaUtils.h \
            QPlasmaTreeItem.h \
-           QCreatable.h
+           PRP/QCreatable.h \
+           PRP/QKeyList.h \
+           PRP/Object/QCoordinateInterface.h
 SOURCES += Main.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
-           QCreatable.cpp
+           PRP/QCreatable.cpp \
+           PRP/QKeyList.cpp \
+           PRP/Object/QCoordinateInterface.cpp
 RESOURCES += images.qrc

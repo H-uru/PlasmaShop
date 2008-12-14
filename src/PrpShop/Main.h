@@ -1,3 +1,6 @@
+#ifndef _PLASMASHOP_MAIN_H
+#define _PLASMASHOP_MAIN_H
+
 #include <QMainWindow>
 #include <QMdiArea>
 #include <QTreeWidget>
@@ -12,6 +15,8 @@
 #include <ResManager/plResManager.h>
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
+
+#define PRPSHOP_VERSION "1.0 (build 35)"
 
 class PrpShopMain : public QMainWindow {
 private:
@@ -55,10 +60,16 @@ private:
     plResManager fResMgr;
     QHash<plLocation, QPlasmaTreeItem*> fLoadedLocations;
 
+    // Magic for Creatable loading
+    static PrpShopMain* sInstance;
+
 public:
+    static PrpShopMain* Instance();
+
     PrpShopMain();
     void setPropertyPage(PropWhich which);
     void loadFile(const QString& filename);
+    void editCreatable(plCreatable* pCre);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
@@ -69,3 +80,5 @@ public slots:
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeItemActivated(QTreeWidgetItem* item, int column);
 };
+
+#endif

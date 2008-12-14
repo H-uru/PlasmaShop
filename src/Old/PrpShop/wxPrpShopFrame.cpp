@@ -193,6 +193,9 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
         return;
     }
 
+    //wxPrpProgressDialog progress(wxT("Please Wait"), wxT("Loading ") + fn.GetFullName());
+    //fResMgr->SetProgressFunc(&wxPrpProgressDialog::PlasmaUpdate);
+
     try {
         wxString ext = fn.GetExt();
         if (ext.CmpNoCase(wxT("age")) == 0) {
@@ -238,6 +241,7 @@ void wxPrpShopFrame::LoadFile(const wxString& filename)
                      wxT("Error"), wxOK | wxICON_ERROR, this);
     }
 
+    //fResMgr->SetProgressFunc(NULL);
     fObjTree->SortChildren(fObjTree->GetRootItem());
 }
 
@@ -695,4 +699,27 @@ void wxPrpShopFrame::DoDataSave(bool doDelete)
         if (doDelete)
             fCurPage = NULL;
     }
+}
+
+
+/* wxPrpProgressDialog */
+wxPrpProgressDialog* wxPrpProgressDialog::fCurrent = NULL;
+
+wxPrpProgressDialog::wxPrpProgressDialog(const wxString& title, const wxString& message,
+                                         int maximum, wxWindow* parent, int style)
+                   : wxProgressDialog(title, message, maximum, parent, style)
+{
+    fCurrent = this;
+    fMaximum = maximum;
+}
+
+wxPrpProgressDialog::~wxPrpProgressDialog()
+{
+    fCurrent = NULL;
+}
+
+void wxPrpProgressDialog::PlasmaUpdate(float progress)
+{
+    if (fCurrent != NULL)
+        fCurrent->Update((int)(progress * (fCurrent->fMaximum-1)));
 }

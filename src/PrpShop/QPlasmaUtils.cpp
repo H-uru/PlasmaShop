@@ -518,3 +518,11 @@ QString pqGetFriendlyClassName(short classType)
 
 unsigned int qHash(const plLocation& loc)
 { return loc.unparse(); }
+
+/*
+unsigned int qHash(const plKey& key)
+{
+    return (qHash(key->getLocation()) + key->getType())
+         ^ (qHash(QString(key->getName().cstr())));
+}
+*/
