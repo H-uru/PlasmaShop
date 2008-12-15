@@ -5,7 +5,7 @@
 #include "../QPlasmaUtils.h"
 
 QCreatable::QCreatable(plCreatable* pCre, QWidget* parent)
-          : QMdiSubWindow(parent), fCreatable(pCre)
+          : QWidget(parent), fCreatable(pCre)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(pqGetTypeIcon(fCreatable->ClassIndex()));
@@ -17,10 +17,16 @@ QCreatable::QCreatable(plCreatable* pCre, QWidget* parent)
     }
 }
 
-bool QCreatable::isMatch(plCreatable* pCre)
-{ return (fCreatable == NULL) ? false : fCreatable == pCre; }
+bool QCreatable::isMatch(plCreatable* pCre, short forceType)
+{
+    if (fCreatable == NULL)
+        return false;
+    if (forceType == -1)
+        return fCreatable == pCre;
+    return (fCreatable == pCre) && (fCreatable->ClassIndex() == forceType);
+}
 
-void QCreatable::closeEvent(QCloseEvent* evt)
+void QCreatable::closeEvent(QCloseEvent*)
 {
     saveDamage();
 }
@@ -29,15 +35,17 @@ void QCreatable::closeEvent(QCloseEvent* evt)
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "PRP/Object/QCoordinateInterface.h"
 
-QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent)
+QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
 {
-    switch (pCre->ClassIndex()) {
+    short type = (forceType == -1) ? pCre->ClassIndex() : forceType;
+
+    switch (type) {
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
     default:
         QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
                            parent->tr("No editor is currently available for %1")
-                                     .arg(pqGetFriendlyClassName(pCre->ClassIndex())),
+                                     .arg(pqGetFriendlyClassName(type)),
                            QMessageBox::Ok, parent);
         msgBox.exec();
         return NULL;

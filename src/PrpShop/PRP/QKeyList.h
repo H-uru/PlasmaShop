@@ -7,16 +7,22 @@
 class QKeyList : public QTreeWidget {
 protected:
     Q_OBJECT
-    QHash<QTreeWidgetItem*, plKey> fKeys;
+    QList<plKey> fKeys;
 
 public:
     QKeyList(QWidget* parent = NULL);
+
     void addKey(plKey key);
-    void delItem(QTreeWidgetItem* item);
+    void delItem(int idx);
+    QList<plKey> keys() const;
+
     void adjustColumns();
 
 protected slots:
     void activateKeyItem(QTreeWidgetItem* item, int column);
+
+protected:
+    virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
 #endif

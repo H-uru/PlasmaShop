@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 35)"
+#define PRPSHOP_VERSION "1.0 (build 36)"
 
 class PrpShopMain : public QMainWindow {
 private:
@@ -69,7 +69,7 @@ public:
     PrpShopMain();
     void setPropertyPage(PropWhich which);
     void loadFile(const QString& filename);
-    void editCreatable(plCreatable* pCre);
+    void editCreatable(plCreatable* pCre, short forceType = -1);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);

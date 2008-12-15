@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMdiSubWindow>
 #include <Debug/plDebug.h>
 
 #include "Main.h"
@@ -320,18 +321,18 @@ void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int)
     editCreatable(((QPlasmaTreeItem*)item)->obj());
 }
 
-void PrpShopMain::editCreatable(plCreatable* pCre)
+void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
 {
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::Iterator it;
     for (it = windows.begin(); it != windows.end(); it++) {
-        if (((QCreatable*)(*it))->isMatch(pCre)) {
+        if (((QCreatable*)(*it)->widget())->isMatch(pCre, forceType)) {
             fMdiArea->setActiveSubWindow(*it);
             break;
         }
     }
     if (it == windows.end()) {
-        QCreatable* win = pqMakeCreatableForm(pCre, this);
+        QCreatable* win = pqMakeCreatableForm(pCre, this, forceType);
         if (win != NULL) {
             fMdiArea->addSubWindow(win);
             win->show();

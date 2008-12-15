@@ -1,4 +1,7 @@
 #include "QKeyList.h"
+
+#include <QContextMenuEvent>
+#include <QMenu>
 #include "../QPlasmaUtils.h"
 #include "../Main.h"
 
@@ -20,14 +23,18 @@ void QKeyList::addKey(plKey key)
     QTreeWidgetItem* item = new QTreeWidgetItem(this,
         QStringList() << key->getName().cstr() << pqGetFriendlyClassName(key->getType()));
     item->setIcon(0, pqGetTypeIcon(key->getType()));
-    fKeys[item] = key;
+    fKeys << key;
 }
 
-void QKeyList::delItem(QTreeWidgetItem* item)
+void QKeyList::delItem(int idx)
 {
-    removeItemWidget(item, 0);
-    delete *(fKeys.find(item));
+    QTreeWidgetItem* item = takeTopLevelItem(idx);
+    delete item;
+    fKeys.erase(fKeys.begin() + idx);
 }
+
+QList<plKey> QKeyList::keys() const
+{ return fKeys; }
 
 void QKeyList::adjustColumns()
 {
@@ -37,5 +44,22 @@ void QKeyList::adjustColumns()
 
 void QKeyList::activateKeyItem(QTreeWidgetItem* item, int)
 {
-    PrpShopMain::Instance()->editCreatable(fKeys[item]->getObj());
+    PrpShopMain::Instance()->editCreatable(fKeys[indexOfTopLevelItem(item)]->getObj());
+}
+
+void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
+{
+    QMenu menu(this);
+    QAction* addObjItem = menu.addAction(tr("Add Object"));
+    QAction* delObjItem = menu.addAction(tr("Remove Object"));
+
+    if (currentItem() == NULL)
+        delObjItem->setEnabled(false);
+
+    QAction* sel = menu.exec(evt->globalPos());
+    if (sel == addObjItem) {
+        // ...
+    } else if (sel == delObjItem) {
+        delItem(indexOfTopLevelItem(currentItem()));
+    }
 }
