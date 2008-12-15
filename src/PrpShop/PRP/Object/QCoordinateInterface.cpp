@@ -50,7 +50,7 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
         fChildren->addKey(intf->getChild(i));
 
     QGridLayout* layout = new QGridLayout(this);
-    layout->setContentsMargins(4, 4, 4, 4);
+    layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fOwnerLink, 0, 0);
     layout->addWidget(fSynchObjLink, 1, 0);
     layout->addWidget(grpProps, 2, 0);

@@ -51,7 +51,7 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
         fVolatileList->addString(obj->getVolatiles()[i].cstr());
 
     QGridLayout* layout = new QGridLayout(this);
-    layout->setContentsMargins(4, 4, 4, 4);
+    layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(grpFlags, 0, 0);
     layout->addWidget(sdlTab, 1, 0);
 }

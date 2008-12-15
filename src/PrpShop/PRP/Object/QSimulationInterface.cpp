@@ -61,7 +61,7 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fOwnerLink, 0, 0, 1, 2);
     layout->addWidget(fSynchObjLink, 1, 0, 1, 2);
     layout->addWidget(grpProps, 2, 0, 1, 2);
-    layout->addWidget(new QLabel(tr("Audible Object: "), this), 3, 0, 1, 1);
+    layout->addWidget(new QLabel(tr("Physical Object: "), this), 3, 0, 1, 1);
     layout->addWidget(fPhysicalLink, 3, 1, 1, 1);
 
     QObject::connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));

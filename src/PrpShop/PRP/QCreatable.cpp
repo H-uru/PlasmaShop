@@ -7,7 +7,6 @@
 QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
           : QWidget(parent), fCreatable(pCre), fForceType(type)
 {
-    if (fForceType == -1) fForceType = fCreatable->ClassIndex();
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(pqGetTypeIcon(type));
     if (hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable)) {
@@ -33,6 +32,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 
 /***** Creatable Forms -- think QFactory ;) *****/
+#include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
 #include "PRP/Object/QSceneObject.h"
@@ -48,6 +48,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kPythonFileMod:
+        return new QPythonFileMod(pCre, parent);
     case kSceneObject:
         return new QSceneObject(pCre, parent);
     case kSimulationInterface:
