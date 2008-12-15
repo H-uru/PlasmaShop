@@ -6,7 +6,7 @@
 #include <QGridLayout>
 
 QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
-                    : QCreatable(pCre, parent)
+                    : QCreatable(pCre, kCoordinateInterface, parent)
 {
     plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
 

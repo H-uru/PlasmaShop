@@ -2,9 +2,11 @@
 
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QInputDialog>
 #include "../QPlasmaUtils.h"
 #include "../Main.h"
 
+/* QKeyList */
 QKeyList::QKeyList(QWidget* parent)
         : QTreeWidget(parent)
 {
@@ -61,5 +63,55 @@ void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
         // ...
     } else if (sel == delObjItem) {
         delItem(indexOfTopLevelItem(currentItem()));
+    }
+}
+
+
+/* QStringListWidget */
+QStringListWidget::QStringListWidget(QWidget* parent)
+                 : QListWidget(parent)
+{ }
+
+QSize QStringListWidget::sizeHint() const
+{
+    QSize listSize = QListWidget::sizeHint();
+    return QSize((listSize.width() * 2) / 3, (listSize.height() * 1) / 2);
+}
+
+void QStringListWidget::addString(const QString& str)
+{
+    fStrings << str;
+    addItem(str);
+}
+
+void QStringListWidget::delString(int idx)
+{
+    QListWidgetItem* item = takeItem(idx);
+    if (item != NULL)
+        delete item;
+    fStrings.erase(fStrings.begin() + idx);
+}
+
+QStringList QStringListWidget::strings() const
+{ return fStrings; }
+
+void QStringListWidget::contextMenuEvent(QContextMenuEvent* evt)
+{
+    QMenu menu(this);
+    QAction* addObjItem = menu.addAction(tr("Add Item"));
+    QAction* delObjItem = menu.addAction(tr("Remove Item"));
+
+    if (currentItem() == NULL)
+        delObjItem->setEnabled(false);
+
+    QAction* sel = menu.exec(evt->globalPos());
+    if (sel == addObjItem) {
+        bool ok;
+        QString str = QInputDialog::getText(this, tr("Add Item"),
+                          tr("Enter a string"), QLineEdit::Normal,
+                          QString(), &ok);
+        if (ok) addString(str);
+    } else if (sel == delObjItem) {
+        delString(currentRow());
     }
 }

@@ -2,6 +2,7 @@
 #define _QKEYLIST_H
 
 #include <QTreeWidget>
+#include <QListWidget>
 #include <PRP/KeyedObject/plKey.h>
 
 class QKeyList : public QTreeWidget {
@@ -20,6 +21,23 @@ public:
 
 protected slots:
     void activateKeyItem(QTreeWidgetItem* item, int column);
+
+protected:
+    virtual void contextMenuEvent(QContextMenuEvent* evt);
+};
+
+class QStringListWidget : public QListWidget {
+protected:
+    Q_OBJECT
+    QStringList fStrings;
+
+public:
+    QStringListWidget(QWidget* parent = NULL);
+    virtual QSize sizeHint() const;
+
+    void addString(const QString& str);
+    void delString(int idx);
+    QStringList strings() const;
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);

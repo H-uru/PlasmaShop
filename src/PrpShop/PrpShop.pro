@@ -18,7 +18,8 @@ HEADERS += Main.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
            PRP/QObjLink.h \
-           PRP/Object/QCoordinateInterface.h
+           PRP/Object/QCoordinateInterface.h \
+           PRP/Object/QSynchedObject.h
 SOURCES += Main.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
@@ -26,5 +27,6 @@ SOURCES += Main.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \
            PRP/QObjLink.cpp \
-           PRP/Object/QCoordinateInterface.cpp
+           PRP/Object/QCoordinateInterface.cpp \
+           PRP/Object/QSynchedObject.cpp
 RESOURCES += images.qrc

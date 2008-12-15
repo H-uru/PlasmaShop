@@ -7,10 +7,11 @@
 class QCreatable : public QWidget {
 protected:
     plCreatable* fCreatable;
+    short fForceType;
 
 public:
-    QCreatable(plCreatable* pCre, QWidget* parent = NULL);
-    bool isMatch(plCreatable* pCre, short forceType = -1);
+    QCreatable(plCreatable* pCre, short type, QWidget* parent = NULL);
+    bool isMatch(plCreatable* pCre, short type);
     virtual void saveDamage() = 0;
 
 protected:
