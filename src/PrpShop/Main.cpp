@@ -37,7 +37,8 @@ PrpShopMain::PrpShopMain()
     fActions[kFileSaveAs] = new QAction(tr("Sa&ve As..."), this);
     fActions[kFileClose] = new QAction(tr("&Close"), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
-    fActions[kViewProperties] = new QAction(tr("&Properties Pane"), this);
+    fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);
+    fActions[kToolsNewObject] = new QAction(tr("&New Object..."), this);
     fActions[kWindowPrev] = new QAction(tr("&Previous"), this);
     fActions[kWindowNext] = new QAction(tr("&Next"), this);
     fActions[kWindowTile] = new QAction(tr("&Tile"), this);
@@ -49,8 +50,8 @@ PrpShopMain::PrpShopMain()
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
     fActions[kWindowClose]->setShortcut(Qt::CTRL + Qt::Key_W);
-    fActions[kViewProperties]->setCheckable(true);
-    fActions[kViewProperties]->setChecked(true);
+    fActions[kToolsProperties]->setCheckable(true);
+    fActions[kToolsProperties]->setChecked(true);
 
     // Main Menus
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
@@ -63,8 +64,10 @@ PrpShopMain::PrpShopMain()
     fileMenu->addSeparator();
     fileMenu->addAction(fActions[kFileExit]);
 
-    QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
-    viewMenu->addAction(fActions[kViewProperties]);
+    QMenu* viewMenu = menuBar()->addMenu(tr("&Tools"));
+    viewMenu->addAction(fActions[kToolsProperties]);
+    viewMenu->addSeparator();
+    viewMenu->addAction(fActions[kToolsNewObject]);
 
     QMenu* wndMenu = menuBar()->addMenu(tr("&Window"));
     wndMenu->addAction(fActions[kWindowPrev]);
@@ -77,7 +80,7 @@ PrpShopMain::PrpShopMain()
     wndMenu->addAction(fActions[kWindowCloseAll]);
 
     // Toolbars
-    QToolBar* fileTbar = addToolBar(tr("File"));
+    QToolBar* fileTbar = addToolBar(tr("File Toolbar"));
     fileTbar->setObjectName("FileToolBar");
     fileTbar->addAction(fActions[kFileNewPage]);
     fileTbar->addAction(fActions[kFileOpen]);
@@ -121,10 +124,10 @@ PrpShopMain::PrpShopMain()
     QObject::connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
     QObject::connect(fActions[kFileOpen], SIGNAL(activated()), this, SLOT(openFiles()));
 
-    QObject::connect(fActions[kViewProperties], SIGNAL(toggled(bool)),
+    QObject::connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
                      fPropertyDock, SLOT(setVisible(bool)));
     QObject::connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
-                     fActions[kViewProperties], SLOT(setChecked(bool)));
+                     fActions[kToolsProperties], SLOT(setChecked(bool)));
 
     QObject::connect(fActions[kWindowPrev], SIGNAL(activated()),
                      fMdiArea, SLOT(activatePreviousSubWindow()));

@@ -31,7 +31,9 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 
 /***** Creatable Forms -- think QFactory ;) *****/
+#include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
+#include "PRP/Object/QSceneObject.h"
 #include "PRP/Object/QSynchedObject.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
@@ -39,8 +41,12 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
     short type = (forceType == -1) ? pCre->ClassIndex() : forceType;
 
     switch (type) {
+    case kAudioInterface:
+        return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kSceneObject:
+        return new QSceneObject(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
     default:

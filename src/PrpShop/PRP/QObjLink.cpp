@@ -30,7 +30,7 @@ void QLinkLabel::init()
 
 void QLinkLabel::mousePressEvent(QMouseEvent* evt)
 {
-    fInClick = rect().contains(evt->pos());
+    fInClick = (evt->button() == Qt::LeftButton && rect().contains(evt->pos()));
 }
 
 void QLinkLabel::mouseReleaseEvent(QMouseEvent* evt)
@@ -38,7 +38,7 @@ void QLinkLabel::mouseReleaseEvent(QMouseEvent* evt)
     if (!fInClick) return;
     fInClick = false;
 
-    if (rect().contains(evt->pos()))
+    if (evt->button() == Qt::LeftButton && rect().contains(evt->pos()))
         emit activated();
 }
 

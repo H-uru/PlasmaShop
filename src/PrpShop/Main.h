@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 37)"
+#define PRPSHOP_VERSION "1.0 (build 38)"
 
 class PrpShopMain : public QMainWindow {
 private:
@@ -52,8 +52,8 @@ private:
     // Menu actions
     enum {
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileClose, kFileExit,
-        kViewProperties, kWindowPrev, kWindowNext, kWindowTile, kWindowCascade,
-        kWindowClose, kWindowCloseAll, kNumActions
+        kToolsProperties, kToolsNewObject, kWindowPrev, kWindowNext,
+        kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll, kNumActions
     };
     QAction* fActions[kNumActions];
 
