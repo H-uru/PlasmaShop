@@ -93,6 +93,7 @@ PrpShopMain::PrpShopMain()
     fMdiArea->setFrameShape(QFrame::StyledPanel);
     fMdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     fMdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    fMdiArea->setActivationOrder(QMdiArea::ActivationHistoryOrder);
     setCentralWidget(fMdiArea);
 
     // Object Browser

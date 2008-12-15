@@ -21,6 +21,7 @@ HEADERS += Main.h \
            PRP/Object/QAudioInterface.h \
            PRP/Object/QCoordinateInterface.h \
            PRP/Object/QSceneObject.h \
+           PRP/Object/QSimulationInterface.h \
            PRP/Object/QSynchedObject.h
 SOURCES += Main.cpp \
            QPlasmaUtils.cpp \
@@ -32,5 +33,6 @@ SOURCES += Main.cpp \
            PRP/Object/QAudioInterface.cpp \
            PRP/Object/QCoordinateInterface.cpp \
            PRP/Object/QSceneObject.cpp \
+           PRP/Object/QSimulationInterface.cpp \
            PRP/Object/QSynchedObject.cpp
 RESOURCES += images.qrc

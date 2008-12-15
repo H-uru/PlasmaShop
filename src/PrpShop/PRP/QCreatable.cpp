@@ -7,6 +7,7 @@
 QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
           : QWidget(parent), fCreatable(pCre), fForceType(type)
 {
+    if (fForceType == -1) fForceType = fCreatable->ClassIndex();
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(pqGetTypeIcon(type));
     if (hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable)) {
@@ -21,6 +22,7 @@ bool QCreatable::isMatch(plCreatable* pCre, short type)
 {
     if (fCreatable == NULL)
         return false;
+    if (type == -1) type = pCre->ClassIndex();
     return (fCreatable == pCre) && (fForceType == type);
 }
 
@@ -34,6 +36,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
 #include "PRP/Object/QSceneObject.h"
+#include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
@@ -47,6 +50,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QCoordinateInterface(pCre, parent);
     case kSceneObject:
         return new QSceneObject(pCre, parent);
+    case kSimulationInterface:
+        return new QSimulationInterface(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
     default:

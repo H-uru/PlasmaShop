@@ -3,7 +3,7 @@
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QGridLayout>
-#include "../QPlasmaUtils.h"
+#include "../../QPlasmaUtils.h"
 
 QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kSceneObject, parent)
