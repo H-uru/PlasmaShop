@@ -12,7 +12,7 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
 
     QGroupBox* grpFlags = new QGroupBox(tr("Synched Object Flags"), this);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
-    layFlags->setVerticalSpacing(2);
+    layFlags->setVerticalSpacing(0);
     layFlags->setHorizontalSpacing(8);
     fCBFlags[kCbDontDirty] = new QCheckBox(tr("Don't Dirty"), grpFlags);
     fCBFlags[kCbSendReliably] = new QCheckBox(tr("Send Reliably"), grpFlags);

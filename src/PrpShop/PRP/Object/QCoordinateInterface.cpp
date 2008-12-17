@@ -21,7 +21,7 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
 
     QGroupBox* grpProps = new QGroupBox(tr("Coordinate Interface Properties"), this);
     QGridLayout* layProps = new QGridLayout(grpProps);
-    layProps->setVerticalSpacing(2);
+    layProps->setVerticalSpacing(0);
     fCBProperties[plCoordinateInterface::kDisable] = new QCheckBox(tr("Disable"), grpProps);
     fCBProperties[plCoordinateInterface::kCanEverDelayTransform] = new QCheckBox(tr("Can Ever Delay Transform"), grpProps);
     fCBProperties[plCoordinateInterface::kDelayedTransformEval] = new QCheckBox(tr("Delayed Transform Evaluation"), grpProps);

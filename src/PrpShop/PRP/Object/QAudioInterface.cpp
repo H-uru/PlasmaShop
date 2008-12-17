@@ -20,7 +20,7 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
     QGridLayout* layProps = new QGridLayout(grpProps);
-    layProps->setVerticalSpacing(2);
+    layProps->setVerticalSpacing(0);
     fDisabled = new QCheckBox(tr("Disable"), grpProps);
     layProps->addWidget(fDisabled, 0, 0);
     fDisabled->setChecked(intf->getProperty(plAudioInterface::kDisable));

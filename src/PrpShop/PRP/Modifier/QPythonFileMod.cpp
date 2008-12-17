@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QGridLayout>
+#include "../../Main.h"
 
 static const QString s_PythonParamTypes[] = {
     "(Invalid)", "Integer", "Float", "Boolean", "String", "Scene Object",
@@ -24,6 +25,9 @@ QPythonParamList::QPythonParamList(QWidget* parent)
     headerItem()->setText(0, tr("Id"));
     headerItem()->setText(1, tr("Type"));
     headerItem()->setText(2, tr("Value"));
+
+    QObject::connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+                     this, SLOT(handleActivate(QTreeWidgetItem*, int)));
 }
 
 QSize QPythonParamList::sizeHint() const
@@ -72,10 +76,17 @@ void QPythonParamList::adjustColumns()
     resizeColumnToContents(1);
 }
 
+void QPythonParamList::handleActivate(QTreeWidgetItem* item, int)
+{
+    plPythonParameter param(fParams[indexOfTopLevelItem(item)]);
+    if (param.fObjKey.Exists() && param.fObjKey.isLoaded())
+        PrpShopMain::Instance()->editCreatable(param.fObjKey->getObj());
+}
+
 void QPythonParamList::contextMenuEvent(QContextMenuEvent* evt)
 {
     QMenu menu(this);
-    QAction* addObjItem = menu.addAction(tr("Add Parameter"));
+    QAction* addObjItem = menu.addAction(tr("Add Parameter..."));
     QAction* delObjItem = menu.addAction(tr("Remove Parameter"));
 
     if (currentItem() == NULL)

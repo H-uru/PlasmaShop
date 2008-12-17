@@ -20,7 +20,7 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
     QGridLayout* layProps = new QGridLayout(grpProps);
-    layProps->setVerticalSpacing(2);
+    layProps->setVerticalSpacing(0);
     fCBProperties[plSimulationInterface::kDisable] = new QCheckBox(tr("Disable"), grpProps);
     fCBProperties[plSimulationInterface::kWeightless] = new QCheckBox(tr("Weightless"), grpProps);
     fCBProperties[plSimulationInterface::kPinned] = new QCheckBox(tr("Pinned"), grpProps);

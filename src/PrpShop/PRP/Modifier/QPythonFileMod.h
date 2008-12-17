@@ -23,6 +23,9 @@ public:
 
     void adjustColumns();
 
+protected slots:
+    void handleActivate(QTreeWidgetItem* item, int column);
+
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };

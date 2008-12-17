@@ -38,6 +38,8 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Object/QSceneObject.h"
 #include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
+#include "PRP/Surface/QLayer.h"
+#include "PRP/Surface/QMaterial.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
 {
@@ -48,6 +50,10 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kGMaterial:
+        return new QMaterial(pCre, parent);
+    case kLayer:
+        return new QLayer(pCre, parent);
     case kPythonFileMod:
         return new QPythonFileMod(pCre, parent);
     case kSceneObject:

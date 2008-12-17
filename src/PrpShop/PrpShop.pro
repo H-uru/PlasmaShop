@@ -14,6 +14,7 @@ LIBS += -L../../../Plasma/bin -lPlasma
 HEADERS += Main.h \
            QPlasmaUtils.h \
            QPlasmaTreeItem.h \
+           PRP/QColorEdit.h \
            PRP/QCreatable.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
@@ -23,10 +24,13 @@ HEADERS += Main.h \
            PRP/Object/QCoordinateInterface.h \
            PRP/Object/QSceneObject.h \
            PRP/Object/QSimulationInterface.h \
-           PRP/Object/QSynchedObject.h
+           PRP/Object/QSynchedObject.h \
+           PRP/Surface/QLayer.h \
+           PRP/Surface/QMaterial.h
 SOURCES += Main.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
+           PRP/QColorEdit.cpp \
            PRP/QCreatable.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \
@@ -36,5 +40,7 @@ SOURCES += Main.cpp \
            PRP/Object/QCoordinateInterface.cpp \
            PRP/Object/QSceneObject.cpp \
            PRP/Object/QSimulationInterface.cpp \
-           PRP/Object/QSynchedObject.cpp
+           PRP/Object/QSynchedObject.cpp \
+           PRP/Surface/QLayer.cpp \
+           PRP/Surface/QMaterial.cpp
 RESOURCES += images.qrc
