@@ -5,7 +5,8 @@
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QSpacerItem>
-#include <QDoubleValidator>
+#include "../../QKeyDialog.h"
+#include "../../Main.h"
 
 QLayer::QLayer(plCreatable* pCre, QWidget* parent)
       : QCreatable(pCre, kLayer, parent)
@@ -100,6 +101,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     blendLayout->addWidget(fBlendFlags[kBlendAlphaTestHigh], 6, 1);
     blendLayout->addWidget(fBlendFlags[kBlendAlphaAlways], 6, 2);
     blendLayout->addWidget(fBlendFlags[kBlendEnvBumpNext], 6, 3);
+    blendLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 7, 0, 1, 4);
 
     QWidget* clampZWidget = new QWidget(flagTab);
     QGridLayout* clampZLayout = new QGridLayout(clampZWidget);
@@ -120,6 +122,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     clampZLayout->addWidget(fZFlags[kZClearZ], 3, 0);
     clampZLayout->addWidget(fZFlags[kZNoZWrite], 3, 1);
     clampZLayout->addWidget(fZFlags[kZLODBias], 4, 0);
+    clampZLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0, 1, 2);
 
     QWidget* shadeWidget = new QWidget(flagTab);
     QGridLayout* shadeLayout = new QGridLayout(shadeWidget);
@@ -157,6 +160,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     shadeLayout->addWidget(fShadeFlags[kShadeWhite], 3, 1);
     shadeLayout->addWidget(fShadeFlags[kShadeVertColShade], 3, 2);
     shadeLayout->addWidget(fShadeFlags[kShadeReallyNoFog], 3, 3);
+    shadeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 4, 0, 1, 4);
 
     QWidget* miscWidget = new QWidget(flagTab);
     QGridLayout* miscLayout = new QGridLayout(miscWidget);
@@ -208,6 +212,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     miscLayout->addWidget(fMiscFlags[kMiscLightMap], 5, 0);
     miscLayout->addWidget(fMiscFlags[kMiscTroubledLoner], 5, 1);
     miscLayout->addWidget(fMiscFlags[kMiscNoShadowAlpha], 5, 2, 1, 2);
+    miscLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 6, 0, 1, 4);
 
     flagTab->addTab(blendWidget, tr("Blend Flags"));
     flagTab->addTab(clampZWidget, tr("Clamp/Z Flags"));
@@ -477,22 +482,62 @@ void QLayer::updateState(hsGMatState& state) const
 
 void QLayer::setBaseLayer()
 {
-    //...
+    plLayer* lay = (plLayer*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (lay->getUnderLay().Exists())
+        dlg.init(PrpShopMain::ResManager(), lay->getUnderLay());
+    else
+        dlg.init(PrpShopMain::ResManager(), lay->getKey()->getLocation(), kLayer);
+    if (dlg.exec() == QDialog::Accepted) {
+        lay->setUnderLay(dlg.selection());
+        fBaseLayer->setKey(lay->getUnderLay());
+        fBaseLayer->setText(lay->getUnderLay()->getName().cstr());
+    }
 }
 
 void QLayer::setTexture()
 {
-    //...
+    plLayer* lay = (plLayer*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (lay->getTexture().Exists())
+        dlg.init(PrpShopMain::ResManager(), lay->getTexture());
+    else
+        dlg.init(PrpShopMain::ResManager(), lay->getKey()->getLocation(), kMipmap);
+    if (dlg.exec() == QDialog::Accepted) {
+        lay->setTexture(dlg.selection());
+        fTexture->setKey(lay->getTexture());
+        fTexture->setText(lay->getTexture()->getName().cstr());
+    }
 }
 
 void QLayer::setVShader()
 {
-    //...
+    plLayer* lay = (plLayer*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (lay->getVertexShader().Exists())
+        dlg.init(PrpShopMain::ResManager(), lay->getVertexShader());
+    else
+        dlg.init(PrpShopMain::ResManager(), lay->getKey()->getLocation(), kShader);
+    if (dlg.exec() == QDialog::Accepted) {
+        lay->setVertexShader(dlg.selection());
+        fVShader->setKey(lay->getVertexShader());
+        fVShader->setText(lay->getVertexShader()->getName().cstr());
+    }
 }
 
 void QLayer::setPShader()
 {
-    //...
+    plLayer* lay = (plLayer*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (lay->getPixelShader().Exists())
+        dlg.init(PrpShopMain::ResManager(), lay->getPixelShader());
+    else
+        dlg.init(PrpShopMain::ResManager(), lay->getKey()->getLocation(), kShader);
+    if (dlg.exec() == QDialog::Accepted) {
+        lay->setPixelShader(dlg.selection());
+        fPShader->setKey(lay->getPixelShader());
+        fPShader->setText(lay->getPixelShader()->getName().cstr());
+    }
 }
 
 void QLayer::unsetBaseLayer()

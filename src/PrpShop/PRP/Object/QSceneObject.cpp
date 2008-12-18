@@ -4,6 +4,8 @@
 #include <QTabWidget>
 #include <QGridLayout>
 #include "../../QPlasmaUtils.h"
+#include "../../QKeyDialog.h"
+#include "../../Main.h"
 
 QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kSceneObject, parent)
@@ -80,22 +82,58 @@ void QSceneObject::saveDamage()
 
 void QSceneObject::setDraw()
 {
-    // ...
+    plSceneObject* obj = (plSceneObject*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (obj->getDrawInterface().Exists())
+        dlg.init(PrpShopMain::ResManager(), obj->getDrawInterface());
+    else
+        dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kDrawInterface);
+    if (dlg.exec() == QDialog::Accepted) {
+        obj->setDrawInterface(dlg.selection());
+        fDrawIntfLink->setKey(obj->getDrawInterface());
+    }
 }
 
 void QSceneObject::setSim()
 {
-    // ...
+    plSceneObject* obj = (plSceneObject*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (obj->getSimInterface().Exists())
+        dlg.init(PrpShopMain::ResManager(), obj->getSimInterface());
+    else
+        dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kSimulationInterface);
+    if (dlg.exec() == QDialog::Accepted) {
+        obj->setSimInterface(dlg.selection());
+        fSimIntfLink->setKey(obj->getSimInterface());
+    }
 }
 
 void QSceneObject::setCoord()
 {
-    // ...
+    plSceneObject* obj = (plSceneObject*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (obj->getCoordInterface().Exists())
+        dlg.init(PrpShopMain::ResManager(), obj->getCoordInterface());
+    else
+        dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kCoordinateInterface);
+    if (dlg.exec() == QDialog::Accepted) {
+        obj->setCoordInterface(dlg.selection());
+        fCoordIntfLink->setKey(obj->getCoordInterface());
+    }
 }
 
 void QSceneObject::setAudio()
 {
-    // ...
+    plSceneObject* obj = (plSceneObject*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (obj->getAudioInterface().Exists())
+        dlg.init(PrpShopMain::ResManager(), obj->getAudioInterface());
+    else
+        dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kAudioInterface);
+    if (dlg.exec() == QDialog::Accepted) {
+        obj->setAudioInterface(dlg.selection());
+        fAudioIntfLink->setKey(obj->getAudioInterface());
+    }
 }
 
 void QSceneObject::unsetDraw()

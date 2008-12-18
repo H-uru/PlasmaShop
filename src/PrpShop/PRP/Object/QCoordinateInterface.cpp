@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QTabWidget>
 #include <QGridLayout>
+#include "../../QKeyDialog.h"
+#include "../../Main.h"
 
 QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kCoordinateInterface, parent)
@@ -84,7 +86,16 @@ void QCoordinateInterface::saveDamage()
 
 void QCoordinateInterface::setOwner()
 {
-    //...
+    plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (intf->getOwner().Exists())
+        dlg.init(PrpShopMain::ResManager(), intf->getOwner());
+    else
+        dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
+    if (dlg.exec() == QDialog::Accepted) {
+        intf->setOwner(dlg.selection());
+        fOwnerLink->setKey(intf->getOwner());
+    }
 }
 
 void QCoordinateInterface::unsetOwner()

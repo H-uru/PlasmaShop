@@ -519,6 +519,18 @@ QString pqGetFriendlyClassName(short classType)
     return S_INVALID;
 }
 
+std::vector<short> pqGetValidKOTypes()
+{
+    // Please keep this sorted by the names found in pqGetFriendlyClassName
+    static short s_typeList[] = {
+        kAudioInterface, kCoordinateInterface, kLayer, kGMaterial,
+        kPythonFileMod, kSceneObject, kSimulationInterface
+    };
+    static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
+
+    return std::vector<short>(s_typeList, s_typeList + s_numTypes);
+}
+
 unsigned int qHash(const plLocation& loc)
 { return loc.unparse(); }
 

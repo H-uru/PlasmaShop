@@ -9,14 +9,19 @@
 #include <QMessageBox>
 #include <QMdiSubWindow>
 #include <Debug/plDebug.h>
+#include <ResManager/plFactory.h>
 
 #include "Main.h"
 #include "QPlasmaUtils.h"
+#include "QKeyDialog.h"
 #include "PRP/QCreatable.h"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance()
 { return sInstance; }
+
+plResManager* PrpShopMain::ResManager()
+{ return &sInstance->fResMgr; }
 
 PrpShopMain::PrpShopMain()
 {
@@ -35,7 +40,6 @@ PrpShopMain::PrpShopMain()
     fActions[kFileOpen] = new QAction(QIcon(":/res/fileopen.png"), tr("&Open..."), this);
     fActions[kFileSave] = new QAction(QIcon(":/res/filesave.png"), tr("&Save"), this);
     fActions[kFileSaveAs] = new QAction(tr("Sa&ve As..."), this);
-    fActions[kFileClose] = new QAction(tr("&Close"), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);
     fActions[kToolsNewObject] = new QAction(tr("&New Object..."), this);
@@ -60,7 +64,6 @@ PrpShopMain::PrpShopMain()
     fileMenu->addAction(fActions[kFileOpen]);
     fileMenu->addAction(fActions[kFileSave]);
     fileMenu->addAction(fActions[kFileSaveAs]);
-    fileMenu->addAction(fActions[kFileClose]);
     fileMenu->addSeparator();
     fileMenu->addAction(fActions[kFileExit]);
 
@@ -124,11 +127,15 @@ PrpShopMain::PrpShopMain()
     // Global UI Signals
     QObject::connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
     QObject::connect(fActions[kFileOpen], SIGNAL(activated()), this, SLOT(openFiles()));
+    QObject::connect(fActions[kFileSave], SIGNAL(activated()), this, SLOT(performSave()));
+    QObject::connect(fActions[kFileSaveAs], SIGNAL(activated()), this, SLOT(performSaveAs()));
 
     QObject::connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
                      fPropertyDock, SLOT(setVisible(bool)));
     QObject::connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
                      fActions[kToolsProperties], SLOT(setChecked(bool)));
+    QObject::connect(fActions[kToolsNewObject], SIGNAL(activated()),
+                     this, SLOT(createNewObject()));
 
     QObject::connect(fActions[kWindowPrev], SIGNAL(activated()),
                      fMdiArea, SLOT(activatePreviousSubWindow()));
@@ -404,7 +411,7 @@ void PrpShopMain::openFiles()
                             tr("Open File(s)"), fDialogDir,
                             "All supported types(*.age *.prp);;"
                             "Age Files (*.age);;"
-                            "PageFiles (*.prp)");
+                            "Page Files (*.prp)");
     QStringList filesIt = files;
     for (QStringList::Iterator it = filesIt.begin(); it != filesIt.end(); it++) {
         loadFile(*it);
@@ -471,6 +478,80 @@ void PrpShopMain::loadFile(const QString& filename)
     fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
+QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSaveAs)
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
+                           tr("No item selected to save!"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return NULL;
+    }
+
+
+    if (item->type() == QPlasmaTreeItem::kTypeAge) {
+        if (isSaveAs) {
+            QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
+                            tr("No item selected to save!"),
+                            QMessageBox::Ok, this);
+            msgBox.exec();
+            return NULL;
+        }
+
+        // Save all pages belonging to this age
+        for (int i=0; i<item->childCount(); i++) {
+            QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->child(i);
+            if (pageItem->type() != QPlasmaTreeItem::kTypePage)
+                throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
+            saveFile(pageItem->page(), pageItem->filename());
+        }
+        return NULL;
+    } else if (item->type() == QPlasmaTreeItem::kTypePage) {
+        return item;
+    } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
+        return fLoadedLocations.value(item->obj()->getKey()->getLocation(), NULL);
+    } else {
+        // Type folder
+        QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->parent();
+        if (pageItem->type() != QPlasmaTreeItem::kTypePage)
+            throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
+        return pageItem;
+    }
+}
+
+void PrpShopMain::performSave()
+{
+    QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
+    if (pageItem != NULL)
+        saveFile(pageItem->page(), pageItem->filename());
+}
+
+void PrpShopMain::performSaveAs()
+{
+    QPlasmaTreeItem* pageItem = findCurrentPageItem(true);
+    if (pageItem == NULL)
+        return;
+
+    QString saveDir = pageItem->filename().isEmpty()
+                    ? fDialogDir
+                    : pageItem->filename();
+    QString filename = QFileDialog::getSaveFileName(this,
+                            tr("Save PRP"), saveDir,
+                            "Page Files (*.prp)");
+    if (!filename.isEmpty()) {
+        saveFile(pageItem->page(), filename);
+        QDir dir = QDir(filename);
+        dir.cdUp();
+        fDialogDir = dir.absolutePath();
+    }
+}
+
+void PrpShopMain::saveFile(plPageInfo* page, const QString& filename)
+{
+    fResMgr.WritePage(filename.toUtf8().data(), page);
+}
+
 QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, const QString& filename)
 {
     // See if the page is already loaded -- return that if so
@@ -520,6 +601,69 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, const QString& filename
 
     fLoadedLocations[page->getLocation()] = item;
     return item;
+}
+
+void PrpShopMain::createNewObject()
+{
+    if (fResMgr.getLocations().size() < 1) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("You must have at least one page loaded to create objects"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    QNewKeyDialog dlg(this);
+    dlg.init(&fResMgr);
+    if (dlg.exec() == QDialog::Accepted) {
+        plLocation loc = dlg.location();
+        short type = dlg.type();
+
+        // Create and register the object
+        hsKeyedObject* ko = hsKeyedObject::Convert(plFactory::Create(type));
+        if (ko == NULL)
+            throw hsBadParamException(__FILE__, __LINE__, "Invalid KeyedObject");
+        ko->init(dlg.name().toUtf8().data());
+        fResMgr.AddObject(loc, ko);
+
+        // Now add it to the tree
+        plPageInfo* page = fResMgr.FindPage(loc);
+        QPlasmaTreeItem* ageItem = NULL;
+        QString ageName = page->getAge().cstr();
+        QString pageName = page->getPage().cstr();
+        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+            if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
+                ageItem = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+                break;
+            }
+        }
+        if (ageItem == NULL)
+            throw hsBadParamException(__FILE__, __LINE__, "Invalid Age");
+
+        QPlasmaTreeItem* pageItem = NULL;
+        for (int i=0; i<ageItem->childCount(); i++) {
+            if (ageItem->child(i)->text(0) == pageName) {
+                pageItem = (QPlasmaTreeItem*)ageItem->child(i);
+                break;
+            }
+        }
+        if (pageItem == NULL)
+            throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
+
+        QPlasmaTreeItem* folderItem = NULL;
+        QString typeName = pqGetFriendlyClassName(type);
+        for (int i=0; i<pageItem->childCount(); i++) {
+            if (pageItem->child(i)->text(0) == typeName) {
+                folderItem = (QPlasmaTreeItem*)pageItem->child(i);
+                break;
+            }
+        }
+        if (folderItem == NULL) {
+            folderItem = new QPlasmaTreeItem(pageItem);
+            folderItem->setText(0, typeName);
+        }
+        new QPlasmaTreeItem(folderItem, ko);
+    }
 }
 
 int main(int argc, char* argv[])

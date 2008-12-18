@@ -3,6 +3,8 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
+#include "../../QKeyDialog.h"
+#include "../../Main.h"
 
 QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kSimulationInterface, parent)
@@ -79,7 +81,16 @@ void QSimulationInterface::saveDamage()
 
 void QSimulationInterface::setOwner()
 {
-    //...
+    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (intf->getOwner().Exists())
+        dlg.init(PrpShopMain::ResManager(), intf->getOwner());
+    else
+        dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
+    if (dlg.exec() == QDialog::Accepted) {
+        intf->setOwner(dlg.selection());
+        fOwnerLink->setKey(intf->getOwner());
+    }
 }
 
 void QSimulationInterface::unsetOwner()
@@ -91,7 +102,17 @@ void QSimulationInterface::unsetOwner()
 
 void QSimulationInterface::setPhysical()
 {
-    //...
+    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (intf->getPhysical().Exists())
+        dlg.init(PrpShopMain::ResManager(), intf->getPhysical());
+    else
+        dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kGenericPhysical);
+    if (dlg.exec() == QDialog::Accepted) {
+        intf->setPhysical(dlg.selection());
+        fPhysicalLink->setKey(intf->getPhysical());
+        fPhysicalLink->setText(intf->getPhysical()->getName().cstr());
+    }
 }
 
 void QSimulationInterface::unsetPhysical()

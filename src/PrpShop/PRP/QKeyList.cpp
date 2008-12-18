@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include "../QPlasmaUtils.h"
+#include "../QKeyDialog.h"
 #include "../Main.h"
 
 /* QKeyList */
@@ -60,7 +61,14 @@ void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
 
     QAction* sel = menu.exec(evt->globalPos());
     if (sel == addObjItem) {
-        // ...
+        QFindKeyDialog dlg(this);
+        if (fKeys.size() > 0)
+            dlg.init(PrpShopMain::ResManager(), fKeys.back()->getLocation(),
+                     fKeys.back()->getType());
+        else
+            dlg.init(PrpShopMain::ResManager());
+        if (dlg.exec() == QDialog::Accepted)
+            addKey(dlg.selection());
     } else if (sel == delObjItem) {
         delItem(indexOfTopLevelItem(currentItem()));
     }

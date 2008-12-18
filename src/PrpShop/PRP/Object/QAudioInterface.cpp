@@ -3,6 +3,8 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
+#include "../../QKeyDialog.h"
+#include "../../Main.h"
 
 QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kAudioInterface, parent)
@@ -51,7 +53,16 @@ void QAudioInterface::saveDamage()
 
 void QAudioInterface::setOwner()
 {
-    //...
+    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (intf->getOwner().Exists())
+        dlg.init(PrpShopMain::ResManager(), intf->getOwner());
+    else
+        dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
+    if (dlg.exec() == QDialog::Accepted) {
+        intf->setOwner(dlg.selection());
+        fOwnerLink->setKey(intf->getOwner());
+    }
 }
 
 void QAudioInterface::unsetOwner()
@@ -63,7 +74,17 @@ void QAudioInterface::unsetOwner()
 
 void QAudioInterface::setAudible()
 {
-    //...
+    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    QFindKeyDialog dlg(this);
+    if (intf->getAudible().Exists())
+        dlg.init(PrpShopMain::ResManager(), intf->getAudible());
+    else
+        dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation());
+    if (dlg.exec() == QDialog::Accepted) {
+        intf->setAudible(dlg.selection());
+        fAudibleLink->setKey(intf->getAudible());
+        fAudibleLink->setText(intf->getAudible()->getName().cstr());
+    }
 }
 
 void QAudioInterface::unsetAudible()

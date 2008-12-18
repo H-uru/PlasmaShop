@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 41)"
+#define PRPSHOP_VERSION "1.0 (build 42)"
 
 class PrpShopMain : public QMainWindow {
 private:
@@ -51,7 +51,7 @@ private:
 
     // Menu actions
     enum {
-        kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileClose, kFileExit,
+        kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
         kToolsProperties, kToolsNewObject, kWindowPrev, kWindowNext,
         kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll, kNumActions
     };
@@ -66,20 +66,26 @@ private:
 
 public:
     static PrpShopMain* Instance();
+    static plResManager* ResManager();
 
     PrpShopMain();
     void setPropertyPage(PropWhich which);
     void loadFile(const QString& filename);
+    void saveFile(plPageInfo* page, const QString& filename);
     void editCreatable(plCreatable* pCre, short forceType = -1);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
     QPlasmaTreeItem* loadPage(plPageInfo* page, const QString& filename);
+    QPlasmaTreeItem* findCurrentPageItem(bool isSaveAs);
 
 public slots:
     void openFiles();
+    void performSave();
+    void performSaveAs();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeItemActivated(QTreeWidgetItem* item, int column);
+    void createNewObject();
 };
 
 #endif
