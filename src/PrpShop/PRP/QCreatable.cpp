@@ -32,6 +32,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 
 /***** Creatable Forms -- think QFactory ;) *****/
+#include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
@@ -54,6 +55,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QMaterial(pCre, parent);
     case kLayer:
         return new QLayer(pCre, parent);
+    case kMsgForwarder:
+        return new QMsgForwarder(pCre, parent);
     case kPythonFileMod:
         return new QPythonFileMod(pCre, parent);
     case kSceneObject:

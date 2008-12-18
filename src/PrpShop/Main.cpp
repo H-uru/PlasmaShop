@@ -421,15 +421,21 @@ void PrpShopMain::openFiles()
     }
 }
 
-void PrpShopMain::loadFile(const QString& filename)
+void PrpShopMain::loadFile(QString filename)
 {
+    // Fix filename to contain the absolute path >.<
+    QDir dir(filename);
+    filename = dir.absolutePath();
+
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
             plAgeInfo* age = fResMgr.ReadAge(filename.toUtf8().constData(), true);
             for (size_t i=0; i<age->getNumPages(); i++)
-                loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())), filename);
+                loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())),
+                         age->getPageFilename(i, fResMgr.getVer()).cstr());
             for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++)
-                loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), filename);
+                loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())),
+                         age->getCommonPageFilename(i, fResMgr.getVer()).cstr());
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
                                tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
@@ -493,8 +499,8 @@ QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSaveAs)
     if (item->type() == QPlasmaTreeItem::kTypeAge) {
         if (isSaveAs) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-                            tr("No item selected to save!"),
-                            QMessageBox::Ok, this);
+                               tr("No item selected to save!"),
+                               QMessageBox::Ok, this);
             msgBox.exec();
             return NULL;
         }
@@ -547,12 +553,12 @@ void PrpShopMain::performSaveAs()
     }
 }
 
-void PrpShopMain::saveFile(plPageInfo* page, const QString& filename)
+void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 {
     fResMgr.WritePage(filename.toUtf8().data(), page);
 }
 
-QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, const QString& filename)
+QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 {
     // See if the page is already loaded -- return that if so
     QPlasmaTreeItem* parent = NULL;
@@ -599,6 +605,7 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, const QString& filename
         }
     }
 
+    item->setFilename(filename);
     fLoadedLocations[page->getLocation()] = item;
     return item;
 }
@@ -674,5 +681,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     PrpShopMain mainWnd;
     mainWnd.show();
+    for (int i=1; i<argc; i++)
+        mainWnd.loadFile(argv[i]);
     return app.exec();
 }

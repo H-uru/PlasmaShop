@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 42)"
+#define PRPSHOP_VERSION "1.0 (build 43)"
 
 class PrpShopMain : public QMainWindow {
 private:
@@ -70,13 +70,13 @@ public:
 
     PrpShopMain();
     void setPropertyPage(PropWhich which);
-    void loadFile(const QString& filename);
-    void saveFile(plPageInfo* page, const QString& filename);
+    void loadFile(QString filename);
+    void saveFile(plPageInfo* page, QString filename);
     void editCreatable(plCreatable* pCre, short forceType = -1);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
-    QPlasmaTreeItem* loadPage(plPageInfo* page, const QString& filename);
+    QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSaveAs);
 
 public slots:

@@ -1,10 +1,11 @@
 #include "QPythonFileMod.h"
 
-#include <QLabel>
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include "../../Main.h"
+#include "../../QKeyDialog.h"
 
 static const QString s_PythonParamTypes[] = {
     "(Invalid)", "Integer", "Float", "Boolean", "String", "Scene Object",
@@ -14,6 +15,28 @@ static const QString s_PythonParamTypes[] = {
     "Cluster Component", "Material Animation", "Grass Shader Component",
     "Global SDL Variable", "Subtitle", "Blower Component", "None"
 };
+
+static QStringList makeParamItem(const plPythonParameter& param)
+{
+    QStringList row;
+    row << QString("%1").arg(param.fID) << s_PythonParamTypes[param.fValueType];
+    if (param.fValueType == plPythonParameter::kInt)
+        row << QString("%1").arg(param.fIntValue);
+    else if (param.fValueType == plPythonParameter::kBoolean)
+        row << (param.fBoolValue ? "true" : "false");
+    else if (param.fValueType == plPythonParameter::kFloat)
+        row << QString("%1").arg(param.fFloatValue);
+    else if (param.fValueType == plPythonParameter::kString ||
+             param.fValueType == plPythonParameter::kAnimationName ||
+             param.fValueType == plPythonParameter::kGlobalSDLVar ||
+             param.fValueType == plPythonParameter::kSubtitle)
+        row << param.fStrValue.cstr();
+    else if (param.fValueType == plPythonParameter::kNone)
+        row << "(Null)";
+    else
+        row << param.fObjKey->getName().cstr();
+    return row;
+}
 
 /* QPythonParamList */
 QPythonParamList::QPythonParamList(QWidget* parent)
@@ -38,24 +61,7 @@ QSize QPythonParamList::sizeHint() const
 
 void QPythonParamList::addParam(const plPythonParameter& param)
 {
-    QStringList row;
-    row << QString("%1").arg(param.fID) << s_PythonParamTypes[param.fValueType];
-    if (param.fValueType == plPythonParameter::kInt)
-        row << QString("%1").arg(param.fIntValue);
-    else if (param.fValueType == plPythonParameter::kBoolean)
-        row << (param.fBoolValue ? "true" : "false");
-    else if (param.fValueType == plPythonParameter::kFloat)
-        row << QString("%1").arg(param.fFloatValue);
-    else if (param.fValueType == plPythonParameter::kString ||
-             param.fValueType == plPythonParameter::kAnimationName ||
-             param.fValueType == plPythonParameter::kGlobalSDLVar ||
-             param.fValueType == plPythonParameter::kSubtitle)
-        row << param.fStrValue.cstr();
-    else if (param.fValueType == plPythonParameter::kNone)
-        row << "(Null)";
-    else
-        row << param.fObjKey->getName().cstr();
-    new QTreeWidgetItem(this, row);
+    new QTreeWidgetItem(this, makeParamItem(param));
     fParams << param;
 }
 
@@ -87,6 +93,7 @@ void QPythonParamList::contextMenuEvent(QContextMenuEvent* evt)
 {
     QMenu menu(this);
     QAction* addObjItem = menu.addAction(tr("Add Parameter..."));
+    QAction* editObjItem = menu.addAction(tr("Edit Parameter..."));
     QAction* delObjItem = menu.addAction(tr("Remove Parameter"));
 
     if (currentItem() == NULL)
@@ -94,7 +101,19 @@ void QPythonParamList::contextMenuEvent(QContextMenuEvent* evt)
 
     QAction* sel = menu.exec(evt->globalPos());
     if (sel == addObjItem) {
-        // ...
+        QPythonParamDialog dlg(this);
+        if (dlg.exec() == QDialog::Accepted)
+            addParam(dlg.parameter());
+    } else if (sel == editObjItem) {
+        QPythonParamDialog dlg(this);
+        dlg.init(fParams[indexOfTopLevelItem(currentItem())]);
+        if (dlg.exec() == QDialog::Accepted) {
+            plPythonParameter param = dlg.parameter();
+            fParams[indexOfTopLevelItem(currentItem())] = param;
+            QStringList list = makeParamItem(param);
+            for (int i=0; i<list.size(); i++)
+                currentItem()->setText(i, list[i]);
+        }
     } else if (sel == delObjItem) {
         delParam(indexOfTopLevelItem(currentItem()));
     }
@@ -149,4 +168,151 @@ void QPythonFileMod::saveDamage()
     QList<plPythonParameter> params = fParams->params();
     while (!params.isEmpty())
         mod->addParameter(params.takeFirst());
+}
+
+
+/* QPythonParamDialog */
+QPythonParamDialog::QPythonParamDialog(QWidget* parent)
+                  : QDialog(parent)
+{
+    setWindowTitle(tr("Python Parameter"));
+
+    fTypeBox = new QComboBox(this);
+    fID = new QSpinBox(this);
+    fID->setRange(0, 0x7FFFFFFF);
+    fKeyValue = new QLinkLabel("(Null)", this);
+    fStringValue = new QLineEdit(this);
+    fIntValue = new QLineEdit("0", this);
+    fIntValue->setValidator(new QIntValidator(fIntValue));
+    fFloatValue = new QLineEdit("0", this);
+    fFloatValue->setValidator(new QDoubleValidator(fFloatValue));
+    fBoolValue = new QComboBox(this);
+    fBoolValue->addItem("false");
+    fBoolValue->addItem("true");
+    fLabelNull = new QLabel("(Null)", this);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(Qt::Horizontal, this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel |
+                                  QDialogButtonBox::Ok);
+
+    fKeyValue->setVisible(false);
+    fStringValue->setVisible(false);
+    fIntValue->setVisible(false);
+    fFloatValue->setVisible(false);
+    fBoolValue->setVisible(false);
+
+    for (int i=1; i<=plPythonParameter::kNone; i++)
+        fTypeBox->addItem(s_PythonParamTypes[i]);
+
+    QGridLayout* layout = new QGridLayout(this);
+    layout->setHorizontalSpacing(8);
+    layout->setVerticalSpacing(8);
+    layout->addWidget(new QLabel(tr("ID:"), this), 0, 0);
+    layout->addWidget(fID, 0, 1, 1, 2);
+    layout->addWidget(new QLabel(tr("Type:"), this), 1, 0);
+    layout->addWidget(fTypeBox, 1, 1, 1, 2);
+    layout->addWidget(new QLabel(tr("Value:"), this), 2, 0);
+    layout->addWidget(fKeyValue, 2, 1);
+    layout->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding), 2, 2);
+    layout->addWidget(fStringValue, 2, 1, 1, 2);
+    layout->addWidget(fIntValue, 2, 1, 1, 2);
+    layout->addWidget(fFloatValue, 2, 1, 1, 2);
+    layout->addWidget(fBoolValue, 2, 1, 1, 2);
+    layout->addWidget(fLabelNull, 2, 1, 1, 2);
+    layout->addWidget(buttonBox, 3, 0, 1, 3);
+
+    QObject::connect(fTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    QObject::connect(fKeyValue, SIGNAL(activated()), this, SLOT(selectKey()));
+    QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    fTypeBox->setCurrentIndex(plPythonParameter::kNone-1);
+}
+
+void QPythonParamDialog::init(const plPythonParameter& param)
+{
+    fID->setValue(param.fID);
+    fTypeBox->setCurrentIndex(param.fValueType-1);
+
+    if (param.fValueType == plPythonParameter::kInt) {
+        fIntValue->setText(QString("%1").arg(param.fIntValue));
+    } else if (param.fValueType == plPythonParameter::kBoolean) {
+        fBoolValue->setCurrentIndex(param.fBoolValue ? 1 : 0);
+    } else if (param.fValueType == plPythonParameter::kFloat) {
+        fFloatValue->setText(QString("%1").arg(param.fFloatValue));
+    } else if (param.fValueType == plPythonParameter::kString ||
+             param.fValueType == plPythonParameter::kAnimationName ||
+             param.fValueType == plPythonParameter::kGlobalSDLVar ||
+             param.fValueType == plPythonParameter::kSubtitle) {
+        fStringValue->setText(param.fStrValue.cstr());
+    } else if (param.fValueType == plPythonParameter::kNone) {
+        // Do nothing
+    } else {
+        fKey = param.fObjKey;
+        if (fKey.Exists())
+            fKeyValue->setText(fKey->getName().cstr());
+        else
+            fKeyValue->setText("(Null)");
+    }
+}
+
+plPythonParameter QPythonParamDialog::parameter() const
+{
+    plPythonParameter param;
+    param.fID = fID->text().toUInt();
+    param.fValueType = fTypeBox->currentIndex() + 1;
+
+    if (param.fValueType == plPythonParameter::kInt) {
+        param.fIntValue = fIntValue->text().toInt();
+    } else if (param.fValueType == plPythonParameter::kBoolean) {
+        param.fBoolValue = fBoolValue->currentIndex() != 0;
+    } else if (param.fValueType == plPythonParameter::kFloat) {
+        param.fFloatValue = fFloatValue->text().toFloat();
+    } else if (param.fValueType == plPythonParameter::kString ||
+             param.fValueType == plPythonParameter::kAnimationName ||
+             param.fValueType == plPythonParameter::kGlobalSDLVar ||
+             param.fValueType == plPythonParameter::kSubtitle) {
+        param.fStrValue = fStringValue->text().toUtf8().data();
+    } else if (param.fValueType == plPythonParameter::kNone) {
+        // Do nothing
+    } else {
+        param.fObjKey = fKey;
+    }
+    return param;
+}
+
+void QPythonParamDialog::selectKey()
+{
+    QFindKeyDialog dlg(this);
+    dlg.init(PrpShopMain::ResManager(), fKey);
+    if (dlg.exec() == QDialog::Accepted) {
+        fKey = dlg.selection();
+        fKeyValue->setText(fKey->getName().cstr());
+    }
+}
+
+void QPythonParamDialog::typeChanged(int type)
+{
+    fKeyValue->setVisible(false);
+    fStringValue->setVisible(false);
+    fIntValue->setVisible(false);
+    fFloatValue->setVisible(false);
+    fBoolValue->setVisible(false);
+    fLabelNull->setVisible(false);
+
+    type++;
+    if (type == plPythonParameter::kInt) {
+        fIntValue->setVisible(true);
+    } else if (type == plPythonParameter::kBoolean) {
+        fBoolValue->setVisible(true);
+    } else if (type == plPythonParameter::kFloat) {
+        fFloatValue->setVisible(true);
+    } else if (type == plPythonParameter::kString ||
+               type == plPythonParameter::kAnimationName ||
+               type == plPythonParameter::kGlobalSDLVar ||
+               type == plPythonParameter::kSubtitle) {
+        fStringValue->setVisible(true);
+    } else if (type == plPythonParameter::kNone) {
+        fLabelNull->setVisible(true);
+    } else {
+        fKeyValue->setVisible(true);
+    }
 }

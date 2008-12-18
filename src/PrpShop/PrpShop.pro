@@ -20,6 +20,7 @@ HEADERS += Main.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
            PRP/QObjLink.h \
+           PRP/Message/QMsgForwarder.h \
            PRP/Modifier/QPythonFileMod.h \
            PRP/Object/QAudioInterface.h \
            PRP/Object/QCoordinateInterface.h \
@@ -37,6 +38,7 @@ SOURCES += Main.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \
            PRP/QObjLink.cpp \
+           PRP/Message/QMsgForwarder.cpp \
            PRP/Modifier/QPythonFileMod.cpp \
            PRP/Object/QAudioInterface.cpp \
            PRP/Object/QCoordinateInterface.cpp \

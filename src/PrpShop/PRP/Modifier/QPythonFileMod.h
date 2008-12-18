@@ -5,6 +5,10 @@
 
 #include <PRP/Modifier/plPythonFileMod.h>
 #include <QLineEdit>
+#include <QDialog>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QLabel>
 #include "../QObjLink.h"
 #include "../QKeyList.h"
 
@@ -41,6 +45,30 @@ protected:
 public:
     QPythonFileMod(plCreatable* pCre, QWidget* parent = NULL);
     virtual void saveDamage();
+};
+
+class QPythonParamDialog : public QDialog {
+protected:
+    Q_OBJECT
+    QComboBox* fTypeBox;
+    QSpinBox* fID;
+    QLinkLabel* fKeyValue;
+    QLineEdit* fStringValue;
+    QLineEdit* fIntValue;
+    QLineEdit* fFloatValue;
+    QComboBox* fBoolValue;
+    QLabel* fLabelNull;
+    plWeakKey fKey;
+
+public:
+    QPythonParamDialog(QWidget* parent = NULL);
+    void init(const plPythonParameter& param);
+
+    plPythonParameter parameter() const;
+
+protected slots:
+    void selectKey();
+    void typeChanged(int);
 };
 
 #endif
