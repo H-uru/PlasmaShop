@@ -58,7 +58,7 @@ protected:
     QLineEdit* fFloatValue;
     QComboBox* fBoolValue;
     QLabel* fLabelNull;
-    plWeakKey fKey;
+    plKey fKey;
 
 public:
     QPythonParamDialog(QWidget* parent = NULL);
