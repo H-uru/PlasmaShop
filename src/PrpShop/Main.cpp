@@ -315,7 +315,7 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
                 last->setText(0, fPageName->text());
                 refreshTree = true;
             }
-            if (fReleaseVersion->value() != last->page()->getReleaseVersion())
+            if (fReleaseVersion->value() != (int)last->page()->getReleaseVersion())
                 last->page()->setReleaseVersion(fReleaseVersion->value());
             plLocation loc;
             loc.setSeqPrefix(fSeqPrefix->value());
@@ -675,8 +675,8 @@ void PrpShopMain::createNewObject()
 
 int main(int argc, char* argv[])
 {
-    // Redirect libPlasma's debug stuff to Plasma.log
-    plDebug::InitFile(plDebug::kDLAll);
+    // Redirect libPlasma's debug stuff to PrpShop.log
+    plDebug::InitFile(plDebug::kDLAll, "PrpShop.log");
 
     QApplication app(argc, argv);
     PrpShopMain mainWnd;

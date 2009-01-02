@@ -1,0 +1,28 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <!-- App Images -->
+    <file>res/filenew.png</file>
+    <file>res/fileopen.png</file>
+    <file>res/filesave.png</file>
+
+    <!-- Images for the Node Tree -->
+    <file>img/admin.png</file>
+    <file>img/age.png</file>
+    <file>img/agei.png</file>
+    <file>img/bfldr.png</file>
+    <file>img/data.png</file>
+    <file>img/gfldr.png</file>
+    <file>img/gtext.png</file>
+    <file>img/img.png</file>
+    <file>img/link.png</file>
+    <file>img/mrkr.png</file>
+    <file>img/plr.png</file>
+    <file>img/plri.png</file>
+    <file>img/rfldr.png</file>
+    <file>img/save.png</file>
+    <file>img/text.png</file>
+    <file>img/unknown.png</file>
+    <file>img/wfldr.png</file>
+    <file>img/yfldr.png</file>
+</qresource>
+</RCC>
