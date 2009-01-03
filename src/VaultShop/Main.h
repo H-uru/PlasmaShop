@@ -8,7 +8,10 @@
 #include <QAction>
 
 #include <Vault/plVaultStore.h>
+#include <SDL/plSDLMgr.h>
 #include <list>
+
+#include "QVaultNode.h"
 
 class VaultShopMain : public QMainWindow {
 public:
@@ -20,6 +23,7 @@ private:
     Q_OBJECT
     QTreeWidget* fVaultTree;
     QTabWidget* fNodeEditor;
+    QVaultNode* fVaultNodeEditor;
 
     // Menu actions
     enum {
@@ -38,18 +42,20 @@ private:
         void save();
     };
     std::list<VaultInfo*> fLoadedVaults;
+    plSDLMgr fSDLMgr;
 
 public:
     VaultShopMain();
-    void loadVault(QString filename);
+    virtual ~VaultShopMain();
+    void loadVault(QString filename, QString vaultName);
     void loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
-    VaultInfo* findCurrentVault();
+    VaultInfo* findCurrentVault(QTreeWidgetItem* item = NULL);
 
 public slots:
-    void openFile();
+    void openGame();
     void performSave();
     void openNode();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);

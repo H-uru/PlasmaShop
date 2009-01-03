@@ -9,6 +9,11 @@
 #include <Vault/plVaultNode.h>
 
 class QVaultNode : public QWidget {
+public:
+    static QString sNodeTypeNames[];
+    static int MapNodeType(unsigned int nodeType);
+    static unsigned int UnmapNodeType(int idx);
+
 private:
     Q_OBJECT
     QLabel* fAutoTime;
@@ -16,7 +21,6 @@ private:
     QLabel* fAgeTime;
     QLineEdit* fAgeName;
     QLineEdit* fAgeGUID;
-    QLineEdit* fAgeBlobID;
 
     QLineEdit* fCreatorID;
     QLineEdit* fOwnerID;
@@ -54,11 +58,16 @@ private:
     QLabel* fBlob1_Info;
     QLabel* fBlob2_Info;
 
+    plVaultNode fNode;
+
 public:
-    QVaultNode();
+    QVaultNode(QWidget* parent = NULL);
+
+    void setNode(const plVaultNode& node);
+    plVaultNode saveNode();
 };
 
-QIcon GetNodeTypeIcon(const plVaultNode& node);
+QIcon GetNodeTypeIcon(unsigned int nodeType);
 QString GetNodeDisplay(const plVaultNode& node);
 QString GetFolderName(const plVaultNode& node);
 
