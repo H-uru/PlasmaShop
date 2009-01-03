@@ -170,10 +170,11 @@ void VaultShopMain::updateNode(QTreeWidgetItem* item, const plVaultNode& node)
 
 void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    statusBar()->showMessage(current->statusTip(0));
+    if (current != NULL)
+        statusBar()->showMessage(current->statusTip(0));
     saveNode(previous);
 
-    if (current->data(0, kRoleNodeID).toInt() > 0) {
+    if (current != NULL && current->data(0, kRoleNodeID).toInt() > 0) {
         VaultInfo* vault = findCurrentVault(current);
         if (vault == NULL)
             fVaultNodeEditor->setNode(plVaultNode());
