@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QIntValidator>
+#include <QRegExpValidator>
 #include <QDateTime>
 #include <Vault/plVaultNodeTypes.h>
 
@@ -87,7 +88,8 @@ QVaultNode::QVaultNode(QWidget* parent)
     fModifyTime = new QLabel("N/A", top);
     fAgeTime = new QLabel("N/A", top);
     fAgeName = new QLineEdit(top);
-    fAgeGUID = new QLineEdit(top);
+    fAgeGUID = new QLineEdit("0000000000000000", top);
+    fAgeGUID->setValidator(new QRegExpValidator(QRegExp("[0-9A-Fa-f]{16}"), fAgeGUID));
 
     fCreatorID = new QLineEdit("0", top);
     fOwnerID = new QLineEdit("0", top);
@@ -139,15 +141,15 @@ QVaultNode::QVaultNode(QWidget* parent)
     topLayout->setVerticalSpacing(2);
     topLayout->addWidget(new QLabel("Auto Time:", top), 0, 0);
     topLayout->addWidget(fAutoTime, 0, 1);
+    topLayout->addWidget(new QLabel("Modify Time:", top), 1, 0);
+    topLayout->addWidget(fModifyTime, 1, 1);
+    topLayout->addWidget(new QLabel("Age Time:", top), 2, 0);
+    topLayout->addWidget(fAgeTime, 2, 1);
     topLayout->addItem(new QSpacerItem(32, 0), 0, 2);
-    topLayout->addWidget(new QLabel("Modify Time:", top), 0, 3);
-    topLayout->addWidget(fModifyTime, 0, 4);
-    topLayout->addWidget(new QLabel("Age Time:", top), 1, 0);
-    topLayout->addWidget(fAgeTime, 1, 1);
+    topLayout->addWidget(new QLabel("Age Name:", top), 0, 3);
+    topLayout->addWidget(fAgeName, 0, 4);
     topLayout->addWidget(new QLabel("Age GUID:", top), 1, 3);
     topLayout->addWidget(fAgeGUID, 1, 4);
-    topLayout->addWidget(new QLabel("Age Name:", top), 2, 0);
-    topLayout->addWidget(fAgeName, 2, 1);
     topLayout->addItem(new QSpacerItem(0, 32), 3, 0);
     topLayout->addWidget(new QLabel("Creator:", top), 4, 0);
     topLayout->addWidget(fCreatorID, 4, 1);
@@ -349,7 +351,7 @@ plVaultNode QVaultNode::saveNode()
     fNode.setIString64_2(fIString64_2->text().toUtf8().data());
 
     fNode.setText_1(fText_1->toPlainText().toUtf8().data());
-    fNode.setText_2(fText_1->toPlainText().toUtf8().data());
+    fNode.setText_2(fText_2->toPlainText().toUtf8().data());
 
     return fNode;
 }

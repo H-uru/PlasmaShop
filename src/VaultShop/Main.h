@@ -53,6 +53,8 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent* evt);
     VaultInfo* findCurrentVault(QTreeWidgetItem* item = NULL);
+    plVaultNode saveNode(QTreeWidgetItem* nodeItem);
+    void updateNode(QTreeWidgetItem* item, const plVaultNode& node);
 
 public slots:
     void openGame();

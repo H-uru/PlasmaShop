@@ -145,19 +145,36 @@ VaultShopMain::VaultInfo* VaultShopMain::findCurrentVault(QTreeWidgetItem* item)
     return NULL;
 }
 
+plVaultNode VaultShopMain::saveNode(QTreeWidgetItem* nodeItem)
+{
+    if (nodeItem == NULL || nodeItem->data(0, kRoleNodeID).toInt() < 0)
+        return plVaultNode();
+
+    VaultInfo* vault = findCurrentVault(nodeItem);
+    if (vault == NULL) {
+        fVaultNodeEditor->setNode(plVaultNode());
+        return plVaultNode();
+    }
+    plVaultNode update = vault->fVault->addNode(fVaultNodeEditor->saveNode());
+    updateNode(nodeItem, update);
+    return update;
+}
+
+void VaultShopMain::updateNode(QTreeWidgetItem* item, const plVaultNode& node)
+{
+    item->setText(0, GetNodeDisplay(node));
+    item->setIcon(0, GetNodeTypeIcon(node.getNodeType()));
+    item->setData(0, kRoleNodeID, node.getNodeID());
+    item->setStatusTip(0, QString("%1").arg(node.getNodeID()));
+}
+
 void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     statusBar()->showMessage(current->statusTip(0));
-
-    VaultInfo* vault = findCurrentVault(previous);
-    if (vault == NULL) {
-        fVaultNodeEditor->setNode(plVaultNode());
-        return;
-    }
-    vault->fVault->addNode(fVaultNodeEditor->saveNode());
+    saveNode(previous);
 
     if (current->data(0, kRoleNodeID).toInt() > 0) {
-        vault = findCurrentVault(current);
+        VaultInfo* vault = findCurrentVault(current);
         if (vault == NULL)
             fVaultNodeEditor->setNode(plVaultNode());
         else
@@ -224,6 +241,13 @@ void VaultShopMain::openGame()
             }
         }
 
+        if (fVaultTree->topLevelItemCount() == 0) {
+            QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                               tr("No vaults were found to load"),
+                               QMessageBox::Ok, this);
+            msgBox.exec();
+        }
+
         s_gameDir = dirname;
     }
 }
@@ -249,10 +273,8 @@ void VaultShopMain::loadVault(QString filename, QString vaultName)
 void VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
                              VaultInfo* vault)
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent, QStringList() << GetNodeDisplay(node));
-    item->setIcon(0, GetNodeTypeIcon(node.getNodeType()));
-    item->setData(0, kRoleNodeID, node.getNodeID());
-    item->setStatusTip(0, QString("%1").arg(node.getNodeID()));
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent);
+    updateNode(item, node);
 
     std::vector<plVaultNode> children = vault->fVault->getChildren(node.getNodeID());
     for (size_t i=0; i<children.size(); i++)
@@ -292,9 +314,8 @@ void VaultShopMain::openNode()
 void VaultShopMain::performSave()
 {
     // Save the current node:
-    VaultInfo* vault = findCurrentVault();
-    if (vault != NULL)
-        vault->fVault->addNode(fVaultNodeEditor->saveNode());
+    plVaultNode update = saveNode(fVaultTree->currentItem());
+    fVaultNodeEditor->setNode(update);
 
     // Save all vaults to their files
     std::list<VaultInfo*>::iterator it;
