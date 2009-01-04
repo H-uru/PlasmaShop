@@ -48,6 +48,11 @@ VaultShopMain::VaultShopMain()
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kVaultOpenNode] = new QAction(tr("Subscribe to &Node..."), this);
 
+    fActions[kNodeUnLink] = new QAction(tr("Remove"), this);
+    fActions[kNodeLink] = new QAction(tr("Add Node..."), this);
+    fActions[kNodeCreate] = new QAction(tr("Create Node"), this);
+    fActions[kNodeUnsubscribe] = new QAction(tr("Un-subscribe"), this);
+
     fActions[kFileOpenVault]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSaveVault]->setShortcut(Qt::CTRL + Qt::Key_S);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
@@ -78,6 +83,7 @@ VaultShopMain::VaultShopMain()
     fVaultTree = new QTreeWidget(splitter);
     fVaultTree->setUniformRowHeights(true);
     fVaultTree->setHeaderHidden(true);
+    fVaultTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Property Editor
     fNodeEditor = new QTabWidget(splitter);
@@ -91,13 +97,20 @@ VaultShopMain::VaultShopMain()
     splitter->setSizes(QList<int>() << 160 << 320);
 
     // Global UI Signals
-    QObject::connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
-    QObject::connect(fActions[kFileOpenVault], SIGNAL(activated()), this, SLOT(openGame()));
-    QObject::connect(fActions[kFileSaveVault], SIGNAL(activated()), this, SLOT(performSave()));
-    QObject::connect(fActions[kVaultOpenNode], SIGNAL(activated()), this, SLOT(openNode()));
+    connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
+    connect(fActions[kFileOpenVault], SIGNAL(activated()), this, SLOT(openGame()));
+    connect(fActions[kFileSaveVault], SIGNAL(activated()), this, SLOT(performSave()));
+    connect(fActions[kVaultOpenNode], SIGNAL(activated()), this, SLOT(openNode()));
+    connect(fActions[kNodeUnLink], SIGNAL(activated()), this, SLOT(unlinkNode()));
+    connect(fActions[kNodeLink], SIGNAL(activated()), this, SLOT(linkNode()));
+    connect(fActions[kNodeCreate], SIGNAL(activated()), this, SLOT(createNode()));
+    connect(fActions[kNodeUnsubscribe], SIGNAL(activated()), this, SLOT(closeNode()));
 
-    QObject::connect(fVaultTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-                     this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(fVaultTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+            this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(fVaultTree, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(treeContextMenu(const QPoint&)));
+    connect(this, SIGNAL(nodeChanged(unsigned int)), this, SLOT(refreshNode(unsigned int)));
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "VaultShop");
@@ -145,6 +158,17 @@ VaultShopMain::VaultInfo* VaultShopMain::findCurrentVault(QTreeWidgetItem* item)
     return NULL;
 }
 
+QList<QTreeWidgetItem*> VaultShopMain::findNodeItems(unsigned int nodeId, QTreeWidgetItem* parent)
+{
+    QList<QTreeWidgetItem*> items;
+    for (int i=0; i<parent->childCount(); i++) {
+        items += findNodeItems(nodeId, parent->child(i));
+        if (parent->child(i)->data(0, kRoleNodeID).toInt() == (int)nodeId)
+            items << parent->child(i);
+    }
+    return items;
+}
+
 plVaultNode VaultShopMain::saveNode(QTreeWidgetItem* nodeItem)
 {
     if (nodeItem == NULL || nodeItem->data(0, kRoleNodeID).toInt() < 0)
@@ -176,10 +200,11 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
 
     if (current != NULL && current->data(0, kRoleNodeID).toInt() > 0) {
         VaultInfo* vault = findCurrentVault(current);
-        if (vault == NULL)
+        if (vault == NULL) {
             fVaultNodeEditor->setNode(plVaultNode());
-        else
+        } else {
             fVaultNodeEditor->setNode(vault->fVault->getNode(current->data(0, kRoleNodeID).toInt()));
+        }
     } else {
         fVaultNodeEditor->setNode(plVaultNode());
     }
@@ -274,6 +299,11 @@ void VaultShopMain::loadVault(QString filename, QString vaultName)
 void VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
                              VaultInfo* vault)
 {
+    for (int i=0; i<parent->childCount(); i++) {
+        if (parent->child(i)->data(0, kRoleNodeID).toInt() == node.getNodeID())
+            return;
+    }
+
     QTreeWidgetItem* item = new QTreeWidgetItem(parent);
     updateNode(item, node);
 
@@ -322,6 +352,136 @@ void VaultShopMain::performSave()
     std::list<VaultInfo*>::iterator it;
     for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
         (*it)->save();
+}
+
+void VaultShopMain::treeContextMenu(const QPoint& pos)
+{
+    fVaultTree->setCurrentItem(fVaultTree->itemAt(pos));
+    if (fVaultTree->currentItem() == NULL)
+        return;
+
+    QMenu menu(this);
+    menu.addAction(fActions[kNodeUnsubscribe]);
+    menu.addAction(fActions[kNodeUnLink]);
+    menu.addAction(fActions[kNodeLink]);
+    menu.addAction(fActions[kNodeCreate]);
+    if (fVaultTree->currentItem()->data(0, kRoleNodeID).toInt() < 0) {
+        fActions[kNodeUnsubscribe]->setEnabled(false);
+        fActions[kNodeUnsubscribe]->setVisible(false);
+        fActions[kNodeUnLink]->setEnabled(false);
+        fActions[kNodeLink]->setEnabled(false);
+    } else if (fVaultTree->currentItem()->parent() != NULL &&
+               fVaultTree->currentItem()->parent()->data(0, kRoleNodeID).toInt() < 0) {
+        fActions[kNodeUnsubscribe]->setEnabled(true);
+        fActions[kNodeUnsubscribe]->setVisible(true);
+        fActions[kNodeUnLink]->setEnabled(false);
+        fActions[kNodeLink]->setEnabled(true);
+    } else {
+        fActions[kNodeUnsubscribe]->setEnabled(false);
+        fActions[kNodeUnsubscribe]->setVisible(false);
+        fActions[kNodeUnLink]->setEnabled(true);
+        fActions[kNodeLink]->setEnabled(true);
+    }
+    menu.exec(fVaultTree->viewport()->mapToGlobal(pos));
+}
+
+void VaultShopMain::unlinkNode()
+{
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    unsigned int nodeId = fVaultTree->currentItem()->data(0, kRoleNodeID).toInt();
+    unsigned int parent = fVaultTree->currentItem()->parent()->data(0, kRoleNodeID).toInt();
+    vault->fVault->delRef(parent, nodeId);
+    emit nodeChanged(parent);
+}
+
+void VaultShopMain::linkNode()
+{
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    bool ok;
+    int nodeId = QInputDialog::getInteger(this, tr("Node ID"),
+                                          tr("Enter the ID of the Node to link"),
+                                          0, 0, 0x7FFFFFFF, 1, &ok);
+    if (!ok)
+        return;
+    plVaultNode node = vault->fVault->getNode(nodeId);
+    if (node.isValid()) {
+        unsigned int parent = fVaultTree->currentItem()->data(0, kRoleNodeID).toInt();
+        vault->fVault->addRef(parent, nodeId);
+        emit nodeChanged(parent);
+    } else {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("Node %1 does not exist in %2")
+                           .arg(nodeId).arg(vault->fRootItem->text(0)),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+}
+
+void VaultShopMain::createNode()
+{
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    plVaultNode node = vault->fVault->addNode(plVaultNode());
+    unsigned int parent = fVaultTree->currentItem()->data(0, kRoleNodeID).toInt();
+    if (parent > 0) {
+        vault->fVault->addRef(parent, node.getNodeID());
+        emit nodeChanged(parent);
+    } else {
+        loadNode(node, fVaultTree->currentItem(), vault);
+    }
+}
+
+void VaultShopMain::closeNode()
+{
+    delete fVaultTree->currentItem();
+}
+
+void VaultShopMain::refreshNode(unsigned int nodeId)
+{
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    QList<QTreeWidgetItem*> nodeItems = findNodeItems(nodeId, vault->fRootItem);
+    QList<QTreeWidgetItem*>::const_iterator it;
+    plVaultNode node = vault->fVault->getNode(nodeId);
+    for (it = nodeItems.constBegin(); it != nodeItems.constEnd(); it++) {
+        updateNode(*it, node);
+        while ((*it)->childCount() > 0)
+            delete (*it)->child(0);
+        std::vector<plVaultNode> children = vault->fVault->getChildren(node.getNodeID());
+        for (size_t i=0; i<children.size(); i++)
+            loadNode(children[i], *it, vault);
+    }
 }
 
 int main(int argc, char* argv[])

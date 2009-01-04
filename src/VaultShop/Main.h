@@ -27,7 +27,9 @@ private:
 
     // Menu actions
     enum {
-        kFileOpenVault, kFileSaveVault, kFileExit, kVaultOpenNode, kNumActions
+        kFileOpenVault, kFileSaveVault, kFileExit, kVaultOpenNode,
+        kNodeUnLink, kNodeLink, kNodeCreate, kNodeUnsubscribe,
+        kNumActions
     };
     QAction* fActions[kNumActions];
 
@@ -50,9 +52,13 @@ public:
     void loadVault(QString filename, QString vaultName);
     void loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
 
+signals:
+    void nodeChanged(unsigned int nodeId);
+
 protected:
     virtual void closeEvent(QCloseEvent* evt);
     VaultInfo* findCurrentVault(QTreeWidgetItem* item = NULL);
+    QList<QTreeWidgetItem*> findNodeItems(unsigned int nodeId, QTreeWidgetItem* parent);
     plVaultNode saveNode(QTreeWidgetItem* nodeItem);
     void updateNode(QTreeWidgetItem* item, const plVaultNode& node);
 
@@ -61,6 +67,12 @@ public slots:
     void performSave();
     void openNode();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void treeContextMenu(const QPoint& pos);
+    void unlinkNode();
+    void linkNode();
+    void createNode();
+    void closeNode();
+    void refreshNode(unsigned int nodeId);
 };
 
 #endif
