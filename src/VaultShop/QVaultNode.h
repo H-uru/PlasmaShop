@@ -9,13 +9,14 @@
 #include <Vault/plVaultNode.h>
 
 class QVaultNode : public QWidget {
+    Q_OBJECT
+
 public:
     static QString sNodeTypeNames[];
     static int MapNodeType(unsigned int nodeType);
     static unsigned int UnmapNodeType(int idx);
 
 private:
-    Q_OBJECT
     QLabel* fAutoTime;
     QLabel* fModifyTime;
     QLabel* fAgeTime;
@@ -59,12 +60,18 @@ private:
     QLabel* fBlob2_Info;
 
     plVaultNode fNode;
+    bool fSignalLock;
 
 public:
     QVaultNode(QWidget* parent = NULL);
-
-    void setNode(const plVaultNode& node);
     plVaultNode saveNode();
+
+signals:
+    void typeModified();
+
+public slots:
+    void setNode(const plVaultNode& node);
+    void typeChanged(int);
 };
 
 QIcon GetNodeTypeIcon(unsigned int nodeType);

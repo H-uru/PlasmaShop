@@ -12,18 +12,22 @@
 #include <list>
 
 #include "QVaultNode.h"
+#include "QVaultNodeEdit.h"
 
 class VaultShopMain : public QMainWindow {
+    Q_OBJECT
+
 public:
     enum TreeRoles {
         kRoleNodeID = Qt::UserRole
     };
 
 private:
-    Q_OBJECT
     QTreeWidget* fVaultTree;
-    QTabWidget* fNodeEditor;
-    QVaultNode* fVaultNodeEditor;
+    QTabWidget* fNodeTab;
+    QVaultNode* fGenericEditor;
+    QVaultNodeEdit* fCustomEditor;
+    int fEditorTabPreference;
 
     // Menu actions
     enum {
@@ -59,13 +63,15 @@ protected:
     virtual void closeEvent(QCloseEvent* evt);
     VaultInfo* findCurrentVault(QTreeWidgetItem* item = NULL);
     QList<QTreeWidgetItem*> findNodeItems(unsigned int nodeId, QTreeWidgetItem* parent);
-    plVaultNode saveNode(QTreeWidgetItem* nodeItem);
+    void saveNode(QTreeWidgetItem* nodeItem, int source);
     void updateNode(QTreeWidgetItem* item, const plVaultNode& node);
 
 public slots:
     void openGame();
     void performSave();
     void openNode();
+    void tabChanged(int tabIdx);
+    void typeModified();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeContextMenu(const QPoint& pos);
     void unlinkNode();

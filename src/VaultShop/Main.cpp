@@ -86,13 +86,15 @@ VaultShopMain::VaultShopMain()
     fVaultTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Property Editor
-    fNodeEditor = new QTabWidget(splitter);
-    fVaultNodeEditor = new QVaultNode(fNodeEditor);
-    fNodeEditor->addTab(fVaultNodeEditor, tr("Node Properties"));
+    fNodeTab = new QTabWidget(splitter);
+    fGenericEditor = new QVaultNode(fNodeTab);
+    fNodeTab->addTab(fGenericEditor, tr("Node Properties"));
+    fCustomEditor = NULL;
+    fEditorTabPreference = 0;
 
     // Layout
     splitter->addWidget(fVaultTree);
-    splitter->addWidget(fNodeEditor);
+    splitter->addWidget(fNodeTab);
     setCentralWidget(splitter);
     splitter->setSizes(QList<int>() << 160 << 320);
 
@@ -110,6 +112,8 @@ VaultShopMain::VaultShopMain()
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(fVaultTree, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(treeContextMenu(const QPoint&)));
+    connect(fNodeTab, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+    connect(fGenericEditor, SIGNAL(typeModified()), this, SLOT(typeModified()));
     connect(this, SIGNAL(nodeChanged(unsigned int)), this, SLOT(refreshNode(unsigned int)));
 
     // Load UI Settings
@@ -169,19 +173,29 @@ QList<QTreeWidgetItem*> VaultShopMain::findNodeItems(unsigned int nodeId, QTreeW
     return items;
 }
 
-plVaultNode VaultShopMain::saveNode(QTreeWidgetItem* nodeItem)
+void VaultShopMain::saveNode(QTreeWidgetItem* nodeItem, int source)
 {
     if (nodeItem == NULL || nodeItem->data(0, kRoleNodeID).toInt() < 0)
-        return plVaultNode();
+        return;
 
     VaultInfo* vault = findCurrentVault(nodeItem);
-    if (vault == NULL) {
-        fVaultNodeEditor->setNode(plVaultNode());
-        return plVaultNode();
+    if (vault == NULL)
+        return;
+
+    plVaultNode update;
+    if (fCustomEditor != NULL && source == 0) {
+        update = vault->fVault->addNode(fCustomEditor->saveNode());
+        fGenericEditor->setNode(update);
+    } else {
+        update = vault->fVault->addNode(fGenericEditor->saveNode());
+        if (fCustomEditor != NULL)
+            fCustomEditor->setNode(update);
     }
-    plVaultNode update = vault->fVault->addNode(fVaultNodeEditor->saveNode());
-    updateNode(nodeItem, update);
-    return update;
+
+    QList<QTreeWidgetItem*> nodeItems = findNodeItems(update.getNodeID(), vault->fRootItem);
+    QList<QTreeWidgetItem*>::const_iterator it;
+    for (it = nodeItems.constBegin(); it != nodeItems.constEnd(); it++)
+        updateNode(*it, update);
 }
 
 void VaultShopMain::updateNode(QTreeWidgetItem* item, const plVaultNode& node)
@@ -192,21 +206,66 @@ void VaultShopMain::updateNode(QTreeWidgetItem* item, const plVaultNode& node)
     item->setStatusTip(0, QString("%1").arg(node.getNodeID()));
 }
 
+void VaultShopMain::tabChanged(int tabIdx)
+{
+    if (tabIdx == 0)
+        saveNode(fVaultTree->currentItem(), 1);
+    else
+        saveNode(fVaultTree->currentItem(), 0);
+}
+
+void VaultShopMain::typeModified()
+{
+    saveNode(fVaultTree->currentItem(), fNodeTab->currentIndex());
+    if (fCustomEditor != NULL) {
+        fEditorTabPreference = fNodeTab->currentIndex();
+        fNodeTab->removeTab(0);
+        disconnect(fCustomEditor, 0, 0, 0);
+        delete fCustomEditor;
+        fCustomEditor = NULL;
+    }
+
+    QTreeWidgetItem* current = fVaultTree->currentItem();
+    VaultInfo* vault = findCurrentVault(current);
+    if (vault != NULL) {
+        plVaultNode node = vault->fVault->getNode(current->data(0, kRoleNodeID).toInt());
+        fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node);
+        if (fCustomEditor != NULL) {
+            fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
+            fNodeTab->setCurrentIndex(fEditorTabPreference);
+        }
+    }
+}
+
 void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
+    saveNode(previous, fNodeTab->currentIndex());
+
     if (current != NULL)
         statusBar()->showMessage(current->statusTip(0));
-    saveNode(previous);
+    if (fCustomEditor != NULL) {
+        fEditorTabPreference = fNodeTab->currentIndex();
+        fNodeTab->removeTab(0);
+        disconnect(fCustomEditor, 0, 0, 0);
+        delete fCustomEditor;
+        fCustomEditor = NULL;
+    }
 
     if (current != NULL && current->data(0, kRoleNodeID).toInt() > 0) {
         VaultInfo* vault = findCurrentVault(current);
         if (vault == NULL) {
-            fVaultNodeEditor->setNode(plVaultNode());
+            fGenericEditor->setNode(plVaultNode());
         } else {
-            fVaultNodeEditor->setNode(vault->fVault->getNode(current->data(0, kRoleNodeID).toInt()));
+            plVaultNode node = vault->fVault->getNode(current->data(0, kRoleNodeID).toInt());
+            fGenericEditor->setNode(node);
+            fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node);
+            if (fCustomEditor != NULL) {
+                fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
+                fNodeTab->setCurrentIndex(fEditorTabPreference);
+            }
         }
     } else {
-        fVaultNodeEditor->setNode(plVaultNode());
+        fGenericEditor->setNode(plVaultNode());
     }
 }
 
@@ -300,7 +359,7 @@ void VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
                              VaultInfo* vault)
 {
     for (int i=0; i<parent->childCount(); i++) {
-        if (parent->child(i)->data(0, kRoleNodeID).toInt() == node.getNodeID())
+        if (parent->child(i)->data(0, kRoleNodeID).toInt() == (int)node.getNodeID())
             return;
     }
 
@@ -345,8 +404,7 @@ void VaultShopMain::openNode()
 void VaultShopMain::performSave()
 {
     // Save the current node:
-    plVaultNode update = saveNode(fVaultTree->currentItem());
-    fVaultNodeEditor->setNode(update);
+    saveNode(fVaultTree->currentItem(), fNodeTab->currentIndex());
 
     // Save all vaults to their files
     std::list<VaultInfo*>::iterator it;

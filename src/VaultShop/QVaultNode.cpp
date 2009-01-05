@@ -78,7 +78,7 @@ unsigned int QVaultNode::UnmapNodeType(int idx)
 }
 
 QVaultNode::QVaultNode(QWidget* parent)
-          : QWidget(parent)
+          : QWidget(parent), fSignalLock(false)
 {
     QWidget* top = new QWidget(this);
     QWidget* middle = new QWidget(this);
@@ -124,7 +124,7 @@ QVaultNode::QVaultNode(QWidget* parent)
     permLayout->addWidget(fOtherWrite, 2, 3);
 
     fNodeType = new QComboBox(rProps);
-    for (int i=0; i<19; i++)
+    for (int i=0; i<=19; i++)
         fNodeType->addItem(GetNodeTypeIcon(UnmapNodeType(i)), sNodeTypeNames[i]);
 
     QGridLayout* rLayout = new QGridLayout(rProps);
@@ -239,10 +239,19 @@ QVaultNode::QVaultNode(QWidget* parent)
     layout->addItem(new QSpacerItem(32, 0), 3, 2);
     layout->addWidget(new QLabel("Blob 2:", this), 3, 3);
     layout->addWidget(fBlob2_Info, 3, 4);
+
+    connect(fNodeType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+}
+
+void QVaultNode::typeChanged(int)
+{
+    if (!fSignalLock)
+        emit typeModified();
 }
 
 void QVaultNode::setNode(const plVaultNode& node)
 {
+    fSignalLock = true;
     fNode = node;
 
     QDateTime dt;
@@ -310,6 +319,8 @@ void QVaultNode::setNode(const plVaultNode& node)
         fBlob2_Info->setText(QString("%1 bytes").arg(fNode.getBlob_2().getSize()));
     else
         fBlob2_Info->setText(QString("(empty)"));
+
+    fSignalLock = false;
 }
 
 plVaultNode QVaultNode::saveNode()
@@ -416,7 +427,7 @@ QString GetNodeDisplay(const plVaultNode& node)
     case plVault::kNodePlayer:
         return node.upcastToPlayerNode()->getPlayerName().cstr();
     case plVault::kNodeAge:
-        return node.upcastToAgeNode()->getAgeInstanceGuid().toString().cstr();
+        return QString("Age Instance %1").arg(node.upcastToAgeNode()->getAgeInstanceGuid().toString().cstr());
     case plVault::kNodeGameServer:
         return node.upcastToGameServerNode()->getAgeFilename().cstr();
     case plVault::kNodeAdmin:
