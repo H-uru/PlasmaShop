@@ -1,6 +1,7 @@
 #include "QVaultNodeEdit.h"
 
 #include "QVaultFolderNode.h"
+#include "QVaultTextNode.h"
 
 /* QVaultNodeEdit */
 QVaultNodeEdit::QVaultNodeEdit(QWidget* parent)
@@ -22,6 +23,9 @@ QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& n
         break;
     case plVault::kNodeAgeInfoList:
         editor = new QVaultAgeInfoList(parent);
+        break;
+    case plVault::kNodeTextNote:
+        editor = new QVaultTextNode(parent);
         break;
     }
 

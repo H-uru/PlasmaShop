@@ -142,7 +142,7 @@ void QVaultFolderNode::IRefreshNode()
         return;
 
     fFolderType->setCurrentIndex(MapFolderType(folder->getFolderType()));
-    fFolderName->setText(folder->getFolderName().cstr());
+    fFolderName->setText(QString::fromUtf8(folder->getFolderName().cstr()));
 }
 
 

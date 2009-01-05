@@ -13,9 +13,11 @@ LIBS += -L../../../Plasma/bin -lPlasma
 HEADERS += Main.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
-           QVaultFolderNode.h
+           QVaultFolderNode.h \
+           QVaultTextNode.h
 SOURCES += Main.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
-           QVaultFolderNode.cpp
+           QVaultFolderNode.cpp \
+           QVaultTextNode.cpp
 RESOURCES += images.qrc

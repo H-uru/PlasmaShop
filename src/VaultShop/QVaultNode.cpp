@@ -274,8 +274,8 @@ void QVaultNode::setNode(const plVaultNode& node)
         fAgeTime->setText("N/A");
     }
 
-    fAgeName->setText(fNode.getCreateAgeName().cstr());
-    fAgeGUID->setText(fNode.getCreateAgeGuid().toString().cstr());
+    fAgeName->setText(QString::fromUtf8(fNode.getCreateAgeName().cstr()));
+    fAgeGUID->setText(QString::fromUtf8(fNode.getCreateAgeGuid().toString().cstr()));
 
     fCreatorID->setText(QString("%1").arg(fNode.getCreator()));
     fOwnerID->setText(QString("%1").arg(fNode.getOwner()));
@@ -298,17 +298,17 @@ void QVaultNode::setNode(const plVaultNode& node)
     fUInt32_3->setText(QString("%1").arg(fNode.getUInt32_3()));
     fUInt32_4->setText(QString("%1").arg(fNode.getUInt32_4()));
 
-    fString64_1->setText(fNode.getString64_1().cstr());
-    fString64_2->setText(fNode.getString64_2().cstr());
-    fString64_3->setText(fNode.getString64_3().cstr());
-    fString64_4->setText(fNode.getString64_4().cstr());
-    fString64_5->setText(fNode.getString64_5().cstr());
-    fString64_6->setText(fNode.getString64_6().cstr());
-    fIString64_1->setText(fNode.getIString64_1().cstr());
-    fIString64_2->setText(fNode.getIString64_2().cstr());
+    fString64_1->setText(QString::fromUtf8(fNode.getString64_1().cstr()));
+    fString64_2->setText(QString::fromUtf8(fNode.getString64_2().cstr()));
+    fString64_3->setText(QString::fromUtf8(fNode.getString64_3().cstr()));
+    fString64_4->setText(QString::fromUtf8(fNode.getString64_4().cstr()));
+    fString64_5->setText(QString::fromUtf8(fNode.getString64_5().cstr()));
+    fString64_6->setText(QString::fromUtf8(fNode.getString64_6().cstr()));
+    fIString64_1->setText(QString::fromUtf8(fNode.getIString64_1().cstr()));
+    fIString64_2->setText(QString::fromUtf8(fNode.getIString64_2().cstr()));
 
-    fText_1->setPlainText(fNode.getText_1().cstr());
-    fText_2->setPlainText(fNode.getText_2().cstr());
+    fText_1->setPlainText(QString::fromUtf8(fNode.getText_1().cstr()));
+    fText_2->setPlainText(QString::fromUtf8(fNode.getText_2().cstr()));
 
     if (fNode.getBlob_1().getSize() > 0)
         fBlob1_Info->setText(QString("%1 bytes").arg(fNode.getBlob_1().getSize()));
@@ -425,11 +425,11 @@ QString GetNodeDisplay(const plVaultNode& node)
 {
     switch (node.getNodeType()) {
     case plVault::kNodePlayer:
-        return node.upcastToPlayerNode()->getPlayerName().cstr();
+        return QString::fromUtf8(node.upcastToPlayerNode()->getPlayerName().cstr());
     case plVault::kNodeAge:
-        return QString("Age Instance %1").arg(node.upcastToAgeNode()->getAgeInstanceGuid().toString().cstr());
+        return QString("Age Instance %1").arg(QString::fromUtf8(node.upcastToAgeNode()->getAgeInstanceGuid().toString().cstr()));
     case plVault::kNodeGameServer:
-        return node.upcastToGameServerNode()->getAgeFilename().cstr();
+        return QString::fromUtf8(node.upcastToGameServerNode()->getAgeFilename().cstr());
     case plVault::kNodeAdmin:
         return "Admin";
     case plVault::kNodeVaultServer:
@@ -437,29 +437,29 @@ QString GetNodeDisplay(const plVaultNode& node)
     case plVault::kNodeFolder:
         return GetFolderName(node);
     case plVault::kNodePlayerInfo:
-        return node.upcastToPlayerInfoNode()->getPlayerName().cstr();
+        return QString::fromUtf8(node.upcastToPlayerInfoNode()->getPlayerName().cstr());
     case plVault::kNodeSystem:
         return "System";
     case plVault::kNodeImage:
-        return node.upcastToImageNode()->getImageTitle().cstr();
+        return QString::fromUtf8(node.upcastToImageNode()->getImageTitle().cstr());
     case plVault::kNodeTextNote:
-        return node.upcastToTextNoteNode()->getNoteTitle().cstr();
+        return QString::fromUtf8(node.upcastToTextNoteNode()->getNoteTitle().cstr());
     case plVault::kNodeSDL:
-        return node.upcastToSDLNode()->getSDLName().cstr();
+        return QString::fromUtf8(node.upcastToSDLNode()->getSDLName().cstr());
     case plVault::kNodeAgeLink:
         return "Link";
     case plVault::kNodeChronicle:
-        return node.upcastToChronicleNode()->getEntryName().cstr();
+        return QString::fromUtf8(node.upcastToChronicleNode()->getEntryName().cstr());
     case plVault::kNodePlayerInfoList:
         return GetFolderName(node);
     case plVault::kNodeMarker:
-        return (node.upcastToMarkerNode()->getAgeName() + " Marker").cstr();
+        return QString("%1 Marker").arg(QString::fromUtf8(node.upcastToMarkerNode()->getAgeName().cstr()));
     case plVault::kNodeAgeInfo:
-        return node.upcastToAgeInfoNode()->getAgeInstanceName().cstr();
+        return QString::fromUtf8(node.upcastToAgeInfoNode()->getAgeInstanceName().cstr());
     case plVault::kNodeAgeInfoList:
         return GetFolderName(node);
     case plVault::kNodeMarkerList:
-        return node.upcastToMarkerListNode()->getGameTitle().cstr();
+        return QString::fromUtf8(node.upcastToMarkerListNode()->getGameTitle().cstr());
     default:
         return "Unknown";
     }
@@ -469,7 +469,7 @@ QString GetFolderName(const plVaultNode& node)
 {
     plVaultFolderNode* folder = node.upcastToFolderNode();
     if (!folder->getFolderName().empty())
-        return folder->getFolderName().cstr();
+        return QString::fromUtf8(folder->getFolderName().cstr());
 
     switch (folder->getFolderType()) {
     case plVault::kInboxFolder:
