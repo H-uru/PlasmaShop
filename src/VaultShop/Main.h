@@ -8,7 +8,6 @@
 #include <QAction>
 
 #include <Vault/plVaultStore.h>
-#include <SDL/plSDLMgr.h>
 #include <list>
 
 #include "QVaultNode.h"
@@ -23,6 +22,7 @@ public:
     };
 
 private:
+    QString fLastDir;
     QTreeWidget* fVaultTree;
     QTabWidget* fNodeTab;
     QVaultNode* fGenericEditor;
@@ -48,6 +48,7 @@ private:
         void save();
     };
     std::list<VaultInfo*> fLoadedVaults;
+    plResManager fResMgr;
     plSDLMgr fSDLMgr;
 
 public:
@@ -55,6 +56,7 @@ public:
     virtual ~VaultShopMain();
     void loadVault(QString filename, QString vaultName);
     void loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
+    void loadGame(QString path);
 
 signals:
     void nodeChanged(unsigned int nodeId);

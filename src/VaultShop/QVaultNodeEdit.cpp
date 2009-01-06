@@ -2,13 +2,15 @@
 
 #include "QVaultFolderNode.h"
 #include "QVaultTextNode.h"
+#include "QVaultSDLNode.h"
 
 /* QVaultNodeEdit */
 QVaultNodeEdit::QVaultNodeEdit(QWidget* parent)
               : QWidget(parent)
 { }
 
-QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& node)
+QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& node,
+                                           plResManager* mgr, plSDLMgr* sdl)
 {
     if (!node.isValid())
         return NULL;
@@ -27,10 +29,15 @@ QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& n
     case plVault::kNodeTextNote:
         editor = new QVaultTextNode(parent);
         break;
+    case plVault::kNodeSDL:
+        editor = new QVaultSDLNode(parent);
+        break;
     }
 
-    if (editor != NULL)
+    if (editor != NULL) {
+        editor->setMgrs(mgr, sdl);
         editor->setNode(node);
+    }
     return editor;
 }
 
@@ -39,3 +46,6 @@ void QVaultNodeEdit::setNode(const plVaultNode& node)
     fNode = node;
     IRefreshNode();
 }
+
+void QVaultNodeEdit::setMgrs(plResManager*, plSDLMgr*)
+{ }

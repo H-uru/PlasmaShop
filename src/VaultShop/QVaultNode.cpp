@@ -6,6 +6,7 @@
 #include <QRegExpValidator>
 #include <QDateTime>
 #include <Vault/plVaultNodeTypes.h>
+#include "QVaultSDLNode.h"
 
 QString QVaultNode::sNodeTypeNames[] = {
     "(Invalid)", "Player", "Age", "Game Server", "Admin", "Vault", "CCR",
@@ -445,7 +446,7 @@ QString GetNodeDisplay(const plVaultNode& node)
     case plVault::kNodeTextNote:
         return QString::fromUtf8(node.upcastToTextNoteNode()->getNoteTitle().cstr());
     case plVault::kNodeSDL:
-        return QString::fromUtf8(node.upcastToSDLNode()->getSDLName().cstr());
+        return QSDLEditor::GetSDLName(node.upcastToSDLNode()->getSDLData());
     case plVault::kNodeAgeLink:
         return "Link";
     case plVault::kNodeChronicle:

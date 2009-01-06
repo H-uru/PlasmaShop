@@ -126,6 +126,10 @@ VaultShopMain::VaultShopMain()
 
     if (settings.contains("WinState"))
         restoreState(settings.value("WinState").toByteArray());
+
+    fLastDir = settings.value("LastDir").toString();
+    if (!fLastDir.isEmpty())
+        loadGame(fLastDir);
 }
 
 VaultShopMain::~VaultShopMain()
@@ -144,6 +148,7 @@ void VaultShopMain::closeEvent(QCloseEvent*)
     settings.setValue("WinSize", size());
     settings.setValue("WinPos", pos());
     settings.setValue("WinState", saveState());
+    settings.setValue("LastDir", fLastDir);
 }
 
 VaultShopMain::VaultInfo* VaultShopMain::findCurrentVault(QTreeWidgetItem* item)
@@ -229,7 +234,7 @@ void VaultShopMain::typeModified()
     VaultInfo* vault = findCurrentVault(current);
     if (vault != NULL) {
         plVaultNode node = vault->fVault->getNode(current->data(0, kRoleNodeID).toInt());
-        fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node);
+        fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node, &fResMgr, &fSDLMgr);
         if (fCustomEditor != NULL) {
             fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
             fNodeTab->setCurrentIndex(fEditorTabPreference);
@@ -258,7 +263,7 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
         } else {
             plVaultNode node = vault->fVault->getNode(current->data(0, kRoleNodeID).toInt());
             fGenericEditor->setNode(node);
-            fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node);
+            fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node, &fResMgr, &fSDLMgr);
             if (fCustomEditor != NULL) {
                 fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
                 fNodeTab->setCurrentIndex(fEditorTabPreference);
@@ -269,72 +274,82 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
     }
 }
 
+void VaultShopMain::loadGame(QString path)
+{
+    if (fCustomEditor != NULL) {
+        fEditorTabPreference = fNodeTab->currentIndex();
+        fNodeTab->removeTab(0);
+        disconnect(fCustomEditor, 0, 0, 0);
+        delete fCustomEditor;
+        fCustomEditor = NULL;
+    }
+
+    fSDLMgr.ClearDescriptors();
+    std::list<VaultInfo*>::iterator it;
+    for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
+        delete *it;
+    fLoadedVaults.clear();
+
+    if (QFile::exists(path + "/sav/vault.dat"))
+        loadVault(path + "/sav/vault.dat", "Vault Root");
+    QDir vdir(path + "/sav/");
+    if (vdir.exists()) {
+        QStringList vaultList = vdir.entryList(
+            QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable | QDir::Hidden);
+        QStringList::const_iterator it;
+        for (it = vaultList.constBegin(); it != vaultList.constEnd(); it++) {
+            QString vaultPath = path + "/sav/" + *it + "/current/vault.dat";
+            try {
+                if (QFile::exists(vaultPath))
+                    loadVault(vaultPath, QString("Vault %1").arg(*it));
+            } catch (hsException ex) {
+                QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                                    tr("Error loading vault %1: %2")
+                                    .arg(*it).arg(ex.what()),
+                                    QMessageBox::Ok, this);
+                plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+                msgBox.exec();
+            }
+        }
+    }
+
+    QDir sdldir(path + "/SDL/");
+    if (sdldir.exists()) {
+        QStringList sdlList = sdldir.entryList(QStringList() << "*.sdl",
+            QDir::Files | QDir::Readable | QDir::Hidden);
+        QStringList::const_iterator it;
+        for (it = sdlList.constBegin(); it != sdlList.constEnd(); it++) {
+            QString sdlPath = path + "/SDL/" + *it;
+            try {
+                if (QFile::exists(sdlPath))
+                    fSDLMgr.ReadDescriptors(sdlPath.toUtf8().data());
+            } catch (hsException ex) {
+                QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                                    tr("Error parsing %1: %2")
+                                    .arg(*it).arg(ex.what()),
+                                    QMessageBox::Ok, this);
+                plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+                msgBox.exec();
+            }
+        }
+    }
+
+    if (fVaultTree->topLevelItemCount() == 0) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                            tr("No vaults were found to load"),
+                            QMessageBox::Ok, this);
+        msgBox.exec();
+    }
+
+    fLastDir = path;
+}
+
 void VaultShopMain::openGame()
 {
-    static QString s_gameDir;
-
     QString dirname = QFileDialog::getExistingDirectory(this,
-                                   tr("Open Game"), s_gameDir);
-    if (!dirname.isEmpty()) {
-        fSDLMgr.ClearDescriptors();
-        std::list<VaultInfo*>::iterator it;
-        for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
-            delete *it;
-        fLoadedVaults.clear();
-
-        if (QFile::exists(dirname + "/sav/vault.dat"))
-            loadVault(dirname + "/sav/vault.dat", "Vault Root");
-        QDir vdir(dirname + "/sav/");
-        if (vdir.exists()) {
-            QStringList vaultList = vdir.entryList(
-                QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable | QDir::Hidden);
-            QStringList::const_iterator it;
-            for (it = vaultList.constBegin(); it != vaultList.constEnd(); it++) {
-                QString vaultPath = dirname + "/sav/" + *it + "/current/vault.dat";
-                try {
-                    if (QFile::exists(vaultPath))
-                        loadVault(vaultPath, QString("Vault %1").arg(*it));
-                } catch (hsException ex) {
-                    QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
-                                       tr("Error loading vault %1: %2")
-                                       .arg(*it).arg(ex.what()),
-                                       QMessageBox::Ok, this);
-                    plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
-                    msgBox.exec();
-                }
-            }
-        }
-
-        QDir sdldir(dirname + "/SDL/");
-        if (sdldir.exists()) {
-            QStringList sdlList = sdldir.entryList(QStringList() << "*.sdl",
-                QDir::Files | QDir::Readable | QDir::Hidden);
-            QStringList::const_iterator it;
-            for (it = sdlList.constBegin(); it != sdlList.constEnd(); it++) {
-                QString sdlPath = dirname + "/SDL/" + *it;
-                try {
-                    if (QFile::exists(sdlPath))
-                        fSDLMgr.ReadDescriptors(sdlPath.toUtf8().data());
-                } catch (hsException ex) {
-                    QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
-                                       tr("Error parsing %1: %2")
-                                       .arg(*it).arg(ex.what()),
-                                       QMessageBox::Ok, this);
-                    plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
-                    msgBox.exec();
-                }
-            }
-        }
-
-        if (fVaultTree->topLevelItemCount() == 0) {
-            QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
-                               tr("No vaults were found to load"),
-                               QMessageBox::Ok, this);
-            msgBox.exec();
-        }
-
-        s_gameDir = dirname;
-    }
+                                   tr("Open Game"), fLastDir);
+    if (!dirname.isEmpty())
+        loadGame(dirname);
 }
 
 void VaultShopMain::loadVault(QString filename, QString vaultName)

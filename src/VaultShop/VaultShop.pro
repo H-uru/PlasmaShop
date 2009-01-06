@@ -14,10 +14,12 @@ HEADERS += Main.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
-           QVaultTextNode.h
+           QVaultTextNode.h \
+           QVaultSDLNode.h
 SOURCES += Main.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \
-           QVaultTextNode.cpp
+           QVaultTextNode.cpp \
+           QVaultSDLNode.cpp
 RESOURCES += images.qrc
