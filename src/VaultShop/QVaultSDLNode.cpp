@@ -74,7 +74,7 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
         case plVarDescriptor::kAgeTimeOfDay:
             {
                 QDateTime dt;
-                if (((plSimpleStateVariable*)var)->getTimeStamp().getSecs() != 0) {
+                if (!((plSimpleStateVariable*)var)->getTimeStamp().atEpoch()) {
                     dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
                     result += dt.toString("yyyy/MM/dd hh:mm:ss");
                 } else {
@@ -107,7 +107,7 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
 }
 
 QSDLEditor::QSDLEditor(QWidget* parent)
-          : QWidget(parent)
+          : QWidget(parent), fSDLVersion(-1)
 {
     fSDLList = new QTreeWidget(this);
     fSDLList->setColumnCount(2);
@@ -132,28 +132,30 @@ void QSDLEditor::setMgrs(plResManager* mgr, plSDLMgr* sdl)
 void QSDLEditor::loadBlob(plVaultBlob blob)
 {
     fSDLList->clear();
+    fSDLVersion = -1;
     if (blob.getSize() == 0)
         return;
 
     hsRAMStream S;
+    S.setVer(pvPots);
     S.copyFrom(blob.getData(), blob.getSize());
 
-    plString name;
-    int version;
-    plStateDataRecord::ReadStreamHeader(&S, name, version, NULL);
-    plStateDescriptor* desc = fSDLMgr->GetDescriptor(name, version);
+    plStateDataRecord::ReadStreamHeader(&S, fSDLName, fSDLVersion, NULL);
+    plStateDescriptor* desc = fSDLMgr->GetDescriptor(fSDLName, fSDLVersion);
     if (desc == NULL) {
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("No SDL Descriptor for %1 (version %2)")
-                           .arg(QString::fromUtf8(name.cstr())).arg(version),
+                           .arg(QString::fromUtf8(fSDLName.cstr())).arg(fSDLVersion),
                            QMessageBox::Ok, this);
         msgBox.exec();
         return;
     }
     fRecord.setDescriptor(desc);
     fRecord.read(&S, fResMgr);
-    if (S.size() != S.pos())
-        plDebug::Debug("SDL size-read difference: %d", S.size() - S.pos());
+    if (S.size() != S.pos()) {
+        plDebug::Debug("[%s] SDL size-read difference: %d",
+                       fSDLName.cstr(), S.size() - S.pos());
+    }
 
     for (size_t i=0; i<fRecord.getNumVars(); i++)
         addVar(fRecord.get(i), fSDLList->invisibleRootItem());
@@ -164,8 +166,13 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
 
 plVaultBlob QSDLEditor::saveBlob()
 {
+    if (fSDLVersion == -1)
+        return plVaultBlob();
+
     plVaultBlob blob;
     hsRAMStream S;
+    S.setVer(pvPots);
+    plStateDataRecord::WriteStreamHeader(&S, fSDLName, fSDLVersion, NULL);
     fRecord.write(&S, fResMgr);
     unsigned char* data = new unsigned char[S.size()];
     S.copyTo(data, S.size());
@@ -262,6 +269,16 @@ plVaultNode QVaultSDLNode::saveNode()
 
     sdl->setSDLIdent(UnmapSDLType(fSDLType->currentIndex()));
 
+    try {
+        sdl->setSDLData(fSDLEditor->saveBlob());
+    } catch (hsException& ex) {
+        plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("Error saving SDL data"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+    }
+
     return fNode;
 }
 
@@ -281,6 +298,5 @@ void QVaultSDLNode::IRefreshNode()
                            tr("Error loading SDL data"),
                            QMessageBox::Ok, this);
         msgBox.exec();
-        return;
     }
 }

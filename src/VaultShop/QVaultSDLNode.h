@@ -22,6 +22,8 @@ private:
     plStateDataRecord fRecord;
     plResManager* fResMgr;
     plSDLMgr* fSDLMgr;
+    plString fSDLName;
+    int fSDLVersion;
     QTreeWidget* fSDLList;
 
 public:

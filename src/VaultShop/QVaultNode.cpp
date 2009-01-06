@@ -256,19 +256,19 @@ void QVaultNode::setNode(const plVaultNode& node)
     fNode = node;
 
     QDateTime dt;
-    if (fNode.getAutoTime().getSecs() != 0) {
+    if (!fNode.getAutoTime().atEpoch()) {
         dt.setTime_t(fNode.getAutoTime().getSecs());
         fAutoTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
         fAutoTime->setText("N/A");
     }
-    if (fNode.getAutoTime().getSecs() != 0) {
+    if (!fNode.getAutoTime().atEpoch()) {
         dt.setTime_t(fNode.getModifyTime().getSecs());
         fModifyTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
         fModifyTime->setText("N/A");
     }
-    if (fNode.getAutoTime().getSecs() != 0) {
+    if (!fNode.getAutoTime().atEpoch()) {
         dt.setTime_t(fNode.getCreateAgeTime().getSecs());
         fAgeTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
