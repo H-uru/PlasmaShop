@@ -11,12 +11,14 @@ LIBS += -L../../../Plasma/bin -lPlasma
 
 # VaultShop Sources
 HEADERS += Main.h \
+           QColorEdit.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
            QVaultTextNode.h \
            QVaultSDLNode.h
 SOURCES += Main.cpp \
+           QColorEdit.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \

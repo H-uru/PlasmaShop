@@ -5,11 +5,14 @@
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QTreeWidget>
+#include <QSpinBox>
+#include <QGridLayout>
 #include <SDL/plSDLMgr.h>
 #include <SDL/plStateVariable.h>
 #include <SDL/plStateDataRecord.h>
 #include <ResManager/plResManager.h>
 #include "QVaultNodeEdit.h"
+#include "QColorEdit.h"
 
 class QSDLEditor : public QWidget {
     Q_OBJECT
@@ -24,7 +27,17 @@ private:
     plSDLMgr* fSDLMgr;
     plString fSDLName;
     int fSDLVersion;
+
     QTreeWidget* fSDLList;
+    QWidget* fEditorPanel;
+    QGridLayout* fEditorLayout;
+    QSpinBox* fEditorWhich;
+    int fCurrentWhich;
+    QComboBox* fComboEdit;
+    QSpinBox* fIntEdit;
+    QLineEdit* fStringEdit;
+    QSpinBox* fLocationEdit[2];
+    QColorEdit* fColorEdit;
 
 public:
     QSDLEditor(QWidget* parent);
@@ -35,6 +48,13 @@ public:
 
 private:
     void addVar(plStateVariable* var, QTreeWidgetItem* parent);
+    void setupVarEditorCommon(plStateVariable* var);
+    void setVarCustomEdit(QTreeWidgetItem* item, int which);
+    void saveVarCustomEdit(QTreeWidgetItem* item, int which);
+
+private slots:
+    void itemSelected(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void indexChanged(int idx);
 };
 
 
