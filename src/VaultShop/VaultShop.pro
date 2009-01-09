@@ -16,12 +16,18 @@ HEADERS += Main.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
            QVaultTextNode.h \
-           QVaultSDLNode.h
+           QVaultSDLNode.h \
+           QVaultChronicleNode.h \
+           QVaultLinkNode.h \
+           QVaultPlayerNode.h
 SOURCES += Main.cpp \
            QColorEdit.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \
            QVaultTextNode.cpp \
-           QVaultSDLNode.cpp
+           QVaultSDLNode.cpp \
+           QVaultChronicleNode.cpp \
+           QVaultLinkNode.cpp \
+           QVaultPlayerNode.cpp
 RESOURCES += images.qrc

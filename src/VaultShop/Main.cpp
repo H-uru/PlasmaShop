@@ -13,6 +13,27 @@
 
 #include "Main.h"
 
+static QString HexToStr(const QString& hex)
+{
+    QString str;
+    for (int i=0; i<hex.size(); i += 2) {
+        int ch = hex.mid(i, 2).toInt(NULL, 16);
+        str += QChar(ch);
+    }
+    return str;
+}
+
+static QString StrToHex(const QString& str)
+{
+    QString hex;
+    for (int i=0; i<str.size(); i++) {
+        int ch = (int)str[i].toAscii();
+        hex += QString("%1").arg(ch, 16);
+    }
+    return hex;
+}
+
+
 /* VaultInfo */
 VaultShopMain::VaultInfo::VaultInfo(QString filename)
              : fVaultFile(filename), fRootItem(NULL)
@@ -301,7 +322,7 @@ void VaultShopMain::loadGame(QString path)
             QString vaultPath = path + "/sav/" + *it + "/current/vault.dat";
             try {
                 if (QFile::exists(vaultPath))
-                    loadVault(vaultPath, QString("Vault %1").arg(*it));
+                    loadVault(vaultPath, QString("%1's Vault").arg(HexToStr(*it)));
             } catch (hsException ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error loading vault %1: %2")
