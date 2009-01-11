@@ -32,7 +32,7 @@ private:
     // Menu actions
     enum {
         kFileOpenVault, kFileSaveVault, kFileExit, kVaultOpenNode,
-        kNodeUnLink, kNodeLink, kNodeCreate, kNodeUnsubscribe,
+        kNodeUnLink, kNodeLink, kNodeCreate, kNodeUnsubscribe, kNodeRenameVault,
         kNumActions
     };
     QAction* fActions[kNumActions];
@@ -55,7 +55,7 @@ public:
     VaultShopMain();
     virtual ~VaultShopMain();
     void loadVault(QString filename, QString vaultName);
-    void loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
+    QTreeWidgetItem* loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
     void loadGame(QString path);
 
 signals:
@@ -72,6 +72,7 @@ public slots:
     void openGame();
     void performSave();
     void openNode();
+    void subscribe(unsigned int nodeId);
     void tabChanged(int tabIdx);
     void typeModified();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -81,6 +82,7 @@ public slots:
     void createNode();
     void closeNode();
     void refreshNode(unsigned int nodeId);
+    //void renameVault();
 };
 
 #endif

@@ -12,6 +12,7 @@ LIBS += -L../../../Plasma/bin -lPlasma
 # VaultShop Sources
 HEADERS += Main.h \
            QColorEdit.h \
+           QLinkLabel.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
@@ -19,9 +20,13 @@ HEADERS += Main.h \
            QVaultSDLNode.h \
            QVaultChronicleNode.h \
            QVaultLinkNode.h \
-           QVaultPlayerNode.h
+           QVaultPlayerNode.h \
+           QVaultPlayerInfoNode.h \
+           QVaultAgeNode.h \
+           QVaultAgeInfoNode.h
 SOURCES += Main.cpp \
            QColorEdit.cpp \
+           QLinkLabel.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \
@@ -29,5 +34,8 @@ SOURCES += Main.cpp \
            QVaultSDLNode.cpp \
            QVaultChronicleNode.cpp \
            QVaultLinkNode.cpp \
-           QVaultPlayerNode.cpp
+           QVaultPlayerNode.cpp \
+           QVaultPlayerInfoNode.cpp \
+           QVaultAgeNode.cpp \
+           QVaultAgeInfoNode.cpp
 RESOURCES += images.qrc

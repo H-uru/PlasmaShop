@@ -73,6 +73,7 @@ VaultShopMain::VaultShopMain()
     fActions[kNodeLink] = new QAction(tr("Add Node..."), this);
     fActions[kNodeCreate] = new QAction(tr("Create Node"), this);
     fActions[kNodeUnsubscribe] = new QAction(tr("Un-subscribe"), this);
+    //fActions[kNodeRenameVault] = new QAction(tr("Rename Vault..."), this);
 
     fActions[kFileOpenVault]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSaveVault]->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -128,6 +129,7 @@ VaultShopMain::VaultShopMain()
     connect(fActions[kNodeLink], SIGNAL(activated()), this, SLOT(linkNode()));
     connect(fActions[kNodeCreate], SIGNAL(activated()), this, SLOT(createNode()));
     connect(fActions[kNodeUnsubscribe], SIGNAL(activated()), this, SLOT(closeNode()));
+    //connect(fActions[kNodeRenameVault], SIGNAL(activated()), this, SLOT(renameVault()));
 
     connect(fVaultTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
@@ -259,6 +261,8 @@ void VaultShopMain::typeModified()
         if (fCustomEditor != NULL) {
             fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
             fNodeTab->setCurrentIndex(fEditorTabPreference);
+            connect(fCustomEditor, SIGNAL(subscribe(unsigned int)),
+                    this, SLOT(subscribe(unsigned int)));
         }
     }
 }
@@ -288,6 +292,8 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
             if (fCustomEditor != NULL) {
                 fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
                 fNodeTab->setCurrentIndex(fEditorTabPreference);
+                connect(fCustomEditor, SIGNAL(subscribe(unsigned int)),
+                        this, SLOT(subscribe(unsigned int)));
             }
         }
     } else {
@@ -391,12 +397,12 @@ void VaultShopMain::loadVault(QString filename, QString vaultName)
         loadNode(node, vault->fRootItem, vault);
 }
 
-void VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
-                             VaultInfo* vault)
+QTreeWidgetItem* VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
+                                         VaultInfo* vault)
 {
     for (int i=0; i<parent->childCount(); i++) {
         if (parent->child(i)->data(0, kRoleNodeID).toInt() == (int)node.getNodeID())
-            return;
+            return parent->child(i);
     }
 
     QTreeWidgetItem* item = new QTreeWidgetItem(parent);
@@ -405,6 +411,7 @@ void VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetItem* parent,
     std::vector<plVaultNode> children = vault->fVault->getChildren(node.getNodeID());
     for (size_t i=0; i<children.size(); i++)
         loadNode(children[i], item, vault);
+    return item;
 }
 
 void VaultShopMain::openNode()
@@ -422,11 +429,29 @@ void VaultShopMain::openNode()
     int nodeId = QInputDialog::getInteger(this, tr("Node ID"),
                                           tr("Enter the ID of the Node to subscribe to"),
                                           0, 0, 0x7FFFFFFF, 1, &ok);
-    if (!ok)
+    if (ok)
+        subscribe(nodeId);
+}
+
+void VaultShopMain::subscribe(unsigned int nodeId)
+{
+    if (nodeId == 0)
         return;
+
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
     plVaultNode node = vault->fVault->getNode(nodeId);
     if (node.isValid()) {
-        loadNode(node, vault->fRootItem, vault);
+        QTreeWidgetItem* item = loadNode(node, vault->fRootItem, vault);
+        if (item != NULL)
+            fVaultTree->setCurrentItem(item);
     } else {
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("Node %1 does not exist in %2")
@@ -455,22 +480,29 @@ void VaultShopMain::treeContextMenu(const QPoint& pos)
         return;
 
     QMenu menu(this);
+    //menu.addAction(fActions[kNodeRenameVault]);
     menu.addAction(fActions[kNodeUnsubscribe]);
     menu.addAction(fActions[kNodeUnLink]);
     menu.addAction(fActions[kNodeLink]);
     menu.addAction(fActions[kNodeCreate]);
     if (fVaultTree->currentItem()->data(0, kRoleNodeID).toInt() < 0) {
+        //fActions[kNodeRenameVault]->setEnabled(true);
+        //fActions[kNodeRenameVault]->setVisible(true);
         fActions[kNodeUnsubscribe]->setEnabled(false);
         fActions[kNodeUnsubscribe]->setVisible(false);
         fActions[kNodeUnLink]->setEnabled(false);
         fActions[kNodeLink]->setEnabled(false);
     } else if (fVaultTree->currentItem()->parent() != NULL &&
                fVaultTree->currentItem()->parent()->data(0, kRoleNodeID).toInt() < 0) {
+        //fActions[kNodeRenameVault]->setEnabled(false);
+        //fActions[kNodeRenameVault]->setVisible(false);
         fActions[kNodeUnsubscribe]->setEnabled(true);
         fActions[kNodeUnsubscribe]->setVisible(true);
         fActions[kNodeUnLink]->setEnabled(false);
         fActions[kNodeLink]->setEnabled(true);
     } else {
+        //fActions[kNodeRenameVault]->setEnabled(false);
+        //fActions[kNodeRenameVault]->setVisible(false);
         fActions[kNodeUnsubscribe]->setEnabled(false);
         fActions[kNodeUnsubscribe]->setVisible(false);
         fActions[kNodeUnLink]->setEnabled(true);
@@ -577,6 +609,24 @@ void VaultShopMain::refreshNode(unsigned int nodeId)
             loadNode(children[i], *it, vault);
     }
 }
+
+/*
+void VaultShopMain::renameVault()
+{
+    VaultInfo* vault = findCurrentVault();
+    if (vault == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                           tr("No vault is active"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    QString name =
+    name = QInputDialog::getText(this, tr("Rename Vault"),
+                                 tr("New Vault Name (must match the primary Player Name)"),
+                                 QLineEdit::Normal, name);
+}*/
 
 int main(int argc, char* argv[])
 {

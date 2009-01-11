@@ -24,6 +24,9 @@ public:
 protected:
     virtual void IRefreshNode() = 0;
 
+signals:
+    void subscribe(unsigned int nodeId);
+
 public slots:
     void setNode(const plVaultNode& node);
 };

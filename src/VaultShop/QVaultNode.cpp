@@ -428,7 +428,7 @@ QString GetNodeDisplay(const plVaultNode& node)
     case plVault::kNodePlayer:
         return QString::fromUtf8(node.upcastToPlayerNode()->getPlayerName().cstr());
     case plVault::kNodeAge:
-        return QString("Age Instance %1").arg(QString::fromUtf8(node.upcastToAgeNode()->getAgeInstanceGuid().toString().cstr()));
+        return QString::fromUtf8(node.getCreateAgeName().cstr());
     case plVault::kNodeGameServer:
         return QString::fromUtf8(node.upcastToGameServerNode()->getAgeFilename().cstr());
     case plVault::kNodeAdmin:

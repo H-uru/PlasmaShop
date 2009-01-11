@@ -1,19 +1,19 @@
-#ifndef _QVAULTPLAYERNODE_H
-#define _QVAULTPLAYERNODE_H
+#ifndef _QVAULTAGENODE_H
+#define _QVAULTAGENODE_H
 
 #include <QLineEdit>
+#include <QSpinBox>
 #include "QVaultNodeEdit.h"
+#include "QLinkLabel.h"
 
-class QVaultPlayerNode : public QVaultNodeEdit {
+class QVaultAgeNode : public QVaultNodeEdit {
     Q_OBJECT
 
 protected:
-    QLineEdit* fPlayerName;
-    QLineEdit* fAvatarShape;
-    QLineEdit* fAccountUUID;
+    QLineEdit* fAgeInstanceGuid;
 
 public:
-    QVaultPlayerNode(QWidget* parent);
+    QVaultAgeNode(QWidget* parent);
     virtual QString getEditorTitle() const;
     virtual plVaultNode saveNode();
 
