@@ -8,8 +8,9 @@
 #include "../QObjLink.h"
 
 class QSceneObject : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fSynchObjLink;
     QCreatableLink* fDrawIntfLink;
     QCreatableLink* fSimIntfLink;

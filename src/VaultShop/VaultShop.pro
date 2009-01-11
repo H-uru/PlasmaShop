@@ -2,7 +2,6 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += release
 DESTDIR = ../../bin
 
 # Use libPlasma

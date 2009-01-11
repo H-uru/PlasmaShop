@@ -8,8 +8,9 @@
 #include <vector>
 
 class QNewKeyDialog : public QDialog {
-protected:
     Q_OBJECT
+
+protected:
     QComboBox* fLocationBox;
     QComboBox* fTypeBox;
     QLineEdit* fName;
@@ -26,8 +27,9 @@ public:
 };
 
 class QFindKeyDialog : public QDialog {
-protected:
     Q_OBJECT
+
+protected:
     QComboBox* fLocationBox;
     QComboBox* fTypeBox;
     QComboBox* fKeyBox;

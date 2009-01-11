@@ -16,11 +16,12 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 45)"
+#define PRPSHOP_VERSION "1.0 (build 57)"
 
 class PrpShopMain : public QMainWindow {
-private:
     Q_OBJECT
+
+private:
     QString fDialogDir;
     QMdiArea* fMdiArea;
     QDockWidget* fBrowserDock;

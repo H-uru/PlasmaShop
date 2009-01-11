@@ -6,8 +6,9 @@
 #include <PRP/KeyedObject/plKey.h>
 
 class QKeyList : public QTreeWidget {
-protected:
     Q_OBJECT
+
+protected:
     QList<plKey> fKeys;
 
 public:
@@ -27,8 +28,9 @@ protected:
 };
 
 class QStringListWidget : public QListWidget {
-protected:
     Q_OBJECT
+
+protected:
     QStringList fStrings;
 
 public:

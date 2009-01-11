@@ -5,8 +5,9 @@
 #include <PRP/KeyedObject/hsKeyedObject.h>
 
 class QLinkLabel : public QLabel {
-protected:
     Q_OBJECT
+
+protected:
     bool fInClick;
 
 public:
@@ -23,8 +24,9 @@ signals:
 };
 
 class QCreatableLink : public QWidget {
-protected:
     Q_OBJECT
+
+protected:
     plCreatable* fCreatable;
     QLinkLabel* fObjLabel;
     QLinkLabel* fEditLabel;

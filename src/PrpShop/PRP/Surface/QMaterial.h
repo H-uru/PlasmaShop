@@ -9,6 +9,8 @@
 #include "../QKeyList.h"
 
 class QMaterial : public QCreatable {
+    Q_OBJECT
+
 protected:
     enum {
         kCbShaded, kCbEnvironMap, kCbProjectOnto, kCbSoftShadow, kCbSpecular,
@@ -17,7 +19,6 @@ protected:
         kNumCompFlags
     };
 
-    Q_OBJECT
     QCreatableLink* fSynchObjLink;
     QCheckBox* fCBFlags[kNumCompFlags];
     QKeyList* fLayers;

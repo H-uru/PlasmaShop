@@ -10,8 +10,9 @@
 #include "../QObjLink.h"
 
 class QCoordinateInterface : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fOwnerLink;
     QCreatableLink* fSynchObjLink;
     QCheckBox* fCBProperties[plCoordinateInterface::kNumProps];

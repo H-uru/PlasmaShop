@@ -8,8 +8,9 @@
 #include "../QObjLink.h"
 
 class QSimulationInterface : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fOwnerLink;
     QCreatableLink* fSynchObjLink;
     QCheckBox* fCBProperties[plSimulationInterface::kNumProps];

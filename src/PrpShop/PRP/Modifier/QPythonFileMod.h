@@ -13,8 +13,9 @@
 #include "../QKeyList.h"
 
 class QPythonParamList : public QTreeWidget {
-protected:
     Q_OBJECT
+
+protected:
     QList<plPythonParameter> fParams;
 
 public:
@@ -35,8 +36,9 @@ protected:
 };
 
 class QPythonFileMod : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fSynchObjLink;
     QLineEdit* fFileName;
     QKeyList* fReceivers;
@@ -48,8 +50,9 @@ public:
 };
 
 class QPythonParamDialog : public QDialog {
-protected:
     Q_OBJECT
+
+protected:
     QComboBox* fTypeBox;
     QSpinBox* fID;
     QLinkLabel* fKeyValue;

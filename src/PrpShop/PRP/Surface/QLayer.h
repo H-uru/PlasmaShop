@@ -12,8 +12,9 @@
 #include "../QMatrix44.h"
 
 class QLayer : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fSynchObjLink;
     QCreatableLink* fBaseLayer;
     QCreatableLink* fTexture;

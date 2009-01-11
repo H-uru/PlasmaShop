@@ -5,6 +5,8 @@
 #include <ResManager/plResManager.h>
 
 class QCreatable : public QWidget {
+    Q_OBJECT
+
 protected:
     plCreatable* fCreatable;
     short fForceType;

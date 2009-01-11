@@ -8,6 +8,8 @@
 #include "../QKeyList.h"
 
 class QSynchedObject : public QCreatable {
+    Q_OBJECT
+
 protected:
     enum {
         kCbDontDirty, kCbSendReliably, kCbHasConstantNetGroup,
@@ -16,7 +18,6 @@ protected:
         kCbAllStateIsVolatile, kNumCbFlags
     };
 
-    Q_OBJECT
     QCheckBox* fCBFlags[kNumCbFlags];
     QStringListWidget* fExcludeList;
     QStringListWidget* fVolatileList;

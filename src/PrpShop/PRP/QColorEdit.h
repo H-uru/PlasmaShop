@@ -6,8 +6,9 @@
 #include <Sys/hsColor.h>
 
 class QColorBox : public QWidget {
-protected:
     Q_OBJECT
+
+protected:
     QColor fColor;
     bool fInClick;
 
@@ -26,8 +27,9 @@ signals:
 };
 
 class QColorEdit : public QWidget {
-protected:
     Q_OBJECT
+
+protected:
     QColorBox* fColorBox;
     QDoubleSpinBox* fAlphaBox;
     hsColorRGBA fColor;

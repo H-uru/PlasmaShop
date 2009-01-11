@@ -7,8 +7,9 @@
 #include "../QKeyList.h"
 
 class QMsgForwarder : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QKeyList* fForwardKeys;
 
 public:

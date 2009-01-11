@@ -8,8 +8,9 @@
 #include "../QObjLink.h"
 
 class QAudioInterface : public QCreatable {
-protected:
     Q_OBJECT
+
+protected:
     QCreatableLink* fOwnerLink;
     QCreatableLink* fSynchObjLink;
     QCheckBox* fDisabled;

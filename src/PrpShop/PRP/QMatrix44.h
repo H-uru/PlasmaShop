@@ -6,8 +6,9 @@
 #include <Math/hsMatrix44.h>
 
 class QMatrix44 : public QWidget {
-protected:
     Q_OBJECT
+
+protected:
     QLineEdit* fMatEdit[4][4];
 
 public:
