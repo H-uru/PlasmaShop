@@ -51,7 +51,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     fBlendFlags[kBlendAlpha] = new QCheckBox(tr("Alpha"), blendWidget);
     fBlendFlags[kBlendMult] = new QCheckBox(tr("Mult"), blendWidget);
     fBlendFlags[kBlendAdd] = new QCheckBox(tr("Add"), blendWidget);
-    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(tr("Add Color × Alpha"), blendWidget);
+    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(tr("Add Color \u00d7 Alpha"), blendWidget);
     fBlendFlags[kBlendAntiAlias] = new QCheckBox(tr("Anti-Alias"), blendWidget);
     fBlendFlags[kBlendDetail] = new QCheckBox(tr("Detail"), blendWidget);
     fBlendFlags[kBlendNoColor] = new QCheckBox(tr("No Color"), blendWidget);
@@ -109,7 +109,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     clampZLayout->setHorizontalSpacing(8);
     fClampFlags[kClampTextureU] = new QCheckBox(tr("Clamp Texture U"), clampZWidget);
     fClampFlags[kClampTextureV] = new QCheckBox(tr("Clamp Texture V"), clampZWidget);
-    fZFlags[kZIncLayer] = new QCheckBox(tr("Include Layer"), clampZWidget);
+    fZFlags[kZIncLayer] = new QCheckBox(tr("Include Z Layer"), clampZWidget);
     fZFlags[kZClearZ] = new QCheckBox(tr("Clear Z"), clampZWidget);
     fZFlags[kZNoZRead] = new QCheckBox(tr("No Z Read"), clampZWidget);
     fZFlags[kZNoZWrite] = new QCheckBox(tr("No Z Write"), clampZWidget);

@@ -32,6 +32,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 
 /***** Creatable Forms -- think QFactory ;) *****/
+#include "PRP/QSceneNode.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Object/QAudioInterface.h"
@@ -59,6 +60,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QMsgForwarder(pCre, parent);
     case kPythonFileMod:
         return new QPythonFileMod(pCre, parent);
+    case kSceneNode:
+        return new QSceneNode(pCre, parent);
     case kSceneObject:
         return new QSceneObject(pCre, parent);
     case kSimulationInterface:

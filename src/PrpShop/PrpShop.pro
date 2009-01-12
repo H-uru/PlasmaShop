@@ -2,7 +2,7 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += release
+CONFIG += release
 DESTDIR = ../../bin
 RC_FILE = res/PrpShop.rc
 
@@ -20,6 +20,7 @@ HEADERS += Main.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
            PRP/QObjLink.h \
+           PRP/QSceneNode.h \
            PRP/Message/QMsgForwarder.h \
            PRP/Modifier/QPythonFileMod.h \
            PRP/Object/QAudioInterface.h \
@@ -38,6 +39,7 @@ SOURCES += Main.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \
            PRP/QObjLink.cpp \
+           PRP/QSceneNode.cpp \
            PRP/Message/QMsgForwarder.cpp \
            PRP/Modifier/QPythonFileMod.cpp \
            PRP/Object/QAudioInterface.cpp \
