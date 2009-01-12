@@ -2,6 +2,7 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
+CONFIG += release
 DESTDIR = ../../bin
 RC_FILE = res/PrpShop.rc
 
