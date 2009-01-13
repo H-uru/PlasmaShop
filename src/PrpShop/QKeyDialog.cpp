@@ -43,8 +43,8 @@ void QNewKeyDialog::init(plResManager* mgr)
     for (size_t i=0; i<fLocations.size(); i++) {
         plPageInfo* page = mgr->FindPage(fLocations[i]);
         fLocationBox->addItem(QIcon(":/img/page.png"),
-            QString("[%1] %2").arg(page->getAge().cstr())
-                              .arg(page->getPage().cstr()));
+            QString("[%1] %2").arg(~page->getAge())
+                              .arg(~page->getPage()));
     }
 
     fTypes = pqGetValidKOTypes();
@@ -104,8 +104,8 @@ void QFindKeyDialog::init(plResManager* mgr, plLocation loc, short type)
     for (size_t i=0; i<fLocations.size(); i++) {
         plPageInfo* page = fResMgr->FindPage(fLocations[i]);
         fLocationBox->addItem(QIcon(":/img/page.png"),
-            QString("[%1] %2").arg(page->getAge().cstr())
-                              .arg(page->getPage().cstr()));
+            QString("[%1] %2").arg(~page->getAge())
+                              .arg(~page->getPage()));
     }
 
     if (loc.isValid()) {
@@ -131,8 +131,8 @@ void QFindKeyDialog::init(plResManager* mgr, plKey current)
     for (size_t i=0; i<fLocations.size(); i++) {
         plPageInfo* page = fResMgr->FindPage(fLocations[i]);
         fLocationBox->addItem(QIcon(":/img/page.png"),
-            QString("[%1] %2").arg(page->getAge().cstr())
-                              .arg(page->getPage().cstr()));
+            QString("[%1] %2").arg(~page->getAge())
+                              .arg(~page->getPage()));
     }
 
     if (current.Exists()) {
@@ -174,5 +174,5 @@ void QFindKeyDialog::typeSelected(int idx)
 
     fKeys = fResMgr->getKeys(fLocations[fLocationBox->currentIndex()], fTypes[idx]);
     for (size_t i=0; i<fKeys.size(); i++)
-        fKeyBox->addItem(fKeys[i]->getName().cstr());
+        fKeyBox->addItem(~fKeys[i]->getName());
 }

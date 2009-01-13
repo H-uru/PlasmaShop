@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QTabWidget>
+#include "../../../QPlasma.h"
 
 QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kSynchedObject, parent)
@@ -46,9 +47,9 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     sdlTab->addTab(fVolatileList, tr("SDL Volatiles"));
 
     for (size_t i=0; i<obj->getExcludes().getSize(); i++)
-        fExcludeList->addString(obj->getExcludes()[i].cstr());
+        fExcludeList->addString(~obj->getExcludes()[i]);
     for (size_t i=0; i<obj->getVolatiles().getSize(); i++)
-        fVolatileList->addString(obj->getVolatiles()[i].cstr());
+        fVolatileList->addString(~obj->getVolatiles()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -74,7 +75,7 @@ void QSynchedObject::saveDamage()
     QStringList volatiles = fVolatileList->strings();
     QStringList::Iterator it;
     for (it = excludes.begin(); it != excludes.end(); it++)
-        obj->setExclude((*it).toUtf8().data());
+        obj->setExclude(~(*it));
     for (it = volatiles.begin(); it != volatiles.end(); it++)
-        obj->setVolatile((*it).toUtf8().data());
+        obj->setVolatile(~(*it));
 }

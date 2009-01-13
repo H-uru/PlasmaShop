@@ -36,8 +36,8 @@ plVaultNode QVaultChronicleNode::saveNode()
         return plVaultNode();
 
     chron->setEntryType(fChronicleType->value());
-    chron->setEntryName(fChronicleName->text().toUtf8().data());
-    chron->setEntryValue(fChronicleValue->text().toUtf8().data());
+    chron->setEntryName(~fChronicleName->text());
+    chron->setEntryValue(~fChronicleValue->text());
     return fNode;
 }
 
@@ -48,6 +48,6 @@ void QVaultChronicleNode::IRefreshNode()
         return;
 
     fChronicleType->setValue(chron->getEntryType());
-    fChronicleName->setText(QString::fromUtf8(chron->getEntryName().cstr()));
-    fChronicleValue->setText(QString::fromUtf8(chron->getEntryValue().cstr()));
+    fChronicleName->setText(~chron->getEntryName());
+    fChronicleValue->setText(~chron->getEntryValue());
 }

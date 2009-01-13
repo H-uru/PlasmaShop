@@ -12,7 +12,7 @@
 #include <SDL/plStateDataRecord.h>
 #include <ResManager/plResManager.h>
 #include "QVaultNodeEdit.h"
-#include "QColorEdit.h"
+#include "../QColorEdit.h"
 
 class QSDLEditor : public QWidget {
     Q_OBJECT

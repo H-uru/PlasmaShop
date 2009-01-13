@@ -35,7 +35,7 @@ plVaultNode QVaultPlayerInfoNode::saveNode()
     if (player == NULL)
         return plVaultNode();
 
-    player->setPlayerName(fPlayerName->text().toUtf8().data());
+    player->setPlayerName(~fPlayerName->text());
     player->setPlayerID(fPlayerID->value());
     return fNode;
 }
@@ -46,7 +46,7 @@ void QVaultPlayerInfoNode::IRefreshNode()
     if (player == NULL)
         return;
 
-    fPlayerName->setText(QString::fromUtf8(player->getPlayerName().cstr()));
+    fPlayerName->setText(~player->getPlayerName());
     fPlayerID->setValue(player->getPlayerID());
 }
 

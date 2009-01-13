@@ -55,7 +55,7 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
         fCBProperties[i]->setChecked(intf->getProperty(i));
 
     fPhysicalLink = new QCreatableLink(this);
-    fPhysicalLink->setText(intf->getPhysical().Exists() ? intf->getPhysical()->getName().cstr() : "(Null)");
+    fPhysicalLink->setText(intf->getPhysical().Exists() ? ~intf->getPhysical()->getName() : "(Null)");
     fPhysicalLink->setKey(intf->getPhysical());
 
     QGridLayout* layout = new QGridLayout(this);
@@ -111,7 +111,7 @@ void QSimulationInterface::setPhysical()
     if (dlg.exec() == QDialog::Accepted) {
         intf->setPhysical(dlg.selection());
         fPhysicalLink->setKey(intf->getPhysical());
-        fPhysicalLink->setText(intf->getPhysical()->getName().cstr());
+        fPhysicalLink->setText(~intf->getPhysical()->getName());
     }
 }
 

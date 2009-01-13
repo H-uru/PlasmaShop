@@ -30,11 +30,11 @@ static QStringList makeParamItem(const plPythonParameter& param)
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle)
-        row << param.fStrValue.cstr();
+        row << ~param.fStrValue;
     else if (param.fValueType == plPythonParameter::kNone)
         row << "(Null)";
     else
-        row << param.fObjKey->getName().cstr();
+        row << ~param.fObjKey->getName();
     return row;
 }
 
@@ -131,7 +131,7 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setCreatable(mod);
     fSynchObjLink->setForceType(kSynchedObject);
 
-    fFileName = new QLineEdit(mod->getFilename().cstr(), this);
+    fFileName = new QLineEdit(~mod->getFilename(), this);
 
     fReceivers = new QKeyList(this);
     for (size_t i=0; i<mod->getNumReceivers(); i++)
@@ -157,7 +157,7 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
 void QPythonFileMod::saveDamage()
 {
     plPythonFileMod* mod = (plPythonFileMod*)fCreatable;
-    mod->setFilename(fFileName->text().toUtf8().data());
+    mod->setFilename(~fFileName->text());
 
     mod->clearReceivers();
     QList<plKey> recs = fReceivers->keys();
@@ -242,13 +242,13 @@ void QPythonParamDialog::init(const plPythonParameter& param)
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle) {
-        fStringValue->setText(param.fStrValue.cstr());
+        fStringValue->setText(~param.fStrValue);
     } else if (param.fValueType == plPythonParameter::kNone) {
         // Do nothing
     } else {
         fKey = param.fObjKey;
         if (fKey.Exists())
-            fKeyValue->setText(fKey->getName().cstr());
+            fKeyValue->setText(~fKey->getName());
         else
             fKeyValue->setText("(Null)");
     }
@@ -270,7 +270,7 @@ plPythonParameter QPythonParamDialog::parameter() const
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle) {
-        param.fStrValue = fStringValue->text().toUtf8().data();
+        param.fStrValue = ~fStringValue->text();
     } else if (param.fValueType == plPythonParameter::kNone) {
         // Do nothing
     } else {
@@ -285,7 +285,7 @@ void QPythonParamDialog::selectKey()
     dlg.init(PrpShopMain::ResManager(), fKey);
     if (dlg.exec() == QDialog::Accepted) {
         fKey = dlg.selection();
-        fKeyValue->setText(fKey->getName().cstr());
+        fKeyValue->setText(~fKey->getName());
     }
 }
 

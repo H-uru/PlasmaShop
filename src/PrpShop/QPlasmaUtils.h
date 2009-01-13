@@ -2,14 +2,12 @@
 #define _PLASMAWIDGETS_H
 
 #include <QIcon>
-#include <PRP/KeyedObject/plLocation.h>
 #include <vector>
+#include "../QPlasma.h"
 
 QIcon pqGetTypeIcon(short);
 QString pqGetFriendlyClassName(short);
 
 std::vector<short> pqGetValidKOTypes();
-
-unsigned int qHash(const plLocation& loc);
 
 #endif

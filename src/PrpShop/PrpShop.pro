@@ -12,10 +12,12 @@ LIBS += -L../../../Plasma/bin -lPlasma
 
 # PrpShop Sources
 HEADERS += Main.h \
+           ../QPlasma.h \
+           ../QColorEdit.h \
+           ../QLinkLabel.h \
            QKeyDialog.h \
            QPlasmaUtils.h \
            QPlasmaTreeItem.h \
-           PRP/QColorEdit.h \
            PRP/QCreatable.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
@@ -31,10 +33,12 @@ HEADERS += Main.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QMaterial.h
 SOURCES += Main.cpp \
+           ../QPlasma.cpp \
+           ../QColorEdit.cpp \
+           ../QLinkLabel.cpp \
            QKeyDialog.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
-           PRP/QColorEdit.cpp \
            PRP/QCreatable.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \

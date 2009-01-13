@@ -41,7 +41,7 @@ public:
         while ((child = takeChild(0)) != NULL)
             delete child;
 
-        setText(0, QString::fromUtf8(fVariable->getDescriptor()->getName().cstr()));
+        setText(0, ~fVariable->getDescriptor()->getName());
         setText(1, QSDLEditor::GetVarDisplay(var));
         if (fVariable->getDescriptor()->getType() == plVarDescriptor::kStateDescriptor) {
             if (fVariable->getCount() > 1) {
@@ -84,10 +84,10 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
             result += ((plSimpleStateVariable*)var)->Bool(i) ? "True" : "False";
             break;
         case plVarDescriptor::kString:
-            result += QString::fromUtf8(((plSimpleStateVariable*)var)->String(i).cstr());
+            result += ~((plSimpleStateVariable*)var)->String(i);
             break;
         case plVarDescriptor::kKey:
-            result += QString::fromUtf8(((plSimpleStateVariable*)var)->Uoid(i).toString().cstr());
+            result += ~((plSimpleStateVariable*)var)->Uoid(i).toString();
             break;
         case plVarDescriptor::kDouble:
             result += QString("%1").arg(((plSimpleStateVariable*)var)->Double(i));
@@ -138,7 +138,7 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
             }
             break;
         case plVarDescriptor::kStateDescriptor:
-            result = QString("(SDL Record: %1)").arg(QString::fromUtf8(var->getDescriptor()->getStateDescType().cstr()));
+            result = QString("(SDL Record: %1)").arg(~var->getDescriptor()->getStateDescType());
             break;
         default:
             result += "(incomplete)";
@@ -158,7 +158,7 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
     plString name;
     int version;
     plStateDataRecord::ReadStreamHeader(&S, name, version, NULL);
-    return QString::fromUtf8(name.cstr());
+    return ~name;
 }
 
 QSDLEditor::QSDLEditor(QWidget* parent)
@@ -210,7 +210,7 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
     if (desc == NULL) {
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("No SDL Descriptor for %1 (version %2)")
-                           .arg(QString::fromUtf8(fSDLName.cstr())).arg(fSDLVersion),
+                           .arg(~fSDLName).arg(fSDLVersion),
                            QMessageBox::Ok, this);
         msgBox.exec();
         return;
@@ -260,7 +260,7 @@ void QSDLEditor::setupVarEditorCommon(plStateVariable* var)
     fEditorWhich->setRange(0, var->getCount() - 1);
     fEditorLayout->addWidget(new QLabel(
         QString("%1[%2]:")
-        .arg(QString::fromUtf8(var->getDescriptor()->getName().cstr()))
+        .arg(~var->getDescriptor()->getName())
         .arg(var->getCount()), fEditorPanel), 0, 0);
     fEditorLayout->addWidget(fEditorWhich, 0, 1, 1, 2);
 
@@ -291,7 +291,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
         fIntEdit->setValue(((plSimpleStateVariable*)var)->Byte(which));
         break;
     case plVarDescriptor::kString:
-        fStringEdit->setText(QString::fromUtf8(((plSimpleStateVariable*)var)->String(which)));
+        fStringEdit->setText(~((plSimpleStateVariable*)var)->String(which));
         break;
     case plVarDescriptor::kKey:
         {
@@ -299,7 +299,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
             fLocationEdit[0]->setValue(key.getLocation().getSeqPrefix());
             fLocationEdit[1]->setValue(key.getLocation().getPageNum());
             fComboEdit->setCurrentIndex(key.getType());
-            fStringEdit->setText(QString::fromUtf8(key.getName().cstr()));
+            fStringEdit->setText(~key.getName());
         }
         break;
     case plVarDescriptor::kRGB8:
@@ -350,7 +350,7 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
         ((plSimpleStateVariable*)var)->Byte(which) = fIntEdit->value();
         break;
     case plVarDescriptor::kString:
-        ((plSimpleStateVariable*)var)->String(which) = fStringEdit->text().toUtf8().data();
+        ((plSimpleStateVariable*)var)->String(which) = ~fStringEdit->text();
         break;
     case plVarDescriptor::kKey:
         {
@@ -360,7 +360,7 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
             loc.setPageNum(fLocationEdit[1]->value());
             key.setLocation(loc);
             key.setType(fComboEdit->currentIndex());
-            key.setName(fStringEdit->text().toUtf8().data());
+            key.setName(~fStringEdit->text());
             ((plSimpleStateVariable*)var)->Uoid(which) = key;
         }
         break;

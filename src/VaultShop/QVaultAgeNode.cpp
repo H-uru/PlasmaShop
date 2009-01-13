@@ -1,5 +1,6 @@
 #include "QVaultAgeNode.h"
 
+#include <QLabel>
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QRegExpValidator>
@@ -29,7 +30,7 @@ plVaultNode QVaultAgeNode::saveNode()
     if (age == NULL)
         return plVaultNode();
 
-    age->setAgeInstanceGuid(plServerGuid::FromString(fAgeInstanceGuid->text().toUtf8().data()));
+    age->setAgeInstanceGuid(plServerGuid::FromString(~fAgeInstanceGuid->text()));
     return fNode;
 }
 
@@ -39,5 +40,5 @@ void QVaultAgeNode::IRefreshNode()
     if (age == NULL)
         return;
 
-    fAgeInstanceGuid->setText(QString::fromUtf8(age->getAgeInstanceGuid().toString().cstr()));
+    fAgeInstanceGuid->setText(~age->getAgeInstanceGuid().toString());
 }

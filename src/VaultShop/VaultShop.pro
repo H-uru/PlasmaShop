@@ -11,8 +11,9 @@ LIBS += -L../../../Plasma/bin -lPlasma
 
 # VaultShop Sources
 HEADERS += Main.h \
-           QColorEdit.h \
-           QLinkLabel.h \
+           ../QPlasma.h \
+           ../QColorEdit.h \
+           ../QLinkLabel.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
@@ -25,8 +26,9 @@ HEADERS += Main.h \
            QVaultAgeNode.h \
            QVaultAgeInfoNode.h
 SOURCES += Main.cpp \
-           QColorEdit.cpp \
-           QLinkLabel.cpp \
+           ../QPlasma.cpp \
+           ../QColorEdit.cpp \
+           ../QLinkLabel.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \

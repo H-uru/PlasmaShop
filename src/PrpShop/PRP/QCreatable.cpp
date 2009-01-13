@@ -11,7 +11,7 @@ QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
     setWindowIcon(pqGetTypeIcon(type));
     if (hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable)) {
         setWindowTitle(pqGetFriendlyClassName(type) +
-                       ": " + ko->getKey()->getName().cstr());
+                       ": " + ~ko->getKey()->getName());
     } else {
         setWindowTitle(pqGetFriendlyClassName(type));
     }

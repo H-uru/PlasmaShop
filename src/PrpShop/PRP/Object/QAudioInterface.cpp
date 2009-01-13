@@ -28,7 +28,7 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     fDisabled->setChecked(intf->getProperty(plAudioInterface::kDisable));
 
     fAudibleLink = new QCreatableLink(this);
-    fAudibleLink->setText(intf->getAudible().Exists() ? intf->getAudible()->getName().cstr() : "(Null)");
+    fAudibleLink->setText(intf->getAudible().Exists() ? ~intf->getAudible()->getName() : "(Null)");
     fAudibleLink->setKey(intf->getAudible());
 
     QGridLayout* layout = new QGridLayout(this);
@@ -83,7 +83,7 @@ void QAudioInterface::setAudible()
     if (dlg.exec() == QDialog::Accepted) {
         intf->setAudible(dlg.selection());
         fAudibleLink->setKey(intf->getAudible());
-        fAudibleLink->setText(intf->getAudible()->getName().cstr());
+        fAudibleLink->setText(~intf->getAudible()->getName());
     }
 }
 

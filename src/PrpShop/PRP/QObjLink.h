@@ -1,27 +1,8 @@
 #ifndef _QOBJLINK_H
 #define _QOBJLINK_H
 
-#include <QLabel>
 #include <PRP/KeyedObject/hsKeyedObject.h>
-
-class QLinkLabel : public QLabel {
-    Q_OBJECT
-
-protected:
-    bool fInClick;
-
-public:
-    QLinkLabel(QWidget* parent = NULL);
-    QLinkLabel(const QString& text, QWidget* parent = NULL);
-
-protected:
-    void init();
-    virtual void mousePressEvent(QMouseEvent* evt);
-    virtual void mouseReleaseEvent(QMouseEvent* evt);
-
-signals:
-    void activated();
-};
+#include "../../QLinkLabel.h"
 
 class QCreatableLink : public QWidget {
     Q_OBJECT

@@ -12,6 +12,7 @@
 #include <ResManager/plFactory.h>
 
 #include "Main.h"
+#include "../QPlasma.h"
 
 static QString HexToStr(const QString& hex)
 {
@@ -39,7 +40,7 @@ VaultShopMain::VaultInfo::VaultInfo(QString filename)
              : fVaultFile(filename), fRootItem(NULL)
 {
     fVault = new plVaultStore();
-    fVault->ImportFile(filename.toUtf8().data());
+    fVault->ImportFile(~filename);
 }
 
 VaultShopMain::VaultInfo::~VaultInfo()
@@ -52,7 +53,7 @@ VaultShopMain::VaultInfo::~VaultInfo()
 
 void VaultShopMain::VaultInfo::save()
 {
-    fVault->ExportFile(fVaultFile.toUtf8().data());
+    fVault->ExportFile(~fVaultFile);
 }
 
 
@@ -349,7 +350,7 @@ void VaultShopMain::loadGame(QString path)
             QString sdlPath = path + "/SDL/" + *it;
             try {
                 if (QFile::exists(sdlPath))
-                    fSDLMgr.ReadDescriptors(sdlPath.toUtf8().data());
+                    fSDLMgr.ReadDescriptors(~sdlPath);
             } catch (hsException ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error parsing %1: %2")

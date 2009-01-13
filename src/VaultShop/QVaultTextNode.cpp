@@ -42,7 +42,7 @@ plVaultNode QVaultTextNode::saveNode()
     if (text == NULL)
         return plVaultNode();
 
-    text->setNoteTitle(fNoteTitle->text().toUtf8().data());
+    text->setNoteTitle(~fNoteTitle->text());
     text->setNoteType(fNoteType->currentIndex());
 
     QByteArray contents = fNoteContents->toPlainText().toUtf8();
@@ -59,7 +59,7 @@ void QVaultTextNode::IRefreshNode()
     if (text == NULL)
         return;
 
-    fNoteTitle->setText(QString::fromUtf8(text->getNoteTitle().cstr()));
+    fNoteTitle->setText(~text->getNoteTitle());
     fNoteType->setCurrentIndex(text->getNoteType());
 
     plVaultBlob blob = text->getNoteContents();

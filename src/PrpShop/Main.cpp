@@ -12,6 +12,7 @@
 #include <ResManager/plFactory.h>
 
 #include "Main.h"
+#include "../QPlasma.h"
 #include "QPlasmaUtils.h"
 #include "QKeyDialog.h"
 #include "PRP/QCreatable.h"
@@ -302,16 +303,16 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
     if (last != NULL) {
         bool refreshTree = false;
         if (last->type() == QPlasmaTreeItem::kTypePage) {
-            if (fAgeName->text() != last->page()->getAge().cstr()) {
-                last->page()->setAge(fAgeName->text().toUtf8().data());
+            if (fAgeName->text() != ~last->page()->getAge()) {
+                last->page()->setAge(~fAgeName->text());
                 fLoadedLocations.erase(fLoadedLocations.find(last->page()->getLocation()));
                 QPlasmaTreeItem* stale = last;
                 last = loadPage(last->page(), last->filename());
                 delete stale;
                 refreshTree = true;
             }
-            if (fPageName->text() != last->page()->getPage().cstr()) {
-                last->page()->setPage(fPageName->text().toUtf8().data());
+            if (fPageName->text() != ~last->page()->getPage()) {
+                last->page()->setPage(~fPageName->text());
                 last->setText(0, fPageName->text());
                 refreshTree = true;
             }
@@ -331,8 +332,8 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
                 fResMgr.ChangeLocation(last->page()->getLocation(), loc);
             }
         } else if (last->type() == QPlasmaTreeItem::kTypeKO) {
-            if (fObjName->text() != last->obj()->getKey()->getName().cstr()) {
-                last->obj()->getKey()->setName(fObjName->text().toUtf8().data());
+            if (fObjName->text() != ~last->obj()->getKey()->getName()) {
+                last->obj()->getKey()->setName(~fObjName->text());
                 last->setText(0, fObjName->text());
                 refreshTree = true;
             }
@@ -354,8 +355,8 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fAgeName->setText(item->age());
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
         setPropertyPage(kPropsPage);
-        fAgeName->setText(item->page()->getAge().cstr());
-        fPageName->setText(item->page()->getPage().cstr());
+        fAgeName->setText(~item->page()->getAge());
+        fPageName->setText(~item->page()->getPage());
         fReleaseVersion->setValue(item->page()->getReleaseVersion());
         fSeqPrefix->setValue(item->page()->getLocation().getSeqPrefix());
         fSeqSuffix->setValue(item->page()->getLocation().getPageNum());
@@ -366,7 +367,7 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fLocationFlags[kLocBuiltIn]->setChecked(item->page()->getLocation().getFlags() & plLocation::kBuiltIn);
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         setPropertyPage(kPropsKO);
-        fObjName->setText(item->obj()->getKey()->getName().cstr());
+        fObjName->setText(~item->obj()->getKey()->getName());
         fObjType->setText(item->obj()->ClassName());
         fLoadMaskQ[0]->setValue(item->obj()->getKey()->getLoadMask().getQuality(0));
         fLoadMaskQ[1]->setValue(item->obj()->getKey()->getLoadMask().getQuality(1));
@@ -429,13 +430,13 @@ void PrpShopMain::loadFile(QString filename)
 
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
-            plAgeInfo* age = fResMgr.ReadAge(filename.toUtf8().constData(), true);
+            plAgeInfo* age = fResMgr.ReadAge(~filename, true);
             for (size_t i=0; i<age->getNumPages(); i++)
                 loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())),
-                         age->getPageFilename(i, fResMgr.getVer()).cstr());
+                         ~age->getPageFilename(i, fResMgr.getVer()));
             for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++)
                 loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())),
-                         age->getCommonPageFilename(i, fResMgr.getVer()).cstr());
+                         ~age->getCommonPageFilename(i, fResMgr.getVer()));
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
                                tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
@@ -444,7 +445,7 @@ void PrpShopMain::loadFile(QString filename)
         }
     } else if (filename.endsWith(".prp", Qt::CaseInsensitive)) {
         try {
-            plPageInfo* page = fResMgr.ReadPage(filename.toUtf8().data());
+            plPageInfo* page = fResMgr.ReadPage(~filename);
             QPlasmaTreeItem* pageItem = loadPage(page, filename);
             QPlasmaTreeItem* ageItem = (QPlasmaTreeItem*)pageItem->parent();
 
@@ -452,22 +453,22 @@ void PrpShopMain::loadFile(QString filename)
             QDir path(filename);
             path.cdUp(); // Get rid of the filename >.>
             if (ageItem != NULL && !ageItem->hasTextures()) {
-                plString texPath = page->getAge();
+                QString texPath = ~page->getAge();
                 if (fResMgr.getVer() < pvEoa)
                     texPath += "_District";
                 texPath += "_Textures.prp";
-                texPath = path.absoluteFilePath(texPath.cstr()).toUtf8().data();
-                if (QFile::exists(texPath.cstr()))
-                    loadPage(fResMgr.ReadPage(texPath), texPath.cstr());
+                texPath = path.absoluteFilePath(texPath);
+                if (QFile::exists(texPath))
+                    loadPage(fResMgr.ReadPage(~texPath), texPath);
             }
             if (ageItem != NULL && !ageItem->hasBuiltIn()) {
-                plString biPath = page->getAge();
+                QString biPath = ~page->getAge();
                 if (fResMgr.getVer() < pvEoa)
                     biPath += "_District";
                 biPath += "_BuiltIn.prp";
-                biPath = path.absoluteFilePath(biPath.cstr()).toUtf8().data();
-                if (QFile::exists(biPath.cstr()))
-                    loadPage(fResMgr.ReadPage(biPath), biPath.cstr());
+                biPath = path.absoluteFilePath(biPath);
+                if (QFile::exists(biPath))
+                    loadPage(fResMgr.ReadPage(~biPath), biPath);
             }
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
@@ -555,7 +556,7 @@ void PrpShopMain::performSaveAs()
 
 void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 {
-    fResMgr.WritePage(filename.toUtf8().data(), page);
+    fResMgr.WritePage(~filename, page);
 }
 
 QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
@@ -569,8 +570,8 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     }
 
     // Find or create the Age folder
-    QString ageName = page->getAge().cstr();
-    QString pageName = page->getPage().cstr();
+    QString ageName = ~page->getAge();
+    QString pageName = ~page->getPage();
     for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
         if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
             parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
@@ -630,14 +631,14 @@ void PrpShopMain::createNewObject()
         hsKeyedObject* ko = hsKeyedObject::Convert(plFactory::Create(type));
         if (ko == NULL)
             throw hsBadParamException(__FILE__, __LINE__, "Invalid KeyedObject");
-        ko->init(dlg.name().toUtf8().data());
+        ko->init(~dlg.name());
         fResMgr.AddObject(loc, ko);
 
         // Now add it to the tree
         plPageInfo* page = fResMgr.FindPage(loc);
         QPlasmaTreeItem* ageItem = NULL;
-        QString ageName = page->getAge().cstr();
-        QString pageName = page->getPage().cstr();
+        QString ageName = ~page->getAge();
+        QString pageName = ~page->getPage();
         for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
             if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
                 ageItem = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);

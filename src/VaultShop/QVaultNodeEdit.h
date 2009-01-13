@@ -5,6 +5,7 @@
 #include <Vault/plVaultNode.h>
 #include <SDL/plSDLMgr.h>
 #include <ResManager/plResManager.h>
+#include "../QPlasma.h"
 
 class QVaultNodeEdit : public QWidget {
     Q_OBJECT

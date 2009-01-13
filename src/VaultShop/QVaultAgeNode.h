@@ -4,7 +4,6 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include "QVaultNodeEdit.h"
-#include "QLinkLabel.h"
 
 class QVaultAgeNode : public QVaultNodeEdit {
     Q_OBJECT

@@ -24,7 +24,7 @@ QKeyList::QKeyList(QWidget* parent)
 void QKeyList::addKey(plKey key)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(this,
-        QStringList() << key->getName().cstr() << pqGetFriendlyClassName(key->getType()));
+        QStringList() << ~key->getName() << pqGetFriendlyClassName(key->getType()));
     item->setIcon(0, pqGetTypeIcon(key->getType()));
     fKeys << key;
 }

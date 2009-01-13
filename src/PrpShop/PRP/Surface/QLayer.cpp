@@ -21,25 +21,25 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     fBaseLayer = new QCreatableLink(this);
     fBaseLayer->setKey(lay->getUnderLay());
     fBaseLayer->setText(lay->getUnderLay().Exists()
-                        ? lay->getUnderLay()->getName().cstr()
+                        ? ~lay->getUnderLay()->getName()
                         : "(None)");
 
     fTexture = new QCreatableLink(this);
     fTexture->setKey(lay->getTexture());
     fTexture->setText(lay->getTexture().Exists()
-                      ? lay->getTexture()->getName().cstr()
+                      ? ~lay->getTexture()->getName()
                       : "(None)");
 
     fVShader = new QCreatableLink(this);
     fVShader->setKey(lay->getVertexShader());
     fVShader->setText(lay->getVertexShader().Exists()
-                      ? lay->getVertexShader()->getName().cstr()
+                      ? ~lay->getVertexShader()->getName()
                       : "(None)");
 
     fPShader = new QCreatableLink(this);
     fPShader->setKey(lay->getPixelShader());
     fPShader->setText(lay->getPixelShader().Exists()
-                      ? lay->getPixelShader()->getName().cstr()
+                      ? ~lay->getPixelShader()->getName()
                       : "(None)");
 
     QTabWidget* flagTab = new QTabWidget(this);
@@ -51,7 +51,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     fBlendFlags[kBlendAlpha] = new QCheckBox(tr("Alpha"), blendWidget);
     fBlendFlags[kBlendMult] = new QCheckBox(tr("Mult"), blendWidget);
     fBlendFlags[kBlendAdd] = new QCheckBox(tr("Add"), blendWidget);
-    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(tr("Add Color \u00d7 Alpha"), blendWidget);
+    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(trUtf8("Add Color × Alpha"), blendWidget);
     fBlendFlags[kBlendAntiAlias] = new QCheckBox(tr("Anti-Alias"), blendWidget);
     fBlendFlags[kBlendDetail] = new QCheckBox(tr("Detail"), blendWidget);
     fBlendFlags[kBlendNoColor] = new QCheckBox(tr("No Color"), blendWidget);
@@ -232,10 +232,10 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     QGridLayout* layColors = new QGridLayout(grpColors);
     layColors->setVerticalSpacing(8);
     layColors->setHorizontalSpacing(8);
-    fPreshade = new QColorEdit(grpColors);
-    fRuntime = new QColorEdit(grpColors);
-    fAmbient = new QColorEdit(grpColors);
-    fSpecular = new QColorEdit(grpColors);
+    fPreshade = new QColorEdit(true, grpColors);
+    fRuntime = new QColorEdit(true, grpColors);
+    fAmbient = new QColorEdit(true, grpColors);
+    fSpecular = new QColorEdit(true, grpColors);
     fPreshade->setColor(lay->getPreshade());
     fRuntime->setColor(lay->getRuntime());
     fAmbient->setColor(lay->getAmbient());
@@ -491,7 +491,7 @@ void QLayer::setBaseLayer()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setUnderLay(dlg.selection());
         fBaseLayer->setKey(lay->getUnderLay());
-        fBaseLayer->setText(lay->getUnderLay()->getName().cstr());
+        fBaseLayer->setText(~lay->getUnderLay()->getName());
     }
 }
 
@@ -506,7 +506,7 @@ void QLayer::setTexture()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setTexture(dlg.selection());
         fTexture->setKey(lay->getTexture());
-        fTexture->setText(lay->getTexture()->getName().cstr());
+        fTexture->setText(~lay->getTexture()->getName());
     }
 }
 
@@ -521,7 +521,7 @@ void QLayer::setVShader()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setVertexShader(dlg.selection());
         fVShader->setKey(lay->getVertexShader());
-        fVShader->setText(lay->getVertexShader()->getName().cstr());
+        fVShader->setText(~lay->getVertexShader()->getName());
     }
 }
 
@@ -536,7 +536,7 @@ void QLayer::setPShader()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setPixelShader(dlg.selection());
         fPShader->setKey(lay->getPixelShader());
-        fPShader->setText(lay->getPixelShader()->getName().cstr());
+        fPShader->setText(~lay->getPixelShader()->getName());
     }
 }
 

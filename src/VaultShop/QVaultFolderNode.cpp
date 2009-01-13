@@ -131,7 +131,7 @@ plVaultNode QVaultFolderNode::saveNode()
         return plVaultNode();
 
     folder->setFolderType(UnmapFolderType(fFolderType->currentIndex()));
-    folder->setFolderName(fFolderName->text().toUtf8().data());
+    folder->setFolderName(~fFolderName->text());
     return fNode;
 }
 
@@ -142,7 +142,7 @@ void QVaultFolderNode::IRefreshNode()
         return;
 
     fFolderType->setCurrentIndex(MapFolderType(folder->getFolderType()));
-    fFolderName->setText(QString::fromUtf8(folder->getFolderName().cstr()));
+    fFolderName->setText(~folder->getFolderName());
 }
 
 

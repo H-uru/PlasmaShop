@@ -45,9 +45,9 @@ plVaultNode QVaultPlayerNode::saveNode()
     if (player == NULL)
         return plVaultNode();
 
-    player->setAvatarShape(fAvatarShape->text().toUtf8().data());
-    player->setPlayerName(fPlayerName->text().toUtf8().data());
-    player->setAccountUuid(fAccountUUID->text().toUtf8().data());
+    player->setAvatarShape(~fAvatarShape->text());
+    player->setPlayerName(~fPlayerName->text());
+    player->setAccountUuid(~fAccountUUID->text());
     return fNode;
 }
 
@@ -57,7 +57,7 @@ void QVaultPlayerNode::IRefreshNode()
     if (player == NULL)
         return;
 
-    fAvatarShape->setText(QString::fromUtf8(player->getAvatarShape().cstr()));
-    fPlayerName->setText(QString::fromUtf8(player->getPlayerName().cstr()));
-    fAccountUUID->setText(QString::fromUtf8(player->getAccountUuid().cstr()));
+    fAvatarShape->setText(~player->getAvatarShape());
+    fPlayerName->setText(~player->getPlayerName());
+    fAccountUUID->setText(~player->getAccountUuid());
 }

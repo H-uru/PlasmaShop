@@ -533,14 +533,3 @@ std::vector<short> pqGetValidKOTypes()
 
     return std::vector<short>(s_typeList, s_typeList + s_numTypes);
 }
-
-unsigned int qHash(const plLocation& loc)
-{ return loc.unparse(); }
-
-/*
-unsigned int qHash(const plKey& key)
-{
-    return (qHash(key->getLocation()) + key->getType())
-         ^ (qHash(QString(key->getName().cstr())));
-}
-*/
