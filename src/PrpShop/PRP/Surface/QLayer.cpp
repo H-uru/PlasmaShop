@@ -295,14 +295,14 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Pixel Shader:"), this), 9, 0, 1, 1);
     layout->addWidget(fPShader, 9, 1, 1, 4);
 
-    QObject::connect(fBaseLayer, SIGNAL(addObject()), this, SLOT(setBaseLayer()));
-    QObject::connect(fBaseLayer, SIGNAL(delObject()), this, SLOT(unsetBaseLayer()));
-    QObject::connect(fTexture, SIGNAL(addObject()), this, SLOT(setTexture()));
-    QObject::connect(fTexture, SIGNAL(delObject()), this, SLOT(unsetTexture()));
-    QObject::connect(fVShader, SIGNAL(addObject()), this, SLOT(setVShader()));
-    QObject::connect(fVShader, SIGNAL(delObject()), this, SLOT(unsetVShader()));
-    QObject::connect(fPShader, SIGNAL(addObject()), this, SLOT(setPShader()));
-    QObject::connect(fPShader, SIGNAL(delObject()), this, SLOT(unsetPShader()));
+    connect(fBaseLayer, SIGNAL(addObject()), this, SLOT(setBaseLayer()));
+    connect(fBaseLayer, SIGNAL(delObject()), this, SLOT(unsetBaseLayer()));
+    connect(fTexture, SIGNAL(addObject()), this, SLOT(setTexture()));
+    connect(fTexture, SIGNAL(delObject()), this, SLOT(unsetTexture()));
+    connect(fVShader, SIGNAL(addObject()), this, SLOT(setVShader()));
+    connect(fVShader, SIGNAL(delObject()), this, SLOT(unsetVShader()));
+    connect(fPShader, SIGNAL(addObject()), this, SLOT(setPShader()));
+    connect(fPShader, SIGNAL(delObject()), this, SLOT(unsetPShader()));
 }
 
 void QLayer::saveDamage()

@@ -29,8 +29,8 @@ QNewKeyDialog::QNewKeyDialog(QWidget* parent)
     layout->addWidget(fName, 2, 1);
     layout->addWidget(buttonBox, 3, 0, 1, 2);
 
-    QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 void QNewKeyDialog::init(plResManager* mgr)
@@ -86,13 +86,13 @@ QFindKeyDialog::QFindKeyDialog(QWidget* parent)
     layout->addWidget(fKeyBox, 2, 1);
     layout->addWidget(buttonBox, 3, 0, 1, 2);
 
-    QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-    QObject::connect(fLocationBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(locationSelected(int)));
-    QObject::connect(fTypeBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(typeSelected(int)));
+    connect(fLocationBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(locationSelected(int)));
+    connect(fTypeBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(typeSelected(int)));
 }
 
 void QFindKeyDialog::init(plResManager* mgr, plLocation loc, short type)

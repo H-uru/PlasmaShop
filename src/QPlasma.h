@@ -6,9 +6,22 @@
 #include <PRP/KeyedObject/plLocation.h>
 
 // Shorthand Plasma-Qt string conversion
-QString operator~(const plString& str);
-plString operator~(const QString& str);
+inline QString operator~(const plString& str)
+{ return QString::fromUtf8(str.cstr()); }
 
-unsigned int qHash(const plLocation& loc);
+inline plString operator~(const QString& str)
+{ return plString(str.toUtf8().constData()); }
+
+// qHash functions for QHashMaps
+inline unsigned int qHash(const plLocation& loc)
+{ return loc.unparse(); }
+
+/*
+inline unsigned int qHash(const plKey& key)
+{
+    return (qHash(key->getLocation()) + key->getType())
+         ^ (qHash(QString(key->getName().cstr())));
+}
+*/
 
 #endif

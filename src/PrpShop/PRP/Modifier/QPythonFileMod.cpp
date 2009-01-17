@@ -49,8 +49,8 @@ QPythonParamList::QPythonParamList(QWidget* parent)
     headerItem()->setText(1, tr("Type"));
     headerItem()->setText(2, tr("Value"));
 
-    QObject::connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-                     this, SLOT(handleActivate(QTreeWidgetItem*, int)));
+    connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+            this, SLOT(handleActivate(QTreeWidgetItem*, int)));
 }
 
 QSize QPythonParamList::sizeHint() const
@@ -220,10 +220,10 @@ QPythonParamDialog::QPythonParamDialog(QWidget* parent)
     layout->addWidget(fLabelNull, 2, 1, 1, 2);
     layout->addWidget(buttonBox, 3, 0, 1, 3);
 
-    QObject::connect(fTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
-    QObject::connect(fKeyValue, SIGNAL(activated()), this, SLOT(selectKey()));
-    QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(fTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(fKeyValue, SIGNAL(activated()), this, SLOT(selectKey()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     fTypeBox->setCurrentIndex(plPythonParameter::kNone-1);
 }
 

@@ -14,12 +14,12 @@ QCreatableLink::QCreatableLink(QWidget* parent, bool canEdit)
     layout->setSpacing(4);
 
     fObjLabel = new QLinkLabel(this);
-    QObject::connect(fObjLabel, SIGNAL(activated()), this, SLOT(objectActivated()));
+    connect(fObjLabel, SIGNAL(activated()), this, SLOT(objectActivated()));
     layout->addWidget(fObjLabel);
     layout->addStretch();
     if (canEdit) {
         fEditLabel = new QLinkLabel("...", this);
-        QObject::connect(fEditLabel, SIGNAL(activated()), this, SLOT(menuRequested()));
+        connect(fEditLabel, SIGNAL(activated()), this, SLOT(menuRequested()));
         layout->addWidget(fEditLabel);
     }
 

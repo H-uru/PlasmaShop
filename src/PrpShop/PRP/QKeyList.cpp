@@ -17,8 +17,8 @@ QKeyList::QKeyList(QWidget* parent)
     headerItem()->setText(0, tr("Name"));
     headerItem()->setText(1, tr("Type"));
 
-    QObject::connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-                     this, SLOT(activateKeyItem(QTreeWidgetItem*, int)));
+    connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+            this, SLOT(activateKeyItem(QTreeWidgetItem*, int)));
 }
 
 void QKeyList::addKey(plKey key)

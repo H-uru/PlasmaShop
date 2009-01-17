@@ -126,35 +126,35 @@ PrpShopMain::PrpShopMain()
     addDockWidget(Qt::LeftDockWidgetArea, fPropertyDock);
 
     // Global UI Signals
-    QObject::connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
-    QObject::connect(fActions[kFileOpen], SIGNAL(activated()), this, SLOT(openFiles()));
-    QObject::connect(fActions[kFileSave], SIGNAL(activated()), this, SLOT(performSave()));
-    QObject::connect(fActions[kFileSaveAs], SIGNAL(activated()), this, SLOT(performSaveAs()));
+    connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
+    connect(fActions[kFileOpen], SIGNAL(activated()), this, SLOT(openFiles()));
+    connect(fActions[kFileSave], SIGNAL(activated()), this, SLOT(performSave()));
+    connect(fActions[kFileSaveAs], SIGNAL(activated()), this, SLOT(performSaveAs()));
 
-    QObject::connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
-                     fPropertyDock, SLOT(setVisible(bool)));
-    QObject::connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
-                     fActions[kToolsProperties], SLOT(setChecked(bool)));
-    QObject::connect(fActions[kToolsNewObject], SIGNAL(activated()),
-                     this, SLOT(createNewObject()));
+    connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
+            fPropertyDock, SLOT(setVisible(bool)));
+    connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
+            fActions[kToolsProperties], SLOT(setChecked(bool)));
+    connect(fActions[kToolsNewObject], SIGNAL(activated()),
+            this, SLOT(createNewObject()));
 
-    QObject::connect(fActions[kWindowPrev], SIGNAL(activated()),
-                     fMdiArea, SLOT(activatePreviousSubWindow()));
-    QObject::connect(fActions[kWindowNext], SIGNAL(activated()),
-                     fMdiArea, SLOT(activateNextSubWindow()));
-    QObject::connect(fActions[kWindowTile], SIGNAL(activated()),
-                     fMdiArea, SLOT(tileSubWindows()));
-    QObject::connect(fActions[kWindowCascade], SIGNAL(activated()),
-                     fMdiArea, SLOT(cascadeSubWindows()));
-    QObject::connect(fActions[kWindowClose], SIGNAL(activated()),
-                     fMdiArea, SLOT(closeActiveSubWindow()));
-    QObject::connect(fActions[kWindowCloseAll], SIGNAL(activated()),
-                     fMdiArea, SLOT(closeAllSubWindows()));
+    connect(fActions[kWindowPrev], SIGNAL(activated()),
+            fMdiArea, SLOT(activatePreviousSubWindow()));
+    connect(fActions[kWindowNext], SIGNAL(activated()),
+            fMdiArea, SLOT(activateNextSubWindow()));
+    connect(fActions[kWindowTile], SIGNAL(activated()),
+            fMdiArea, SLOT(tileSubWindows()));
+    connect(fActions[kWindowCascade], SIGNAL(activated()),
+            fMdiArea, SLOT(cascadeSubWindows()));
+    connect(fActions[kWindowClose], SIGNAL(activated()),
+            fMdiArea, SLOT(closeActiveSubWindow()));
+    connect(fActions[kWindowCloseAll], SIGNAL(activated()),
+            fMdiArea, SLOT(closeAllSubWindows()));
 
-    QObject::connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-                     this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
-    QObject::connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-                     this, SLOT(treeItemActivated(QTreeWidgetItem*, int)));
+    connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+            this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+            this, SLOT(treeItemActivated(QTreeWidgetItem*, int)));
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -299,53 +299,7 @@ void PrpShopMain::setPropertyPage(PropWhich which)
 
 void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    QPlasmaTreeItem* last = (QPlasmaTreeItem*)previous;
-    if (last != NULL) {
-        bool refreshTree = false;
-        if (last->type() == QPlasmaTreeItem::kTypePage) {
-            if (fAgeName->text() != ~last->page()->getAge()) {
-                last->page()->setAge(~fAgeName->text());
-                fLoadedLocations.erase(fLoadedLocations.find(last->page()->getLocation()));
-                QPlasmaTreeItem* stale = last;
-                last = loadPage(last->page(), last->filename());
-                delete stale;
-                refreshTree = true;
-            }
-            if (fPageName->text() != ~last->page()->getPage()) {
-                last->page()->setPage(~fPageName->text());
-                last->setText(0, fPageName->text());
-                refreshTree = true;
-            }
-            if (fReleaseVersion->value() != (int)last->page()->getReleaseVersion())
-                last->page()->setReleaseVersion(fReleaseVersion->value());
-            plLocation loc;
-            loc.setSeqPrefix(fSeqPrefix->value());
-            loc.setPageNum(fSeqSuffix->value());
-            loc.setFlags((fLocationFlags[kLocLocalOnly]->isChecked() ? plLocation::kLocalOnly : 0)
-                       | (fLocationFlags[kLocVolatile]->isChecked() ? plLocation::kVolatile : 0)
-                       | (fLocationFlags[kLocItinerant]->isChecked() ? plLocation::kItinerant : 0)
-                       | (fLocationFlags[kLocReserved]->isChecked() ? plLocation::kReserved : 0)
-                       | (fLocationFlags[kLocBuiltIn]->isChecked() ? plLocation::kBuiltIn : 0));
-            if (loc != last->page()->getLocation()) {
-                fLoadedLocations[loc] = fLoadedLocations[last->page()->getLocation()];
-                fLoadedLocations.erase(fLoadedLocations.find(last->page()->getLocation()));
-                fResMgr.ChangeLocation(last->page()->getLocation(), loc);
-            }
-        } else if (last->type() == QPlasmaTreeItem::kTypeKO) {
-            if (fObjName->text() != ~last->obj()->getKey()->getName()) {
-                last->obj()->getKey()->setName(~fObjName->text());
-                last->setText(0, fObjName->text());
-                refreshTree = true;
-            }
-            plLoadMask mask = last->obj()->getKey()->getLoadMask();
-            mask.setQuality(fLoadMaskQ[0]->value(), fLoadMaskQ[1]->value());
-            last->obj()->getKey()->setLoadMask(mask);
-            if (fCloneIdBox->isChecked())
-                last->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
-        }
-        if (refreshTree)
-            fBrowserTree->sortItems(0, Qt::AscendingOrder);
-    }
+    saveProps((QPlasmaTreeItem*)previous);
 
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)current;
     if (item == NULL) {
@@ -556,7 +510,62 @@ void PrpShopMain::performSaveAs()
 
 void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 {
+    saveProps((QPlasmaTreeItem*)fBrowserTree->currentItem());
+    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
+    QList<QMdiSubWindow*>::ConstIterator it;
+    for (it = windows.constBegin(); it != windows.constEnd(); it++)
+        ((QCreatable*)(*it)->widget())->saveDamage();
     fResMgr.WritePage(~filename, page);
+}
+
+void PrpShopMain::saveProps(QPlasmaTreeItem* item)
+{
+    if (item != NULL) {
+        bool refreshTree = false;
+        if (item->type() == QPlasmaTreeItem::kTypePage) {
+            if (fAgeName->text() != ~item->page()->getAge()) {
+                item->page()->setAge(~fAgeName->text());
+                fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
+                QPlasmaTreeItem* stale = item;
+                item = loadPage(item->page(), item->filename());
+                delete stale;
+                refreshTree = true;
+            }
+            if (fPageName->text() != ~item->page()->getPage()) {
+                item->page()->setPage(~fPageName->text());
+                item->setText(0, fPageName->text());
+                refreshTree = true;
+            }
+            if (fReleaseVersion->value() != (int)item->page()->getReleaseVersion())
+                item->page()->setReleaseVersion(fReleaseVersion->value());
+            plLocation loc;
+            loc.setSeqPrefix(fSeqPrefix->value());
+            loc.setPageNum(fSeqSuffix->value());
+            loc.setFlags((fLocationFlags[kLocLocalOnly]->isChecked() ? plLocation::kLocalOnly : 0)
+                       | (fLocationFlags[kLocVolatile]->isChecked() ? plLocation::kVolatile : 0)
+                       | (fLocationFlags[kLocItinerant]->isChecked() ? plLocation::kItinerant : 0)
+                       | (fLocationFlags[kLocReserved]->isChecked() ? plLocation::kReserved : 0)
+                       | (fLocationFlags[kLocBuiltIn]->isChecked() ? plLocation::kBuiltIn : 0));
+            if (loc != item->page()->getLocation()) {
+                fLoadedLocations[loc] = fLoadedLocations[item->page()->getLocation()];
+                fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
+                fResMgr.ChangeLocation(item->page()->getLocation(), loc);
+            }
+        } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
+            if (fObjName->text() != ~item->obj()->getKey()->getName()) {
+                item->obj()->getKey()->setName(~fObjName->text());
+                item->setText(0, fObjName->text());
+                refreshTree = true;
+            }
+            plLoadMask mask = item->obj()->getKey()->getLoadMask();
+            mask.setQuality(fLoadMaskQ[0]->value(), fLoadMaskQ[1]->value());
+            item->obj()->getKey()->setLoadMask(mask);
+            if (fCloneIdBox->isChecked())
+                item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
+        }
+        if (refreshTree)
+            fBrowserTree->sortItems(0, Qt::AscendingOrder);
+    }
 }
 
 QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)

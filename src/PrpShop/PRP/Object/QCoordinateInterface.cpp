@@ -62,8 +62,8 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fChildren, 6, 0);
     fChildren->adjustColumns();
 
-    QObject::connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
-    QObject::connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
+    connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
+    connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
 }
 
 void QCoordinateInterface::saveDamage()

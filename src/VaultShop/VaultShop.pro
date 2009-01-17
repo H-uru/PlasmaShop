@@ -26,7 +26,6 @@ HEADERS += Main.h \
            QVaultAgeNode.h \
            QVaultAgeInfoNode.h
 SOURCES += Main.cpp \
-           ../QPlasma.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
            QVaultNode.cpp \

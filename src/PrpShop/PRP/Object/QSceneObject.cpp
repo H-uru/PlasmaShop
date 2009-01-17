@@ -55,14 +55,14 @@ QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
     fInterfaceList->adjustColumns();
     fModifierList->adjustColumns();
 
-    QObject::connect(fDrawIntfLink, SIGNAL(addObject()), this, SLOT(setDraw()));
-    QObject::connect(fDrawIntfLink, SIGNAL(delObject()), this, SLOT(unsetDraw()));
-    QObject::connect(fSimIntfLink, SIGNAL(addObject()), this, SLOT(setSim()));
-    QObject::connect(fSimIntfLink, SIGNAL(delObject()), this, SLOT(unsetSim()));
-    QObject::connect(fCoordIntfLink, SIGNAL(addObject()), this, SLOT(setCoord()));
-    QObject::connect(fCoordIntfLink, SIGNAL(delObject()), this, SLOT(unsetCoord()));
-    QObject::connect(fAudioIntfLink, SIGNAL(addObject()), this, SLOT(setAudio()));
-    QObject::connect(fAudioIntfLink, SIGNAL(delObject()), this, SLOT(unsetAudio()));
+    connect(fDrawIntfLink, SIGNAL(addObject()), this, SLOT(setDraw()));
+    connect(fDrawIntfLink, SIGNAL(delObject()), this, SLOT(unsetDraw()));
+    connect(fSimIntfLink, SIGNAL(addObject()), this, SLOT(setSim()));
+    connect(fSimIntfLink, SIGNAL(delObject()), this, SLOT(unsetSim()));
+    connect(fCoordIntfLink, SIGNAL(addObject()), this, SLOT(setCoord()));
+    connect(fCoordIntfLink, SIGNAL(delObject()), this, SLOT(unsetCoord()));
+    connect(fAudioIntfLink, SIGNAL(addObject()), this, SLOT(setAudio()));
+    connect(fAudioIntfLink, SIGNAL(delObject()), this, SLOT(unsetAudio()));
 }
 
 void QSceneObject::saveDamage()

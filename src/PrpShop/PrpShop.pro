@@ -33,7 +33,6 @@ HEADERS += Main.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QMaterial.h
 SOURCES += Main.cpp \
-           ../QPlasma.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
            QKeyDialog.cpp \

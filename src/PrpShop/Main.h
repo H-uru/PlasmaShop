@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 60)"
+#define PRPSHOP_VERSION "1.0 (build 61)"
 
 class PrpShopMain : public QMainWindow {
     Q_OBJECT
@@ -73,6 +73,7 @@ public:
     void setPropertyPage(PropWhich which);
     void loadFile(QString filename);
     void saveFile(plPageInfo* page, QString filename);
+    void saveProps(QPlasmaTreeItem* item);
     void editCreatable(plCreatable* pCre, short forceType = -1);
 
 protected:
