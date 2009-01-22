@@ -10,6 +10,7 @@
 #include <QMdiSubWindow>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
+#include <PRP/Surface/plMipmap.h>
 
 #include "Main.h"
 #include "../QPlasma.h"
@@ -50,6 +51,16 @@ PrpShopMain::PrpShopMain()
     fActions[kWindowCascade] = new QAction(tr("&Cascade"), this);
     fActions[kWindowClose] = new QAction(tr("C&lose"), this);
     fActions[kWindowCloseAll] = new QAction(tr("Cl&ose All"), this);
+
+    fActions[kTreeClose] = new QAction(tr("&Close"), this);
+    fActions[kTreeEdit] = new QAction(tr("&Edit"), this);
+    fActions[kTreePreview] = new QAction(tr("&Preview"), this);
+    fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
+    fActions[kTreeImport] = new QAction(tr("&Import..."), this);
+    fActions[kTreeExport] = new QAction(tr("E&xport..."), this);
+    fActions[kTreeExportDDS] = new QAction(tr("Export &DDS..."), this);
+    fActions[kTreeExportJPEG] = new QAction(tr("Export &JPEG..."), this);
+    fActions[kTreeExportOBJ] = new QAction(tr("Export &OBJ..."), this);
 
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -111,6 +122,7 @@ PrpShopMain::PrpShopMain()
                               QDockWidget::DockWidgetFloatable);
     fBrowserTree->setUniformRowHeights(true);
     fBrowserTree->setHeaderHidden(true);
+    fBrowserTree->setContextMenuPolicy(Qt::CustomContextMenu);
     addDockWidget(Qt::LeftDockWidgetArea, fBrowserDock);
 
     // Property Pane
@@ -151,10 +163,22 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kWindowCloseAll], SIGNAL(activated()),
             fMdiArea, SLOT(closeAllSubWindows()));
 
+    connect(fActions[kTreeClose], SIGNAL(activated()), this, SLOT(treeClose()));
+    connect(fActions[kTreeEdit], SIGNAL(activated()), this, SLOT(treeEdit()));
+    connect(fActions[kTreePreview], SIGNAL(activated()), this, SLOT(treePreview()));
+    connect(fActions[kTreeDelete], SIGNAL(activated()), this, SLOT(treeDelete()));
+    connect(fActions[kTreeImport], SIGNAL(activated()), this, SLOT(treeImport()));
+    connect(fActions[kTreeExport], SIGNAL(activated()), this, SLOT(treeExport()));
+    connect(fActions[kTreeExportDDS], SIGNAL(activated()), this, SLOT(treeExportDDS()));
+    connect(fActions[kTreeExportJPEG], SIGNAL(activated()), this, SLOT(treeExportJPEG()));
+    connect(fActions[kTreeExportOBJ], SIGNAL(activated()), this, SLOT(treeExportOBJ()));
+
     connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
             this, SLOT(treeItemActivated(QTreeWidgetItem*, int)));
+    connect(fBrowserTree, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(treeContextMenu(const QPoint&)));
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -340,6 +364,239 @@ void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int)
     editCreatable(((QPlasmaTreeItem*)item)->obj());
 }
 
+void PrpShopMain::treeContextMenu(const QPoint& pos)
+{
+    fBrowserTree->setCurrentItem(fBrowserTree->itemAt(pos));
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL)
+        return;
+
+    QMenu menu(this);
+    if (item->type() == QPlasmaTreeItem::kTypeAge) {
+        menu.addAction(fActions[kTreeClose]);
+    } else if (item->type() == QPlasmaTreeItem::kTypePage) {
+        menu.addAction(fActions[kTreeClose]);
+        menu.addAction(fActions[kTreeImport]);
+    } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
+        menu.addAction(fActions[kTreeEdit]);
+        menu.addAction(fActions[kTreePreview]);
+        menu.addSeparator();
+        menu.addAction(fActions[kTreeDelete]);
+        menu.addAction(fActions[kTreeImport]);
+        menu.addAction(fActions[kTreeExport]);
+        if (item->obj()->ClassInstance(kMipmap)) {
+            plMipmap* mipmap = plMipmap::Convert(item->obj());
+            if (mipmap->getCompressionType() == plMipmap::kJPEGCompression)
+                menu.addAction(fActions[kTreeExportJPEG]);
+            else
+                menu.addAction(fActions[kTreeExportDDS]);
+        } else if (item->obj()->ClassInstance(kSceneNode)
+                   || item->obj()->ClassInstance(kSceneObject)) {
+            menu.addAction(fActions[kTreeExportOBJ]);
+        }
+        menu.setDefaultAction(fActions[kTreeEdit]);
+        fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()->ClassIndex()));
+    } else {
+        menu.addAction(fActions[kTreeImport]);
+    }
+    menu.exec(fBrowserTree->viewport()->mapToGlobal(pos));
+}
+
+void PrpShopMain::treeClose()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL)
+        return;
+
+    // Make sure no windows are open with objects we want to unload...
+    fMdiArea->closeAllSubWindows();
+
+    if (item->type() == QPlasmaTreeItem::kTypeAge) {
+        QHash<plLocation, QPlasmaTreeItem*>::Iterator it;
+        for (it = fLoadedLocations.begin(); it != fLoadedLocations.end(); ) {
+            if (~(*it)->page()->getAge() == item->age()) {
+                fResMgr.UnloadPage((*it)->page()->getLocation());
+                it = fLoadedLocations.erase(it);
+            } else {
+                it++;
+            }
+        }
+        delete item;
+    } else if (item->type() == QPlasmaTreeItem::kTypePage) {
+        plLocation loc = item->page()->getLocation();
+        QPlasmaTreeItem* age = (QPlasmaTreeItem*)item->parent();
+        delete item;
+        QHash<plLocation, QPlasmaTreeItem*>::Iterator it = fLoadedLocations.find(loc);
+        fLoadedLocations.erase(it);
+        fResMgr.UnloadPage(loc);
+        if (age->childCount() == 0)
+            delete age;
+    }
+}
+
+void PrpShopMain::treeEdit()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+    editCreatable(item->obj());
+}
+
+void PrpShopMain::treePreview()
+{
+    QMessageBox msgBox(QMessageBox::Warning, tr("Preview"),
+                       tr("Preview forms not yet implemented"),
+                       QMessageBox::Ok, this);
+    msgBox.exec();
+}
+
+void PrpShopMain::treeDelete()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+    fResMgr.DelObject(item->obj()->getKey());
+    QPlasmaTreeItem* folder = (QPlasmaTreeItem*)item->parent();
+    delete item;
+
+    if (folder->childCount() == 0)
+        delete folder;
+}
+
+QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
+{
+    plPageInfo* page = fResMgr.FindPage(loc);
+    QPlasmaTreeItem* ageItem = NULL;
+    QString ageName = ~page->getAge();
+    QString pageName = ~page->getPage();
+    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+        if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
+            ageItem = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+            break;
+        }
+    }
+    if (ageItem == NULL)
+        throw hsBadParamException(__FILE__, __LINE__, "Invalid Age");
+
+    QPlasmaTreeItem* pageItem = NULL;
+    for (int i=0; i<ageItem->childCount(); i++) {
+        if (ageItem->child(i)->text(0) == pageName) {
+            pageItem = (QPlasmaTreeItem*)ageItem->child(i);
+            break;
+        }
+    }
+    if (pageItem == NULL)
+        throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
+
+    QPlasmaTreeItem* folderItem = NULL;
+    QString typeName = pqGetFriendlyClassName(objType);
+    for (int i=0; i<pageItem->childCount(); i++) {
+        if (pageItem->child(i)->text(0) == typeName) {
+            folderItem = (QPlasmaTreeItem*)pageItem->child(i);
+            break;
+        }
+    }
+    if (folderItem == NULL) {
+        folderItem = new QPlasmaTreeItem(pageItem);
+        folderItem->setText(0, typeName);
+    }
+    return folderItem;
+}
+
+void PrpShopMain::treeImport()
+{
+    QPlasmaTreeItem* pageItem = findCurrentPageItem();
+    if (pageItem == NULL)
+        return;
+
+    QStringList files = QFileDialog::getOpenFileNames(this,
+                            tr("Import Raw Object(s)"), fDialogDir,
+                            "Plasma Objects (*.po *.mof *.uof)");
+    QStringList filesIt = files;
+    for (QStringList::Iterator it = filesIt.begin(); it != filesIt.end(); it++) {
+        try {
+            hsFileStream S(fResMgr.getVer());
+            S.open(~(*it), fmRead);
+            plCreatable* pCre = fResMgr.ReadCreatable(&S);
+            hsKeyedObject* ko = hsKeyedObject::Convert(pCre);
+            if (pCre != NULL && ko == NULL) {
+                delete pCre;
+                throw hsBadParamException(__FILE__, __LINE__, "Invalid object class");
+            }
+            // The key is already added to the ResMgr, but we need to ensure
+            // its location is correctly updated
+            plLocation loc = pageItem->page()->getLocation();
+            fResMgr.MoveKey(ko->getKey(), loc);
+
+            // Now add it to the tree
+            QPlasmaTreeItem* folderItem = ensurePath(loc, ko->ClassIndex());
+            new QPlasmaTreeItem(folderItem, ko);
+            fBrowserTree->sortItems(0, Qt::AscendingOrder);
+        } catch (std::exception& ex) {
+            QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                               tr("Error Importing File %1:\n%2").arg(*it).arg(ex.what()),
+                               QMessageBox::Ok, this);
+            msgBox.exec();
+        }
+        QDir dir = QDir(*it);
+        dir.cdUp();
+        fDialogDir = dir.absolutePath();
+    }
+}
+
+void PrpShopMain::treeExport()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+
+    QString genPath = tr("%1/[%2]%3.po").arg(fDialogDir)
+                                        .arg(item->obj()->ClassName())
+                                        .arg(~item->obj()->getKey()->getName());
+    QString filename = QFileDialog::getSaveFileName(this,
+                            tr("Export Raw Object"), genPath,
+                            "Plasma Objects (*.po *.mof *.uof)");
+    if (!filename.isEmpty()) {
+        try {
+            hsFileStream S(fResMgr.getVer());
+            S.open(~filename, fmCreate);
+            fResMgr.WriteCreatable(&S, item->obj());
+        } catch (std::exception& ex) {
+            QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
+                               tr("Error Exporting File %1:\n%2").arg(filename).arg(ex.what()),
+                               QMessageBox::Ok, this);
+            msgBox.exec();
+        }
+        QDir dir = QDir(filename);
+        dir.cdUp();
+        fDialogDir = dir.absolutePath();
+    }
+}
+
+void PrpShopMain::treeExportDDS()
+{
+    QMessageBox msgBox(QMessageBox::Warning, tr("Export DDS"),
+                       tr("DDS Exporter not yet implemented"),
+                       QMessageBox::Ok, this);
+    msgBox.exec();
+}
+
+void PrpShopMain::treeExportJPEG()
+{
+    QMessageBox msgBox(QMessageBox::Warning, tr("Export JPEG"),
+                       tr("JPEG Exporter not yet implemented"),
+                       QMessageBox::Ok, this);
+    msgBox.exec();
+}
+
+void PrpShopMain::treeExportOBJ()
+{
+    QMessageBox msgBox(QMessageBox::Warning, tr("Export OBJ"),
+                       tr("OBJ Exporter not yet implemented"),
+                       QMessageBox::Ok, this);
+    msgBox.exec();
+}
+
 void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
 {
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
@@ -364,7 +621,7 @@ void PrpShopMain::openFiles()
 {
     QStringList files = QFileDialog::getOpenFileNames(this,
                             tr("Open File(s)"), fDialogDir,
-                            "All supported types(*.age *.prp);;"
+                            "All supported types (*.age *.prp);;"
                             "Age Files (*.age);;"
                             "Page Files (*.prp)");
     QStringList filesIt = files;
@@ -439,33 +696,21 @@ void PrpShopMain::loadFile(QString filename)
     fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
-QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSaveAs)
+QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
 {
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
-    if (item == NULL) {
-        QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-                           tr("No item selected to save!"),
-                           QMessageBox::Ok, this);
-        msgBox.exec();
+    if (item == NULL)
         return NULL;
-    }
-
 
     if (item->type() == QPlasmaTreeItem::kTypeAge) {
-        if (isSaveAs) {
-            QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-                               tr("No item selected to save!"),
-                               QMessageBox::Ok, this);
-            msgBox.exec();
-            return NULL;
-        }
-
-        // Save all pages belonging to this age
-        for (int i=0; i<item->childCount(); i++) {
-            QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->child(i);
-            if (pageItem->type() != QPlasmaTreeItem::kTypePage)
-                throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
-            saveFile(pageItem->page(), pageItem->filename());
+        if (isSave) {
+            // Save all pages belonging to this age
+            for (int i=0; i<item->childCount(); i++) {
+                QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->child(i);
+                if (pageItem->type() != QPlasmaTreeItem::kTypePage)
+                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
+                saveFile(pageItem->page(), pageItem->filename());
+            }
         }
         return NULL;
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
@@ -483,14 +728,14 @@ QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSaveAs)
 
 void PrpShopMain::performSave()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
+    QPlasmaTreeItem* pageItem = findCurrentPageItem(true);
     if (pageItem != NULL)
         saveFile(pageItem->page(), pageItem->filename());
 }
 
 void PrpShopMain::performSaveAs()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(true);
+    QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
     if (pageItem == NULL)
         return;
 
@@ -644,44 +889,12 @@ void PrpShopMain::createNewObject()
         fResMgr.AddObject(loc, ko);
 
         // Now add it to the tree
-        plPageInfo* page = fResMgr.FindPage(loc);
-        QPlasmaTreeItem* ageItem = NULL;
-        QString ageName = ~page->getAge();
-        QString pageName = ~page->getPage();
-        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-            if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
-                ageItem = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
-                break;
-            }
-        }
-        if (ageItem == NULL)
-            throw hsBadParamException(__FILE__, __LINE__, "Invalid Age");
-
-        QPlasmaTreeItem* pageItem = NULL;
-        for (int i=0; i<ageItem->childCount(); i++) {
-            if (ageItem->child(i)->text(0) == pageName) {
-                pageItem = (QPlasmaTreeItem*)ageItem->child(i);
-                break;
-            }
-        }
-        if (pageItem == NULL)
-            throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
-
-        QPlasmaTreeItem* folderItem = NULL;
-        QString typeName = pqGetFriendlyClassName(type);
-        for (int i=0; i<pageItem->childCount(); i++) {
-            if (pageItem->child(i)->text(0) == typeName) {
-                folderItem = (QPlasmaTreeItem*)pageItem->child(i);
-                break;
-            }
-        }
-        if (folderItem == NULL) {
-            folderItem = new QPlasmaTreeItem(pageItem);
-            folderItem->setText(0, typeName);
-        }
+        QPlasmaTreeItem* folderItem = ensurePath(loc, type);
         new QPlasmaTreeItem(folderItem, ko);
+        fBrowserTree->sortItems(0, Qt::AscendingOrder);
     }
 }
+
 
 int main(int argc, char* argv[])
 {

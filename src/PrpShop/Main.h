@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 61)"
+#define PRPSHOP_VERSION "1.0 (build 62)"
 
 class PrpShopMain : public QMainWindow {
     Q_OBJECT
@@ -52,9 +52,16 @@ private:
 
     // Menu actions
     enum {
+        // Main Menu
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
         kToolsProperties, kToolsNewObject, kWindowPrev, kWindowNext,
-        kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll, kNumActions
+        kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
+
+        // Tree Context Menu
+        kTreeClose, kTreeEdit, kTreePreview, kTreeDelete, kTreeImport,
+        kTreeExport, kTreeExportDDS, kTreeExportJPEG, kTreeExportOBJ,
+
+        kNumActions
     };
     QAction* fActions[kNumActions];
 
@@ -79,7 +86,8 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent* evt);
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
-    QPlasmaTreeItem* findCurrentPageItem(bool isSaveAs);
+    QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
+    QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
 
 public slots:
     void openFiles();
@@ -87,7 +95,18 @@ public slots:
     void performSaveAs();
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeItemActivated(QTreeWidgetItem* item, int column);
+    void treeContextMenu(const QPoint& pos);
     void createNewObject();
+
+    void treeClose();
+    void treeEdit();
+    void treePreview();
+    void treeDelete();
+    void treeImport();
+    void treeExport();
+    void treeExportDDS();
+    void treeExportJPEG();
+    void treeExportOBJ();
 };
 
 #endif

@@ -533,3 +533,17 @@ std::vector<short> pqGetValidKOTypes()
 
     return std::vector<short>(s_typeList, s_typeList + s_numTypes);
 }
+
+bool pqCanPreviewType(short type)
+{
+    static short s_typeList[] = {
+        kCoordinateInterface, kSceneNode, kSceneObject
+    };
+    static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
+
+    for (size_t i=0; i<s_numTypes; i++) {
+        if (type == s_typeList[i])
+            return true;
+    }
+    return false;
+}

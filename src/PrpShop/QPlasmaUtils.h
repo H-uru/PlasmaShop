@@ -9,5 +9,6 @@ QIcon pqGetTypeIcon(short);
 QString pqGetFriendlyClassName(short);
 
 std::vector<short> pqGetValidKOTypes();
+bool pqCanPreviewType(short);
 
 #endif
