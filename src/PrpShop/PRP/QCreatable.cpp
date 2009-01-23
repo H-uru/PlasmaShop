@@ -33,10 +33,12 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "PRP/QSceneNode.h"
+#include "PRP/Audio/QSoundBuffer.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
+#include "PRP/Object/QDrawInterface.h"
 #include "PRP/Object/QSceneObject.h"
 #include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
@@ -52,6 +54,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kDrawInterface:
+        return new QDrawInterface(pCre, parent);
     case kGMaterial:
         return new QMaterial(pCre, parent);
     case kLayer:
@@ -66,6 +70,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QSceneObject(pCre, parent);
     case kSimulationInterface:
         return new QSimulationInterface(pCre, parent);
+    case kSoundBuffer:
+        return new QSoundBuffer(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
     default:
