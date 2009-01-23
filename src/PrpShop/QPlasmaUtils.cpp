@@ -45,6 +45,10 @@ QIcon pqGetTypeIcon(short classType)
         return s_icons[kIcoDraw];
     case kLayer:
         return s_icons[kIcoLayer];
+    case kLayerAnimation:
+        return s_icons[kIcoLayer];
+    case kLayerSDLAnimation:
+        return s_icons[kIcoLayer];
     case kGMaterial:
         return s_icons[kIcoMaterial];
     case kSoundBuffer:
@@ -179,7 +183,7 @@ QString pqGetFriendlyClassName(short classType)
         "Layer Target Container", "Image Lib Mod", "Particle Flock Effect",
         "Particle SDL Mod", "Age Loader", "Wave Set Base", "Physical Snd Group",
         "Book Data", "Dyna Torpedo Mgr", "Dyna Torpedo VS Mgr", "Cluster Group",
-        "Game Marker Modifier", "LOD Mipmap", "Swim Detector"
+        "Game Marker Modifier", "LOD Mipmap", "Swim Detector",
         "Fade Opacity Mod", "Fade Opacity Layer", "Dist Opacity Mod",
         "Armature Mod Base", "Swim Region Interface",
         "Swim Circular Current Region", "Particle Follow System Effect",
@@ -240,17 +244,17 @@ QString pqGetFriendlyClassName(short classType)
         "Sfx Dist Fade", "Sfx Dist Shade", "Sfx Global Shade",
         "Sfx Intense Alpha", "Sfx Obj Dist Fade", "Sfx Obj Dist Shade",
         "Dynamic Value", "Dynamic Scalar", "Dynamic ColorRGBA",
-        "Dynamic Matrix33", "Dynamic Matrix44", "Controller", "Leaf Controller",
-        "Scale Controller", "Rot Controller", "Pos Controller",
-        "Scalar Controller", "Point3 Controller", "Scale-Value Controller",
-        "Quat Controller", "Matrix33 Controller", "Matrix44 Controller",
-        "Ease Controller", "Simple Scale Controller", "Simple Rot Controller",
-        "Compound Rot Controller", "Simple Pos Controller",
-        "Compound Pos Controller", "TM Controller", "Fog Control", "Int Ref Msg",
-        "Collision Reactor", "Correction Msg", "Physical Modifier",
-        "Picked Msg", "Collide Msg", "Trigger Msg", "Interesting Mod Msg",
-        "Debug Key Event Msg", "Physical Properties", "Simple Phys",
-        "Matrix Update Msg", "Cond Ref Msg", "Timer Callback Msg",
+        "Dynamic Matrix33", "Dynamic Matrix44", "Controller",
+        "MOUL/Myst 5 Controller", "Scale Controller", "Rot Controller",
+        "Pos Controller", "Scalar Controller", "Point3 Controller",
+        "Scale-Value Controller", "Quat Controller", "Matrix33 Controller",
+        "Matrix44 Controller", "Ease Controller", "Simple Scale Controller",
+        "Simple Rot Controller", "Compound Rot Controller",
+        "Simple Pos Controller", "Compound Pos Controller", "TM Controller",
+        "Fog Control", "Int Ref Msg", "Collision Reactor", "Correction Msg",
+        "Physical Modifier", "Picked Msg", "Collide Msg", "Trigger Msg",
+        "Interesting Mod Msg", "Debug Key Event Msg", "Physical Properties",
+        "Simple Phys", "Matrix Update Msg", "Cond Ref Msg", "Timer Callback Msg",
         "Event Callback Msg", "Spawn Mod Msg", "Spawn Request Msg",
         "Load Clone Msg", "Enable Msg", "Warp Msg", "Attach Msg", "Console",
         "Render Msg", "Anim Time Convert", "Sound Msg", "Interesting Ping",
@@ -526,8 +530,9 @@ std::vector<short> pqGetValidKOTypes()
     // Please keep this sorted by the names found in pqGetFriendlyClassName
     static short s_typeList[] = {
         kAudioInterface, kCoordinateInterface, kDrawInterface, kLayer,
-        kGMaterial, kMsgForwarder, kPythonFileMod, kSceneNode, kSceneObject,
-        kSimulationInterface, kSoundBuffer,
+        kLayerAnimation, kLayerSDLAnimation, kGMaterial, kMsgForwarder,
+        kPythonFileMod, kSceneNode, kSceneObject, kSimulationInterface,
+        kSoundBuffer,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

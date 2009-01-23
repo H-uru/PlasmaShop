@@ -22,11 +22,23 @@ public:
 
 protected slots:
     void objectActivated();
-    void menuRequested();
+    virtual void menuRequested();
 
 signals:
+    void createObject(short type);
     void addObject();
     void delObject();
+};
+
+class QControllerLink : public QCreatableLink {
+    Q_OBJECT
+
+public:
+    QControllerLink(const QString& text, QWidget* parent = NULL,
+                    bool canEdit = true);
+
+protected slots:
+    virtual void menuRequested();
 };
 
 #endif

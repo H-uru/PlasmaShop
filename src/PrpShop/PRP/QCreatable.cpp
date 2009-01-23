@@ -43,6 +43,8 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
 #include "PRP/Surface/QLayer.h"
+#include "PRP/Surface/QLayerAnimation.h"
+#include "PRP/Surface/QLayerSDLAnimation.h"
 #include "PRP/Surface/QMaterial.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
@@ -60,6 +62,10 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QMaterial(pCre, parent);
     case kLayer:
         return new QLayer(pCre, parent);
+    case kLayerAnimation:
+        return new QLayerAnimation(pCre, parent);
+    case kLayerSDLAnimation:
+        return new QLayerSDLAnimation(pCre, parent);
     case kMsgForwarder:
         return new QMsgForwarder(pCre, parent);
     case kPythonFileMod:

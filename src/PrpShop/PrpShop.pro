@@ -33,6 +33,8 @@ HEADERS += Main.h \
            PRP/Object/QSimulationInterface.h \
            PRP/Object/QSynchedObject.h \
            PRP/Surface/QLayer.h \
+           PRP/Surface/QLayerAnimation.h \
+           PRP/Surface/QLayerSDLAnimation.h \
            PRP/Surface/QMaterial.h
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
@@ -55,5 +57,7 @@ SOURCES += Main.cpp \
            PRP/Object/QSimulationInterface.cpp \
            PRP/Object/QSynchedObject.cpp \
            PRP/Surface/QLayer.cpp \
+           PRP/Surface/QLayerAnimation.cpp \
+           PRP/Surface/QLayerSDLAnimation.cpp \
            PRP/Surface/QMaterial.cpp
 RESOURCES += images.qrc
