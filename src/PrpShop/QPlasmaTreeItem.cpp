@@ -7,11 +7,11 @@ QPlasmaTreeItem::QPlasmaTreeItem()
     setIcon(0, QIcon(":/img/folder.png"));
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(hsKeyedObject* obj)
-    : QTreeWidgetItem(kTypeKO), fObj(obj)
+QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
+    : QTreeWidgetItem(kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getKey()->getName());
-    setIcon(0, pqGetTypeIcon(obj->getKey()->getType()));
+    setText(0, ~obj->getName());
+    setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
@@ -35,11 +35,11 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
     setIcon(0, QIcon(":/img/folder.png"));
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, hsKeyedObject* obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObj(obj)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getKey()->getName());
-    setIcon(0, pqGetTypeIcon(obj->getKey()->getType()));
+    setText(0, ~obj->getName());
+    setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age)
@@ -63,11 +63,11 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
     setIcon(0, QIcon(":/img/folder.png"));
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, hsKeyedObject* obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObj(obj)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getKey()->getName());
-    setIcon(0, pqGetTypeIcon(obj->getKey()->getType()));
+    setText(0, ~obj->getName());
+    setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
@@ -86,7 +86,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
 }
 
 hsKeyedObject* QPlasmaTreeItem::obj() const
-{ return (type() == kTypeKO) ? fObj : NULL; }
+{ return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
 
 QString QPlasmaTreeItem::age() const
 { return (type() == kTypeAge) ? fAge : QString(); }

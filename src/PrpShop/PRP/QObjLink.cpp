@@ -40,8 +40,13 @@ void QCreatableLink::setCreatable(plCreatable* pCre)
 
 void QCreatableLink::setKey(plKey key)
 {
-    fCreatable = (key.Exists() && key.isLoaded()) ? key->getObj() : NULL;
-    fObjLabel->setEnabled(fCreatable != NULL);
+    if (key.Exists()) {
+        fCreatable = key.isLoaded() ? key->getObj() : NULL;
+        fObjLabel->setEnabled(true);
+    } else {
+        fCreatable = NULL;
+        fObjLabel->setEnabled(false);
+    }
 }
 
 void QCreatableLink::setForceType(short forceType)
@@ -49,8 +54,7 @@ void QCreatableLink::setForceType(short forceType)
 
 void QCreatableLink::objectActivated()
 {
-    if (fCreatable != NULL)
-        PrpShopMain::Instance()->editCreatable(fCreatable, fForceType);
+    PrpShopMain::Instance()->editCreatable(fCreatable, fForceType);
 }
 
 void QCreatableLink::menuRequested()
@@ -59,9 +63,6 @@ void QCreatableLink::menuRequested()
 
     QAction* setObjItem = menu.addAction(tr("Set Object..."));
     QAction* delObjItem = menu.addAction(tr("Remove Object"));
-
-    if (fCreatable == NULL)
-        delObjItem->setEnabled(false);
 
     QPoint pos = fEditLabel->mapToGlobal(QPoint(0, fEditLabel->height()));
     QAction* sel = menu.exec(pos);

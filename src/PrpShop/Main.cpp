@@ -530,7 +530,7 @@ void PrpShopMain::treeImport()
 
             // Now add it to the tree
             QPlasmaTreeItem* folderItem = ensurePath(loc, ko->ClassIndex());
-            new QPlasmaTreeItem(folderItem, ko);
+            new QPlasmaTreeItem(folderItem, ko->getKey());
             fBrowserTree->sortItems(0, Qt::AscendingOrder);
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
@@ -599,6 +599,14 @@ void PrpShopMain::treeExportOBJ()
 
 void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
 {
+    if (pCre == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("NULL Object"),
+                           tr("The requested object is not currently loaded"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::Iterator it;
     for (it = windows.begin(); it != windows.end(); it++) {
@@ -750,6 +758,14 @@ void PrpShopMain::performSave()
 
 void PrpShopMain::performSaveAs()
 {
+    static QString s_formats[] = {
+        "Uru Prime/UU Pages (*.prp)",
+        "Path of the Shell Pages (*.prp)",
+        "MOUL Pages (*.prp)",
+        "Myst 5 Pages (*.prp)",
+        "Hex Isle Pages (*.prp)"
+    };
+
     QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
     if (pageItem == NULL)
         return;
@@ -757,10 +773,35 @@ void PrpShopMain::performSaveAs()
     QString saveDir = pageItem->filename().isEmpty()
                     ? fDialogDir
                     : pageItem->filename();
+    QString selFormat;
+    switch (fResMgr.getVer()) {
+    case pvPrime: selFormat = s_formats[0];
+    case pvPots:  selFormat = s_formats[1];
+    case pvLive:  selFormat = s_formats[2];
+    case pvEoa:   selFormat = s_formats[3];
+    case pvHex:   selFormat = s_formats[4];
+    default:      selFormat = s_formats[1];
+    }
     QString filename = QFileDialog::getSaveFileName(this,
                             tr("Save PRP"), saveDir,
-                            "Page Files (*.prp)");
+                            tr("%1;;%2;;%3;;%4;;%5")
+                               .arg(s_formats[0]).arg(s_formats[1])
+                               .arg(s_formats[2]).arg(s_formats[3])
+                               .arg(s_formats[4]),
+                            &selFormat);
+
     if (!filename.isEmpty()) {
+        if (selFormat == s_formats[0])
+            fResMgr.setVer(pvPrime, true);
+        else if (selFormat == s_formats[1])
+            fResMgr.setVer(pvPots, true);
+        else if (selFormat == s_formats[2])
+            fResMgr.setVer(pvLive, true);
+        else if (selFormat == s_formats[3])
+            fResMgr.setVer(pvEoa, true);
+        else if (selFormat == s_formats[4])
+            fResMgr.setVer(pvHex, true);
+
         saveFile(pageItem->page(), filename);
         QDir dir = QDir(filename);
         dir.cdUp();
@@ -812,16 +853,18 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 fResMgr.ChangeLocation(item->page()->getLocation(), loc);
             }
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
-            if (fObjName->text() != ~item->obj()->getKey()->getName()) {
-                item->obj()->getKey()->setName(~fObjName->text());
-                item->setText(0, fObjName->text());
-                refreshTree = true;
+            if (item->obj() != NULL) {
+                if (fObjName->text() != ~item->obj()->getKey()->getName()) {
+                    item->obj()->getKey()->setName(~fObjName->text());
+                    item->setText(0, fObjName->text());
+                    refreshTree = true;
+                }
+                plLoadMask mask = item->obj()->getKey()->getLoadMask();
+                mask.setQuality(fLoadMaskQ[0]->value(), fLoadMaskQ[1]->value());
+                item->obj()->getKey()->setLoadMask(mask);
+                if (fCloneIdBox->isChecked())
+                    item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
             }
-            plLoadMask mask = item->obj()->getKey()->getLoadMask();
-            mask.setQuality(fLoadMaskQ[0]->value(), fLoadMaskQ[1]->value());
-            item->obj()->getKey()->setLoadMask(mask);
-            if (fCloneIdBox->isChecked())
-                item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
         }
         if (refreshTree)
             fBrowserTree->sortItems(0, Qt::AscendingOrder);
@@ -871,7 +914,7 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
                 plDebug::Debug("Got erroneous key: %s", keys[j]->toString().cstr());
                 continue;
             }
-            new QPlasmaTreeItem(folder, keys[j]->getObj());
+            new QPlasmaTreeItem(folder, keys[j]);
         }
     }
 
@@ -905,7 +948,7 @@ void PrpShopMain::createNewObject()
 
         // Now add it to the tree
         QPlasmaTreeItem* folderItem = ensurePath(loc, type);
-        new QPlasmaTreeItem(folderItem, ko);
+        new QPlasmaTreeItem(folderItem, ko->getKey());
         fBrowserTree->sortItems(0, Qt::AscendingOrder);
     }
 }

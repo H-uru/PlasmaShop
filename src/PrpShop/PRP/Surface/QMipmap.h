@@ -2,7 +2,10 @@
 #define _QMIPMAP_H
 
 #include "../QCreatable.h"
-
+#include "../QObjLink.h"
+#include <QImage>
+#include <QCheckBox>
+#include <QSpinBox>
 #include <PRP/Surface/plMipmap.h>
 
 class QTextureBox : public QWidget {
@@ -36,6 +39,24 @@ public:
 
 public slots:
     void setLevel(int level);
+};
+
+class QMipmap : public QCreatable {
+    Q_OBJECT
+
+protected:
+    enum {
+        kAlphaChannelFlag, kAlphaBitFlag, kBumpEnvMap, kForce32Bit,
+        kDontThrowAwayImage, kForceOneMipLevel, kNoMaxSize, kIntensityMap,
+        kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,
+        kIsTexture, kIsOffscreen, kIsProjected, kIsOrtho, kNumBitmapFlags
+    };
+    QCheckBox* fFlags[kNumBitmapFlags];
+    QCreatableLink* fPreviewLink;
+
+public:
+    QMipmap(plCreatable* pCre, QWidget* parent = NULL);
+    virtual void saveDamage();
 };
 
 #endif

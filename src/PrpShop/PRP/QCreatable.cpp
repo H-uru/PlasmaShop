@@ -9,7 +9,8 @@ QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(pqGetTypeIcon(type));
-    if (hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable)) {
+    hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable);
+    if (ko != NULL && ko->getKey().Exists()) {
         setWindowTitle(pqGetFriendlyClassName(type) +
                        ": " + ~ko->getKey()->getName());
     } else {
@@ -69,6 +70,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QLayer(pCre, parent);
     case kLayerSDLAnimation:
         return new QLayerSDLAnimation(pCre, parent);
+    case kMipmap:
+        return new QMipmap(pCre, parent);
     case kMsgForwarder:
         return new QMsgForwarder(pCre, parent);
     case kPythonFileMod:

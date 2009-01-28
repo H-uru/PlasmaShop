@@ -7,12 +7,11 @@
 
 class QPlasmaTreeItem : public QTreeWidgetItem {
 private:
-    union {
-        hsKeyedObject* fObj;
-        plPageInfo* fPage;
-        struct { bool fHasBuiltIn, fHasTextures; };
-    };
+    plKey fObjKey;
+    plPageInfo* fPage;
+    bool fHasBuiltIn, fHasTextures;
     QString fAge;
+
     QString fFilename;
 
 public:
@@ -22,15 +21,15 @@ public:
     };
 
     QPlasmaTreeItem();
-    QPlasmaTreeItem(hsKeyedObject* obj);
+    QPlasmaTreeItem(plKey obj);
     QPlasmaTreeItem(const QString& age);
     QPlasmaTreeItem(plPageInfo* page);
     QPlasmaTreeItem(QTreeWidget* parent);
-    QPlasmaTreeItem(QTreeWidget* parent, hsKeyedObject* obj);
+    QPlasmaTreeItem(QTreeWidget* parent, plKey obj);
     QPlasmaTreeItem(QTreeWidget* parent, const QString& age);
     QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page);
     QPlasmaTreeItem(QTreeWidgetItem* parent);
-    QPlasmaTreeItem(QTreeWidgetItem* parent, hsKeyedObject* obj);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj);
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
 
