@@ -46,6 +46,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QLayerAnimation.h"
 #include "PRP/Surface/QLayerSDLAnimation.h"
 #include "PRP/Surface/QMaterial.h"
+#include "PRP/Surface/QMipmap.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
 {
@@ -64,6 +65,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QLayer(pCre, parent);
     case kLayerAnimation:
         return new QLayerAnimation(pCre, parent);
+    case kLayerDepth:
+        return new QLayer(pCre, parent);
     case kLayerSDLAnimation:
         return new QLayerSDLAnimation(pCre, parent);
     case kMsgForwarder:
@@ -80,12 +83,24 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QSoundBuffer(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
+
+    case kPreviewMipmap:
+        return new QMipmap_Preview(pCre, parent);
+
     default:
-        QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
-                           parent->tr("No editor is currently available for %1")
-                                     .arg(pqGetFriendlyClassName(type)),
-                           QMessageBox::Ok, parent);
-        msgBox.exec();
+        if ((type & 0x1000) == 0) {
+            QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
+                            parent->tr("No editor is currently available for %1")
+                                      .arg(pqGetFriendlyClassName(type)),
+                            QMessageBox::Ok, parent);
+            msgBox.exec();
+        } else {
+            QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
+                            parent->tr("No previewer is currently available for %1")
+                                      .arg(pqGetFriendlyClassName(type)),
+                            QMessageBox::Ok, parent);
+            msgBox.exec();
+        }
         return NULL;
     }
 }

@@ -10,6 +10,9 @@ RC_FILE = res/PrpShop.rc
 INCLUDEPATH += ../../../Plasma/core
 LIBS += -L../../../Plasma/bin -lPlasma
 
+# Make VS shut up a bit
+win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
+
 # PrpShop Sources
 HEADERS += Main.h \
            ../QPlasma.h \
@@ -35,7 +38,8 @@ HEADERS += Main.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QLayerAnimation.h \
            PRP/Surface/QLayerSDLAnimation.h \
-           PRP/Surface/QMaterial.h
+           PRP/Surface/QMaterial.h \
+           PRP/Surface/QMipmap.h
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
@@ -59,5 +63,6 @@ SOURCES += Main.cpp \
            PRP/Surface/QLayer.cpp \
            PRP/Surface/QLayerAnimation.cpp \
            PRP/Surface/QLayerSDLAnimation.cpp \
-           PRP/Surface/QMaterial.cpp
+           PRP/Surface/QMaterial.cpp \
+           PRP/Surface/QMipmap.cpp
 RESOURCES += images.qrc

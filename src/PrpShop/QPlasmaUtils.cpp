@@ -24,7 +24,7 @@ QIcon pqGetTypeIcon(short classType)
         QIcon(":/img/synch.png"),
     };
 
-    switch (classType) {
+    switch (classType & ~0x1000) {
     case kSceneNode:
         return s_icons[kIcoSceneNode];
     case kSceneObject:
@@ -46,6 +46,8 @@ QIcon pqGetTypeIcon(short classType)
     case kLayer:
         return s_icons[kIcoLayer];
     case kLayerAnimation:
+        return s_icons[kIcoLayer];
+    case kLayerDepth:
         return s_icons[kIcoLayer];
     case kLayerSDLAnimation:
         return s_icons[kIcoLayer];
@@ -518,6 +520,7 @@ QString pqGetFriendlyClassName(short classType)
         S_INVALID, S_INVALID, S_INVALID, S_INVALID, S_INVALID
     };
 
+    classType &= ~0x1000;
     if ((unsigned short)classType == 0x8000)
         return "(NULL)";
     if (classType >= 0 && classType < TYPESPACE_MAX)
@@ -530,9 +533,9 @@ std::vector<short> pqGetValidKOTypes()
     // Please keep this sorted by the names found in pqGetFriendlyClassName
     static short s_typeList[] = {
         kAudioInterface, kCoordinateInterface, kDrawInterface, kLayer,
-        kLayerAnimation, kLayerSDLAnimation, kGMaterial, kMsgForwarder,
-        kPythonFileMod, kSceneNode, kSceneObject, kSimulationInterface,
-        kSoundBuffer,
+        kLayerAnimation, kLayerDepth, kLayerSDLAnimation, kGMaterial,
+        kMsgForwarder, kPythonFileMod, kSceneNode, kSceneObject,
+        kSimulationInterface, kSoundBuffer,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 
@@ -542,7 +545,8 @@ std::vector<short> pqGetValidKOTypes()
 bool pqCanPreviewType(short type)
 {
     static short s_typeList[] = {
-        kCoordinateInterface, kSceneNode, kSceneObject
+        kCoordinateInterface, kCubicEnvironmap, kMipmap, kSceneNode,
+        kSceneObject
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

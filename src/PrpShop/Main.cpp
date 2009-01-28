@@ -444,10 +444,10 @@ void PrpShopMain::treeEdit()
 
 void PrpShopMain::treePreview()
 {
-    QMessageBox msgBox(QMessageBox::Warning, tr("Preview"),
-                       tr("Preview forms not yet implemented"),
-                       QMessageBox::Ok, this);
-    msgBox.exec();
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+    editCreatable(item->obj(), 0x1000 | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treeDelete()
@@ -642,12 +642,27 @@ void PrpShopMain::loadFile(QString filename)
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
             plAgeInfo* age = fResMgr.ReadAge(~filename, true);
-            for (size_t i=0; i<age->getNumPages(); i++)
-                loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())),
-                         ~age->getPageFilename(i, fResMgr.getVer()));
-            for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++)
-                loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())),
-                         ~age->getCommonPageFilename(i, fResMgr.getVer()));
+            QDir path(filename);
+            path.cdUp();
+            for (size_t i=0; i<age->getNumPages(); i++) {
+                QString prp = path.absoluteFilePath(~age->getPageFilename(i, fResMgr.getVer()));
+                if (QFile::exists(prp)) {
+                    loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())), prp);
+                } else {
+                    plDebug::Warning("Could not find page %s referenced from %s",
+                                     age->getPageFilename(i, fResMgr.getVer()).cstr(),
+                                     filename.toUtf8().data());
+                }
+            }
+            for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++) {
+                QString prp = path.absoluteFilePath(~age->getCommonPageFilename(i, fResMgr.getVer()));
+                if (QFile::exists(prp)) {
+                    loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), prp);
+                } else {
+                    plDebug::Warning("Common page %s was not found",
+                                     age->getCommonPageFilename(i, fResMgr.getVer()).cstr());
+                }
+            }
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
                                tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
