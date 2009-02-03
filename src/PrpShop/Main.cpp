@@ -903,19 +903,14 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     item = new QPlasmaTreeItem(parent, page);
 
     // Populate the type folders and actual objects
-    std::vector<short> types = fResMgr.getTypes(page->getLocation());
+    std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
     for (size_t i=0; i<types.size(); i++) {
         QPlasmaTreeItem* folder = new QPlasmaTreeItem(item);
         folder->setText(0, pqGetFriendlyClassName(types[i]));
 
-        std::vector<plKey> keys = fResMgr.getKeys(page->getLocation(), types[i]);
-        for (size_t j=0; j<keys.size(); j++) {
-            if (!keys[j].Exists() || !keys[j].isLoaded()) {
-                plDebug::Debug("Got erroneous key: %s", keys[j]->toString().cstr());
-                continue;
-            }
+        std::vector<plKey> keys = fResMgr.getKeys(page->getLocation(), types[i], true);
+        for (size_t j=0; j<keys.size(); j++)
             new QPlasmaTreeItem(folder, keys[j]);
-        }
     }
 
     item->setFilename(filename);

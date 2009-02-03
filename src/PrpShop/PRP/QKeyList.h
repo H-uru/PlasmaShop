@@ -45,4 +45,22 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
+class QDoubleListWidget : public QListWidget {
+    Q_OBJECT
+
+protected:
+    QList<double> fValues;
+
+public:
+    QDoubleListWidget(QWidget* parent = NULL);
+    virtual QSize sizeHint() const;
+
+    void addValue(double value);
+    void delValue(int idx);
+    QList<double> values() const;
+
+protected:
+    virtual void contextMenuEvent(QContextMenuEvent* evt);
+};
+
 #endif

@@ -49,7 +49,7 @@ QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
     fTransform->setCreatable(lay->getTransformCtl());
 
     fAnimTimeConvert = new QCreatableLink(this, false);
-    fAnimTimeConvert->setText(tr("Animation Time Controller"));
+    fAnimTimeConvert->setText(tr("Animation Time Properties"));
     fAnimTimeConvert->setCreatable(&lay->getTimeConvert());
 
     QGridLayout* layout = new QGridLayout(this);

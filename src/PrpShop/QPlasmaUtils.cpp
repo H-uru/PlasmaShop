@@ -532,10 +532,10 @@ std::vector<short> pqGetValidKOTypes()
 {
     // Please keep this sorted by the names found in pqGetFriendlyClassName
     static short s_typeList[] = {
-        kAudioInterface, kCoordinateInterface, kDrawInterface, kLayer,
-        kLayerAnimation, kLayerDepth, kLayerSDLAnimation, kGMaterial, kMipmap,
-        kMsgForwarder, kPythonFileMod, kSceneNode, kSceneObject,
-        kSimulationInterface, kSoundBuffer,
+        kAudioInterface, kCoordinateInterface, kDrawInterface,
+        kInterfaceInfoModifier, kLayer, kLayerAnimation, kLayerDepth,
+        kLayerSDLAnimation, kGMaterial, kMipmap, kMsgForwarder, kPythonFileMod,
+        kSceneNode, kSceneObject, kSimulationInterface, kSoundBuffer,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

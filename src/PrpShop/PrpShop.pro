@@ -26,8 +26,10 @@ HEADERS += Main.h \
            PRP/QMatrix44.h \
            PRP/QObjLink.h \
            PRP/QSceneNode.h \
+           PRP/Animation/QAnimTimeConvert.h \
            PRP/Audio/QSoundBuffer.h \
            PRP/Message/QMsgForwarder.h \
+           PRP/Modifier/QInterfaceInfoModifier.h \
            PRP/Modifier/QPythonFileMod.h \
            PRP/Object/QAudioInterface.h \
            PRP/Object/QCoordinateInterface.h \
@@ -51,8 +53,10 @@ SOURCES += Main.cpp \
            PRP/QMatrix44.cpp \
            PRP/QObjLink.cpp \
            PRP/QSceneNode.cpp \
+           PRP/Animation/QAnimTimeConvert.cpp \
            PRP/Audio/QSoundBuffer.cpp \
            PRP/Message/QMsgForwarder.cpp \
+           PRP/Modifier/QInterfaceInfoModifier.cpp \
            PRP/Modifier/QPythonFileMod.cpp \
            PRP/Object/QAudioInterface.cpp \
            PRP/Object/QCoordinateInterface.cpp \

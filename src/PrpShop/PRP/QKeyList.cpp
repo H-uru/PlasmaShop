@@ -123,3 +123,53 @@ void QStringListWidget::contextMenuEvent(QContextMenuEvent* evt)
         delString(currentRow());
     }
 }
+
+
+/* QDoubleListWidget */
+QDoubleListWidget::QDoubleListWidget(QWidget* parent)
+                 : QListWidget(parent)
+{ }
+
+QSize QDoubleListWidget::sizeHint() const
+{
+    QSize listSize = QListWidget::sizeHint();
+    return QSize((listSize.width() * 2) / 3, (listSize.height() * 1) / 2);
+}
+
+void QDoubleListWidget::addValue(double value)
+{
+    fValues << value;
+    addItem(QString("%1").arg(value));
+}
+
+void QDoubleListWidget::delValue(int idx)
+{
+    QListWidgetItem* item = takeItem(idx);
+    if (item != NULL)
+        delete item;
+    fValues.erase(fValues.begin() + idx);
+}
+
+QList<double> QDoubleListWidget::values() const
+{ return fValues; }
+
+void QDoubleListWidget::contextMenuEvent(QContextMenuEvent* evt)
+{
+    QMenu menu(this);
+    QAction* addObjItem = menu.addAction(tr("Add Item"));
+    QAction* delObjItem = menu.addAction(tr("Remove Item"));
+
+    if (currentItem() == NULL)
+        delObjItem->setEnabled(false);
+
+    QAction* sel = menu.exec(evt->globalPos());
+    if (sel == addObjItem) {
+        bool ok;
+        double val = QInputDialog::getDouble(this, tr("Add Item"),
+                            tr("Enter a value"), 0.0, 0.0, 2147483647.0,
+                            3, &ok);
+        if (ok) addValue(val);
+    } else if (sel == delObjItem) {
+        delValue(currentRow());
+    }
+}

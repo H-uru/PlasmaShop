@@ -8,7 +8,9 @@ QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
           : QWidget(parent), fCreatable(pCre), fForceType(type)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowIcon(pqGetTypeIcon(type));
+    QIcon ico = pqGetTypeIcon(type);
+    if (!ico.isNull())
+        setWindowIcon(ico);
     hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable);
     if (ko != NULL && ko->getKey().Exists()) {
         setWindowTitle(pqGetFriendlyClassName(type) +
@@ -34,8 +36,10 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "PRP/QSceneNode.h"
+#include "PRP/Animation/QAnimTimeConvert.h"
 #include "PRP/Audio/QSoundBuffer.h"
 #include "PRP/Message/QMsgForwarder.h"
+#include "PRP/Modifier/QInterfaceInfoModifier.h"
 #include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
@@ -54,12 +58,15 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
     short type = (forceType == -1) ? pCre->ClassIndex() : forceType;
 
     switch (type) {
+    // Keyed Object types
     case kAudioInterface:
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
     case kDrawInterface:
         return new QDrawInterface(pCre, parent);
+    case kInterfaceInfoModifier:
+        return new QInterfaceInfoModifier(pCre, parent);
     case kGMaterial:
         return new QMaterial(pCre, parent);
     case kLayer:
@@ -87,6 +94,17 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
 
+    // Non-Keyed Object types
+    case kAnimTimeConvert:
+        return new QAnimTimeConvert(pCre, parent);
+    case kATCEaseCurve:
+        return new QATCEaseCurve(pCre, parent);
+    case kConstAccelEaseCurve:
+        return new QATCEaseCurve(pCre, parent);
+    case kSplineEaseCurve:
+        return new QATCEaseCurve(pCre, parent);
+
+    // Preview meta-types
     case kPreviewMipmap:
         return new QMipmap_Preview(pCre, parent);
 
