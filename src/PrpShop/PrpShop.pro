@@ -27,10 +27,14 @@ HEADERS += Main.h \
            PRP/QObjLink.h \
            PRP/QSceneNode.h \
            PRP/Animation/QAnimTimeConvert.h \
+           PRP/Audio/QAudible.h \
            PRP/Audio/QSoundBuffer.h \
+           PRP/Light/QShadowMaster.h \
            PRP/Message/QMsgForwarder.h \
            PRP/Modifier/QInterfaceInfoModifier.h \
+           PRP/Modifier/QOneShotMod.h \
            PRP/Modifier/QPythonFileMod.h \
+           PRP/Modifier/QSpawnModifier.h \
            PRP/Object/QAudioInterface.h \
            PRP/Object/QCoordinateInterface.h \
            PRP/Object/QDrawInterface.h \
@@ -54,10 +58,14 @@ SOURCES += Main.cpp \
            PRP/QObjLink.cpp \
            PRP/QSceneNode.cpp \
            PRP/Animation/QAnimTimeConvert.cpp \
+           PRP/Audio/QAudible.cpp \
            PRP/Audio/QSoundBuffer.cpp \
+           PRP/Light/QShadowMaster.cpp \
            PRP/Message/QMsgForwarder.cpp \
            PRP/Modifier/QInterfaceInfoModifier.cpp \
+           PRP/Modifier/QOneShotMod.cpp \
            PRP/Modifier/QPythonFileMod.cpp \
+           PRP/Modifier/QSpawnModifier.cpp \
            PRP/Object/QAudioInterface.cpp \
            PRP/Object/QCoordinateInterface.cpp \
            PRP/Object/QDrawInterface.cpp \

@@ -37,10 +37,14 @@ void QCreatable::closeEvent(QCloseEvent*)
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "PRP/QSceneNode.h"
 #include "PRP/Animation/QAnimTimeConvert.h"
+#include "PRP/Audio/QAudible.h"
 #include "PRP/Audio/QSoundBuffer.h"
+#include "PRP/Light/QShadowMaster.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QInterfaceInfoModifier.h"
+#include "PRP/Modifier/QOneShotMod.h"
 #include "PRP/Modifier/QPythonFileMod.h"
+#include "PRP/Modifier/QSpawnModifier.h"
 #include "PRP/Object/QAudioInterface.h"
 #include "PRP/Object/QCoordinateInterface.h"
 #include "PRP/Object/QDrawInterface.h"
@@ -59,10 +63,18 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
 
     switch (type) {
     // Keyed Object types
+    case k2WayWinAudible:
+        return new QWinAudible(pCre, parent);
+    case kAudible:
+        return new QAudible(pCre, parent);
+    case kAudibleNull:
+        return new QAudible(pCre, parent);
     case kAudioInterface:
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kDirectShadowMaster:
+        return new QShadowMaster(pCre, parent);
     case kDrawInterface:
         return new QDrawInterface(pCre, parent);
     case kInterfaceInfoModifier:
@@ -81,18 +93,28 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QMipmap(pCre, parent);
     case kMsgForwarder:
         return new QMsgForwarder(pCre, parent);
+    case kOneShotMod:
+        return new QOneShotMod(pCre, parent);
+    case kPointShadowMaster:
+        return new QShadowMaster(pCre, parent);
     case kPythonFileMod:
         return new QPythonFileMod(pCre, parent);
     case kSceneNode:
         return new QSceneNode(pCre, parent);
     case kSceneObject:
         return new QSceneObject(pCre, parent);
+    case kShadowMaster:
+        return new QShadowMaster(pCre, parent);
     case kSimulationInterface:
         return new QSimulationInterface(pCre, parent);
     case kSoundBuffer:
         return new QSoundBuffer(pCre, parent);
+    case kSpawnModifier:
+        return new QSpawnModifier(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
+    case kWinAudible:
+        return new QWinAudible(pCre, parent);
 
     // Non-Keyed Object types
     case kAnimTimeConvert:
