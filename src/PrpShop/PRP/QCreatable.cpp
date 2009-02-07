@@ -51,6 +51,8 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Object/QSceneObject.h"
 #include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
+#include "PRP/Surface/QCubicEnvironmap.h"
+#include "PRP/Surface/QDynamicTextMap.h"
 #include "PRP/Surface/QLayer.h"
 #include "PRP/Surface/QLayerAnimation.h"
 #include "PRP/Surface/QLayerSDLAnimation.h"
@@ -73,10 +75,14 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QAudioInterface(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
+    case kCubicEnvironmap:
+        return new QCubicEnvironmap(pCre, parent);
     case kDirectShadowMaster:
         return new QShadowMaster(pCre, parent);
     case kDrawInterface:
         return new QDrawInterface(pCre, parent);
+    case kDynamicTextMap:
+        return new QDynamicTextMap(pCre, parent);
     case kInterfaceInfoModifier:
         return new QInterfaceInfoModifier(pCre, parent);
     case kGMaterial:

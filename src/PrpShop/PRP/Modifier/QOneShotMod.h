@@ -6,7 +6,6 @@
 #include <PRP/Modifier/plOneShotMod.h>
 #include <QLineEdit>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include "../QObjLink.h"
 
 class QOneShotMod : public QCreatable {
@@ -19,7 +18,7 @@ protected:
     QCheckBox* fReversable;
     QCheckBox* fSmartSeek;
     QCheckBox* fNoSeek;
-    QDoubleSpinBox* fSeekDuration;
+    QFloatEdit* fSeekDuration;
 
 public:
     QOneShotMod(plCreatable* pCre, QWidget* parent = NULL);

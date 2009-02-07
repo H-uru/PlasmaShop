@@ -28,8 +28,8 @@ protected:
     QColorEdit* fSpecular;
     QSpinBox* fUvwSrc;
     QDoubleSpinBox* fOpacity;
-    QDoubleSpinBox* fLodBias;
-    QDoubleSpinBox* fSpecPower;
+    QFloatEdit* fLodBias;
+    QFloatEdit* fSpecPower;
 
     enum {
         kBlendTest, kBlendAlpha, kBlendMult, kBlendAdd, kBlendAddColorTimesAlpha,

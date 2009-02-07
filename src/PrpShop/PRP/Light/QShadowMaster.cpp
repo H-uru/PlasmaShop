@@ -1,5 +1,6 @@
 #include "QShadowMaster.h"
 
+#include <limits>
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
@@ -30,36 +31,24 @@ QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
     for (size_t i=0; i<plShadowMaster::kNumProps; i++)
         fProperties[i]->setChecked(obj->getProperty(i));
 
-    fMinDist = new QDoubleSpinBox(this);
-    fMinDist->setRange(-2147483648.0, 2147483647.0);
-    fMinDist->setDecimals(3);
-    fMinDist->setSingleStep(0.1);
+    fMinDist = new QFloatEdit(this);
     fMinDist->setValue(obj->getMinDist());
 
-    fMaxDist = new QDoubleSpinBox(this);
-    fMaxDist->setRange(-2147483648.0, 2147483647.0);
-    fMaxDist->setDecimals(3);
-    fMaxDist->setSingleStep(0.1);
+    fMaxDist = new QFloatEdit(this);
     fMaxDist->setValue(obj->getMaxDist());
 
-    fMinSize = new QSpinBox(this);
+    fMinSize = new QIntEdit(this);
     fMinSize->setRange(0, 0x7FFFFFFF);
     fMinSize->setValue(obj->getMinSize());
 
-    fMaxSize = new QSpinBox(this);
+    fMaxSize = new QIntEdit(this);
     fMaxSize->setRange(0, 0x7FFFFFFF);
     fMaxSize->setValue(obj->getMaxSize());
 
-    fAttenDist = new QDoubleSpinBox(this);
-    fAttenDist->setRange(-2147483648.0, 2147483647.0);
-    fAttenDist->setDecimals(3);
-    fAttenDist->setSingleStep(0.1);
+    fAttenDist = new QFloatEdit(this);
     fAttenDist->setValue(obj->getAttenDist());
 
-    fPower = new QDoubleSpinBox(this);
-    fPower->setRange(-2147483648.0, 2147483647.0);
-    fPower->setDecimals(3);
-    fPower->setSingleStep(0.1);
+    fPower = new QFloatEdit(this);
     fPower->setValue(obj->getPower());
 
     QGridLayout* layout = new QGridLayout(this);

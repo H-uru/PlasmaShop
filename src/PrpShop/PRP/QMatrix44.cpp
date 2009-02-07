@@ -2,7 +2,6 @@
 
 #include <QLabel>
 #include <QGridLayout>
-#include <QDoubleValidator>
 
 QMatrix44::QMatrix44(QWidget* parent) : QWidget(parent)
 {
@@ -17,17 +16,11 @@ QMatrix44::QMatrix44(QWidget* parent) : QWidget(parent)
 
     for (size_t i=0; i<4; i++) {
         for (size_t j=0; j<4; j++) {
-            fMatEdit[i][j] = new QLineEdit(this);
-            fMatEdit[i][j]->setValidator(new QDoubleValidator(fMatEdit[i][j]));
+            fMatEdit[i][j] = new QFloatEdit(this);
+            fMatEdit[i][j]->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
             layout->addWidget(fMatEdit[i][j], i+1, j+1);
         }
     }
-}
-
-QSize QMatrix44::sizeHint() const
-{
-    QSize recSize = QWidget::sizeHint();
-    return QSize((recSize.width() * 2) / 3, recSize.height());
 }
 
 hsMatrix44 QMatrix44::value() const
@@ -35,7 +28,7 @@ hsMatrix44 QMatrix44::value() const
     hsMatrix44 mat;
     for (size_t i=0; i<4; i++)
         for (size_t j=0; j<4; j++)
-            mat(i, j) = fMatEdit[i][j]->text().toFloat();
+            mat(i, j) = fMatEdit[i][j]->value();
     return mat;
 }
 
@@ -43,5 +36,5 @@ void QMatrix44::setValue(const hsMatrix44& val)
 {
     for (size_t i=0; i<4; i++)
         for (size_t j=0; j<4; j++)
-            fMatEdit[i][j]->setText(QString("%1").arg(val(i, j)));
+            fMatEdit[i][j]->setValue(val(i, j));
 }

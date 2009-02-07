@@ -18,6 +18,7 @@ HEADERS += Main.h \
            ../QPlasma.h \
            ../QColorEdit.h \
            ../QLinkLabel.h \
+           ../QNumerics.h \
            QKeyDialog.h \
            QPlasmaUtils.h \
            QPlasmaTreeItem.h \
@@ -41,6 +42,8 @@ HEADERS += Main.h \
            PRP/Object/QSceneObject.h \
            PRP/Object/QSimulationInterface.h \
            PRP/Object/QSynchedObject.h \
+           PRP/Surface/QCubicEnvironmap.h \
+           PRP/Surface/QDynamicTextMap.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QLayerAnimation.h \
            PRP/Surface/QLayerSDLAnimation.h \
@@ -49,6 +52,7 @@ HEADERS += Main.h \
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
+           ../QNumerics.cpp \
            QKeyDialog.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
@@ -72,6 +76,8 @@ SOURCES += Main.cpp \
            PRP/Object/QSceneObject.cpp \
            PRP/Object/QSimulationInterface.cpp \
            PRP/Object/QSynchedObject.cpp \
+           PRP/Surface/QCubicEnvironmap.cpp \
+           PRP/Surface/QDynamicTextMap.cpp \
            PRP/Surface/QLayer.cpp \
            PRP/Surface/QLayerAnimation.cpp \
            PRP/Surface/QLayerSDLAnimation.cpp \

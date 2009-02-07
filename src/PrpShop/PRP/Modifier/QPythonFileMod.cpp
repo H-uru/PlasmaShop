@@ -182,10 +182,8 @@ QPythonParamDialog::QPythonParamDialog(QWidget* parent)
     fID->setRange(0, 0x7FFFFFFF);
     fKeyValue = new QLinkLabel("(Null)", this);
     fStringValue = new QLineEdit(this);
-    fIntValue = new QLineEdit("0", this);
-    fIntValue->setValidator(new QIntValidator(fIntValue));
-    fFloatValue = new QLineEdit("0", this);
-    fFloatValue->setValidator(new QDoubleValidator(fFloatValue));
+    fIntValue = new QIntEdit(this);
+    fFloatValue = new QFloatEdit(this);
     fBoolValue = new QComboBox(this);
     fBoolValue->addItem("false");
     fBoolValue->addItem("true");
@@ -233,11 +231,11 @@ void QPythonParamDialog::init(const plPythonParameter& param)
     fTypeBox->setCurrentIndex(param.fValueType-1);
 
     if (param.fValueType == plPythonParameter::kInt) {
-        fIntValue->setText(QString("%1").arg(param.fIntValue));
+        fIntValue->setValue(param.fIntValue);
     } else if (param.fValueType == plPythonParameter::kBoolean) {
         fBoolValue->setCurrentIndex(param.fBoolValue ? 1 : 0);
     } else if (param.fValueType == plPythonParameter::kFloat) {
-        fFloatValue->setText(QString("%1").arg(param.fFloatValue));
+        fFloatValue->setValue(param.fFloatValue);
     } else if (param.fValueType == plPythonParameter::kString ||
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
@@ -261,11 +259,11 @@ plPythonParameter QPythonParamDialog::parameter() const
     param.fValueType = fTypeBox->currentIndex() + 1;
 
     if (param.fValueType == plPythonParameter::kInt) {
-        param.fIntValue = fIntValue->text().toInt();
+        param.fIntValue = fIntValue->value();
     } else if (param.fValueType == plPythonParameter::kBoolean) {
         param.fBoolValue = fBoolValue->currentIndex() != 0;
     } else if (param.fValueType == plPythonParameter::kFloat) {
-        param.fFloatValue = fFloatValue->text().toFloat();
+        param.fFloatValue = fFloatValue->value();
     } else if (param.fValueType == plPythonParameter::kString ||
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||

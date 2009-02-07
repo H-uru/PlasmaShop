@@ -5,6 +5,7 @@
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
 #include "../QPlasma.h"
+#include "../QNumerics.h"
 
 enum {
     kPreviewSceneNode = 0x1000 | kSceneNode,

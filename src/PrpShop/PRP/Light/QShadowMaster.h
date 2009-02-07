@@ -5,8 +5,6 @@
 
 #include <PRP/Light/plShadowMaster.h>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
-#include <QSpinBox>
 #include "../QObjLink.h"
 
 class QShadowMaster : public QCreatable {
@@ -16,12 +14,12 @@ protected:
     QCreatableLink* fOwnerLink;
     QCreatableLink* fSynchObjLink;
     QCheckBox* fProperties[plShadowMaster::kNumProps];
-    QDoubleSpinBox* fAttenDist;
-    QDoubleSpinBox* fMinDist;
-    QDoubleSpinBox* fMaxDist;
-    QDoubleSpinBox* fPower;
-    QSpinBox* fMinSize;
-    QSpinBox* fMaxSize;
+    QFloatEdit* fAttenDist;
+    QFloatEdit* fMinDist;
+    QFloatEdit* fMaxDist;
+    QFloatEdit* fPower;
+    QIntEdit* fMinSize;
+    QIntEdit* fMaxSize;
 
 public:
     QShadowMaster(plCreatable* pCre, QWidget* parent = NULL);

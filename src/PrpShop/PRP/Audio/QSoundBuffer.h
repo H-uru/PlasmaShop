@@ -4,7 +4,6 @@
 #include "../QCreatable.h"
 
 #include <QCheckBox>
-#include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
 #include <PRP/Audio/plSoundBuffer.h>
@@ -22,10 +21,10 @@ protected:
     QLineEdit* fFilename;
     QComboBox* fFormat;
     QSpinBox* fNumChannels;
-    QSpinBox* fBlockAlign;
-    QSpinBox* fBitRate;
-    QSpinBox* fSampleRate;
-    QSpinBox* fAvgBytesPerSec;
+    QIntEdit* fBlockAlign;
+    QIntEdit* fBitRate;
+    QIntEdit* fSampleRate;
+    QIntEdit* fAvgBytesPerSec;
 
 public:
     QSoundBuffer(plCreatable* pCre, QWidget* parent = NULL);

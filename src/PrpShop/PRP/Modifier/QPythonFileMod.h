@@ -4,7 +4,6 @@
 #include "../QCreatable.h"
 
 #include <PRP/Modifier/plPythonFileMod.h>
-#include <QLineEdit>
 #include <QDialog>
 #include <QComboBox>
 #include <QSpinBox>
@@ -57,8 +56,8 @@ protected:
     QSpinBox* fID;
     QLinkLabel* fKeyValue;
     QLineEdit* fStringValue;
-    QLineEdit* fIntValue;
-    QLineEdit* fFloatValue;
+    QIntEdit* fIntValue;
+    QFloatEdit* fFloatValue;
     QComboBox* fBoolValue;
     QLabel* fLabelNull;
     plKey fKey;

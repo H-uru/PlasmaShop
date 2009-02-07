@@ -24,13 +24,13 @@ class QATCEaseCurve : public QCreatable {
     Q_OBJECT
 
 protected:
-    QLineEdit* fStartSpeed;
-    QLineEdit* fSpeed;
-    QLineEdit* fMinLength;
-    QLineEdit* fMaxLength;
-    QLineEdit* fLength;
-    QLineEdit* fBeginWorldTime;
-    QLineEdit* fSplineCoef[4];
+    QFloatEdit* fStartSpeed;
+    QFloatEdit* fSpeed;
+    QFloatEdit* fMinLength;
+    QFloatEdit* fMaxLength;
+    QFloatEdit* fLength;
+    QFloatEdit* fBeginWorldTime;
+    QFloatEdit* fSplineCoef[4];
 
 public:
     QATCEaseCurve(plCreatable* pCre, QWidget* parent = NULL);
@@ -47,13 +47,13 @@ protected:
     };
     QCheckBox* fFlags[kNumATCFlags];
 
-    QLineEdit* fBegin;
-    QLineEdit* fEnd;
-    QLineEdit* fLoopBegin;
-    QLineEdit* fLoopEnd;
-    QLineEdit* fSpeed;
-    QLineEdit* fCurrentAnimTime;
-    QLineEdit* fLastEvalWorldTime;
+    QFloatEdit* fBegin;
+    QFloatEdit* fEnd;
+    QFloatEdit* fLoopBegin;
+    QFloatEdit* fLoopEnd;
+    QFloatEdit* fSpeed;
+    QFloatEdit* fCurrentAnimTime;
+    QFloatEdit* fLastEvalWorldTime;
     QTreeWidget* fCallbackList;
     QDoubleListWidget* fStopPoints;
     QATCCurveLink* fEaseInCurve;

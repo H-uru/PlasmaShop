@@ -59,4 +59,6 @@ public:
     virtual void saveDamage();
 };
 
+QString getCompressionText(plBitmap* tex);
+
 #endif

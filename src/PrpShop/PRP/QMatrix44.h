@@ -2,18 +2,17 @@
 #define _QMATRIX44_H
 
 #include <QWidget>
-#include <QLineEdit>
 #include <Math/hsMatrix44.h>
+#include "../../QNumerics.h"
 
 class QMatrix44 : public QWidget {
     Q_OBJECT
 
 protected:
-    QLineEdit* fMatEdit[4][4];
+    QFloatEdit* fMatEdit[4][4];
 
 public:
     QMatrix44(QWidget* parent = NULL);
-    virtual QSize sizeHint() const;
 
     hsMatrix44 value() const;
     void setValue(const hsMatrix44& val);

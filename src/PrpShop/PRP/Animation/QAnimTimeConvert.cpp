@@ -1,7 +1,6 @@
 #include "QAnimTimeConvert.h"
 
 #include <QLabel>
-#include <QDoubleValidator>
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QGridLayout>
@@ -50,24 +49,18 @@ QATCEaseCurve::QATCEaseCurve(plCreatable* pCre, QWidget* parent)
 {
     plATCEaseCurve* obj = (plATCEaseCurve*)fCreatable;
 
-    fStartSpeed = new QLineEdit(this);
-    fSpeed = new QLineEdit(this);
-    fMinLength = new QLineEdit(this);
-    fMaxLength = new QLineEdit(this);
-    fLength = new QLineEdit(this);
-    fBeginWorldTime = new QLineEdit(this);
-    fStartSpeed->setValidator(new QDoubleValidator(fStartSpeed));
-    fSpeed->setValidator(new QDoubleValidator(fSpeed));
-    fMinLength->setValidator(new QDoubleValidator(fMinLength));
-    fMaxLength->setValidator(new QDoubleValidator(fMaxLength));
-    fLength->setValidator(new QDoubleValidator(fLength));
-    fBeginWorldTime->setValidator(new QDoubleValidator(fBeginWorldTime));
-    fStartSpeed->setText(QString("%1").arg(obj->getStartSpeed()));
-    fSpeed->setText(QString("%1").arg(obj->getSpeed()));
-    fMinLength->setText(QString("%1").arg(obj->getMinLength()));
-    fMaxLength->setText(QString("%1").arg(obj->getMaxLength()));
-    fLength->setText(QString("%1").arg(obj->getLength()));
-    fBeginWorldTime->setText(QString("%1").arg(obj->getBeginWorldTime()));
+    fStartSpeed = new QFloatEdit(this);
+    fSpeed = new QFloatEdit(this);
+    fMinLength = new QFloatEdit(this);
+    fMaxLength = new QFloatEdit(this);
+    fLength = new QFloatEdit(this);
+    fBeginWorldTime = new QFloatEdit(this);
+    fStartSpeed->setValue(obj->getStartSpeed());
+    fSpeed->setValue(obj->getSpeed());
+    fMinLength->setValue(obj->getMinLength());
+    fMaxLength->setValue(obj->getMaxLength());
+    fLength->setValue(obj->getLength());
+    fBeginWorldTime->setValue(obj->getBeginWorldTime());
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -88,9 +81,8 @@ QATCEaseCurve::QATCEaseCurve(plCreatable* pCre, QWidget* parent)
     if (plSplineEaseCurve* spline = plSplineEaseCurve::Convert(fCreatable)) {
         QGroupBox* splineGroup = new QGroupBox(tr("Spline Coefficients"), this);
         for (size_t i=0; i<4; i++) {
-            fSplineCoef[i] = new QLineEdit(splineGroup);
-            fSplineCoef[i]->setValidator(new QDoubleValidator(fSplineCoef[i]));
-            fSplineCoef[i]->setText(QString("%1").arg(spline->getSplineCoef(i)));
+            fSplineCoef[i] = new QFloatEdit(splineGroup);
+            fSplineCoef[i]->setValue(spline->getSplineCoef(i));
         }
         QGridLayout* splineLayout = new QGridLayout(splineGroup);
         splineLayout->addWidget(fSplineCoef[0], 0, 0);
@@ -105,15 +97,15 @@ void QATCEaseCurve::saveDamage()
 {
     plATCEaseCurve* obj = (plATCEaseCurve*)fCreatable;
 
-    obj->setStartSpeed(fStartSpeed->text().toDouble());
-    obj->setSpeed(fSpeed->text().toDouble());
-    obj->setLengthBounds(fMinLength->text().toDouble(), fMaxLength->text().toDouble());
-    obj->setLength(fLength->text().toDouble());
-    obj->setBeginWorldTime(fBeginWorldTime->text().toDouble());
+    obj->setStartSpeed(fStartSpeed->value());
+    obj->setSpeed(fSpeed->value());
+    obj->setLengthBounds(fMinLength->value(), fMaxLength->value());
+    obj->setLength(fLength->value());
+    obj->setBeginWorldTime(fBeginWorldTime->value());
 
     if (plSplineEaseCurve* spline = plSplineEaseCurve::Convert(fCreatable)) {
         for (size_t i=0; i<4; i++)
-            spline->setSplineCoef(i, fSplineCoef[i]->text().toDouble());
+            spline->setSplineCoef(i, fSplineCoef[i]->value());
     }
 }
 
@@ -155,27 +147,20 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
 
     QGroupBox* timeGroup = new QGroupBox(tr("Timing Parameters"), this);
     QGridLayout* timeLayout = new QGridLayout(timeGroup);
-    fBegin = new QLineEdit(timeGroup);
-    fEnd = new QLineEdit(timeGroup);
-    fLoopBegin = new QLineEdit(timeGroup);
-    fLoopEnd = new QLineEdit(timeGroup);
-    fSpeed = new QLineEdit(timeGroup);
-    fCurrentAnimTime = new QLineEdit(timeGroup);
-    fLastEvalWorldTime = new QLineEdit(timeGroup);
-    fBegin->setValidator(new QDoubleValidator(fBegin));
-    fEnd->setValidator(new QDoubleValidator(fEnd));
-    fLoopBegin->setValidator(new QDoubleValidator(fLoopBegin));
-    fLoopEnd->setValidator(new QDoubleValidator(fLoopEnd));
-    fSpeed->setValidator(new QDoubleValidator(fSpeed));
-    fCurrentAnimTime->setValidator(new QDoubleValidator(fCurrentAnimTime));
-    fLastEvalWorldTime->setValidator(new QDoubleValidator(fLastEvalWorldTime));
-    fBegin->setText(QString("%1").arg(obj->getBegin()));
-    fEnd->setText(QString("%1").arg(obj->getEnd()));
-    fLoopBegin->setText(QString("%1").arg(obj->getLoopBegin()));
-    fLoopEnd->setText(QString("%1").arg(obj->getLoopEnd()));
-    fSpeed->setText(QString("%1").arg(obj->getSpeed()));
-    fCurrentAnimTime->setText(QString("%1").arg(obj->getCurrentAnimTime()));
-    fLastEvalWorldTime->setText(QString("%1").arg(obj->getLastEvalWorldTime()));
+    fBegin = new QFloatEdit(timeGroup);
+    fEnd = new QFloatEdit(timeGroup);
+    fLoopBegin = new QFloatEdit(timeGroup);
+    fLoopEnd = new QFloatEdit(timeGroup);
+    fSpeed = new QFloatEdit(timeGroup);
+    fCurrentAnimTime = new QFloatEdit(timeGroup);
+    fLastEvalWorldTime = new QFloatEdit(timeGroup);
+    fBegin->setValue(obj->getBegin());
+    fEnd->setValue(obj->getEnd());
+    fLoopBegin->setValue(obj->getLoopBegin());
+    fLoopEnd->setValue(obj->getLoopEnd());
+    fSpeed->setValue(obj->getSpeed());
+    fCurrentAnimTime->setValue(obj->getCurrentAnimTime());
+    fLastEvalWorldTime->setValue(obj->getLastEvalWorldTime());
     timeLayout->addWidget(new QLabel(tr("Range:"), timeGroup), 0, 0);
     timeLayout->addWidget(fBegin, 0, 1);
     timeLayout->addWidget(fEnd, 0, 2);
@@ -254,11 +239,11 @@ void QAnimTimeConvert::saveDamage()
                 | (fFlags[kEasingIn]->isChecked() ? plAnimTimeConvert::kEasingIn : 0)
                 | (fFlags[kForcedMove]->isChecked() ? plAnimTimeConvert::kForcedMove : 0)
                 | (fFlags[kNoCallbacks]->isChecked() ? plAnimTimeConvert::kNoCallbacks : 0));
-    obj->setRange(fBegin->text().toDouble(), fEnd->text().toDouble());
-    obj->setLoop(fLoopBegin->text().toDouble(), fLoopEnd->text().toDouble());
-    obj->setSpeed(fSpeed->text().toDouble());
-    obj->setCurrentAnimTime(fCurrentAnimTime->text().toDouble());
-    obj->setLastEvalWorldTime(fLastEvalWorldTime->text().toDouble());
+    obj->setRange(fBegin->value(), fEnd->value());
+    obj->setLoop(fLoopBegin->value(), fLoopEnd->value());
+    obj->setSpeed(fSpeed->value());
+    obj->setCurrentAnimTime(fCurrentAnimTime->value());
+    obj->setLastEvalWorldTime(fLastEvalWorldTime->value());
     QList<double> stops = fStopPoints->values();
     hsTArray<float> plstops;
     plstops.setSize(stops.size());

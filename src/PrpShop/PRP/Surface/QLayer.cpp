@@ -253,18 +253,12 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
 
     fUvwSrc = new QSpinBox(this);
     fOpacity = new QDoubleSpinBox(this);
-    fLodBias = new QDoubleSpinBox(this);
-    fSpecPower = new QDoubleSpinBox(this);
+    fLodBias = new QFloatEdit(this);
+    fSpecPower = new QFloatEdit(this);
     fUvwSrc->setRange(0, 0x7FFFFFFF);
     fOpacity->setDecimals(3);
     fOpacity->setRange(0.0, 1.0);
     fOpacity->setSingleStep(0.005);
-    fLodBias->setDecimals(3);
-    fLodBias->setRange(-32.0, 32.0);
-    fLodBias->setSingleStep(1.0);
-    fSpecPower->setDecimals(3);
-    fSpecPower->setRange(0.0, 1.0);
-    fSpecPower->setSingleStep(0.005);
     fUvwSrc->setValue(lay->getUVWSrc());
     fOpacity->setValue(lay->getOpacity());
     fLodBias->setValue(lay->getLODBias());

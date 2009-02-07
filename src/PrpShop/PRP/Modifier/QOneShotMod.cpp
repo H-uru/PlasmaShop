@@ -34,11 +34,7 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
 
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~obj->getAnimName());
-
-    fSeekDuration = new QDoubleSpinBox(this);
-    fSeekDuration->setRange(-2147483648.0, 2147483647.0);
-    fSeekDuration->setDecimals(3);
-    fSeekDuration->setSingleStep(0.1);
+    fSeekDuration = new QFloatEdit(this);
     fSeekDuration->setValue(obj->getSeekDuration());
 
     QGridLayout* layout = new QGridLayout(this);

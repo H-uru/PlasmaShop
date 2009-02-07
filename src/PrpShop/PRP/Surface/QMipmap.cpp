@@ -121,7 +121,7 @@ int QMipmap_Preview::level() const
 
 
 /* QMipmap */
-static QString getCompressionText(plBitmap* tex)
+QString getCompressionText(plBitmap* tex)
 {
     if (tex->getCompressionType() == plBitmap::kDirectXCompression) {
         switch (tex->getDXCompression()) {
