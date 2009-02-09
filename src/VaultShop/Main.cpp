@@ -122,15 +122,15 @@ VaultShopMain::VaultShopMain()
     splitter->setSizes(QList<int>() << 160 << 320);
 
     // Global UI Signals
-    connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
-    connect(fActions[kFileOpenVault], SIGNAL(activated()), this, SLOT(openGame()));
-    connect(fActions[kFileSaveVault], SIGNAL(activated()), this, SLOT(performSave()));
-    connect(fActions[kVaultOpenNode], SIGNAL(activated()), this, SLOT(openNode()));
-    connect(fActions[kNodeUnLink], SIGNAL(activated()), this, SLOT(unlinkNode()));
-    connect(fActions[kNodeLink], SIGNAL(activated()), this, SLOT(linkNode()));
-    connect(fActions[kNodeCreate], SIGNAL(activated()), this, SLOT(createNode()));
-    connect(fActions[kNodeUnsubscribe], SIGNAL(activated()), this, SLOT(closeNode()));
-    //connect(fActions[kNodeRenameVault], SIGNAL(activated()), this, SLOT(renameVault()));
+    connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
+    connect(fActions[kFileOpenVault], SIGNAL(triggered()), this, SLOT(openGame()));
+    connect(fActions[kFileSaveVault], SIGNAL(triggered()), this, SLOT(performSave()));
+    connect(fActions[kVaultOpenNode], SIGNAL(triggered()), this, SLOT(openNode()));
+    connect(fActions[kNodeUnLink], SIGNAL(triggered()), this, SLOT(unlinkNode()));
+    connect(fActions[kNodeLink], SIGNAL(triggered()), this, SLOT(linkNode()));
+    connect(fActions[kNodeCreate], SIGNAL(triggered()), this, SLOT(createNode()));
+    connect(fActions[kNodeUnsubscribe], SIGNAL(triggered()), this, SLOT(closeNode()));
+    //connect(fActions[kNodeRenameVault], SIGNAL(triggered()), this, SLOT(renameVault()));
 
     connect(fVaultTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));

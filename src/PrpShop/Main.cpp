@@ -138,40 +138,40 @@ PrpShopMain::PrpShopMain()
     addDockWidget(Qt::LeftDockWidgetArea, fPropertyDock);
 
     // Global UI Signals
-    connect(fActions[kFileExit], SIGNAL(activated()), this, SLOT(close()));
-    connect(fActions[kFileOpen], SIGNAL(activated()), this, SLOT(openFiles()));
-    connect(fActions[kFileSave], SIGNAL(activated()), this, SLOT(performSave()));
-    connect(fActions[kFileSaveAs], SIGNAL(activated()), this, SLOT(performSaveAs()));
+    connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
+    connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(openFiles()));
+    connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(performSave()));
+    connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(performSaveAs()));
 
     connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
             fPropertyDock, SLOT(setVisible(bool)));
     connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
             fActions[kToolsProperties], SLOT(setChecked(bool)));
-    connect(fActions[kToolsNewObject], SIGNAL(activated()),
+    connect(fActions[kToolsNewObject], SIGNAL(triggered()),
             this, SLOT(createNewObject()));
 
-    connect(fActions[kWindowPrev], SIGNAL(activated()),
+    connect(fActions[kWindowPrev], SIGNAL(triggered()),
             fMdiArea, SLOT(activatePreviousSubWindow()));
-    connect(fActions[kWindowNext], SIGNAL(activated()),
+    connect(fActions[kWindowNext], SIGNAL(triggered()),
             fMdiArea, SLOT(activateNextSubWindow()));
-    connect(fActions[kWindowTile], SIGNAL(activated()),
+    connect(fActions[kWindowTile], SIGNAL(triggered()),
             fMdiArea, SLOT(tileSubWindows()));
-    connect(fActions[kWindowCascade], SIGNAL(activated()),
+    connect(fActions[kWindowCascade], SIGNAL(triggered()),
             fMdiArea, SLOT(cascadeSubWindows()));
-    connect(fActions[kWindowClose], SIGNAL(activated()),
+    connect(fActions[kWindowClose], SIGNAL(triggered()),
             fMdiArea, SLOT(closeActiveSubWindow()));
-    connect(fActions[kWindowCloseAll], SIGNAL(activated()),
+    connect(fActions[kWindowCloseAll], SIGNAL(triggered()),
             fMdiArea, SLOT(closeAllSubWindows()));
 
-    connect(fActions[kTreeClose], SIGNAL(activated()), this, SLOT(treeClose()));
-    connect(fActions[kTreeEdit], SIGNAL(activated()), this, SLOT(treeEdit()));
-    connect(fActions[kTreePreview], SIGNAL(activated()), this, SLOT(treePreview()));
-    connect(fActions[kTreeDelete], SIGNAL(activated()), this, SLOT(treeDelete()));
-    connect(fActions[kTreeImport], SIGNAL(activated()), this, SLOT(treeImport()));
-    connect(fActions[kTreeExport], SIGNAL(activated()), this, SLOT(treeExport()));
-    connect(fActions[kTreeExportDDS], SIGNAL(activated()), this, SLOT(treeExportDDS()));
-    connect(fActions[kTreeExportJPEG], SIGNAL(activated()), this, SLOT(treeExportJPEG()));
-    connect(fActions[kTreeExportOBJ], SIGNAL(activated()), this, SLOT(treeExportOBJ()));
+    connect(fActions[kTreeClose], SIGNAL(triggered()), this, SLOT(treeClose()));
+    connect(fActions[kTreeEdit], SIGNAL(triggered()), this, SLOT(treeEdit()));
+    connect(fActions[kTreePreview], SIGNAL(triggered()), this, SLOT(treePreview()));
+    connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
+    connect(fActions[kTreeImport], SIGNAL(triggered()), this, SLOT(treeImport()));
+    connect(fActions[kTreeExport], SIGNAL(triggered()), this, SLOT(treeExport()));
+    connect(fActions[kTreeExportDDS], SIGNAL(triggered()), this, SLOT(treeExportDDS()));
+    connect(fActions[kTreeExportJPEG], SIGNAL(triggered()), this, SLOT(treeExportJPEG()));
+    connect(fActions[kTreeExportOBJ], SIGNAL(triggered()), this, SLOT(treeExportOBJ()));
 
     connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
