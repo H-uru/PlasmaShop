@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 69)"
+#define PRPSHOP_VERSION "1.0 (build 71)"
 
 class PrpShopMain : public QMainWindow {
     Q_OBJECT

@@ -535,10 +535,12 @@ std::vector<short> pqGetValidKOTypes()
         k2WayWinAudible, kAudible, kAudibleNull, kAudioInterface,
         kCoordinateInterface, kCubicEnvironmap, kDirectShadowMaster,
         kDrawInterface, kDynamicTextMap, kInterfaceInfoModifier, kLayer,
-        kLayerAnimation, kLayerDepth, kLayerSDLAnimation, kGMaterial, kMipmap,
-        kMsgForwarder, kOneShotMod, kPointShadowMaster, kPythonFileMod,
-        kSceneNode, kSceneObject, kShadowMaster, kSimulationInterface,
-        kSoundBuffer, kSpawnModifier, kWinAudible,
+        kLayerAnimation, kLayerAVI, kLayerBink, kLayerDepth,
+        kLayerLinkAnimation, kLayerMovie, kLayerSDLAnimation, kGMaterial,
+        kMipmap, kMsgForwarder, kMultistageBehMod, kOneShotMod,
+        kPointShadowMaster, kPythonFileMod, kSceneNode, kSceneObject,
+        kShadowMaster, kSimulationInterface, kSoundBuffer, kSpawnModifier,
+        kWinAudible,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 
@@ -549,7 +551,7 @@ bool pqCanPreviewType(short type)
 {
     static short s_typeList[] = {
         kCoordinateInterface, kCubicEnvironmap, kMipmap, kSceneNode,
-        kSceneObject
+        kSceneObject, kSimulationInterface
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

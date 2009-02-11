@@ -14,7 +14,7 @@ QFloatEdit::QFloatEdit(QWidget* parent)
 QSize QFloatEdit::sizeHint() const
 {
     QFontMetrics metrics(fontMetrics());
-    return QSize(metrics.width("-0123456789") + 2, QLineEdit::sizeHint().height());
+    return QSize(metrics.width("-1234567890") + 2, QLineEdit::sizeHint().height());
 }
 
 QSize QFloatEdit::minimumSizeHint() const
@@ -51,7 +51,7 @@ QIntEdit::QIntEdit(QWidget* parent)
 QSize QIntEdit::sizeHint() const
 {
     QFontMetrics metrics(fontMetrics());
-    return QSize(metrics.width("-0123456789") + 2, QLineEdit::sizeHint().height());
+    return QSize(metrics.width("-1234567890") + 2, QLineEdit::sizeHint().height());
 }
 
 QSize QIntEdit::minimumSizeHint() const

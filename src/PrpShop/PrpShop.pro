@@ -30,6 +30,7 @@ HEADERS += Main.h \
            PRP/Animation/QAnimTimeConvert.h \
            PRP/Audio/QAudible.h \
            PRP/Audio/QSoundBuffer.h \
+           PRP/Avatar/QMultistageBehMod.h \
            PRP/Light/QShadowMaster.h \
            PRP/Message/QMsgForwarder.h \
            PRP/Modifier/QInterfaceInfoModifier.h \
@@ -46,6 +47,8 @@ HEADERS += Main.h \
            PRP/Surface/QDynamicTextMap.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QLayerAnimation.h \
+           PRP/Surface/QLayerLinkAnimation.h \
+           PRP/Surface/QLayerMovie.h \
            PRP/Surface/QLayerSDLAnimation.h \
            PRP/Surface/QMaterial.h \
            PRP/Surface/QMipmap.h
@@ -64,6 +67,7 @@ SOURCES += Main.cpp \
            PRP/Animation/QAnimTimeConvert.cpp \
            PRP/Audio/QAudible.cpp \
            PRP/Audio/QSoundBuffer.cpp \
+           PRP/Avatar/QMultistageBehMod.cpp \
            PRP/Light/QShadowMaster.cpp \
            PRP/Message/QMsgForwarder.cpp \
            PRP/Modifier/QInterfaceInfoModifier.cpp \
@@ -80,6 +84,8 @@ SOURCES += Main.cpp \
            PRP/Surface/QDynamicTextMap.cpp \
            PRP/Surface/QLayer.cpp \
            PRP/Surface/QLayerAnimation.cpp \
+           PRP/Surface/QLayerLinkAnimation.cpp \
+           PRP/Surface/QLayerMovie.cpp \
            PRP/Surface/QLayerSDLAnimation.cpp \
            PRP/Surface/QMaterial.cpp \
            PRP/Surface/QMipmap.cpp

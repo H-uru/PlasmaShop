@@ -39,6 +39,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Animation/QAnimTimeConvert.h"
 #include "PRP/Audio/QAudible.h"
 #include "PRP/Audio/QSoundBuffer.h"
+#include "PRP/Avatar/QMultistageBehMod.h"
 #include "PRP/Light/QShadowMaster.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QInterfaceInfoModifier.h"
@@ -55,6 +56,8 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QDynamicTextMap.h"
 #include "PRP/Surface/QLayer.h"
 #include "PRP/Surface/QLayerAnimation.h"
+#include "PRP/Surface/QLayerLinkAnimation.h"
+#include "PRP/Surface/QLayerMovie.h"
 #include "PRP/Surface/QLayerSDLAnimation.h"
 #include "PRP/Surface/QMaterial.h"
 #include "PRP/Surface/QMipmap.h"
@@ -91,14 +94,24 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QLayer(pCre, parent);
     case kLayerAnimation:
         return new QLayerAnimation(pCre, parent);
+    case kLayerAVI:
+        return new QLayerMovie(pCre, parent);
+    case kLayerBink:
+        return new QLayerMovie(pCre, parent);
     case kLayerDepth:
         return new QLayer(pCre, parent);
+    case kLayerLinkAnimation:
+        return new QLayerLinkAnimation(pCre, parent);
+    case kLayerMovie:
+        return new QLayerMovie(pCre, parent);
     case kLayerSDLAnimation:
         return new QLayerSDLAnimation(pCre, parent);
     case kMipmap:
         return new QMipmap(pCre, parent);
     case kMsgForwarder:
         return new QMsgForwarder(pCre, parent);
+    case kMultistageBehMod:
+        return new QMultistageBehMod(pCre, parent);
     case kOneShotMod:
         return new QOneShotMod(pCre, parent);
     case kPointShadowMaster:
@@ -123,6 +136,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QWinAudible(pCre, parent);
 
     // Non-Keyed Object types
+    case kAnimStage:
+        return new QAnimStage(pCre, parent);
     case kAnimTimeConvert:
         return new QAnimTimeConvert(pCre, parent);
     case kATCEaseCurve:
