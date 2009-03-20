@@ -30,6 +30,7 @@ HEADERS += Main.h \
            PRP/Animation/QAnimTimeConvert.h \
            PRP/Audio/QAudible.h \
            PRP/Audio/QSoundBuffer.h \
+           PRP/Audio/QWinSound.h \
            PRP/Avatar/QMultistageBehMod.h \
            PRP/Light/QShadowMaster.h \
            PRP/Message/QMsgForwarder.h \
@@ -67,6 +68,7 @@ SOURCES += Main.cpp \
            PRP/Animation/QAnimTimeConvert.cpp \
            PRP/Audio/QAudible.cpp \
            PRP/Audio/QSoundBuffer.cpp \
+           PRP/Audio/QWinSound.cpp \
            PRP/Avatar/QMultistageBehMod.cpp \
            PRP/Light/QShadowMaster.cpp \
            PRP/Message/QMsgForwarder.cpp \

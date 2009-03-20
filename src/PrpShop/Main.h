@@ -1,5 +1,5 @@
-#ifndef _PLASMASHOP_MAIN_H
-#define _PLASMASHOP_MAIN_H
+#ifndef _PRPSHOP_MAIN_H
+#define _PRPSHOP_MAIN_H
 
 #include <QMainWindow>
 #include <QMdiArea>
@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "1.0 (build 71)"
+#define PRPSHOP_VERSION "1.0 (build 72)"
 
 class PrpShopMain : public QMainWindow {
     Q_OBJECT

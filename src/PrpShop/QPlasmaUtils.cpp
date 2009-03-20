@@ -79,6 +79,18 @@ QIcon pqGetTypeIcon(short classType)
         return s_icons[kIcoSynch];
     case kMsgForwarder:
         return s_icons[kIcoSynch];
+    case kSound:
+        return s_icons[kIcoSound];
+    case kWin32Sound:
+        return s_icons[kIcoSound];
+    case kWin32StaticSound:
+        return s_icons[kIcoSound];
+    case kWin32StreamingSound:
+        return s_icons[kIcoSound];
+    case kWin32GroupedSound:
+        return s_icons[kIcoSound];
+    case kWin32LinkSound:
+        return s_icons[kIcoSound];
     default:
         return QIcon();
     }
@@ -539,8 +551,9 @@ std::vector<short> pqGetValidKOTypes()
         kLayerLinkAnimation, kLayerMovie, kLayerSDLAnimation, kGMaterial,
         kMipmap, kMsgForwarder, kMultistageBehMod, kOneShotMod,
         kPointShadowMaster, kPythonFileMod, kSceneNode, kSceneObject,
-        kShadowMaster, kSimulationInterface, kSoundBuffer, kSpawnModifier,
-        kWinAudible,
+        kShadowMaster, kSimulationInterface, kSound, kSoundBuffer,
+        kSpawnModifier, kWinAudible, kWin32LinkSound, kWin32Sound,
+        kWin32StaticSound, kWin32StreamingSound,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

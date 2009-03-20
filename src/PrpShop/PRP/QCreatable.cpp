@@ -39,6 +39,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Animation/QAnimTimeConvert.h"
 #include "PRP/Audio/QAudible.h"
 #include "PRP/Audio/QSoundBuffer.h"
+#include "PRP/Audio/QWinSound.h"
 #include "PRP/Avatar/QMultistageBehMod.h"
 #include "PRP/Light/QShadowMaster.h"
 #include "PRP/Message/QMsgForwarder.h"
@@ -126,6 +127,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QShadowMaster(pCre, parent);
     case kSimulationInterface:
         return new QSimulationInterface(pCre, parent);
+    case kSound:
+        return new QWinSound(pCre, parent);
     case kSoundBuffer:
         return new QSoundBuffer(pCre, parent);
     case kSpawnModifier:
@@ -134,6 +137,14 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QSynchedObject(pCre, parent);
     case kWinAudible:
         return new QWinAudible(pCre, parent);
+    case kWin32LinkSound:
+        return new QWin32Sound(pCre, parent);
+    case kWin32Sound:
+        return new QWin32Sound(pCre, parent);
+    case kWin32StaticSound:
+        return new QWin32Sound(pCre, parent);
+    case kWin32StreamingSound:
+        return new QWin32Sound(pCre, parent);
 
     // Non-Keyed Object types
     case kAnimStage:
