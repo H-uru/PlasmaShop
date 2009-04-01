@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMdiSubWindow>
+#include <qticonloader.h>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 #include <PRP/Surface/plMipmap.h>
@@ -38,9 +39,9 @@ PrpShopMain::PrpShopMain()
     setDockOptions(QMainWindow::AnimatedDocks);
 
     // Set up actions
-    fActions[kFileNewPage] = new QAction(QIcon(":/res/filenew.png"), tr("New &Page"), this);
-    fActions[kFileOpen] = new QAction(QIcon(":/res/fileopen.png"), tr("&Open..."), this);
-    fActions[kFileSave] = new QAction(QIcon(":/res/filesave.png"), tr("&Save"), this);
+    fActions[kFileNewPage] = new QAction(qStdIcon("document-new"), tr("New &Page"), this);
+    fActions[kFileOpen] = new QAction(qStdIcon("document-open"), tr("&Open..."), this);
+    fActions[kFileSave] = new QAction(qStdIcon("document-save"), tr("&Save"), this);
     fActions[kFileSaveAs] = new QAction(tr("Sa&ve As..."), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);

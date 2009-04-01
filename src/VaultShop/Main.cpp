@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <qticonloader.h>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 
@@ -65,8 +66,8 @@ VaultShopMain::VaultShopMain()
     //setWindowIcon(QIcon(":/res/VaultShop.png"));
 
     // Set up actions
-    fActions[kFileOpenVault] = new QAction(QIcon(":/res/fileopen.png"), tr("&Load Vault..."), this);
-    fActions[kFileSaveVault] = new QAction(QIcon(":/res/filesave.png"), tr("&Save Vault"), this);
+    fActions[kFileOpenVault] = new QAction(qStdIcon("document-open"), tr("&Load Vault..."), this);
+    fActions[kFileSaveVault] = new QAction(qStdIcon("document-save"), tr("&Save Vault"), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kVaultOpenNode] = new QAction(tr("Subscribe to &Node..."), this);
 

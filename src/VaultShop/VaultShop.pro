@@ -1,13 +1,21 @@
 # General Configuration
 TEMPLATE = app
 DEPENDPATH += .
-INCLUDEPATH += .
+INCLUDEPATH += . ../3rdParty
 CONFIG += release
 DESTDIR = ../../bin
 
 # Use libPlasma
 INCLUDEPATH += ../../../Plasma/core
 LIBS += -L../../../Plasma/bin -lPlasma
+
+# Use the QtIconLoader wrapper
+win32|macx {
+    HEADERS += ../3rdParty/qticonloader.h
+} else {
+    HEADERS += ../3rdParty/qticonloader.h
+    SOURCES += ../3rdParty/qticonloader.cpp
+}
 
 # VaultShop Sources
 HEADERS += Main.h \
