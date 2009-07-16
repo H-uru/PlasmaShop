@@ -53,6 +53,8 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Object/QSceneObject.h"
 #include "PRP/Object/QSimulationInterface.h"
 #include "PRP/Object/QSynchedObject.h"
+#include "PRP/Physics/QCollisionDetector.h"
+#include "PRP/Physics/QDetectorModifier.h"
 #include "PRP/Surface/QCubicEnvironmap.h"
 #include "PRP/Surface/QDynamicTextMap.h"
 #include "PRP/Surface/QLayer.h"
@@ -62,6 +64,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QLayerSDLAnimation.h"
 #include "PRP/Surface/QMaterial.h"
 #include "PRP/Surface/QMipmap.h"
+#include "PRP/Render/QSceneObj_Preview.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
 {
@@ -77,10 +80,14 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QAudible(pCre, parent);
     case kAudioInterface:
         return new QAudioInterface(pCre, parent);
+    case kCollisionDetector:
+        return new QCollisionDetector(pCre, parent);
     case kCoordinateInterface:
         return new QCoordinateInterface(pCre, parent);
     case kCubicEnvironmap:
         return new QCubicEnvironmap(pCre, parent);
+    case kDetectorModifier:
+        return new QDetectorModifier(pCre, parent);
     case kDirectShadowMaster:
         return new QShadowMaster(pCre, parent);
     case kDrawInterface:
@@ -115,6 +122,10 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QMultistageBehMod(pCre, parent);
     case kOneShotMod:
         return new QOneShotMod(pCre, parent);
+    case kPanicLinkRegion:
+        return new QCollisionDetector(pCre, parent);
+    case kPickingDetector:
+        return new QDetectorModifier(pCre, parent);
     case kPointShadowMaster:
         return new QShadowMaster(pCre, parent);
     case kPythonFileMod:
@@ -133,6 +144,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QSoundBuffer(pCre, parent);
     case kSpawnModifier:
         return new QSpawnModifier(pCre, parent);
+    case kSubworldRegionDetector:
+        return new QCollisionDetector(pCre, parent);
     case kSynchedObject:
         return new QSynchedObject(pCre, parent);
     case kWinAudible:
@@ -161,6 +174,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
     // Preview meta-types
     case kPreviewMipmap:
         return new QMipmap_Preview(pCre, parent);
+    //case kPreviewSceneObject:
+    //    return new QSceneObj_Preview(pCre, parent);
 
     default:
         if ((type & 0x1000) == 0) {

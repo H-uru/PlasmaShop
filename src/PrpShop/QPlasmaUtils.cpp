@@ -542,18 +542,18 @@ QString pqGetFriendlyClassName(short classType)
 
 std::vector<short> pqGetValidKOTypes()
 {
-    // Please keep this sorted by the names found in pqGetFriendlyClassName
+    // Please keep this sorted alphabetically by friendly class names
     static short s_typeList[] = {
         k2WayWinAudible, kAudible, kAudibleNull, kAudioInterface,
-        kCoordinateInterface, kCubicEnvironmap, kDirectShadowMaster,
-        kDrawInterface, kDynamicTextMap, kInterfaceInfoModifier, kLayer,
-        kLayerAnimation, kLayerAVI, kLayerBink, kLayerDepth,
-        kLayerLinkAnimation, kLayerMovie, kLayerSDLAnimation, kGMaterial,
-        kMipmap, kMsgForwarder, kMultistageBehMod, kOneShotMod,
-        kPointShadowMaster, kPythonFileMod, kSceneNode, kSceneObject,
-        kShadowMaster, kSimulationInterface, kSound, kSoundBuffer,
-        kSpawnModifier, kWinAudible, kWin32LinkSound, kWin32Sound,
-        kWin32StaticSound, kWin32StreamingSound,
+        kCollisionDetector, kCoordinateInterface, kCubicEnvironmap,
+        kDetectorModifier, kDirectShadowMaster, kDrawInterface, kDynamicTextMap,
+        kInterfaceInfoModifier, kLayer, kLayerAnimation, kLayerAVI, kLayerBink,
+        kLayerDepth, kLayerLinkAnimation, kLayerMovie, kLayerSDLAnimation,
+        kGMaterial, kMipmap, kMsgForwarder, kMultistageBehMod, kOneShotMod,
+        kPanicLinkRegion, kPickingDetector, kPointShadowMaster, kPythonFileMod,
+        kSceneNode, kSceneObject, kShadowMaster, kSimulationInterface, kSound,
+        kSoundBuffer, kSpawnModifier, kSubworldRegionDetector, kWinAudible,
+        kWin32LinkSound, kWin32Sound, kWin32StaticSound, kWin32StreamingSound,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 

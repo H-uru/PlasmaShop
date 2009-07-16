@@ -376,7 +376,7 @@ void VaultShopMain::loadGame(QString path)
 void VaultShopMain::openGame()
 {
     QString dirname = QFileDialog::getExistingDirectory(this,
-                                   tr("Open Game"), fLastDir);
+                                   tr("Select the root game folder for your Uru installation"), fLastDir);
     if (!dirname.isEmpty())
         loadGame(dirname);
 }

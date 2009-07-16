@@ -3,6 +3,7 @@ TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../3rdParty
 CONFIG += release
+QT += opengl
 DESTDIR = ../../bin
 RC_FILE = res/PrpShop.rc
 
@@ -52,6 +53,8 @@ HEADERS += Main.h \
            PRP/Object/QSceneObject.h \
            PRP/Object/QSimulationInterface.h \
            PRP/Object/QSynchedObject.h \
+           PRP/Physics/QCollisionDetector.h \
+           PRP/Physics/QDetectorModifier.h \
            PRP/Surface/QCubicEnvironmap.h \
            PRP/Surface/QDynamicTextMap.h \
            PRP/Surface/QLayer.h \
@@ -60,7 +63,9 @@ HEADERS += Main.h \
            PRP/Surface/QLayerMovie.h \
            PRP/Surface/QLayerSDLAnimation.h \
            PRP/Surface/QMaterial.h \
-           PRP/Surface/QMipmap.h
+           PRP/Surface/QMipmap.h \
+           PRP/Render/QPlasmaRender.h \
+           PRP/Render/QSceneObj_Preview.h
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
@@ -90,6 +95,8 @@ SOURCES += Main.cpp \
            PRP/Object/QSceneObject.cpp \
            PRP/Object/QSimulationInterface.cpp \
            PRP/Object/QSynchedObject.cpp \
+           PRP/Physics/QCollisionDetector.cpp \
+           PRP/Physics/QDetectorModifier.cpp \
            PRP/Surface/QCubicEnvironmap.cpp \
            PRP/Surface/QDynamicTextMap.cpp \
            PRP/Surface/QLayer.cpp \
@@ -98,5 +105,7 @@ SOURCES += Main.cpp \
            PRP/Surface/QLayerMovie.cpp \
            PRP/Surface/QLayerSDLAnimation.cpp \
            PRP/Surface/QMaterial.cpp \
-           PRP/Surface/QMipmap.cpp
+           PRP/Surface/QMipmap.cpp \
+           PRP/Render/QPlasmaRender.cpp \
+           PRP/Render/QSceneObj_Preview.cpp
 RESOURCES += images.qrc
