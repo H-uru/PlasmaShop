@@ -57,6 +57,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Physics/QDetectorModifier.h"
 #include "PRP/Surface/QCubicEnvironmap.h"
 #include "PRP/Surface/QDynamicTextMap.h"
+#include "PRP/Surface/QFadeOpacityMod.h"
 #include "PRP/Surface/QLayer.h"
 #include "PRP/Surface/QLayerAnimation.h"
 #include "PRP/Surface/QLayerLinkAnimation.h"
@@ -158,6 +159,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QWin32Sound(pCre, parent);
     case kWin32StreamingSound:
         return new QWin32Sound(pCre, parent);
+    case kFadeOpacityMod:
+        return new QFadeOpacityMod(pCre, parent);
 
     // Non-Keyed Object types
     case kAnimStage:

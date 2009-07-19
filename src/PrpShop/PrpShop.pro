@@ -57,6 +57,7 @@ HEADERS += Main.h \
            PRP/Physics/QDetectorModifier.h \
            PRP/Surface/QCubicEnvironmap.h \
            PRP/Surface/QDynamicTextMap.h \
+           PRP/Surface/QFadeOpacityMod.h \
            PRP/Surface/QLayer.h \
            PRP/Surface/QLayerAnimation.h \
            PRP/Surface/QLayerLinkAnimation.h \
@@ -99,6 +100,7 @@ SOURCES += Main.cpp \
            PRP/Physics/QDetectorModifier.cpp \
            PRP/Surface/QCubicEnvironmap.cpp \
            PRP/Surface/QDynamicTextMap.cpp \
+           PRP/Surface/QFadeOpacityMod.cpp \
            PRP/Surface/QLayer.cpp \
            PRP/Surface/QLayerAnimation.cpp \
            PRP/Surface/QLayerLinkAnimation.cpp \
