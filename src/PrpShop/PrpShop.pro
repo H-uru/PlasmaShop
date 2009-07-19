@@ -41,6 +41,24 @@ HEADERS += Main.h \
            PRP/Audio/QSoundBuffer.h \
            PRP/Audio/QWinSound.h \
            PRP/Avatar/QMultistageBehMod.h \
+           PRP/GUI/QGUIButtonMod.h \
+           PRP/GUI/QGUICheckBoxCtrl.h \
+           PRP/GUI/QGUIClickMapCtrl.h \
+           PRP/GUI/QGUIControlMod.h \
+           PRP/GUI/QGUIDialogMod.h \
+           PRP/GUI/QGUIDraggableMod.h \
+           PRP/GUI/QGUIDynDisplayCtrl.h \
+           PRP/GUI/QGUIKnobCtrl.h \
+           PRP/GUI/QGUIListBoxMod.h \
+           PRP/GUI/QGUIMenuItem.h \
+           PRP/GUI/QGUIMultiLineEditCtrl.h \
+           PRP/GUI/QGUIPopUpMenu.h \
+           PRP/GUI/QGUIProgressCtrl.h \
+           PRP/GUI/QGUIRadioGroupCtrl.h \
+           PRP/GUI/QGUISkin.h \
+           PRP/GUI/QGUITextBoxMod.h \
+           PRP/GUI/QGUIUpDownPairMod.h \
+           PRP/GUI/QImageLibMod.h \
            PRP/Light/QShadowMaster.h \
            PRP/Message/QMsgForwarder.h \
            PRP/Modifier/QInterfaceInfoModifier.h \
@@ -84,6 +102,24 @@ SOURCES += Main.cpp \
            PRP/Audio/QSoundBuffer.cpp \
            PRP/Audio/QWinSound.cpp \
            PRP/Avatar/QMultistageBehMod.cpp \
+           PRP/GUI/QGUIButtonMod.cpp \
+           PRP/GUI/QGUICheckBoxCtrl.cpp \
+           PRP/GUI/QGUIClickMapCtrl.cpp \
+           PRP/GUI/QGUIControlMod.cpp \
+           PRP/GUI/QGUIDialogMod.cpp \
+           PRP/GUI/QGUIDraggableMod.cpp \
+           PRP/GUI/QGUIDynDisplayCtrl.cpp \
+           PRP/GUI/QGUIKnobCtrl.cpp \
+           PRP/GUI/QGUIListBoxMod.cpp \
+           PRP/GUI/QGUIMenuItem.cpp \
+           PRP/GUI/QGUIMultiLineEditCtrl.cpp \
+           PRP/GUI/QGUIPopUpMenu.cpp \
+           PRP/GUI/QGUIProgressCtrl.cpp \
+           PRP/GUI/QGUIRadioGroupCtrl.cpp \
+           PRP/GUI/QGUISkin.cpp \
+           PRP/GUI/QGUITextBoxMod.cpp \
+           PRP/GUI/QGUIUpDownPairMod.cpp \
+           PRP/GUI/QImageLibMod.cpp \
            PRP/Light/QShadowMaster.cpp \
            PRP/Message/QMsgForwarder.cpp \
            PRP/Modifier/QInterfaceInfoModifier.cpp \

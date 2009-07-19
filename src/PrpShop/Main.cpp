@@ -946,6 +946,9 @@ void PrpShopMain::createNewObject()
         QPlasmaTreeItem* folderItem = ensurePath(loc, type);
         new QPlasmaTreeItem(folderItem, ko->getKey());
         fBrowserTree->sortItems(0, Qt::AscendingOrder);
+
+        // And open it for convenience
+        editCreatable(ko);
     }
 }
 

@@ -20,6 +20,10 @@ public:
 
     void adjustColumns();
 
+signals:
+    void itemAdded(plKey item);
+    void itemRemoved(int idx);
+
 protected slots:
     void activateKeyItem(QTreeWidgetItem* item, int column);
 
@@ -30,7 +34,7 @@ protected:
 class QStringListWidget : public QListWidget {
     Q_OBJECT
 
-protected:
+private:
     QStringList fStrings;
 
 public:
@@ -40,6 +44,25 @@ public:
     void addString(const QString& str);
     void delString(int idx);
     QStringList strings() const;
+
+protected:
+    virtual void contextMenuEvent(QContextMenuEvent* evt);
+};
+
+class QIntListWidget : public QListWidget {
+    Q_OBJECT
+
+private:
+    QList<int> fValues;
+    int fMin, fMax;
+
+public:
+    QIntListWidget(int min, int max, QWidget* parent = NULL);
+    virtual QSize sizeHint() const;
+
+    void addValue(int value);
+    void delValue(int idx);
+    QList<int> values() const;
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);

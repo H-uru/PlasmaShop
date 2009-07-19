@@ -41,6 +41,24 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Audio/QSoundBuffer.h"
 #include "PRP/Audio/QWinSound.h"
 #include "PRP/Avatar/QMultistageBehMod.h"
+#include "PRP/GUI/QGUIButtonMod.h"
+#include "PRP/GUI/QGUICheckBoxCtrl.h"
+#include "PRP/GUI/QGUIClickMapCtrl.h"
+#include "PRP/GUI/QGUIControlMod.h"
+#include "PRP/GUI/QGUIDialogMod.h"
+#include "PRP/GUI/QGUIDraggableMod.h"
+#include "PRP/GUI/QGUIDynDisplayCtrl.h"
+#include "PRP/GUI/QGUIKnobCtrl.h"
+#include "PRP/GUI/QGUIListBoxMod.h"
+#include "PRP/GUI/QGUIMenuItem.h"
+#include "PRP/GUI/QGUIMultiLineEditCtrl.h"
+#include "PRP/GUI/QGUIPopUpMenu.h"
+#include "PRP/GUI/QGUIProgressCtrl.h"
+#include "PRP/GUI/QGUIRadioGroupCtrl.h"
+#include "PRP/GUI/QGUISkin.h"
+#include "PRP/GUI/QGUITextBoxMod.h"
+#include "PRP/GUI/QGUIUpDownPairMod.h"
+#include "PRP/GUI/QImageLibMod.h"
 #include "PRP/Light/QShadowMaster.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QInterfaceInfoModifier.h"
@@ -95,10 +113,52 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QDrawInterface(pCre, parent);
     case kDynamicTextMap:
         return new QDynamicTextMap(pCre, parent);
+    case kFadeOpacityMod:
+        return new QFadeOpacityMod(pCre, parent);
     case kInterfaceInfoModifier:
         return new QInterfaceInfoModifier(pCre, parent);
     case kGMaterial:
         return new QMaterial(pCre, parent);
+    case kGUIButtonMod:
+        return new QGUIButtonMod(pCre, parent);
+    case kGUICheckBoxCtrl:
+        return new QGUICheckBoxCtrl(pCre, parent);
+    case kGUIClickMapCtrl:
+        return new QGUIClickMapCtrl(pCre, parent);
+    case kGUIControlMod:
+        return new QGUIControlMod(pCre, parent);
+    case kGUIDialogMod:
+        return new QGUIDialogMod(pCre, parent);
+    case kGUIDragBarCtrl:
+        return new QGUIControlMod(pCre, parent);
+    case kGUIDraggableMod:
+        return new QGUIDraggableMod(pCre, parent);
+    case kGUIDynDisplayCtrl:
+        return new QGUIDynDisplayCtrl(pCre, parent);
+    case kGUIEditBoxMod:
+        return new QGUIControlMod(pCre, parent);
+    case kGUIKnobCtrl:
+        return new QGUIKnobCtrl(pCre, parent);
+    case kGUIListBoxMod:
+        return new QGUIListBoxMod(pCre, parent);
+    case kGUIMenuItem:
+        return new QGUIMenuItem(pCre, parent);
+    case kGUIMultiLineEditCtrl:
+        return new QGUIMultiLineEditCtrl(pCre, parent);
+    case kGUIPopUpMenu:
+        return new QGUIPopUpMenu(pCre, parent);
+    case kGUIProgressCtrl:
+        return new QGUIProgressCtrl(pCre, parent);
+    case kGUIRadioGroupCtrl:
+        return new QGUIRadioGroupCtrl(pCre, parent);
+    case kGUISkin:
+        return new QGUISkin(pCre, parent);
+    case kGUITextBoxMod:
+        return new QGUITextBoxMod(pCre, parent);
+    case kGUIUpDownPairMod:
+        return new QGUIUpDownPairMod(pCre, parent);
+    case kImageLibMod:
+        return new QImageLibMod(pCre, parent);
     case kLayer:
         return new QLayer(pCre, parent);
     case kLayerAnimation:
@@ -159,8 +219,6 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QWin32Sound(pCre, parent);
     case kWin32StreamingSound:
         return new QWin32Sound(pCre, parent);
-    case kFadeOpacityMod:
-        return new QFadeOpacityMod(pCre, parent);
 
     // Non-Keyed Object types
     case kAnimStage:

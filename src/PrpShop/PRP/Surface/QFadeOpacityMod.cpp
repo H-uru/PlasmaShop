@@ -20,7 +20,7 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
     QGridLayout* layFlags = new QGridLayout(grpFlags);
     layFlags->setVerticalSpacing(0);
     layFlags->setHorizontalSpacing(8);
-    fFlags[kBoundsCenter] = new QCheckBox(tr("Alpha Channel"), grpFlags);
+    fFlags[kBoundsCenter] = new QCheckBox(tr("Bounds Centered"), grpFlags);
     layFlags->addWidget(fFlags[kBoundsCenter], 0, 0);
     fFlags[kBoundsCenter]->setChecked(mod->getFlag(plFadeOpacityMod::kBoundsCenter));
     
@@ -32,8 +32,8 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
-    layout->addWidget(fSynchObjLink, 0, 0, 1, 4);
-    layout->addWidget(grpFlags, 1, 0, 1, 4);
+    layout->addWidget(fSynchObjLink, 0, 0, 1, 2);
+    layout->addWidget(grpFlags, 1, 0, 1, 2);
     layout->addWidget(new QLabel(tr("Fade Up:"), this), 2, 0);
     layout->addWidget(fUp, 2, 1);
     layout->addWidget(new QLabel(tr("Fade Down:"), this), 3, 0);
@@ -43,4 +43,12 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
 void QFadeOpacityMod::saveDamage()
 {
     plFadeOpacityMod* mod = (plFadeOpacityMod*)fCreatable;
+
+    if (fFlags[kBoundsCenter]->isChecked())
+        mod->setFlag(plFadeOpacityMod::kBoundsCenter);
+    else
+        mod->clearFlag(plFadeOpacityMod::kBoundsCenter);
+
+    mod->setFadeUp(fUp->value());
+    mod->setFadeDown(fDown->value());
 }

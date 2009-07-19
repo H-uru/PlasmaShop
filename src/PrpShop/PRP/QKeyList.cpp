@@ -67,10 +67,14 @@ void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
                      fKeys.back()->getType());
         else
             dlg.init(PrpShopMain::ResManager());
-        if (dlg.exec() == QDialog::Accepted)
+        if (dlg.exec() == QDialog::Accepted) {
             addKey(dlg.selection());
+            emit itemAdded(dlg.selection());
+        }
     } else if (sel == delObjItem) {
-        delItem(indexOfTopLevelItem(currentItem()));
+        int idx = indexOfTopLevelItem(currentItem());
+        delItem(idx);
+        emit itemRemoved(idx);
     }
 }
 
@@ -121,6 +125,56 @@ void QStringListWidget::contextMenuEvent(QContextMenuEvent* evt)
         if (ok) addString(str);
     } else if (sel == delObjItem) {
         delString(currentRow());
+    }
+}
+
+
+/* QIntListWidget */
+QIntListWidget::QIntListWidget(int min, int max, QWidget* parent)
+              : QListWidget(parent), fMin(min), fMax(max)
+{ }
+
+QSize QIntListWidget::sizeHint() const
+{
+    QSize listSize = QListWidget::sizeHint();
+    return QSize((listSize.width() * 2) / 3, (listSize.height() * 1) / 2);
+}
+
+void QIntListWidget::addValue(int value)
+{
+    fValues << value;
+    addItem(QString("%1").arg(value));
+}
+
+void QIntListWidget::delValue(int idx)
+{
+    QListWidgetItem* item = takeItem(idx);
+    if (item != NULL)
+        delete item;
+    fValues.erase(fValues.begin() + idx);
+}
+
+QList<int> QIntListWidget::values() const
+{ return fValues; }
+
+void QIntListWidget::contextMenuEvent(QContextMenuEvent* evt)
+{
+    QMenu menu(this);
+    QAction* addObjItem = menu.addAction(tr("Add Item"));
+    QAction* delObjItem = menu.addAction(tr("Remove Item"));
+
+    if (currentItem() == NULL)
+        delObjItem->setEnabled(false);
+
+    QAction* sel = menu.exec(evt->globalPos());
+    if (sel == addObjItem) {
+        bool ok;
+        double val = QInputDialog::getInt(this, tr("Add Item"),
+                            tr("Enter a value"), 0, fMin, fMax,
+                            1, &ok);
+        if (ok) addValue(val);
+    } else if (sel == delObjItem) {
+        delValue(currentRow());
     }
 }
 
