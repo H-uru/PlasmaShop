@@ -389,7 +389,7 @@ void QPopUpMenuItemDialog::cmdChanged(QString cmd)
         || fItem->fHandler->getType() != pfGUICtrlProcWriteableObject::kConsoleCmd)
         return;
 
-    ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(~fProcCommand->text());
+    ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(~cmd);
 }
 
 void QPopUpMenuItemDialog::offsetChanged(QString)

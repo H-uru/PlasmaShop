@@ -1,3 +1,6 @@
 TEMPLATE = subdirs
-SUBDIRS = src/PrpShop \
+SUBDIRS = src/PlasmaShop \
+          src/PrpShop \
           src/VaultShop
+
+win32:SUBDIRS += icons/win32

@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <!-- App Images -->
+    <file>res/win/document-new.png</file>
+    <file>res/win/document-open.png</file>
+    <file>res/win/document-save.png</file>
+    <file>res/mac/document-new.png</file>
+    <file>res/mac/document-open.png</file>
+    <file>res/mac/document-save.png</file>
+    <file>res/def/document-new.png</file>
+    <file>res/def/document-open.png</file>
+    <file>res/def/document-save.png</file>
+    <file>res/PlasmaShop.png</file>
+</qresource>
+</RCC>
