@@ -6,12 +6,14 @@
 
 /* Icons */
 MAINICON                ICON    DISCARDABLE         "PrpShop.ico"
+XDOCAGE                 ICON    DISCARDABLE         "Plasma_age.ico"
+XDOCPRP                 ICON    DISCARDABLE         "Plasma_prp2.ico"
 /* End of Icons */
 
 /* Version Info */
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,73
- PRODUCTVERSION 1,0,0,73
+ FILEVERSION 1,0,0,78
+ PRODUCTVERSION 1,0,0,78
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -27,7 +29,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Michael Hansen"
-            VALUE "FileVersion", "1.0.0.73"
+            VALUE "FileVersion", "1.0.0.78"
             VALUE "InternalName", "PrpShop"
             VALUE "LegalCopyright", "Copyright (C) 2008 Michael Hansen"
             VALUE "OriginalFilename", "PrpShop.exe"

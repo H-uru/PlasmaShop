@@ -35,6 +35,8 @@ QIcon pqGetTypeIcon(short classType)
         return s_icons[kIcoImg];
     case kCoordinateInterface:
         return s_icons[kIcoCoord];
+    case kDynamicTextMap:
+        return s_icons[kIcoGUIText];
     case kSimulationInterface:
         return s_icons[kIcoSim];
     case kAudioInterface:
