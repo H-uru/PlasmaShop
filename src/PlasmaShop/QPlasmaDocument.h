@@ -30,7 +30,7 @@ signals:
     void becameDirty();
     void becameClean();
 
-private:
+protected:
     DocumentType fDocType;
     QString fFilename;
     bool fDirty;

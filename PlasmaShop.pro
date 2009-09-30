@@ -1,5 +1,6 @@
 TEMPLATE = subdirs
-SUBDIRS = src/PlasmaShop \
+SUBDIRS = QScintilla/Qt4/qscintilla.pro \
+          src/PlasmaShop \
           src/PrpShop \
           src/VaultShop
 

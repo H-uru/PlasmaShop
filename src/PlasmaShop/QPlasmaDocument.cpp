@@ -1,4 +1,5 @@
 #include "QPlasmaDocument.h"
+#include "QPlasmaTextDoc.h"
 
 QIcon QPlasmaDocument::GetDocIcon(QString filename)
 {
@@ -66,10 +67,9 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
 {
     switch (docType) {
     case kDocText:
-        // TODO
+        return new QPlasmaTextDoc(parent);
     default:
-        //return NULL;
-        return new QPlasmaDocument(docType, parent);    // Placeholder
+        return NULL;
     }
 }
 

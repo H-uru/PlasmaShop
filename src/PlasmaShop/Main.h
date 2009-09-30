@@ -8,7 +8,7 @@
 #include <QAction>
 #include "QPlasmaDocument.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 80)"
+#define PLASMASHOP_VERSION "3.0 (build 81)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT

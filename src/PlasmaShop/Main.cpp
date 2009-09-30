@@ -236,6 +236,11 @@ void PlasmaShopMain::loadFile(QString filename)
     if (plDoc != NULL) {
         fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(filename), fnameDisplay);
         plDoc->loadFile(filename);
+        if (plDoc->filename() == "<>") {
+            // Error loading the file.  Remove it now to avoid problems later
+            fEditorPane->removeTab(fEditorPane->count() - 1);
+            delete plDoc;
+        }
     }
 }
 
@@ -251,11 +256,13 @@ void PlasmaShopMain::closeEvent(QCloseEvent* evt)
                                          "Would you like to save before closing?")
                                       .arg(doc->filename()),
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-            if (result == QMessageBox::Yes)
+            if (result == QMessageBox::Yes) {
                 doc->saveDefault();
-            else if (result == QMessageBox::Cancel)
+            } else if (result == QMessageBox::Cancel) {
                 // Don't continue and don't close anything
+                evt->ignore();
                 return;
+            }
         }
     }
 
