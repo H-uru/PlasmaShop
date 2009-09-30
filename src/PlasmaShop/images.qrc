@@ -4,12 +4,54 @@
     <file>res/win/document-new.png</file>
     <file>res/win/document-open.png</file>
     <file>res/win/document-save.png</file>
+    <file>res/win/edit-cut.png</file>
+    <file>res/win/edit-copy.png</file>
+    <file>res/win/edit-paste.png</file>
+    <file>res/win/edit-undo.png</file>
+    <file>res/win/edit-redo.png</file>
     <file>res/mac/document-new.png</file>
     <file>res/mac/document-open.png</file>
     <file>res/mac/document-save.png</file>
+    <file>res/mac/edit-cut.png</file>
+    <file>res/mac/edit-copy.png</file>
+    <file>res/mac/edit-paste.png</file>
+    <file>res/mac/edit-undo.png</file>
+    <file>res/mac/edit-redo.png</file>
     <file>res/def/document-new.png</file>
     <file>res/def/document-open.png</file>
     <file>res/def/document-save.png</file>
+    <file>res/def/document-save-as.png</file>
+    <file>res/def/document-revert.png</file>
+    <file>res/def/edit-cut.png</file>
+    <file>res/def/edit-copy.png</file>
+    <file>res/def/edit-paste.png</file>
+    <file>res/def/edit-undo.png</file>
+    <file>res/def/edit-redo.png</file>
+    <file>res/def/edit-find.png</file>
+    <file>res/def/help-about.png</file>
     <file>res/PlasmaShop.png</file>
+
+    <!-- Images for file types -->
+    <file>img/folder.png</file>
+    <file>img/bfldr.png</file>
+    <file>img/gfldr.png</file>
+    <file>img/ofldr.png</file>
+    <file>img/rfldr.png</file>
+    <file>img/wfldr.png</file>
+    <file>img/age.png</file>
+    <file>img/page.png</file>
+    <file>img/font.png</file>
+    <file>img/img.png</file>
+    <file>img/ini.png</file>
+    <file>img/text.png</file>
+    <file>img/py.png</file>
+    <file>img/pak.png</file>
+    <file>img/pfp.png</file>
+    <file>img/cursor_dat.png</file>
+    <file>img/elf.png</file>
+    <file>img/sdl.png</file>
+    <file>img/sum.png</file>
+    <file>img/hex.png</file>
+    <file>img/blank.png</file>
 </qresource>
 </RCC>

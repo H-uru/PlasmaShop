@@ -6,8 +6,9 @@
 #include <QTabWidget>
 #include <QDockWidget>
 #include <QAction>
+#include "QPlasmaDocument.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 79)"
+#define PLASMASHOP_VERSION "3.0 (build 80)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -22,13 +23,14 @@ private:
     enum {
         // Main Menu
         kFileNew, kFileOpen, kFileSave, kFileSaveAs, kFileExit, kFileOptions,
-        kWindowPrev, kWindowNext, kWindowTile, kWindowCascade, kWindowClose,
-        kWindowCloseAll,
+        kEditUndo, kEditRedo, kEditCut, kEditCopy, kEditPaste, kEditRevert,
+        kHelpAbout,
 
         // Text Editor Menu
-        kTextFind, kTextReplace, kTextStxNone, kTextStxPython, kTextStxSDL1,
-        kTextStxSDL2, kTextStxIni, kTextStxConsole, kTextStxXML, kTextStxHex,
-        kTextStxFX, kTextEncNone, kTextEncXtea, kTextEncAes, kTextEncDroid,
+        kTextFind, kTextFindNext, kTextFindPrev, kTextReplace,
+        kTextStxNone, kTextStxPython, kTextStxSDL1, kTextStxSDL2, kTextStxIni,
+        kTextStxConsole, kTextStxXML, kTextStxHex, kTextStxFX,
+        kTextEncNone, kTextEncXtea, kTextEncAes, kTextEncDroid,
         kTextTypeAnsi, kTextTypeUTF8, kTextTypeUTF16, kTextTypeUTF32,
         kTextExpandAll, kTextCollapseAll,
 
@@ -39,16 +41,18 @@ private:
     };
     QAction* fActions[kNumActions];
 
-    // Magic for Creatable loading
-    static PlasmaShopMain* sInstance;
-
 public:
-    static PlasmaShopMain* Instance();
-
     PlasmaShopMain();
+    void loadFile(QString filename);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
+
+private slots:
+    void onOpenFile();
+    void onSaveFile();
+    void onSaveAs();
+    void onCloseTab(int idx);
 };
 
 #endif

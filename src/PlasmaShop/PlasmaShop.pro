@@ -23,6 +23,8 @@ win32|macx {
 
 # PlasmaShop Sources
 HEADERS += Main.h \
+           QPlasmaDocument.h \
            ../QPlasma.h
-SOURCES += Main.cpp
+SOURCES += Main.cpp \
+           QPlasmaDocument.cpp
 RESOURCES += images.qrc
