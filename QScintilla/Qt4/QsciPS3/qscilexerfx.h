@@ -1,4 +1,4 @@
-// This defines the interface to the QsciCommandSet class.
+// This defines the interface to the QsciLexerFX class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,67 +33,51 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCICOMMANDSET_H
-#define QSCICOMMANDSET_H
+#ifndef QSCILEXERFX_H
+#define QSCILEXERFX_H
 
 #ifdef __APPLE__
 extern "C++" {
 #endif
 
-#include <qglobal.h>
+#include <qobject.h>
 
-#include <QList>
-
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qscicommand.h>
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscilexercpp.h>
 
 
-class QSettings;
-class QsciScintilla;
-
-
-//! \brief The QsciCommandSet class represents the set of all internal editor
-//! commands that may have keys bound.
-//!
-//! Methods are provided to access the individual commands and to read and
-//! write the current bindings from and to settings files.
-class QSCINTILLA_EXPORT QsciCommandSet
+//! \brief The QsciLexerFX class defines a lexer for HLSL FX files
+//! lexer.
+class QSCINTILLA_EXPORT QsciLexerFX : public QsciLexerCPP
 {
+    Q_OBJECT
+
 public:
-    //! The key bindings for each command in the set are read from the
-    //! settings \a qs.  \a prefix is prepended to the key of each entry.
-    //! true is returned if there was no error.
+    //! Construct a QsciLexerFX with parent \a parent.  \a parent is
+    //! typically the QsciScintilla instance.
+    QsciLexerFX(QObject *parent = 0);
+
+    //! Destroys the QsciLexerFX instance.
+    virtual ~QsciLexerFX();
+
+    //! Returns the name of the language.
+    const char *language() const;
+
+    //! Returns the set of keywords for the keyword set \a set recognised
+    //! by the lexer as a space separated string.
+    const char *keywords(int set) const;
+
+    //! Returns the foreground colour of the text for style number \a style.
     //!
-    //! \sa writeSettings()
-    bool readSettings(QSettings &qs, const char *prefix = "/Scintilla");
+    //! \sa defaultPaper()
+    QColor defaultColor(int style) const;
 
-    //! The key bindings for each command in the set are written to the
-    //! settings \a qs.  \a prefix is prepended to the key of each entry.
-    //! true is returned if there was no error.
-    //!
-    //! \sa readSettings()
-    bool writeSettings(QSettings &qs, const char *prefix = "/Scintilla");
-
-    //! The commands in the set are returned as a list.
-    QList<QsciCommand *> &commands() {return cmds;}
-
-    //! The primary keys bindings for all commands are removed.
-    void clearKeys();
-
-    //! The alternate keys bindings for all commands are removed.
-    void clearAlternateKeys();
+    //! Returns the font for style number \a style.
+    QFont defaultFont(int style) const;
 
 private:
-    friend class QsciScintilla;
-
-    QsciCommandSet(QsciScintilla *qs);
-    ~QsciCommandSet();
-
-    QsciScintilla *qsci;
-    QList<QsciCommand *> cmds;
-
-    QsciCommandSet(const QsciCommandSet &);
-    QsciCommandSet &operator=(const QsciCommandSet &);
+    QsciLexerFX(const QsciLexerFX &);
+    QsciLexerFX &operator=(const QsciLexerFX &);
 };
 
 #ifdef __APPLE__

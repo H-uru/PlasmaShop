@@ -42,8 +42,8 @@ extern "C++" {
 
 #include <qobject.h>
 
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qscilexer.h>
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscilexer.h>
 
 
 //! \brief The QsciLexerSDL class encapsulates the Scintilla-PS30 SDL

@@ -47,7 +47,7 @@ extern "C++" {
 #include <qpoint.h>
 #include <qtimer.h>
 
-#include <Qsci/qsciglobal.h>
+#include <QsciPS3/qsciglobal.h>
 
 
 class QColor;

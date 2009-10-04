@@ -35,7 +35,7 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qsciscintilla.h"
+#include "QsciPS3/qsciscintilla.h"
 
 #include <string.h>
 #include <qapplication.h>
@@ -43,11 +43,11 @@
 #include <qiodevice.h>
 #include <qpoint.h>
 
-#include "Qsci/qsciabstractapis.h"
-#include "Qsci/qscicommandset.h"
-#include "Qsci/qscilexer.h"
-#include "Qsci/qscistyle.h"
-#include "Qsci/qscistyledtext.h"
+#include "QsciPS3/qsciabstractapis.h"
+#include "QsciPS3/qscicommandset.h"
+#include "QsciPS3/qscilexer.h"
+#include "QsciPS3/qscistyle.h"
+#include "QsciPS3/qscistyledtext.h"
 
 
 // Make sure these match the values in Scintilla.h.  We don't #include that
@@ -1892,6 +1892,13 @@ bool QsciScintilla::isRedoAvailable() const
 bool QsciScintilla::isUndoAvailable() const
 {
     return SendScintilla(SCI_CANUNDO);
+}
+
+
+// See if there is something to paste.
+bool QsciScintilla::isPasteAvailable() const
+{
+    return SendScintilla(SCI_CANPASTE);
 }
 
 

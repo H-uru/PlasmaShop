@@ -33,14 +33,14 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qsciprinter.h"
+#include "QsciPS3/qsciprinter.h"
 
 #include <qprinter.h>
 #include <qpainter.h>
 
 #include <qstack.h>
 
-#include "Qsci/qsciscintillabase.h"
+#include "QsciPS3/qsciscintillabase.h"
 
 
 // The ctor.

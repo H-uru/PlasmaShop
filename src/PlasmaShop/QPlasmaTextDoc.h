@@ -1,14 +1,14 @@
 #ifndef _QPLASMATEXTDOC_H
 #define _QPLASMATEXTDOC_H
 
-#include <Qsci/qsciscintilla.h>
-#include <Qsci/qscilexerfni.h>
-#include <Qsci/qscilexerfx.h>
-#include <Qsci/qscilexerhexisle.h>
-#include <Qsci/qscilexerproperties.h>
-#include <Qsci/qscilexerpython.h>
-#include <Qsci/qscilexersdl.h>
-#include <Qsci/qscilexerxml.h>
+#include <QsciPS3/qsciscintilla.h>
+#include <QsciPS3/qscilexerfni.h>
+#include <QsciPS3/qscilexerfx.h>
+#include <QsciPS3/qscilexerhexisle.h>
+#include <QsciPS3/qscilexerproperties.h>
+#include <QsciPS3/qscilexerpython.h>
+#include <QsciPS3/qscilexersdl.h>
+#include <QsciPS3/qscilexerxml.h>
 #include "QPlasmaDocument.h"
 
 class QPlasmaTextDoc : public QPlasmaDocument {
@@ -30,8 +30,16 @@ public:
 
     QPlasmaTextDoc(QWidget* parent);
 
-    virtual void loadFile(QString filename);
-    virtual void saveTo(QString filename);
+    virtual bool canCut() const;
+    virtual bool canCopy() const;
+    virtual bool canPaste() const;
+    virtual bool canDelete() const;
+    virtual bool canSelectAll() const;
+    virtual bool canUndo() const;
+    virtual bool canRedo() const;
+
+    virtual bool loadFile(QString filename);
+    virtual bool saveTo(QString filename);
 
     void setSyntax(SyntaxMode syn);
     void setEncryption(EncryptionMode enc);
@@ -40,6 +48,15 @@ public:
     SyntaxMode syntax() const;
     EncryptionMode encryption() const;
     EncodingMode encoding() const;
+
+public slots:
+    virtual void performCut();
+    virtual void performCopy();
+    virtual void performPaste();
+    virtual void performDelete();
+    virtual void performSelectAll();
+    virtual void performUndo();
+    virtual void performRedo();
 
 private:
     QsciScintilla* fEditor;

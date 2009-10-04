@@ -12,6 +12,8 @@
 #include "../QPlasma.h"
 #include "QPlasmaTextDoc.h"
 
+static QString s_textMenuTitle;
+
 PlasmaShopMain::PlasmaShopMain()
 {
     // Basic Form Settings
@@ -51,7 +53,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextEncNone] = new QAction(tr("&None"), this);
     fActions[kTextEncXtea] = new QAction(tr("&Uru Prime / PotS / UU"), this);
     fActions[kTextEncAes] = new QAction(tr("Myst &5 / Crowthistle / Hex Isle"), this);
-    fActions[kTextEncDroid] = new QAction(tr("&MOUL (Requires Key)"), this);
+    fActions[kTextEncDroid] = new QAction(tr("&MOUL / MQO (Requires Key)"), this);
     fActions[kTextTypeAnsi] = new QAction(tr("&ANSI"), this);
     fActions[kTextTypeUTF8] = new QAction(tr("UTF-&8"), this);
     fActions[kTextTypeUTF16] = new QAction(tr("UTF-1&6"), this);
@@ -122,7 +124,8 @@ PlasmaShopMain::PlasmaShopMain()
     editMenu->addAction(fActions[kEditSelectAll]);
 
     // Editor-specific menus
-    QMenu* fTextMenu = menuBar()->addMenu(tr("&Text"));
+    s_textMenuTitle = tr("&Text");
+    fTextMenu = menuBar()->addMenu(s_textMenuTitle);
     fTextMenu->addAction(fActions[kTextFind]);
     fTextMenu->addAction(fActions[kTextFindNext]);
     fTextMenu->addAction(fActions[kTextFindPrev]);
@@ -156,11 +159,18 @@ PlasmaShopMain::PlasmaShopMain()
     helpMenu->addAction(fActions[kHelpAbout]);
 
     // Toolbars
-    QToolBar* fileTbar = addToolBar(tr("File Toolbar"));
-    fileTbar->setObjectName("FileToolBar");
-    fileTbar->addAction(fActions[kFileNew]);
-    fileTbar->addAction(fActions[kFileOpen]);
-    fileTbar->addAction(fActions[kFileSave]);
+    QToolBar* mainTbar = addToolBar(tr("Main Toolbar"));
+    mainTbar->setObjectName("MainToolBar");
+    mainTbar->addAction(fActions[kFileNew]);
+    mainTbar->addAction(fActions[kFileOpen]);
+    mainTbar->addAction(fActions[kFileSave]);
+    mainTbar->addSeparator();
+    mainTbar->addAction(fActions[kEditCut]);
+    mainTbar->addAction(fActions[kEditCopy]);
+    mainTbar->addAction(fActions[kEditPaste]);
+    mainTbar->addSeparator();
+    mainTbar->addAction(fActions[kEditUndo]);
+    mainTbar->addAction(fActions[kEditRedo]);
     statusBar();
 
     // Tabbed Editor Pane for open documents
@@ -201,10 +211,24 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(onOpenFile()));
     connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(onSaveFile()));
     connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(onSaveAs()));
+    connect(fActions[kFileRevert], SIGNAL(triggered()), this, SLOT(onRevert()));
     connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
+
+    connect(fActions[kEditCut], SIGNAL(triggered()), this, SLOT(onCut()));
+    connect(fActions[kEditCopy], SIGNAL(triggered()), this, SLOT(onCopy()));
+    connect(fActions[kEditPaste], SIGNAL(triggered()), this, SLOT(onPaste()));
+    connect(fActions[kEditDelete], SIGNAL(triggered()), this, SLOT(onDelete()));
+    connect(fActions[kEditSelectAll], SIGNAL(triggered()), this, SLOT(onSelectAll()));
+    connect(fActions[kEditUndo], SIGNAL(triggered()), this, SLOT(onUndo()));
+    connect(fActions[kEditRedo], SIGNAL(triggered()), this, SLOT(onRedo()));
 
     connect(fEditorPane, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseTab(int)));
+    connect(fEditorPane, SIGNAL(currentChanged(int)),
+            this, SLOT(onChangeTab(int)));
+
+    // Set up menus
+    onChangeTab(-1);
 }
 
 void PlasmaShopMain::loadFile(QString filename)
@@ -256,71 +280,29 @@ void PlasmaShopMain::loadFile(QString filename)
     QPlasmaDocument* plDoc = QPlasmaDocument::GetEditor(dtype, this);
     if (plDoc != NULL) {
         fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(filename), fnameDisplay);
-        plDoc->loadFile(filename);
-        if (plDoc->filename() == "<>") {
+        if (!plDoc->loadFile(filename)) {
             // Error loading the file.  Remove it now to avoid problems later
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
         } else if (dtype == kDocText) {
-            QPlasmaTextDoc::EncodingMode type = ((QPlasmaTextDoc*)plDoc)->encoding();
-            QPlasmaTextDoc::EncryptionMode enc = ((QPlasmaTextDoc*)plDoc)->encryption();
-
-            switch (type) {
-            case QPlasmaTextDoc::kTypeAnsi:
-                fActions[kTextTypeAnsi]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kTypeUTF8:
-                fActions[kTextTypeUTF8]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kTypeUTF16:
-                fActions[kTextTypeUTF16]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kTypeUTF32:
-                fActions[kTextTypeUTF32]->setChecked(true);
-                break;
-            }
-
-            switch (enc) {
-            case QPlasmaTextDoc::kEncAes:
-                fActions[kTextEncAes]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kEncDroid:
-                fActions[kTextEncDroid]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kEncNone:
-                fActions[kTextEncNone]->setChecked(true);
-                break;
-            case QPlasmaTextDoc::kEncXtea:
-                fActions[kTextEncXtea]->setChecked(true);
-                break;
-            }
-
-            if (ext == "fni") {
+            if (ext == "fni")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
-                fActions[kTextStxConsole]->setChecked(true);
-            } else if (ext == "fx") {
+            else if (ext == "fx")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxFX);
-                fActions[kTextStxFX]->setChecked(true);
-            } else if (ext == "hex") {
+            else if (ext == "hex")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxHex);
-                fActions[kTextStxHex]->setChecked(true);
-            } else if (ext == "age" || ext == "cfg" || ext == "ini") {
+            else if (ext == "age" || ext == "cfg" || ext == "ini")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxIni);
-                fActions[kTextStxIni]->setChecked(true);
-            } else if (ext == "py") {
+            else if (ext == "py")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxPython);
-                fActions[kTextStxPython]->setChecked(true);
-            } else if (ext == "sdl") {
+            else if (ext == "sdl")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxSDL);
-                fActions[kTextStxSDL]->setChecked(true);
-            } else if (ext == "loc" || ext == "sub" || ext == "xml") {
+            else if (ext == "loc" || ext == "sub" || ext == "xml")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxXML);
-                fActions[kTextStxXML]->setChecked(true);
-            } else {
+            else
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
-                fActions[kTextStxNone]->setChecked(true);
-            }
         }
+        connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
     }
 }
 
@@ -487,6 +469,79 @@ void PlasmaShopMain::onSaveAs()
     }
 }
 
+void PlasmaShopMain::onRevert()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    if (doc->isDirty()) {
+        QMessageBox::StandardButton result =
+            QMessageBox::question(this, tr("Are you sure?"),
+                                  tr("You have unsaved changes in %1.\n"
+                                     "Are you sure you want to revert to the last saved version?")
+                                  .arg(doc->filename()),
+                                  QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::Yes)
+            doc->revert();
+    }
+}
+
+void PlasmaShopMain::onCut()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performCut();
+}
+
+void PlasmaShopMain::onCopy()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performCopy();
+}
+
+void PlasmaShopMain::onPaste()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performPaste();
+}
+
+void PlasmaShopMain::onDelete()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performDelete();
+}
+
+void PlasmaShopMain::onSelectAll()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performSelectAll();
+}
+
+void PlasmaShopMain::onUndo()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performUndo();
+}
+
+void PlasmaShopMain::onRedo()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->performRedo();
+}
+
 void PlasmaShopMain::onCloseTab(int idx)
 {
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(idx);
@@ -505,6 +560,187 @@ void PlasmaShopMain::onCloseTab(int idx)
     }
     fEditorPane->removeTab(idx);
     delete doc;
+}
+
+void PlasmaShopMain::setTextSyntax(int sel)
+{
+    fActions[kTextStxNone]->setChecked(sel == kTextStxNone);
+    fActions[kTextStxPython]->setChecked(sel == kTextStxPython);
+    fActions[kTextStxSDL]->setChecked(sel == kTextStxSDL);
+    fActions[kTextStxIni]->setChecked(sel == kTextStxIni);
+    fActions[kTextStxConsole]->setChecked(sel == kTextStxConsole);
+    fActions[kTextStxXML]->setChecked(sel == kTextStxXML);
+    fActions[kTextStxHex]->setChecked(sel == kTextStxHex);
+    fActions[kTextStxFX]->setChecked(sel == kTextStxFX);
+}
+
+void PlasmaShopMain::setTextEncryption(int sel)
+{
+    fActions[kTextEncNone]->setChecked(sel == kTextEncNone);
+    fActions[kTextEncXtea]->setChecked(sel == kTextEncXtea);
+    fActions[kTextEncAes]->setChecked(sel == kTextEncAes);
+    fActions[kTextEncDroid]->setChecked(sel == kTextEncDroid);
+}
+
+void PlasmaShopMain::setTextEncoding(int sel)
+{
+    fActions[kTextTypeAnsi]->setChecked(sel == kTextTypeAnsi);
+    fActions[kTextTypeUTF8]->setChecked(sel == kTextTypeUTF8);
+    fActions[kTextTypeUTF16]->setChecked(sel == kTextTypeUTF16);
+    fActions[kTextTypeUTF32]->setChecked(sel == kTextTypeUTF32);
+}
+
+void PlasmaShopMain::onChangeTab(int idx)
+{
+    // Reset menu states
+    fTextMenu->setTitle(QString());
+
+    fActions[kTextFind]->setEnabled(false);
+    fActions[kTextFindNext]->setEnabled(false);
+    fActions[kTextFindPrev]->setEnabled(false);
+    fActions[kTextReplace]->setEnabled(false);
+    fActions[kTextExpandAll]->setEnabled(false);
+    fActions[kTextCollapseAll]->setEnabled(false);
+    fActions[kTextReplace]->setEnabled(false);
+    fActions[kTextStxNone]->setEnabled(false);
+    fActions[kTextStxPython]->setEnabled(false);
+    fActions[kTextStxSDL]->setEnabled(false);
+    fActions[kTextStxIni]->setEnabled(false);
+    fActions[kTextStxConsole]->setEnabled(false);
+    fActions[kTextStxXML]->setEnabled(false);
+    fActions[kTextStxHex]->setEnabled(false);
+    fActions[kTextStxFX]->setEnabled(false);
+    fActions[kTextEncNone]->setEnabled(false);
+    fActions[kTextEncXtea]->setEnabled(false);
+    fActions[kTextEncAes]->setEnabled(false);
+    fActions[kTextEncDroid]->setEnabled(false);
+    fActions[kTextTypeAnsi]->setEnabled(false);
+    fActions[kTextTypeUTF8]->setEnabled(false);
+    fActions[kTextTypeUTF16]->setEnabled(false);
+    fActions[kTextTypeUTF32]->setEnabled(false);
+    setTextSyntax(kTextStxNone);
+    setTextEncryption(kTextEncNone);
+    setTextEncoding(kTextTypeAnsi);
+
+    if (idx < 0) {
+        fActions[kFileSave]->setEnabled(false);
+        fActions[kFileSaveAs]->setEnabled(false);
+        fActions[kFileRevert]->setEnabled(false);
+        fActions[kEditCut]->setEnabled(false);
+        fActions[kEditCopy]->setEnabled(false);
+        fActions[kEditPaste]->setEnabled(false);
+        fActions[kEditDelete]->setEnabled(false);
+        fActions[kEditSelectAll]->setEnabled(false);
+        fActions[kEditUndo]->setEnabled(false);
+        fActions[kEditRedo]->setEnabled(false);
+        return;
+    }
+    fActions[kFileSave]->setEnabled(true);
+    fActions[kFileSaveAs]->setEnabled(true);
+    fActions[kFileRevert]->setEnabled(true);
+
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(idx);
+    if (doc->docType() == kDocText) {
+        fTextMenu->setTitle(s_textMenuTitle);
+        fActions[kTextFind]->setEnabled(true);
+        fActions[kTextFindNext]->setEnabled(true);
+        fActions[kTextFindPrev]->setEnabled(true);
+        fActions[kTextReplace]->setEnabled(true);
+        fActions[kTextExpandAll]->setEnabled(true);
+        fActions[kTextCollapseAll]->setEnabled(true);
+        fActions[kTextReplace]->setEnabled(true);
+        fActions[kTextStxNone]->setEnabled(true);
+        fActions[kTextStxPython]->setEnabled(true);
+        fActions[kTextStxSDL]->setEnabled(true);
+        fActions[kTextStxIni]->setEnabled(true);
+        fActions[kTextStxConsole]->setEnabled(true);
+        fActions[kTextStxXML]->setEnabled(true);
+        fActions[kTextStxHex]->setEnabled(true);
+        fActions[kTextStxFX]->setEnabled(true);
+        fActions[kTextEncNone]->setEnabled(true);
+        fActions[kTextEncXtea]->setEnabled(true);
+        fActions[kTextEncAes]->setEnabled(true);
+        fActions[kTextEncDroid]->setEnabled(true);
+        fActions[kTextTypeAnsi]->setEnabled(true);
+        fActions[kTextTypeUTF8]->setEnabled(true);
+        fActions[kTextTypeUTF16]->setEnabled(true);
+        fActions[kTextTypeUTF32]->setEnabled(true);
+
+        QPlasmaTextDoc::SyntaxMode syn = ((QPlasmaTextDoc*)doc)->syntax();
+        QPlasmaTextDoc::EncryptionMode enc = ((QPlasmaTextDoc*)doc)->encryption();
+        QPlasmaTextDoc::EncodingMode type = ((QPlasmaTextDoc*)doc)->encoding();
+
+        switch (syn) {
+        case QPlasmaTextDoc::kStxConsole:
+            setTextSyntax(kTextStxConsole);
+            break;
+        case QPlasmaTextDoc::kStxFX:
+            setTextSyntax(kTextStxFX);
+            break;
+        case QPlasmaTextDoc::kStxHex:
+            setTextSyntax(kTextStxHex);
+            break;
+        case QPlasmaTextDoc::kStxIni:
+            setTextSyntax(kTextStxIni);
+            break;
+        case QPlasmaTextDoc::kStxNone:
+            setTextSyntax(kTextStxNone);
+            break;
+        case QPlasmaTextDoc::kStxPython:
+            setTextSyntax(kTextStxPython);
+            break;
+        case QPlasmaTextDoc::kStxSDL:
+            setTextSyntax(kTextStxSDL);
+            break;
+        case QPlasmaTextDoc::kStxXML:
+            setTextSyntax(kTextStxXML);
+            break;
+        }
+
+        switch (enc) {
+        case QPlasmaTextDoc::kEncAes:
+            setTextEncryption(kTextEncAes);
+            break;
+        case QPlasmaTextDoc::kEncDroid:
+            setTextEncryption(kTextEncDroid);
+            break;
+        case QPlasmaTextDoc::kEncNone:
+            setTextEncryption(kTextEncNone);
+            break;
+        case QPlasmaTextDoc::kEncXtea:
+            setTextEncryption(kTextEncXtea);
+            break;
+        }
+
+        switch (type) {
+        case QPlasmaTextDoc::kTypeAnsi:
+            setTextEncoding(kTextTypeAnsi);
+            break;
+        case QPlasmaTextDoc::kTypeUTF8:
+            setTextEncoding(kTextTypeUTF8);
+            break;
+        case QPlasmaTextDoc::kTypeUTF16:
+            setTextEncoding(kTextTypeUTF16);
+            break;
+        case QPlasmaTextDoc::kTypeUTF32:
+            setTextEncoding(kTextTypeUTF32);
+            break;
+        }
+    }
+}
+
+void PlasmaShopMain::updateMenuStatus()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    fActions[kEditCut]->setEnabled(doc->canCut());
+    fActions[kEditCopy]->setEnabled(doc->canCopy());
+    fActions[kEditPaste]->setEnabled(doc->canPaste());
+    fActions[kEditDelete]->setEnabled(doc->canDelete());
+    fActions[kEditSelectAll]->setEnabled(doc->canSelectAll());
+    fActions[kEditUndo]->setEnabled(doc->canUndo());
+    fActions[kEditRedo]->setEnabled(doc->canRedo());
 }
 
 

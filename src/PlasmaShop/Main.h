@@ -9,7 +9,7 @@
 #include <QMenu>
 #include "QPlasmaDocument.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 80)"
+#define PLASMASHOP_VERSION "3.0 (build 83)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -54,11 +54,27 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent* evt);
 
+    void setTextSyntax(int sel);
+    void setTextEncryption(int sel);
+    void setTextEncoding(int sel);
+
 private slots:
     void onOpenFile();
     void onSaveFile();
     void onSaveAs();
+    void onRevert();
+
+    void onCut();
+    void onCopy();
+    void onPaste();
+    void onDelete();
+    void onSelectAll();
+    void onUndo();
+    void onRedo();
+
     void onCloseTab(int idx);
+    void onChangeTab(int idx);
+    void updateMenuStatus();
 };
 
 #endif

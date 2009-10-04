@@ -1,4 +1,4 @@
-// This defines the interface to the QsciDocument class.
+// This defines the interface to the QsciLexerFni class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,48 +33,75 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCIDOCUMENT_H
-#define QSCIDOCUMENT_H
+#ifndef QSCILEXERFNI_H
+#define QSCILEXERFNI_H
 
 #ifdef __APPLE__
 extern "C++" {
 #endif
 
-#include <Qsci/qsciglobal.h>
+#include <qobject.h>
+
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscilexer.h>
 
 
-class QsciScintillaBase;
-class QsciDocumentP;
-
-
-//! \brief The QsciDocument class represents a document to be edited.
-//!
-//! It is an opaque class that can be attached to multiple instances of
-//! QsciScintilla to create different simultaneous views of the same document.
-//! QsciDocument uses implicit sharing so that copying class instances is a
-//! cheap operation.
-class QSCINTILLA_EXPORT QsciDocument
+//! \brief The QsciLexerFni class encapsulates the Scintilla
+//! Fni lexer.
+class QSCINTILLA_EXPORT QsciLexerFni : public QsciLexer
 {
-public:
-    //! Create a new unattached document.
-    QsciDocument();
-    virtual ~QsciDocument();
+    Q_OBJECT
 
-    QsciDocument(const QsciDocument &);
-    QsciDocument &operator=(const QsciDocument &);
+public:
+    //! This enum defines the meanings of the different styles used by the
+    //! Properties lexer.
+    enum {
+        //! The default.
+        Default = 0,
+
+        //! A comment.
+        Comment = 1,
+
+        //! A command group.
+        Group = 2,
+
+        //! A console command.
+        Command = 3,
+
+        //! An operator.
+        Operator = 4
+    };
+
+    //! Construct a QsciLexerFni with parent \a parent.  \a parent is
+    //! typically the QsciScintilla instance.
+    QsciLexerFni(QObject *parent = 0);
+
+    //! Destroys the QsciLexerFni instance.
+    virtual ~QsciLexerFni();
+
+    //! Returns the name of the language.
+    const char *language() const;
+
+    //! Returns the name of the lexer.  Some lexers support a number of
+    //! languages.
+    const char *lexer() const;
+
+    //! \internal Returns the string of characters that comprise a word.
+    const char *wordCharacters() const;
+
+    //! Returns the foreground colour of the text for style number \a style.
+    //!
+    //! \sa defaultPaper()
+    QColor defaultColor(int style) const;
+
+    //! Returns the descriptive name for style number \a style.  If the
+    //! style is invalid for this language then an empty QString is returned.
+    //! This is intended to be used in user preference dialogs.
+    QString description(int style) const;
 
 private:
-    friend class QsciScintilla;
-
-    void attach(const QsciDocument &that);
-    void detach();
-    void display(QsciScintillaBase *qsb, const QsciDocument *from);
-    void undisplay(QsciScintillaBase *qsb);
-
-    bool isModified() const;
-    void setModified(bool m);
-
-    QsciDocumentP *pdoc;
+    QsciLexerFni(const QsciLexerFni &);
+    QsciLexerFni &operator=(const QsciLexerFni &);
 };
 
 #ifdef __APPLE__

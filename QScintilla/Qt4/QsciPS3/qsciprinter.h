@@ -42,8 +42,8 @@ extern "C++" {
 
 #include <qprinter.h>
 
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qsciscintilla.h>
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qsciscintilla.h>
 
 
 class QRect;

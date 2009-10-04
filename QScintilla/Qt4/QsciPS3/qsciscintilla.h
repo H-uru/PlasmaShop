@@ -48,9 +48,9 @@ extern "C++" {
 #include <QList>
 #include <QPointer>
 
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qscidocument.h>
-#include <Qsci/qsciscintillabase.h>
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscidocument.h>
+#include <QsciPS3/qsciscintillabase.h>
 
 
 class QIODevice;
@@ -641,6 +641,11 @@ public:
     //!
     //! \sa undo()
     bool isUndoAvailable() const;
+
+    //! Returns true if there is text in the clipboard for pasting.
+    //!
+    //! \sa paste()
+    bool isPasteAvailable() const;
 
     //! Returns true if text is interpreted as being UTF8 encoded.  The default
     //! is to interpret the text as Latin1 encoded.

@@ -15,6 +15,7 @@ class QPlasmaDocument : public QWidget {
 public:
     static QIcon GetDocIcon(QString filename);
     static QPlasmaDocument* GetEditor(DocumentType docType, QWidget* parent);
+    static bool GetEncryptionKeyFromUser(QWidget* parent, unsigned int* key);
 
     QPlasmaDocument(DocumentType docType, QWidget* parent);
 
@@ -22,13 +23,32 @@ public:
     bool isDirty() const;
     QString filename() const;
 
-    virtual void loadFile(QString filename);
-    virtual void saveTo(QString filename);
-    void saveDefault();
+    virtual bool canCut() const;
+    virtual bool canCopy() const;
+    virtual bool canPaste() const;
+    virtual bool canDelete() const;
+    virtual bool canSelectAll() const;
+    virtual bool canUndo() const;
+    virtual bool canRedo() const;
+
+    virtual bool loadFile(QString filename);
+    virtual bool saveTo(QString filename);
+    bool saveDefault();
+    bool revert();
 
 signals:
     void becameDirty();
     void becameClean();
+    void statusChanged();
+
+public slots:
+    virtual void performCut();
+    virtual void performCopy();
+    virtual void performPaste();
+    virtual void performDelete();
+    virtual void performSelectAll();
+    virtual void performUndo();
+    virtual void performRedo();
 
 protected:
     DocumentType fDocType;

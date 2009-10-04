@@ -1,7 +1,4 @@
 #include "QPlasmaTextDoc.h"
-#include <QInputDialog>
-#include <QSettings>
-#include <QMessageBox>
 #include <QGridLayout>
 #include <Stream/plEncryptedStream.h>
 
@@ -48,6 +45,35 @@ static QPlasmaTextDoc::EncodingMode DetectEncoding(hsStream* S)
     return mode;
 }
 
+static void WriteEncoding(hsStream* S, QPlasmaTextDoc::EncodingMode type)
+{
+    unsigned char markerbuf[4];
+
+    switch (type) {
+    case QPlasmaTextDoc::kTypeAnsi:
+        // No BOM
+        break;
+    case QPlasmaTextDoc::kTypeUTF8:
+        markerbuf[0] = 0xEF;
+        markerbuf[1] = 0xBB;
+        markerbuf[2] = 0xBF;
+        S->write(3, markerbuf);
+        break;
+    case QPlasmaTextDoc::kTypeUTF16:
+        markerbuf[0] = 0xFF;
+        markerbuf[1] = 0xFE;
+        S->write(2, markerbuf);
+        break;
+    case QPlasmaTextDoc::kTypeUTF32:
+        markerbuf[0] = 0xFF;
+        markerbuf[1] = 0xFE;
+        markerbuf[2] = 0;
+        markerbuf[3] = 0;
+        S->write(4, markerbuf);
+        break;
+    }
+}
+
 static QString LoadData(hsStream* S, QPlasmaTextDoc::EncodingMode mode)
 {
     size_t dataSize = S->size() - S->pos();
@@ -72,6 +98,34 @@ static QString LoadData(hsStream* S, QPlasmaTextDoc::EncodingMode mode)
 
     delete[] buf;
     return data;
+}
+
+static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
+                     const QString& data)
+{
+    switch (mode) {
+    case QPlasmaTextDoc::kTypeAnsi:
+        {
+            QByteArray buf = data.toAscii();
+            S->write(buf.size(), buf.data());
+        }
+        break;
+    case QPlasmaTextDoc::kTypeUTF8:
+        {
+            QByteArray buf = data.toUtf8();
+            S->write(buf.size(), buf.data());
+        }
+        break;
+    case QPlasmaTextDoc::kTypeUTF16:
+        S->write(data.size() * sizeof(ushort), data.utf16());
+        break;
+    case QPlasmaTextDoc::kTypeUTF32:
+        {
+            QVector<uint> buf = data.toUcs4();
+            S->write(buf.size() * sizeof(uint), buf.data());
+        }
+        break;
+    }
 }
 
 QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
@@ -112,57 +166,64 @@ QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
     fLexerXML->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
 
     connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SIGNAL(becameDirty()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SIGNAL(becameClean()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(makeDirty()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(makeClean()));
+    connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
+    connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
 }
 
-void QPlasmaTextDoc::loadFile(QString filename)
+bool QPlasmaTextDoc::canCut() const
+{ return fEditor->hasSelectedText(); }
+
+bool QPlasmaTextDoc::canCopy() const
+{ return fEditor->hasSelectedText(); }
+
+bool QPlasmaTextDoc::canPaste() const
+{ return fEditor->isPasteAvailable(); }
+
+bool QPlasmaTextDoc::canDelete() const
+{ return fEditor->hasSelectedText(); }
+
+bool QPlasmaTextDoc::canSelectAll() const
+{ return true; }
+
+bool QPlasmaTextDoc::canUndo() const
+{ return fEditor->isUndoAvailable(); }
+
+bool QPlasmaTextDoc::canRedo() const
+{ return fEditor->isRedoAvailable(); }
+
+void QPlasmaTextDoc::performCut()
+{ fEditor->cut(); }
+
+void QPlasmaTextDoc::performCopy()
+{ fEditor->copy(); }
+
+void QPlasmaTextDoc::performPaste()
+{ fEditor->paste(); }
+
+void QPlasmaTextDoc::performDelete()
+{ fEditor->removeSelectedText(); }
+
+void QPlasmaTextDoc::performSelectAll()
+{ fEditor->selectAll(true); }
+
+void QPlasmaTextDoc::performUndo()
+{ fEditor->undo(); }
+
+void QPlasmaTextDoc::performRedo()
+{ fEditor->redo(); }
+
+bool QPlasmaTextDoc::loadFile(QString filename)
 {
     if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(pvUnknown);
         S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
-            // Acquire the NTD key from the user
-            QSettings settings("PlasmaShop", "PlasmaShop");
-            QString keyStr = settings.value("NtdKey", "00000000000000000000000000000000").toString();
-            bool dlgAccept, validKey = false;
-            while (!validKey) {
-                keyStr = QInputDialog::getText(this, tr("Enter NTD Key"),
-                                               tr("Enter your MOUL/MQO Encryption key"),
-                                               QLineEdit::Normal, keyStr, &dlgAccept);
-                if (!dlgAccept) {
-                    fFilename = "<>";
-                    return;
-                }
-                if (keyStr.length() == 32) {
-                    validKey = true;
-                    for (int i=0; i<keyStr.length() && validKey; ++i) {
-                        QChar ch = keyStr.at(i);
-                        if (ch.isDigit())
-                            continue;
-                        if (ch >= 'A' && ch <= 'F')
-                            continue;
-                        if (ch >= 'a' && ch <= 'f')
-                            continue;
-                        validKey = false;
-                    }
-                }
-                if (!validKey) {
-                    QMessageBox::warning(this, tr("Invalid Key"),
-                                         tr("You have entered an invalid encryption key.\n"
-                                            "Encryption keys should be 32 hex digits, with no\n"
-                                            "spaces or dashes"),
-                                         QMessageBox::Ok);
-                } else {
-                    unsigned int key[4];
-                    key[0] = keyStr.mid(0, 8).toUInt(0, 16);
-                    key[1] = keyStr.mid(8, 8).toUInt(0, 16);
-                    key[2] = keyStr.mid(16, 8).toUInt(0, 16);
-                    key[3] = keyStr.mid(24, 8).toUInt(0, 16);
-                    S.setKey(key);
-                    settings.setValue("NtdKey", keyStr);
-                }
-            }
+            unsigned int key[4];
+            if (!GetEncryptionKeyFromUser(this, key))
+                return false;
+            S.setKey(key);
             fEncryption = kEncDroid;
         } else if (S.getEncType() == plEncryptedStream::kEncXtea) {
             fEncryption = kEncXtea;
@@ -178,14 +239,39 @@ void QPlasmaTextDoc::loadFile(QString filename)
         fEncoding = DetectEncoding(&S);
         fEditor->setText(LoadData(&S, fEncoding));
     }
-    QPlasmaDocument::loadFile(filename);
+
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
+    return QPlasmaDocument::loadFile(filename);
 }
 
-void QPlasmaTextDoc::saveTo(QString filename)
+bool QPlasmaTextDoc::saveTo(QString filename)
 {
-    QPlasmaDocument::saveTo(filename);
+    if (fEncryption == kEncNone) {
+        hsFileStream S(pvUnknown);
+        S.open(filename.toUtf8().data(), fmCreate);
+        WriteEncoding(&S, fEncoding);
+        SaveData(&S, fEncoding, fEditor->text());
+    } else {
+        plEncryptedStream S(pvUnknown);
+        plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
+        if (fEncryption == kEncDroid) {
+            unsigned int key[4];
+            if (!GetEncryptionKeyFromUser(this, key))
+                return false;
+            S.setKey(key);
+            type = plEncryptedStream::kEncDroid;
+        } else if (fEncryption == kEncAes) {
+            type = plEncryptedStream::kEncAES;
+        } else if (fEncryption == kEncXtea) {
+            type = plEncryptedStream::kEncXtea;
+        }
+        S.open(filename.toUtf8().data(), fmCreate, type);
+        WriteEncoding(&S, fEncoding);
+        SaveData(&S, fEncoding, fEditor->text());
+    }
+
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
+    return QPlasmaDocument::saveTo(filename);
 }
 
 void QPlasmaTextDoc::setSyntax(SyntaxMode syn)

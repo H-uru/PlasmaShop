@@ -1,4 +1,4 @@
-// This defines the interface to the QsciLexerFX class.
+// This defines the interface to the QsciDocument class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,51 +33,48 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCILEXERFX_H
-#define QSCILEXERFX_H
+#ifndef QSCIDOCUMENT_H
+#define QSCIDOCUMENT_H
 
 #ifdef __APPLE__
 extern "C++" {
 #endif
 
-#include <qobject.h>
-
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qscilexercpp.h>
+#include <QsciPS3/qsciglobal.h>
 
 
-//! \brief The QsciLexerFX class defines a lexer for HLSL FX files
-//! lexer.
-class QSCINTILLA_EXPORT QsciLexerFX : public QsciLexerCPP
+class QsciScintillaBase;
+class QsciDocumentP;
+
+
+//! \brief The QsciDocument class represents a document to be edited.
+//!
+//! It is an opaque class that can be attached to multiple instances of
+//! QsciScintilla to create different simultaneous views of the same document.
+//! QsciDocument uses implicit sharing so that copying class instances is a
+//! cheap operation.
+class QSCINTILLA_EXPORT QsciDocument
 {
-    Q_OBJECT
-
 public:
-    //! Construct a QsciLexerFX with parent \a parent.  \a parent is
-    //! typically the QsciScintilla instance.
-    QsciLexerFX(QObject *parent = 0);
+    //! Create a new unattached document.
+    QsciDocument();
+    virtual ~QsciDocument();
 
-    //! Destroys the QsciLexerFX instance.
-    virtual ~QsciLexerFX();
-
-    //! Returns the name of the language.
-    const char *language() const;
-
-    //! Returns the set of keywords for the keyword set \a set recognised
-    //! by the lexer as a space separated string.
-    const char *keywords(int set) const;
-
-    //! Returns the foreground colour of the text for style number \a style.
-    //!
-    //! \sa defaultPaper()
-    QColor defaultColor(int style) const;
-
-    //! Returns the font for style number \a style.
-    QFont defaultFont(int style) const;
+    QsciDocument(const QsciDocument &);
+    QsciDocument &operator=(const QsciDocument &);
 
 private:
-    QsciLexerFX(const QsciLexerFX &);
-    QsciLexerFX &operator=(const QsciLexerFX &);
+    friend class QsciScintilla;
+
+    void attach(const QsciDocument &that);
+    void detach();
+    void display(QsciScintillaBase *qsb, const QsciDocument *from);
+    void undisplay(QsciScintillaBase *qsb);
+
+    bool isModified() const;
+    void setModified(bool m);
+
+    QsciDocumentP *pdoc;
 };
 
 #ifdef __APPLE__

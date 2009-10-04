@@ -33,7 +33,7 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qscilexerxml.h"
+#include "QsciPS3/qscilexerxml.h"
 
 #include <qcolor.h>
 #include <qfont.h>
@@ -92,17 +92,17 @@ QColor QsciLexerXML::defaultColor(int style) const
 
     case HTMLDoubleQuotedString:
     case HTMLSingleQuotedString:
-        return QColor(0x7f,0x00,0x7f);
+        return QColor(0x7f,0x00,0x00);
 
     case OtherInTag:
     case Entity:
     case XMLStart:
     case XMLEnd:
-        return QColor(0x80,0x00,0x80);
+        return QColor(0x7f,0x7f,0x00);
 
     case HTMLComment:
     case SGMLComment:
-        return QColor(0x80,0x80,0x00);
+        return QColor(0x7f,0x7f,0x7f);
 
     case CDATA:
     case PHPStart:
@@ -127,6 +127,7 @@ QColor QsciLexerXML::defaultColor(int style) const
 
     case SGMLBlockDefault:
         return QColor(0x00,0x00,0x66);
+
     }
 
     return QsciLexerHTML::defaultColor(style);
@@ -140,38 +141,6 @@ bool QsciLexerXML::defaultEolFill(int style) const
         return true;
 
     return QsciLexerHTML::defaultEolFill(style);
-}
-
-
-// Returns the font of the text for a style.
-QFont QsciLexerXML::defaultFont(int style) const
-{
-    QFont f;
-
-    switch (style)
-    {
-    case Default:
-    case Entity:
-    case CDATA:
-#if defined(Q_OS_WIN)
-        f = QFont("Times New Roman",11);
-#else
-        f = QFont("Bitstream Charter",10);
-#endif
-        break;
-
-    case XMLStart:
-    case XMLEnd:
-    case SGMLCommand:
-        f = QsciLexer::defaultFont(style);
-        f.setBold(true);
-        break;
-
-    default:
-        f = QsciLexerHTML::defaultFont(style);
-    }
-
-    return f;
 }
 
 

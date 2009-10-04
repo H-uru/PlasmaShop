@@ -42,8 +42,8 @@ extern "C++" {
 
 #include <qobject.h>
 
-#include <Qsci/qsciglobal.h>
-#include <Qsci/qscilexerhtml.h>
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscilexerhtml.h>
 
 
 //! \brief The QsciLexerXML class encapsulates the Scintilla XML lexer.
@@ -73,9 +73,6 @@ public:
 
     //! Returns the end-of-line fill for style number \a style.
     bool defaultEolFill(int style) const;
-
-    //! Returns the font for style number \a style.
-    QFont defaultFont(int style) const;
 
     //! Returns the background colour of the text for style number \a style.
     //!

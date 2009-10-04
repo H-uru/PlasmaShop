@@ -33,9 +33,9 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qscistyledtext.h"
+#include "QsciPS3/qscistyledtext.h"
 
-#include "Qsci/qscistyle.h"
+#include "QsciPS3/qscistyle.h"
 
 
 // A ctor.

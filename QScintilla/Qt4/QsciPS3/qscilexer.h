@@ -46,7 +46,7 @@ extern "C++" {
 #include <qobject.h>
 #include <qstring.h>
 
-#include <Qsci/qsciglobal.h>
+#include <QsciPS3/qsciglobal.h>
 
 
 class QSettings;

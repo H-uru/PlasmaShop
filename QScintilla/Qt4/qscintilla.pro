@@ -50,10 +50,10 @@ isEmpty(target.path) {
 }
 
 header.path = $$[QT_INSTALL_HEADERS]
-header.files = Qsci
+header.files = QsciPS3
 isEmpty(header.path) {
-    header.path = $(QTDIR)/include/Qsci
-    header.files = Qsci/qsci*.h
+    header.path = $(QTDIR)/include/QsciPS3
+    header.files = QsciPS3/qsci*.h
 }
 
 trans.path = $$[QT_INSTALL_TRANSLATIONS]
@@ -71,28 +71,28 @@ isEmpty(qsci.path) {
 INSTALLS += header trans qsci target
 
 HEADERS = \
-    ./Qsci/qsciglobal.h \
-    ./Qsci/qsciscintilla.h \
-    ./Qsci/qsciscintillabase.h \
-    ./Qsci/qsciabstractapis.h \
-    ./Qsci/qsciapis.h \
-    ./Qsci/qscicommand.h \
-    ./Qsci/qscicommandset.h \
-    ./Qsci/qscidocument.h \
-    ./Qsci/qscilexer.h \
-    ./Qsci/qscilexercpp.h \
-    ./Qsci/qscilexerfni.h \
-    ./Qsci/qscilexerfx.h \
-    ./Qsci/qscilexerhexisle.h \
-    ./Qsci/qscilexerhtml.h \
-    ./Qsci/qscilexerproperties.h \
-    ./Qsci/qscilexerpython.h \
-    ./Qsci/qscilexersdl.h \
-    ./Qsci/qscilexerxml.h \
-    ./Qsci/qscimacro.h \
-    ./Qsci/qsciprinter.h \
-    ./Qsci/qscistyle.h \
-    ./Qsci/qscistyledtext.h \
+    ./QsciPS3/qsciglobal.h \
+    ./QsciPS3/qsciscintilla.h \
+    ./QsciPS3/qsciscintillabase.h \
+    ./QsciPS3/qsciabstractapis.h \
+    ./QsciPS3/qsciapis.h \
+    ./QsciPS3/qscicommand.h \
+    ./QsciPS3/qscicommandset.h \
+    ./QsciPS3/qscidocument.h \
+    ./QsciPS3/qscilexer.h \
+    ./QsciPS3/qscilexercpp.h \
+    ./QsciPS3/qscilexerfni.h \
+    ./QsciPS3/qscilexerfx.h \
+    ./QsciPS3/qscilexerhexisle.h \
+    ./QsciPS3/qscilexerhtml.h \
+    ./QsciPS3/qscilexerproperties.h \
+    ./QsciPS3/qscilexerpython.h \
+    ./QsciPS3/qscilexersdl.h \
+    ./QsciPS3/qscilexerxml.h \
+    ./QsciPS3/qscimacro.h \
+    ./QsciPS3/qsciprinter.h \
+    ./QsciPS3/qscistyle.h \
+    ./QsciPS3/qscistyledtext.h \
     ListBoxQt.h \
     SciClasses.h \
     ScintillaQt.h \

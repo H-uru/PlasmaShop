@@ -1,4 +1,4 @@
-// This module defines interface to the QsciStyledText class.
+// This defines the interface to the QsciCommandSet class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,44 +33,67 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCISTYLEDTEXT_H
-#define QSCISTYLEDTEXT_H
+#ifndef QSCICOMMANDSET_H
+#define QSCICOMMANDSET_H
 
 #ifdef __APPLE__
 extern "C++" {
 #endif
 
-#include <qstring.h>
+#include <qglobal.h>
 
-#include <Qsci/qsciglobal.h>
+#include <QList>
+
+#include <QsciPS3/qsciglobal.h>
+#include <QsciPS3/qscicommand.h>
 
 
-class QsciStyle;
+class QSettings;
+class QsciScintilla;
 
 
-//! \brief The QsciStyledText class is a container for a piece of text and the
-//! style used to display the text.
-class QSCINTILLA_EXPORT QsciStyledText
+//! \brief The QsciCommandSet class represents the set of all internal editor
+//! commands that may have keys bound.
+//!
+//! Methods are provided to access the individual commands and to read and
+//! write the current bindings from and to settings files.
+class QSCINTILLA_EXPORT QsciCommandSet
 {
 public:
-    //! Constructs a QsciStyledText instance for text \a text and style number
-    //! \a style.
-    QsciStyledText(const QString &text, int style);
+    //! The key bindings for each command in the set are read from the
+    //! settings \a qs.  \a prefix is prepended to the key of each entry.
+    //! true is returned if there was no error.
+    //!
+    //! \sa writeSettings()
+    bool readSettings(QSettings &qs, const char *prefix = "/Scintilla");
 
-    //! Constructs a QsciStyledText instance for text \a text and style \a
-    //! style.
-    QsciStyledText(const QString &text, const QsciStyle &style);
+    //! The key bindings for each command in the set are written to the
+    //! settings \a qs.  \a prefix is prepended to the key of each entry.
+    //! true is returned if there was no error.
+    //!
+    //! \sa readSettings()
+    bool writeSettings(QSettings &qs, const char *prefix = "/Scintilla");
 
+    //! The commands in the set are returned as a list.
+    QList<QsciCommand *> &commands() {return cmds;}
 
-    //! Returns a reference to the text.
-    const QString &text() const {return styled_text;}
+    //! The primary keys bindings for all commands are removed.
+    void clearKeys();
 
-    //! Returns the number of the style.
-    int style() const {return style_nr;}
+    //! The alternate keys bindings for all commands are removed.
+    void clearAlternateKeys();
 
 private:
-    QString styled_text;
-    int style_nr;
+    friend class QsciScintilla;
+
+    QsciCommandSet(QsciScintilla *qs);
+    ~QsciCommandSet();
+
+    QsciScintilla *qsci;
+    QList<QsciCommand *> cmds;
+
+    QsciCommandSet(const QsciCommandSet &);
+    QsciCommandSet &operator=(const QsciCommandSet &);
 };
 
 #ifdef __APPLE__

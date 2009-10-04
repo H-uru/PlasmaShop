@@ -1,5 +1,8 @@
 #include "QPlasmaDocument.h"
 #include "QPlasmaTextDoc.h"
+#include <QInputDialog>
+#include <QSettings>
+#include <QMessageBox>
 
 QIcon QPlasmaDocument::GetDocIcon(QString filename)
 {
@@ -73,8 +76,49 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
     }
 }
 
+bool QPlasmaDocument::GetEncryptionKeyFromUser(QWidget* parent, unsigned int* key)
+{
+    QSettings settings("PlasmaShop", "PlasmaShop");
+    QString keyStr = settings.value("NtdKey", "00000000000000000000000000000000").toString();
+    bool dlgAccept, validKey = false;
+    while (!validKey) {
+        keyStr = QInputDialog::getText(parent, tr("Enter NTD Key"),
+                                       tr("Enter your MOUL/MQO Encryption key"),
+                                       QLineEdit::Normal, keyStr, &dlgAccept);
+        if (!dlgAccept)
+            return false;
+        if (keyStr.length() == 32) {
+            validKey = true;
+            for (int i=0; i<keyStr.length() && validKey; ++i) {
+                QChar ch = keyStr.at(i);
+                if (ch.isDigit())
+                    continue;
+                if (ch >= 'A' && ch <= 'F')
+                    continue;
+                if (ch >= 'a' && ch <= 'f')
+                    continue;
+                validKey = false;
+            }
+        }
+        if (!validKey) {
+            QMessageBox::warning(parent, tr("Invalid Key"),
+                                 tr("You have entered an invalid encryption key.\n"
+                                    "Encryption keys should be 32 hex digits, with no\n"
+                                    "spaces or dashes"),
+                                 QMessageBox::Ok);
+        } else {
+            key[0] = keyStr.mid(0, 8).toUInt(0, 16);
+            key[1] = keyStr.mid(8, 8).toUInt(0, 16);
+            key[2] = keyStr.mid(16, 8).toUInt(0, 16);
+            key[3] = keyStr.mid(24, 8).toUInt(0, 16);
+            settings.setValue("NtdKey", keyStr);
+        }
+    }
+    return true;
+}
+
 QPlasmaDocument::QPlasmaDocument(DocumentType docType, QWidget* parent)
-               : QWidget(parent), fDocType(docType)
+               : QWidget(parent), fDocType(docType), fDirty(false)
 { }
 
 DocumentType QPlasmaDocument::docType() const
@@ -86,21 +130,70 @@ bool QPlasmaDocument::isDirty() const
 QString QPlasmaDocument::filename() const
 { return fFilename; }
 
-void QPlasmaDocument::loadFile(QString filename)
+bool QPlasmaDocument::canCut() const
+{ return false; }
+
+bool QPlasmaDocument::canCopy() const
+{ return false; }
+
+bool QPlasmaDocument::canPaste() const
+{ return false; }
+
+bool QPlasmaDocument::canDelete() const
+{ return false; }
+
+bool QPlasmaDocument::canSelectAll() const
+{ return false; }
+
+bool QPlasmaDocument::canUndo() const
+{ return false; }
+
+bool QPlasmaDocument::canRedo() const
+{ return false; }
+
+void QPlasmaDocument::performCut()
+{ }
+
+void QPlasmaDocument::performCopy()
+{ }
+
+void QPlasmaDocument::performPaste()
+{ }
+
+void QPlasmaDocument::performDelete()
+{ }
+
+void QPlasmaDocument::performSelectAll()
+{ }
+
+void QPlasmaDocument::performUndo()
+{ }
+
+void QPlasmaDocument::performRedo()
+{ }
+
+bool QPlasmaDocument::loadFile(QString filename)
 {
     fFilename = filename;
     makeClean();
+    return true;
 }
 
-void QPlasmaDocument::saveTo(QString filename)
+bool QPlasmaDocument::saveTo(QString filename)
 {
     fFilename = filename;
     makeClean();
+    return true;
 }
 
-void QPlasmaDocument::saveDefault()
+bool QPlasmaDocument::saveDefault()
 {
-    saveTo(fFilename);
+    return saveTo(fFilename);
+}
+
+bool QPlasmaDocument::revert()
+{
+    return loadFile(fFilename);
 }
 
 void QPlasmaDocument::makeDirty()

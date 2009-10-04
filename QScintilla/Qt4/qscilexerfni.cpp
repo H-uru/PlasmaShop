@@ -33,7 +33,7 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qscilexerfni.h"
+#include "QsciPS3/qscilexerfni.h"
 
 #include <qcolor.h>
 #include <qfont.h>

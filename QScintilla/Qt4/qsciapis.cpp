@@ -35,7 +35,7 @@
 
 #include <stdlib.h>
 
-#include "Qsci/qsciapis.h"
+#include "QsciPS3/qsciapis.h"
 
 #include <qapplication.h>
 #include <qdatastream.h>
@@ -48,7 +48,7 @@
 
 #include <QLibraryInfo>
 
-#include "Qsci/qscilexer.h"
+#include "QsciPS3/qscilexer.h"
 
 
 

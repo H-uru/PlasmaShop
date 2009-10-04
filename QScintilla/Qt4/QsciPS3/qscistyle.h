@@ -44,7 +44,7 @@ extern "C++" {
 #include <qfont.h>
 #include <qstring.h>
 
-#include <Qsci/qsciglobal.h>
+#include <QsciPS3/qsciglobal.h>
 
 
 //! \brief The QsciStyle class encapsulates all the attributes of a style.
