@@ -1,6 +1,7 @@
 DOC_AGE                 ICON    DISCARDABLE         "Plasma_age.ico"
 DOC_ELF                 ICON    DISCARDABLE         "elf.ico"
 DOC_FNI                 ICON    DISCARDABLE         "ini.ico"
+DOC_HEX                 ICON    DISCARDABLE         "hex.ico"
 DOC_P2F                 ICON    DISCARDABLE         "font.ico"
 DOC_PAK                 ICON    DISCARDABLE         "pak.ico"
 DOC_PRP                 ICON    DISCARDABLE         "Plasma_prp2.ico"

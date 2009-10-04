@@ -57,11 +57,11 @@ Root: HKCR; Subkey: AgeFile\DefaultIcon; ValueType: string; ValueData: {app}\Pla
 Root: HKCR; SubKey: .prp; ValueType: string; ValueData: PrpFile; Flags: uninsdeletekey; Tasks: Associations; Components: PrpShop
 Root: HKCR; SubKey: PrpFile; ValueType: string; ValueData: Plasma Resource Page; Flags: uninsdeletekey; Tasks: Associations; Components: PrpShop
 Root: HKCR; SubKey: PrpFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PrpShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PrpShop
-Root: HKCR; Subkey: PrpFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,5; Flags: uninsdeletevalue; Tasks: Associations; Components: PrpShop
+Root: HKCR; Subkey: PrpFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,6; Flags: uninsdeletevalue; Tasks: Associations; Components: PrpShop
 Root: HKCR; SubKey: .p2f; ValueType: string; ValueData: P2fFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: P2fFile; ValueType: string; ValueData: Plasma Font; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: P2fFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: P2fFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,3; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: P2fFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,4; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: .fni; ValueType: string; ValueData: FniFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: FniFile; ValueType: string; ValueData: Plasma Console Script; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: FniFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
@@ -69,7 +69,7 @@ Root: HKCR; Subkey: FniFile\DefaultIcon; ValueType: string; ValueData: {app}\Pla
 Root: HKCR; SubKey: .sdl; ValueType: string; ValueData: PlasmaSdlFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: PlasmaSdlFile; ValueType: string; ValueData: Plasma State Descriptors; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: PlasmaSdlFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: PlasmaSdlFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,6; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: PlasmaSdlFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,7; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: .elf; ValueType: string; ValueData: ElfFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: ElfFile; ValueType: string; ValueData: Encrypted Log; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: ElfFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
@@ -77,15 +77,19 @@ Root: HKCR; Subkey: ElfFile\DefaultIcon; ValueType: string; ValueData: {app}\Pla
 Root: HKCR; SubKey: .pak; ValueType: string; ValueData: PlasmaPakFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: PlasmaPakFile; ValueType: string; ValueData: Python Package; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: PlasmaPakFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: PlasmaPakFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,4; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: PlasmaPakFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,5; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: .loc; ValueType: string; ValueData: LocFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: LocFile; ValueType: string; ValueData: Plasma Localization Data; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: LocFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: LocFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,7; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: LocFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,8; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: .sub; ValueType: string; ValueData: SubFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: SubFile; ValueType: string; ValueData: Plasma Subtitle Data; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: SubFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: SubFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,7; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: SubFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,8; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; SubKey: .hex; ValueType: string; ValueData: HexFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; SubKey: HexFile; ValueType: string; ValueData: Hex Isle Level Data; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; SubKey: HexFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
+Root: HKCR; Subkey: HexFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,3; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 
 [Icons]
 Name: {group}\PlasmaShop; Filename: {app}\PlasmaShop.exe; WorkingDir: {app}; IconFilename: {app}\PlasmaShop.exe; IconIndex: 0; Components: PlasmaShop

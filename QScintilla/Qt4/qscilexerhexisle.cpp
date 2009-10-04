@@ -1,4 +1,4 @@
-// This module implements the QsciLexerProperties class.
+// This module implements the QsciLexerHexIsle class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,7 +33,7 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qscilexerproperties.h"
+#include "Qsci/qscilexerhexisle.h"
 
 #include <qcolor.h>
 #include <qfont.h>
@@ -41,7 +41,7 @@
 
 
 // The ctor.
-QsciLexerProperties::QsciLexerProperties(QObject *parent)
+QsciLexerHexIsle::QsciLexerHexIsle(QObject *parent)
     : QsciLexer(parent),
       fold_compact(true)
 {
@@ -49,34 +49,34 @@ QsciLexerProperties::QsciLexerProperties(QObject *parent)
 
 
 // The dtor.
-QsciLexerProperties::~QsciLexerProperties()
+QsciLexerHexIsle::~QsciLexerHexIsle()
 {
 }
 
 
 // Returns the language name.
-const char *QsciLexerProperties::language() const
+const char *QsciLexerHexIsle::language() const
 {
-    return "Properties";
+    return "HexIsle";
 }
 
 
 // Returns the lexer name.
-const char *QsciLexerProperties::lexer() const
+const char *QsciLexerHexIsle::lexer() const
 {
-    return "props";
+    return "hex";
 }
 
 
 // Return the string of characters that comprise a word.
-const char *QsciLexerProperties::wordCharacters() const
+const char *QsciLexerHexIsle::wordCharacters() const
 {
     return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 }
 
 
 // Returns the foreground colour of the text for a style.
-QColor QsciLexerProperties::defaultColor(int style) const
+QColor QsciLexerHexIsle::defaultColor(int style) const
 {
     switch (style)
     {
@@ -91,6 +91,15 @@ QColor QsciLexerProperties::defaultColor(int style) const
 
     case Key:
         return QColor(0x00,0x00,0xff);
+
+    case Number:
+        return QColor(0x00,0x00,0x7f);
+
+    case String:
+        return QColor(0x7f,0x00,0x00);
+
+    case Keyword:
+        return QColor(0x00,0x7f,0x7f);
     }
 
     return QsciLexer::defaultColor(style);
@@ -98,7 +107,7 @@ QColor QsciLexerProperties::defaultColor(int style) const
 
 
 // Returns the end-of-line fill for a style.
-bool QsciLexerProperties::defaultEolFill(int style) const
+bool QsciLexerHexIsle::defaultEolFill(int style) const
 {
     if (style == Section)
         return true;
@@ -107,8 +116,28 @@ bool QsciLexerProperties::defaultEolFill(int style) const
 }
 
 
+// Returns the font of the text for a style.
+QFont QsciLexerHexIsle::defaultFont(int style) const
+{
+    QFont f;
+
+    switch (style)
+    {
+    case Keyword:
+        f = QsciLexer::defaultFont(style);
+        f.setBold(true);
+        break;
+
+    default:
+        f = QsciLexer::defaultFont(style);
+    }
+
+    return f;
+}
+
+
 // Returns the user name of a style.
-QString QsciLexerProperties::description(int style) const
+QString QsciLexerHexIsle::description(int style) const
 {
     switch (style)
     {
@@ -129,6 +158,15 @@ QString QsciLexerProperties::description(int style) const
 
     case Key:
         return tr("Key");
+
+    case Number:
+        return tr("Number");
+
+    case String:
+        return tr("String");
+
+    case Keyword:
+        return tr("Keyword");
     }
 
     return QString();
@@ -136,14 +174,14 @@ QString QsciLexerProperties::description(int style) const
 
 
 // Refresh all properties.
-void QsciLexerProperties::refreshProperties()
+void QsciLexerHexIsle::refreshProperties()
 {
     setCompactProp();
 }
 
 
 // Read properties from the settings.
-bool QsciLexerProperties::readProperties(QSettings &qs,const QString &prefix)
+bool QsciLexerHexIsle::readProperties(QSettings &qs,const QString &prefix)
 {
     int rc = true;
 
@@ -154,7 +192,7 @@ bool QsciLexerProperties::readProperties(QSettings &qs,const QString &prefix)
 
 
 // Write properties to the settings.
-bool QsciLexerProperties::writeProperties(QSettings &qs,const QString &prefix) const
+bool QsciLexerHexIsle::writeProperties(QSettings &qs,const QString &prefix) const
 {
     int rc = true;
 
@@ -165,14 +203,14 @@ bool QsciLexerProperties::writeProperties(QSettings &qs,const QString &prefix) c
 
 
 // Return true if folds are compact.
-bool QsciLexerProperties::foldCompact() const
+bool QsciLexerHexIsle::foldCompact() const
 {
     return fold_compact;
 }
 
 
 // Set if folds are compact
-void QsciLexerProperties::setFoldCompact(bool fold)
+void QsciLexerHexIsle::setFoldCompact(bool fold)
 {
     fold_compact = fold;
 
@@ -181,7 +219,7 @@ void QsciLexerProperties::setFoldCompact(bool fold)
 
 
 // Set the "fold.compact" property.
-void QsciLexerProperties::setCompactProp()
+void QsciLexerHexIsle::setCompactProp()
 {
     emit propertyChanged("fold.compact",(fold_compact ? "1" : "0"));
 }

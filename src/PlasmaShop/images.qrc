@@ -25,9 +25,11 @@
     <file>res/def/edit-cut.png</file>
     <file>res/def/edit-copy.png</file>
     <file>res/def/edit-paste.png</file>
+    <file>res/def/edit-delete.png</file>
     <file>res/def/edit-undo.png</file>
     <file>res/def/edit-redo.png</file>
     <file>res/def/edit-find.png</file>
+    <file>res/def/edit-select-all.png</file>
     <file>res/def/help-about.png</file>
     <file>res/PlasmaShop.png</file>
 

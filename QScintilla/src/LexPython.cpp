@@ -134,6 +134,7 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 
 	WordList &keywords = *keywordlists[0];
 	WordList &keywords2 = *keywordlists[1];
+	WordList &keywords3 = *keywordlists[2];
 
 	// property tab.timmy.whinge.level
 	//	For Python code, checks whether indenting is consistent. 
@@ -258,6 +259,8 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 					}
 				} else if (keywords2.InList(s)) {
 					style = SCE_P_WORD2;
+				} else if (keywords3.InList(s)) {
+					style = SCE_P_WORD3;
 				}
 				sc.ChangeState(style);
 				sc.SetState(SCE_P_DEFAULT);
@@ -546,6 +549,7 @@ static void FoldPyDoc(unsigned int startPos, int length, int /*initStyle - unuse
 static const char * const pythonWordListDesc[] = {
 	"Keywords",
 	"Highlighted identifiers",
+	"Plasma API",
 	0
 };
 

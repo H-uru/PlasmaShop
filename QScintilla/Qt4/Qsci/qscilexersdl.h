@@ -1,4 +1,4 @@
-// This defines the interface to the QsciLexerPython class.
+// This defines the interface to the QsciLexerSDL class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,8 +33,8 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCILEXERPYTHON_H
-#define QSCILEXERPYTHON_H
+#ifndef QSCILEXERSDL_H
+#define QSCILEXERSDL_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -44,97 +44,64 @@ extern "C++" {
 
 #include <Qsci/qsciglobal.h>
 #include <Qsci/qscilexer.h>
-#include "Qsci/qsciscintillabase.h"
 
 
-//! \brief The QsciLexerPython class encapsulates the Scintilla Python lexer.
-class QSCINTILLA_EXPORT QsciLexerPython : public QsciLexer
+//! \brief The QsciLexerSDL class encapsulates the Scintilla-PS30 SDL
+//! lexer.
+class QSCINTILLA_EXPORT QsciLexerSDL : public QsciLexer
 {
     Q_OBJECT
 
 public:
     //! This enum defines the meanings of the different styles used by the
-    //! Python lexer.
+    //! SDL lexer.
     enum {
         //! The default.
         Default = 0,
 
-        //! A comment.
-        Comment = 1,
-
-        //! A number.
-        Number = 2,
+        //! An SDL1 comment (#).
+        CommentLine = 1,
 
         //! A double-quoted string.
-        DoubleQuotedString = 3,
+        DoubleQuotedString = 2,
 
         //! A single-quoted string.
-        SingleQuotedString = 4,
+        SingleQuotedString = 3,
+
+        //! A number.
+        Number = 4,
 
         //! A keyword.
         Keyword = 5,
 
-        //! A triple single-quoted string.
-        TripleSingleQuotedString = 6,
-
-        //! A triple double-quoted string.
-        TripleDoubleQuotedString = 7,
-
-        //! The name of a class.
-        ClassName = 8,
-
-        //! The name of a function or method.
-        FunctionMethodName = 9,
+        //! A block comment.
+        CommentBlock = 6,
 
         //! An operator.
-        Operator = 10,
+        Operator = 7,
 
-        //! An identifier
-        Identifier = 11,
-
-        //! A comment block.
-        CommentBlock = 12,
+        //! An identifier.
+        Identifier = 8,
 
         //! The end of a line where a string is not closed.
-        UnclosedString = 13,
+        UnclosedString = 9,
 
-        //! A built-in identifier (keyword set 2).
-        BuiltIns = 14,
+        //! A keyword in set 2.
+        KeywordSet2 = 10,
 
-        //! A decorator.
-        Decorator = 15,
+        //! A comment.
+        Comment = 11,
 
-        //! A Plasma API function or class.
-        PlasmaApi = 16
+        //! A keyword in set 3.
+        KeywordSet3 = 12
     };
 
-    //! This enum defines the different conditions that can cause
-    //! indentations to be displayed as being bad.
-    enum IndentationWarning {
-        //! Bad indentation is not displayed differently.
-        NoWarning = 0,
+    //! Construct a QsciLexerSDL with parent \a parent.  \a parent is typically
+    //! the QsciScintilla instance.
+    QsciLexerSDL(QObject *parent = 0);
 
-        //! The indentation is inconsistent when compared to the
-        //! previous line, ie. it is made up of a different combination
-        //! of tabs and/or spaces.
-        Inconsistent = 1,
-
-        //! The indentation is made up of spaces followed by tabs.
-        TabsAfterSpaces = 2,
-
-        //! The indentation contains spaces.
-        Spaces = 3,
-
-        //! The indentation contains tabs.
-        Tabs = 4
-    };
-
-    //! Construct a QsciLexerPython with parent \a parent.  \a parent is
-    //! typically the QsciScintilla instance.
-    QsciLexerPython(QObject *parent = 0);
-
-    //! Destroys the QsciLexerPython instance.
-    virtual ~QsciLexerPython();
+    //! Destroys the QsciLexerSDL instance.
+    virtual ~QsciLexerSDL();
 
     //! Returns the name of the language.
     const char *language() const;
@@ -147,17 +114,26 @@ public:
     //! auto-completion words.
     QStringList autoCompletionWordSeparators() const;
 
-    //! \internal Returns the number of lines prior to the current one when
-    //! determining the scope of a block when auto-indenting.
-    int blockLookback() const;
+    //! \internal Returns a space separated list of words or characters in
+    //! a particular style that define the end of a block for
+    //! auto-indentation.  The styles is returned via \a style.
+    const char *blockEnd(int *style = 0) const;
 
     //! \internal Returns a space separated list of words or characters in
     //! a particular style that define the start of a block for
     //! auto-indentation.  The styles is returned via \a style.
     const char *blockStart(int *style = 0) const;
 
+    //! \internal Returns a space separated list of keywords in a
+    //! particular style that define the start of a block for
+    //! auto-indentation.  The styles is returned via \a style.
+    const char *blockStartKeyword(int *style = 0) const;
+
     //! \internal Returns the style used for braces for brace matching.
     int braceStyle() const;
+
+    //! \internal Returns the string of characters that comprise a word.
+    const char *wordCharacters() const;
 
     //! Returns the foreground colour of the text for style number \a style.
     //!
@@ -175,9 +151,6 @@ public:
     //! \sa defaultColor()
     QColor defaultPaper(int style) const;
 
-    //! \internal Returns the view used for indentation guides.
-    virtual int indentationGuideView() const;
-
     //! Returns the set of keywords for the keyword set \a set recognised
     //! by the lexer as a space separated string.
     const char *keywords(int set) const;
@@ -191,111 +164,53 @@ public:
     //! propertyChanged() signal as required.
     void refreshProperties();
 
-    //! Returns true if indented comment blocks can be folded.
+    //! Returns true if multi-line comment blocks can be folded.
     //!
     //! \sa setFoldComments()
     bool foldComments() const;
 
-    //! Returns true if triple quoted strings can be folded.
+    //! Returns true if trailing blank lines are included in a fold block.
     //!
-    //! \sa setFoldQuotes()
-    bool foldQuotes() const;
-
-    //! Returns the condition that will cause bad indentations to be
-    //! displayed.
-    //!
-    //! \sa setIndentationWarning()
-    QsciLexerPython::IndentationWarning indentationWarning() const;
-
-    //! If \a allowed is true then Python v2 unicode string literals (e.g.
-    //! u"utf8") are allowed.  The default is true.
-    //!
-    //! \sa v2UnicodeAllowed()
-    void setV2UnicodeAllowed(bool allowed);
-
-    //! Returns true if Python v2 unicode string literals (e.g. u"utf8") are
-    //! allowed.
-    //!
-    //! \sa setV2UnicodeAllowed()
-    bool v2UnicodeAllowed() const;
-
-    //! If \a allowed is true then Python v3 binary and octal literals (e.g.
-    //! 0b1011, 0o712) are allowed.  The default is true.
-    //!
-    //! \sa v3BinaryOctalAllowed()
-    void setV3BinaryOctalAllowed(bool allowed);
-
-    //! Returns true if Python v3 binary and octal literals (e.g. 0b1011,
-    //! 0o712) are allowed.
-    //!
-    //! \sa setV3BinaryOctalAllowed()
-    bool v3BinaryOctalAllowed() const;
-
-    //! If \a allowed is true then Python v3 bytes string literals (e.g.
-    //! b"bytes") are allowed.  The default is true.
-    //!
-    //! \sa v3BytesAllowed()
-    void setV3BytesAllowed(bool allowed);
-
-    //! Returns true if Python v3 bytes string literals (e.g. b"bytes") are
-    //! allowed.
-    //!
-    //! \sa setV3BytesAllowed()
-    bool v3BytesAllowed() const;
+    //! \sa setFoldCompact()
+    bool foldCompact() const;
 
 public slots:
-    //! If \a fold is true then indented comment blocks can be folded.  The
-    //! default is false.
+    //! If \a fold is true then multi-line comment blocks can be folded.
+    //! The default is false.
     //!
     //! \sa foldComments()
     virtual void setFoldComments(bool fold);
 
-    //! If \a fold is true then triple quoted strings can be folded.  The
-    //! default is false.
+    //! If \a fold is true then trailing blank lines are included in a fold
+    //! block. The default is true.
     //!
-    //! \sa foldQuotes()
-    virtual void setFoldQuotes(bool fold);
-
-    //! Sets the condition that will cause bad indentations to be
-    //! displayed.
-    //!
-    //! \sa indentationWarning()
-    virtual void setIndentationWarning(QsciLexerPython::IndentationWarning warn);
+    //! \sa foldCompact()
+    virtual void setFoldCompact(bool fold);
 
 protected:
     //! The lexer's properties are read from the settings \a qs.  \a prefix
     //! (which has a trailing '/') should be used as a prefix to the key of
     //! each setting.  true is returned if there is no error.
     //!
+    //! \sa writeProperties()
     bool readProperties(QSettings &qs,const QString &prefix);
 
     //! The lexer's properties are written to the settings \a qs.
     //! \a prefix (which has a trailing '/') should be used as a prefix to
     //! the key of each setting.  true is returned if there is no error.
     //!
+    //! \sa readProperties()
     bool writeProperties(QSettings &qs,const QString &prefix) const;
 
 private:
     void setCommentProp();
-    void setQuotesProp();
-    void setTabWhingeProp();
-    void setV2UnicodeProp();
-    void setV3BinaryOctalProp();
-    void setV3BytesProp();
+    void setCompactProp();
 
     bool fold_comments;
-    bool fold_quotes;
-    IndentationWarning indent_warn;
-    bool v2_unicode;
-    bool v3_binary_octal;
-    bool v3_bytes;
+    bool fold_compact;
 
-    friend class QsciLexerHTML;
-
-    static const char *keywordClass;
-
-    QsciLexerPython(const QsciLexerPython &);
-    QsciLexerPython &operator=(const QsciLexerPython &);
+    QsciLexerSDL(const QsciLexerSDL &);
+    QsciLexerSDL &operator=(const QsciLexerSDL &);
 };
 
 #ifdef __APPLE__

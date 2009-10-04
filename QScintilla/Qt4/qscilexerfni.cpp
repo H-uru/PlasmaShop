@@ -1,4 +1,4 @@
-// This module implements the QsciLexerProperties class.
+// This module implements the QsciLexerFni class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,7 +33,7 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#include "Qsci/qscilexerproperties.h"
+#include "Qsci/qscilexerfni.h"
 
 #include <qcolor.h>
 #include <qfont.h>
@@ -41,74 +41,66 @@
 
 
 // The ctor.
-QsciLexerProperties::QsciLexerProperties(QObject *parent)
-    : QsciLexer(parent),
-      fold_compact(true)
+QsciLexerFni::QsciLexerFni(QObject *parent)
+    : QsciLexer(parent)
 {
 }
 
 
 // The dtor.
-QsciLexerProperties::~QsciLexerProperties()
+QsciLexerFni::~QsciLexerFni()
 {
 }
 
 
 // Returns the language name.
-const char *QsciLexerProperties::language() const
+const char *QsciLexerFni::language() const
 {
-    return "Properties";
+    return "Fni";
 }
 
 
 // Returns the lexer name.
-const char *QsciLexerProperties::lexer() const
+const char *QsciLexerFni::lexer() const
 {
-    return "props";
+    return "fni";
 }
 
 
 // Return the string of characters that comprise a word.
-const char *QsciLexerProperties::wordCharacters() const
+const char *QsciLexerFni::wordCharacters() const
 {
-    return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+    return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 }
 
 
 // Returns the foreground colour of the text for a style.
-QColor QsciLexerProperties::defaultColor(int style) const
+QColor QsciLexerFni::defaultColor(int style) const
 {
     switch (style)
     {
+    case Default:
+        return QColor(0x00,0x00,0x00);
+
     case Comment:
         return QColor(0x00,0x7f,0x00);
 
-    case Section:
-        return QColor(0x7f,0x7f,0x00);
+    case Group:
+        return QColor(0x7f,0x00,0x7f);
 
-    case DefaultValue:
-        return QColor(0x7f,0x7f,0x00);
-
-    case Key:
+    case Command:
         return QColor(0x00,0x00,0xff);
+
+    case Operator:
+        return QColor(0x00,0x00,0x00);
     }
 
     return QsciLexer::defaultColor(style);
 }
 
 
-// Returns the end-of-line fill for a style.
-bool QsciLexerProperties::defaultEolFill(int style) const
-{
-    if (style == Section)
-        return true;
-
-    return QsciLexer::defaultEolFill(style);
-}
-
-
 // Returns the user name of a style.
-QString QsciLexerProperties::description(int style) const
+QString QsciLexerFni::description(int style) const
 {
     switch (style)
     {
@@ -118,70 +110,15 @@ QString QsciLexerProperties::description(int style) const
     case Comment:
         return tr("Comment");
 
-    case Section:
-        return tr("Section");
+    case Group:
+        return tr("Command group");
 
-    case Assignment:
-        return tr("Assignment");
+    case Command:
+        return tr("Console command");
 
-    case DefaultValue:
-        return tr("Default value");
-
-    case Key:
-        return tr("Key");
+    case Operator:
+        return tr("Operator");
     }
 
     return QString();
-}
-
-
-// Refresh all properties.
-void QsciLexerProperties::refreshProperties()
-{
-    setCompactProp();
-}
-
-
-// Read properties from the settings.
-bool QsciLexerProperties::readProperties(QSettings &qs,const QString &prefix)
-{
-    int rc = true;
-
-    fold_compact = qs.value(prefix + "foldcompact", true).toBool();
-
-    return rc;
-}
-
-
-// Write properties to the settings.
-bool QsciLexerProperties::writeProperties(QSettings &qs,const QString &prefix) const
-{
-    int rc = true;
-
-    qs.setValue(prefix + "foldcompact", fold_compact);
-
-    return rc;
-}
-
-
-// Return true if folds are compact.
-bool QsciLexerProperties::foldCompact() const
-{
-    return fold_compact;
-}
-
-
-// Set if folds are compact
-void QsciLexerProperties::setFoldCompact(bool fold)
-{
-    fold_compact = fold;
-
-    setCompactProp();
-}
-
-
-// Set the "fold.compact" property.
-void QsciLexerProperties::setCompactProp()
-{
-    emit propertyChanged("fold.compact",(fold_compact ? "1" : "0"));
 }

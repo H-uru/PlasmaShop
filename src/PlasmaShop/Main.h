@@ -6,9 +6,10 @@
 #include <QTabWidget>
 #include <QDockWidget>
 #include <QAction>
+#include <QMenu>
 #include "QPlasmaDocument.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 81)"
+#define PLASMASHOP_VERSION "3.0 (build 80)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -23,12 +24,14 @@ private:
     enum {
         // Main Menu
         kFileNew, kFileOpen, kFileSave, kFileSaveAs, kFileExit, kFileOptions,
-        kEditUndo, kEditRedo, kEditCut, kEditCopy, kEditPaste, kEditRevert,
+        kFileRevert,
+        kEditUndo, kEditRedo, kEditCut, kEditCopy, kEditPaste, kEditDelete,
+        kEditSelectAll,
         kHelpAbout,
 
         // Text Editor Menu
         kTextFind, kTextFindNext, kTextFindPrev, kTextReplace,
-        kTextStxNone, kTextStxPython, kTextStxSDL1, kTextStxSDL2, kTextStxIni,
+        kTextStxNone, kTextStxPython, kTextStxSDL, kTextStxIni,
         kTextStxConsole, kTextStxXML, kTextStxHex, kTextStxFX,
         kTextEncNone, kTextEncXtea, kTextEncAes, kTextEncDroid,
         kTextTypeAnsi, kTextTypeUTF8, kTextTypeUTF16, kTextTypeUTF32,
@@ -40,6 +43,9 @@ private:
         kNumActions
     };
     QAction* fActions[kNumActions];
+
+    // Editor-specific menus (for dynamically hiding)
+    QMenu* fTextMenu;
 
 public:
     PlasmaShopMain();

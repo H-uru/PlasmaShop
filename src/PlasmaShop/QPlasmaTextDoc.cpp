@@ -77,14 +77,43 @@ static QString LoadData(hsStream* S, QPlasmaTextDoc::EncodingMode mode)
 QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
               : QPlasmaDocument(kDocText, parent)
 {
+    QPalette pal;
     fEditor = new QsciScintilla(this);
-    fEditor->setFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
     fEditor->setEolMode(QsciScintilla::EolWindows); // Because it's what Plasma uses
+    fEditor->setMarginLineNumbers(1, true);
+    fEditor->setFolding(QsciScintilla::BoxedTreeFoldStyle, 2);
+    fEditor->setUtf8(true);
+    fEditor->setTabWidth(4);
+
+    fEditor->setFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fEditor->setMarginsFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fEditor->setMarginsBackgroundColor(pal.color(QPalette::Active, QPalette::Window));
+    fEditor->setMarginsForegroundColor(pal.color(QPalette::Active, QPalette::WindowText));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
     layout->addWidget(fEditor, 0, 0);
     setLayout(layout);
+
+    fLexerFNI = new QsciLexerFni(fEditor);
+    fLexerFX = new QsciLexerFX(fEditor);
+    fLexerHEX = new QsciLexerHexIsle(fEditor);
+    fLexerINI = new QsciLexerProperties(fEditor);
+    fLexerPY = new QsciLexerPython(fEditor);
+    fLexerSDL = new QsciLexerSDL(fEditor);
+    fLexerXML = new QsciLexerXML(fEditor);
+
+    fLexerFNI->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerFX->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerHEX->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerINI->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerPY->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerSDL->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    fLexerXML->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+
+    connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SIGNAL(becameDirty()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SIGNAL(becameClean()));
 }
 
 void QPlasmaTextDoc::loadFile(QString filename)
@@ -150,9 +179,65 @@ void QPlasmaTextDoc::loadFile(QString filename)
         fEditor->setText(LoadData(&S, fEncoding));
     }
     QPlasmaDocument::loadFile(filename);
+    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
 }
 
 void QPlasmaTextDoc::saveTo(QString filename)
 {
     QPlasmaDocument::saveTo(filename);
+    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
+}
+
+void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
+{
+    fSyntax = syn;
+    switch (fSyntax) {
+    case kStxConsole:
+        fEditor->setLexer(fLexerFNI);
+        break;
+    case kStxFX:
+        fEditor->setLexer(fLexerFX);
+        break;
+    case kStxHex:
+        fEditor->setLexer(fLexerHEX);
+        break;
+    case kStxIni:
+        fEditor->setLexer(fLexerINI);
+        break;
+    case kStxPython:
+        fEditor->setLexer(fLexerPY);
+        break;
+    case kStxSDL:
+        fEditor->setLexer(fLexerSDL);
+        break;
+    case kStxXML:
+        fEditor->setLexer(fLexerXML);
+        break;
+    default:
+        fEditor->setLexer(0);
+    }
+}
+
+void QPlasmaTextDoc::setEncryption(EncryptionMode enc)
+{
+    fEncryption = enc;
+}
+
+void QPlasmaTextDoc::setEncoding(EncodingMode type)
+{
+    fEncoding = type;
+}
+
+QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::syntax() const
+{ return fSyntax; }
+
+QPlasmaTextDoc::EncryptionMode QPlasmaTextDoc::encryption() const
+{ return fEncryption; }
+
+QPlasmaTextDoc::EncodingMode QPlasmaTextDoc::encoding() const
+{ return fEncoding; }
+
+void QPlasmaTextDoc::adjustLineNumbers()
+{
+    fEditor->setMarginWidth(1, QString(" %1").arg(fEditor->lines()));
 }

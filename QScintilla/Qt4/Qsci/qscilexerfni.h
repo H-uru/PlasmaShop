@@ -1,4 +1,4 @@
-// This defines the interface to the QsciLexerProperties class.
+// This defines the interface to the QsciLexerFni class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,8 +33,8 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCILEXERPROPERTIES_H
-#define QSCILEXERPROPERTIES_H
+#ifndef QSCILEXERFNI_H
+#define QSCILEXERFNI_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -46,9 +46,9 @@ extern "C++" {
 #include <Qsci/qscilexer.h>
 
 
-//! \brief The QsciLexerProperties class encapsulates the Scintilla
-//! Properties lexer.
-class QSCINTILLA_EXPORT QsciLexerProperties : public QsciLexer
+//! \brief The QsciLexerFni class encapsulates the Scintilla
+//! Fni lexer.
+class QSCINTILLA_EXPORT QsciLexerFni : public QsciLexer
 {
     Q_OBJECT
 
@@ -62,25 +62,22 @@ public:
         //! A comment.
         Comment = 1,
 
-        //! A section.
-        Section = 2,
+        //! A command group.
+        Group = 2,
 
-        //! An assignment operator.
-        Assignment = 3,
+        //! A console command.
+        Command = 3,
 
-        //! A default value.
-        DefaultValue = 4,
-
-        //! A key
-        Key = 5
+        //! An operator.
+        Operator = 4
     };
 
-    //! Construct a QsciLexerProperties with parent \a parent.  \a parent is
+    //! Construct a QsciLexerFni with parent \a parent.  \a parent is
     //! typically the QsciScintilla instance.
-    QsciLexerProperties(QObject *parent = 0);
+    QsciLexerFni(QObject *parent = 0);
 
-    //! Destroys the QsciLexerProperties instance.
-    virtual ~QsciLexerProperties();
+    //! Destroys the QsciLexerFni instance.
+    virtual ~QsciLexerFni();
 
     //! Returns the name of the language.
     const char *language() const;
@@ -97,52 +94,14 @@ public:
     //! \sa defaultPaper()
     QColor defaultColor(int style) const;
 
-    //! Returns the end-of-line fill for style number \a style.
-    bool defaultEolFill(int style) const;
-
     //! Returns the descriptive name for style number \a style.  If the
     //! style is invalid for this language then an empty QString is returned.
     //! This is intended to be used in user preference dialogs.
     QString description(int style) const;
 
-    //! Causes all properties to be refreshed by emitting the
-    //! propertyChanged() signal as required.
-    void refreshProperties();
-
-    //! Returns true if trailing blank lines are included in a fold block.
-    //!
-    //! \sa setFoldCompact()
-    bool foldCompact() const;
-
-public slots:
-    //! If \a fold is true then trailing blank lines are included in a fold
-    //! block. The default is true.
-    //!
-    //! \sa foldCompact()
-    virtual void setFoldCompact(bool fold);
-
-protected:
-    //! The lexer's properties are read from the settings \a qs.  \a prefix
-    //! (which has a trailing '/') should be used as a prefix to the key of
-    //! each setting.  true is returned if there is no error.
-    //!
-    //! \sa writeProperties()
-    bool readProperties(QSettings &qs,const QString &prefix);
-
-    //! The lexer's properties are written to the settings \a qs.
-    //! \a prefix (which has a trailing '/') should be used as a prefix to
-    //! the key of each setting.  true is returned if there is no error.
-    //!
-    //! \sa readProperties()
-    bool writeProperties(QSettings &qs,const QString &prefix) const;
-
 private:
-    void setCompactProp();
-
-    bool fold_compact;
-
-    QsciLexerProperties(const QsciLexerProperties &);
-    QsciLexerProperties &operator=(const QsciLexerProperties &);
+    QsciLexerFni(const QsciLexerFni &);
+    QsciLexerFni &operator=(const QsciLexerFni &);
 };
 
 #ifdef __APPLE__

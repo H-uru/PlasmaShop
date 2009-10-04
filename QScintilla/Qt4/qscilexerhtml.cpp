@@ -39,9 +39,6 @@
 #include <qfont.h>
 #include <qsettings.h>
 
-#include "Qsci/qscilexerjavascript.h"
-#include "Qsci/qscilexerpython.h"
-
 
 // The ctor.
 QsciLexerHTML::QsciLexerHTML(QObject *parent)
@@ -498,9 +495,6 @@ const char *QsciLexerHTML::keywords(int set) const
             "hidden image "
             "public !doctype";
 
-    if (set == 2)
-        return QsciLexerJavaScript::keywordClass;
-
     if (set == 3)
         return
             // Move these to QsciLexerVisualBasic when we
@@ -516,9 +510,6 @@ const char *QsciLexerHTML::keywords(int set) const
             "integer let lib long module object option optional "
             "preserve private property public redim single static "
             "string type variant";
-
-    if (set == 4)
-        return QsciLexerPython::keywordClass;
 
     if (set == 5)
         return

@@ -1,6 +1,5 @@
 #include <QApplication>
 #include <QSettings>
-#include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QFileDialog>
@@ -11,6 +10,7 @@
 
 #include "Main.h"
 #include "../QPlasma.h"
+#include "QPlasmaTextDoc.h"
 
 PlasmaShopMain::PlasmaShopMain()
 {
@@ -24,6 +24,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileOpen] = new QAction(qStdIcon("document-open"), tr("&Open..."), this);
     fActions[kFileSave] = new QAction(qStdIcon("document-save"), tr("&Save"), this);
     fActions[kFileSaveAs] = new QAction(qStdIcon("document-save-as"), tr("Sa&ve As..."), this);
+    fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&vert"), this);
     fActions[kFileOptions] = new QAction(tr("&Options..."), this);
     fActions[kFileExit] = new QAction(qStdIcon("application-exit"), tr("E&xit"), this);
     fActions[kEditUndo] = new QAction(qStdIcon("edit-undo"), tr("&Undo"), this);
@@ -31,7 +32,8 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kEditCut] = new QAction(qStdIcon("edit-cut"), tr("Cu&t"), this);
     fActions[kEditCopy] = new QAction(qStdIcon("edit-copy"), tr("&Copy"), this);
     fActions[kEditPaste] = new QAction(qStdIcon("edit-paste"), tr("&Paste"), this);
-    fActions[kEditRevert] = new QAction(qStdIcon("document-revert"), tr("Re&vert"), this);
+    fActions[kEditDelete] = new QAction(qStdIcon("edit-delete"), tr("&Delete"), this);
+    fActions[kEditSelectAll] = new QAction(qStdIcon("edit-select-all"), tr("Select &All"), this);
     fActions[kHelpAbout] = new QAction(qStdIcon("help-about"), tr("&About PlasmaShop"), this);
 
     fActions[kTextFind] = new QAction(qStdIcon("edit-find"), tr("&Find..."), this);
@@ -40,8 +42,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextReplace] = new QAction(qStdIcon("edit-find-replace"), tr("&Replace..."), this);
     fActions[kTextStxNone] = new QAction(tr("&None"), this);
     fActions[kTextStxPython] = new QAction(tr("&Python"), this);
-    fActions[kTextStxSDL1] = new QAction(tr("SDL (&Uru / MOUL)"), this);
-    fActions[kTextStxSDL2] = new QAction(tr("SDL (Myst &5 / Crowthistle / Hex Isle)"), this);
+    fActions[kTextStxSDL] = new QAction(tr("&SDL"), this);
     fActions[kTextStxIni] = new QAction(tr("&Age / Ini"), this);
     fActions[kTextStxConsole] = new QAction(tr("&Console"), this);
     fActions[kTextStxXML] = new QAction(tr("&XML"), this);
@@ -72,10 +73,29 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kEditCut]->setShortcut(Qt::CTRL + Qt::Key_X);
     fActions[kEditCopy]->setShortcut(Qt::CTRL + Qt::Key_C);
     fActions[kEditPaste]->setShortcut(Qt::CTRL + Qt::Key_V);
+    fActions[kEditDelete]->setShortcut(Qt::Key_Delete);
+    fActions[kEditSelectAll]->setShortcut(Qt::CTRL + Qt::Key_A);
     fActions[kTextFind]->setShortcut(Qt::CTRL + Qt::Key_F);
     fActions[kTextFindNext]->setShortcut(Qt::Key_F3);
     fActions[kTextFindPrev]->setShortcut(Qt::SHIFT + Qt::Key_F3);
     fActions[kTextReplace]->setShortcut(Qt::CTRL + Qt::Key_R);
+
+    fActions[kTextStxNone]->setCheckable(true);
+    fActions[kTextStxPython]->setCheckable(true);
+    fActions[kTextStxSDL]->setCheckable(true);
+    fActions[kTextStxIni]->setCheckable(true);
+    fActions[kTextStxConsole]->setCheckable(true);
+    fActions[kTextStxXML]->setCheckable(true);
+    fActions[kTextStxHex]->setCheckable(true);
+    fActions[kTextStxFX]->setCheckable(true);
+    fActions[kTextEncNone]->setCheckable(true);
+    fActions[kTextEncXtea]->setCheckable(true);
+    fActions[kTextEncAes]->setCheckable(true);
+    fActions[kTextEncDroid]->setCheckable(true);
+    fActions[kTextTypeAnsi]->setCheckable(true);
+    fActions[kTextTypeUTF8]->setCheckable(true);
+    fActions[kTextTypeUTF16]->setCheckable(true);
+    fActions[kTextTypeUTF32]->setCheckable(true);
 
     // Main Menus
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
@@ -84,6 +104,7 @@ PlasmaShopMain::PlasmaShopMain()
     fileMenu->addAction(fActions[kFileOpen]);
     fileMenu->addAction(fActions[kFileSave]);
     fileMenu->addAction(fActions[kFileSaveAs]);
+    fileMenu->addAction(fActions[kFileRevert]);
     fileMenu->addSeparator();
     fileMenu->addAction(fActions[kFileOptions]);
     fileMenu->addSeparator();
@@ -96,39 +117,39 @@ PlasmaShopMain::PlasmaShopMain()
     editMenu->addAction(fActions[kEditCut]);
     editMenu->addAction(fActions[kEditCopy]);
     editMenu->addAction(fActions[kEditPaste]);
+    editMenu->addAction(fActions[kEditDelete]);
     editMenu->addSeparator();
-    editMenu->addAction(fActions[kEditRevert]);
+    editMenu->addAction(fActions[kEditSelectAll]);
 
     // Editor-specific menus
-    QMenu* textMenu = menuBar()->addMenu(tr("&Text"));
-    textMenu->addAction(fActions[kTextFind]);
-    textMenu->addAction(fActions[kTextFindNext]);
-    textMenu->addAction(fActions[kTextFindPrev]);
-    textMenu->addAction(fActions[kTextReplace]);
-    textMenu->addSeparator();
-    QMenu* text_stxMenu = textMenu->addMenu(tr("&Syntax"));
+    QMenu* fTextMenu = menuBar()->addMenu(tr("&Text"));
+    fTextMenu->addAction(fActions[kTextFind]);
+    fTextMenu->addAction(fActions[kTextFindNext]);
+    fTextMenu->addAction(fActions[kTextFindPrev]);
+    fTextMenu->addAction(fActions[kTextReplace]);
+    fTextMenu->addSeparator();
+    QMenu* text_stxMenu = fTextMenu->addMenu(tr("&Syntax"));
     text_stxMenu->addAction(fActions[kTextStxNone]);
     text_stxMenu->addAction(fActions[kTextStxPython]);
-    text_stxMenu->addAction(fActions[kTextStxSDL1]);
-    text_stxMenu->addAction(fActions[kTextStxSDL2]);
+    text_stxMenu->addAction(fActions[kTextStxSDL]);
     text_stxMenu->addAction(fActions[kTextStxIni]);
     text_stxMenu->addAction(fActions[kTextStxConsole]);
     text_stxMenu->addAction(fActions[kTextStxXML]);
     text_stxMenu->addAction(fActions[kTextStxHex]);
     text_stxMenu->addAction(fActions[kTextStxFX]);
-    QMenu* text_encMenu = textMenu->addMenu(tr("&Encryption"));
+    QMenu* text_encMenu = fTextMenu->addMenu(tr("&Encryption"));
     text_encMenu->addAction(fActions[kTextEncNone]);
     text_encMenu->addAction(fActions[kTextEncXtea]);
     text_encMenu->addAction(fActions[kTextEncAes]);
     text_encMenu->addAction(fActions[kTextEncDroid]);
-    QMenu* text_typeMenu = textMenu->addMenu(tr("&File Encoding"));
+    QMenu* text_typeMenu = fTextMenu->addMenu(tr("&File Encoding"));
     text_typeMenu->addAction(fActions[kTextTypeAnsi]);
     text_typeMenu->addAction(fActions[kTextTypeUTF8]);
     text_typeMenu->addAction(fActions[kTextTypeUTF16]);
     text_typeMenu->addAction(fActions[kTextTypeUTF32]);
-    textMenu->addSeparator();
-    textMenu->addAction(fActions[kTextExpandAll]);
-    textMenu->addAction(fActions[kTextCollapseAll]);
+    fTextMenu->addSeparator();
+    fTextMenu->addAction(fActions[kTextExpandAll]);
+    fTextMenu->addAction(fActions[kTextCollapseAll]);
 
     // Help menu is always at the end
     QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -240,6 +261,65 @@ void PlasmaShopMain::loadFile(QString filename)
             // Error loading the file.  Remove it now to avoid problems later
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
+        } else if (dtype == kDocText) {
+            QPlasmaTextDoc::EncodingMode type = ((QPlasmaTextDoc*)plDoc)->encoding();
+            QPlasmaTextDoc::EncryptionMode enc = ((QPlasmaTextDoc*)plDoc)->encryption();
+
+            switch (type) {
+            case QPlasmaTextDoc::kTypeAnsi:
+                fActions[kTextTypeAnsi]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kTypeUTF8:
+                fActions[kTextTypeUTF8]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kTypeUTF16:
+                fActions[kTextTypeUTF16]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kTypeUTF32:
+                fActions[kTextTypeUTF32]->setChecked(true);
+                break;
+            }
+
+            switch (enc) {
+            case QPlasmaTextDoc::kEncAes:
+                fActions[kTextEncAes]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kEncDroid:
+                fActions[kTextEncDroid]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kEncNone:
+                fActions[kTextEncNone]->setChecked(true);
+                break;
+            case QPlasmaTextDoc::kEncXtea:
+                fActions[kTextEncXtea]->setChecked(true);
+                break;
+            }
+
+            if (ext == "fni") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
+                fActions[kTextStxConsole]->setChecked(true);
+            } else if (ext == "fx") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxFX);
+                fActions[kTextStxFX]->setChecked(true);
+            } else if (ext == "hex") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxHex);
+                fActions[kTextStxHex]->setChecked(true);
+            } else if (ext == "age" || ext == "cfg" || ext == "ini") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxIni);
+                fActions[kTextStxIni]->setChecked(true);
+            } else if (ext == "py") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxPython);
+                fActions[kTextStxPython]->setChecked(true);
+            } else if (ext == "sdl") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxSDL);
+                fActions[kTextStxSDL]->setChecked(true);
+            } else if (ext == "loc" || ext == "sub" || ext == "xml") {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxXML);
+                fActions[kTextStxXML]->setChecked(true);
+            } else {
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
+                fActions[kTextStxNone]->setChecked(true);
+            }
         }
     }
 }
@@ -281,7 +361,7 @@ void PlasmaShopMain::onOpenFile()
 {
     QStringList files = QFileDialog::getOpenFileNames(this,
                             tr("Open File(s)"), fDialogDir,
-                            "All supported Plasma Files (*.age *.cfg *.ini *.fni *.hex *.loc *.sub *.log *.elf *.p2f *.pfp *.pak *.csv *.sdl *.sum *.fx Cursors.dat);;"
+                            "All supported Plasma Files (*.age *.cfg *.ini *.fni *.hex *.loc *.sub *.log *.elf *.p2f *.pfp *.pak *.py *.csv *.sdl *.sum *.fx Cursors.dat);;"
                             "Age Files (*.age);;"
                             "Config Files (*.cfg *.ini);;"
                             "Console Files (*.fni);;"
@@ -293,6 +373,7 @@ void PlasmaShopMain::onOpenFile()
                             "Plasma Font Files (*.p2f);;"
                             "Plasma Font Packages (*.pfp);;"
                             "Python Packages (*.pak);;"
+                            "Python Source Files (*.py);;"
                             "Relevance Map Files (*.csv);;"
                             "SDL Files (*.sdl);;"
                             "Shader Files (*.fx);;"
@@ -343,6 +424,7 @@ void PlasmaShopMain::onSaveAs()
                    "Localization Files (*.loc);;"
                    "Log Files (*.log);;"
                    "Relevance Map Files (*.csv);;"
+                   "Python Source Files (*.py);;"
                    "SDL Files (*.sdl);;"
                    "Shader Files (*.fx);;"
                    "Subtitle Files (*.sub);;"
@@ -364,6 +446,8 @@ void PlasmaShopMain::onSaveAs()
             curFilter = "Log Files (*.log)";
         else if (ext == "csv")
             curFilter = "Relevance Map Files (*.csv)";
+        else if (ext == "py")
+            curFilter = "Python Source Files (*.py)";
         else if (ext == "sdl")
             curFilter = "SDL Files (*.sdl)";
         else if (ext == "fx")

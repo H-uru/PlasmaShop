@@ -43,8 +43,8 @@
 // The list of Python keywords that can be used by other friendly lexers.
 const char *QsciLexerPython::keywordClass =
     "and as assert break class continue def del elif else except exec "
-    "finally for from global if import in is lambda None not or pass "
-    "print raise return try while with yield";
+    "finally for from global if import in is lambda not or pass print "
+    "raise return try while with yield";
 
 
 // The ctor.
@@ -132,40 +132,43 @@ QColor QsciLexerPython::defaultColor(int style) const
         return QColor(0x00,0x7f,0x00);
 
     case Number:
-        return QColor(0x00,0x7f,0x7f);
+        return QColor(0x00,0x00,0x7f);
 
     case DoubleQuotedString:
     case SingleQuotedString:
-        return QColor(0x7f,0x00,0x7f);
+        return QColor(0x7f,0x00,0x00);
 
     case Keyword:
-        return QColor(0x00,0x00,0x7f);
+        return QColor(0x00,0x00,0x00);
 
     case TripleSingleQuotedString:
     case TripleDoubleQuotedString:
         return QColor(0x7f,0x00,0x00);
 
     case ClassName:
-        return QColor(0x00,0x00,0xff);
+        return QColor(0x00,0x00,0x7f);
 
     case FunctionMethodName:
-        return QColor(0x00,0x7f,0x7f);
+        return QColor(0x7f,0x7f,0x00);
 
     case Operator:
     case Identifier:
         break;
 
     case CommentBlock:
-        return QColor(0x7f,0x7f,0x7f);
+        return QColor(0x00,0x7f,0x00);
 
     case UnclosedString:
-        return QColor(0x00,0x00,0x00);
+        return QColor(0x7f,0x00,0x00);
 
-    case HighlightedIdentifier:
-        return QColor(0x40,0x70,0x90);
+    case BuiltIns:
+        return QColor(0x00,0x7f,0x7f);
 
     case Decorator:
-        return QColor(0x80,0x50,0x00);
+        return QColor(0x7f,0x7f,0x7f);
+
+    case PlasmaApi:
+        return QColor(0x7f,0x00,0x7f);
     }
 
     return QsciLexer::defaultColor(style);
@@ -189,30 +192,16 @@ QFont QsciLexerPython::defaultFont(int style) const
 
     switch (style)
     {
-    case Comment:
-#if defined(Q_OS_WIN)
-        f = QFont("Comic Sans MS",9);
-#else
-        f = QFont("Bitstream Vera Serif",9);
-#endif
-        break;
-
-    case DoubleQuotedString:
-    case SingleQuotedString:
-    case UnclosedString:
-#if defined(Q_OS_WIN)
-        f = QFont("Courier New",10);
-#else
-        f = QFont("Bitstream Vera Sans Mono",9);
-#endif
-        break;
-
     case Keyword:
     case ClassName:
-    case FunctionMethodName:
-    case Operator:
+    case BuiltIns:
         f = QsciLexer::defaultFont(style);
         f.setBold(true);
+        break;
+
+    case Decorator:
+        f = QsciLexer::defaultFont(style);
+        f.setItalic(true);
         break;
 
     default:
@@ -226,10 +215,157 @@ QFont QsciLexerPython::defaultFont(int style) const
 // Returns the set of keywords.
 const char *QsciLexerPython::keywords(int set) const
 {
-    if (set != 1)
-        return 0;
+    if (set == 1)
+        return keywordClass;
 
-    return keywordClass;
+    if (set == 2)
+        return "Ellipsis False None self True";
+
+    if (set == 3)
+        return "PtAcceptInviteInGame PtAmCCR PtAttachObject PtAtTimeCallback "
+               "PtAvatarEnterAFK PtAvatarEnterLookingAtKI "
+               "PtAvatarEnterUsePersBook PtAvatarExitAFK "
+               "PtAvatarExitLookingAtKI PtAvatarExitUsePersBook "
+               "PtAvatarSitOnGround PtAvatarSpawnNext PtCanShadowCast "
+               "PtChangeAvatar PtChangePlayerName PtCheckVisLOS "
+               "PtCheckVisLOSFromCursor PtClearCameraStack "
+               "PtClearOfferBookMode PtClearPrivateChatList "
+               "PtClearTimerCallbacks PtConsole PtConsoleNet PtCreatePublicAge "
+               "PtDebugAssert PtDetachObject PtDirtySyncClients "
+               "PtDirtySyncState PtDisableAvatarCursorFade PtDisableAvatarJump "
+               "PtDisableControlKeyEvents PtDisableForwardMovement "
+               "PtDisableMouseMovement PtDisableMovementKeys "
+               "PtDisableRenderScene PtDisableShadows PtEmoteAvatar "
+               "PtEnableAvatarCursorFade PtEnableAvatarJump "
+               "PtEnableControlKeyEvents PtEnableForwardMovement "
+               "PtEnableMouseMovement PtEnableMovementKeys PtEnableRenderScene "
+               "PtEnableShadows PtExcludeRegionSet PtExcludeRegionSetNow "
+               "PtFadeIn PtFadeLocalAvatar PtFadeOut PtFakeLinkAvatarToObject "
+               "PtFindSceneobject PtFirstPerson PtFogSetDefColor "
+               "PtFogSetDefExp PtFogSetDefExp2 PtFogSetDefLinear PtGetAgeInfo "
+               "PtGetAgeName PtGetAgeSDL PtGetAgeTime PtGetAgeTimeOfDayPercent "
+               "PtGetAvatarKeyFromClientID PtGetCameraNumber "
+               "PtGetClientIDFromAvatarKey PtGetClientName PtGetControlEvents "
+               "PtGetDefaultSpawnPoint PtGetDialogFromString "
+               "PtGetDialogFromTagID PtGetDniTime PtGetFrameDeltaTime "
+               "PtGetGameTime PtGetLanguage PtGetLocalAvatar "
+               "PtGetLocalClientID PtGetLocalKILevel PtGetLocalPlayer "
+               "PtGetMouseTurnSensitivity PtGetNumCameras PtGetNumParticles "
+               "PtGetNumRemotePlayers PtGetPlayerList "
+               "PtGetPlayerListDistanceSorted PtGetPrevAgeInfo "
+               "PtGetPrevAgeName PtGetPublicAgeList PtGetPythonLoggingLevel "
+               "PtGetServerTime PtGetShadowVisDistance PtGetTime "
+               "PtGMTtoDniTime PtGUICursorDimmed PtGUICursorOff PtGUICursorOn "
+               "PtHideDialog PtIsCCRAway PtIsClickToTurn PtIsCurrentBrainHuman "
+               "PtIsDemoMode PtIsDialogLoaded PtIsEnterChatModeKeyBound "
+               "PtIsInternalRelease PtIsMouseInverted PtIsShadowsEnabled "
+               "PtIsSinglePlayerMode PtKillParticles PtLimitAvatarLOD "
+               "PtLoadAvatarModel PtLoadBookGUI PtLoadDialog "
+               "PtLoadJPEGFromDisk PtMaxListenDistSq PtMaxListenListSize "
+               "PtNotifyOffererLinkAccepted PtNotifyOffererLinkCompleted "
+               "PtNotifyOffererLinkRejected PtPageInHold PtPageInNode "
+               "PtPageOutNode PtPrintToScreen PtRateIt PtRebuildCameraStack "
+               "PtRecenterCamera PtRemovePublicAge PtRequestLOSScreen "
+               "PtSaveScreenShot PtSendChatToCCR PtSendKIGZMarkerMsg "
+               "PtSendKIMessage PtSendKIMessageInt PtSendPetitionToCCR "
+               "PtSendPrivateChatList PtSendRTChat PtSetAlarm "
+               "PtSetBehaviorLoopCount PtSetClearColor PtSetClickToTurn "
+               "PtSetGamma2 PtSetGlobalClickability PtSetLightAnimStart "
+               "PtSetLightValue PtSetMoueTurnSensitivity PtSetMouseInverted "
+               "PtSetMouseUniverted PtSetOfferBookMode "
+               "PtSetParticleDissentPoint PtSetParticleOffset "
+               "PtSetPythonLoggingLevel PtSetShadowVisDistance "
+               "PtSetShareSpawnPoint PtSetUndoLimit PtShootBulletFromObject "
+               "PtShootBulletFromScreen PtShowDialog PtStartScreenCapture "
+               "PtToggleAvatarClickability PtTransferParticlesToObject "
+               "PtUnloadAllBookGUIs PtUnloadBookGUI PtUnloadDialog "
+               "PtUsingUnicode PtValidateKey PtWasLocallyNotified "
+               "PtWearMaintainerSuit PtWhatGUIControlType PtYesNoDialog "
+               "PtAnimEventDetectorSendCallback PtAnimateNextCamTransition "
+               "PtCameraGlanceDown PtCameraShakeOn PtCancelTimerCallback "
+               "PtClearCamLookAt PtClearSubtitle PtClosestNode "
+               "PtCreateImageFromBuffer PtDetachAnimation "
+               "PtDisableSubtitleRendering PtDrawUnformattedSubtitle "
+               "PtDrawUntimedSubtitle PtEnableInput PtEnableMovement "
+               "PtEnablePlanarReflections PtEnableSubtitleRendering "
+               "PtFindActivatorAndAdd PtFindResponderAndAdd "
+               "PtForceCursorHidden PtForceCursorShown PtForceFirstPersonCam "
+               "PtForceMouseLook PtForceOutOfLadder PtGetCameraShakeIntensity "
+               "PtGetDefaultDisplayParams PtGetDesktopColorDepth "
+               "PtGetDesktopHeight PtGetDesktopWidth PtGetDraggableValue "
+               "PtGetDynamicPath PtGetGamma2 PtGetGlobalSDL PtGetGlobalSDLVar "
+               "PtGetLocalizedString PtGetNumResponderStates "
+               "PtGetPathSeperator PtGetPlayerKey PtGetRelativeSubtitleSize "
+               "PtGetSavePath PtGetStaticPath PtGetSubtitleAnimationText "
+               "PtGetSupportedDisplayModes PtGetUntimedSubtitleText "
+               "PtInALadder PtIsExpertMode PtIsMacClient PtIsNoviceMode "
+               "PtIsNovicePlusMode PtKillSubtitleAnimation PtLoadAgePage "
+               "PtLoadAgePages PtPlaySubtitleAnimation PtReloadModule "
+               "PtRemoveDirTree PtResetSDLPath PtSendPythonNotify "
+               "PtSetCamCutAlways PtSetCamLookAt PtSetCamLookAtTolerance "
+               "PtSetCameraShake PtSetCursor PtSetExpertMode "
+               "PtSetGraphicsOptions PtSetMouseTurnSensitivity PtSetNoviceMode "
+               "PtSetNovicePlusMode PtSetRelativeSubtitleSize "
+               "PtSetSubtitleStyle PtTakeScreenShot PtUnloadPage "
+               "PtValidateSavePath PtCamCutAroundObstructions PtCenterCamera "
+               "PtDisableAutoSave PtEnableGlow PtEnableTurning PtGetBranchId "
+               "PtGetBuildId PtGetClearColor PtGetMaxAnisotropicSamples "
+               "PtGetMaxAntiAlias PtGetProductId PtGetProductLongName "
+               "PtGetProductSafeName PtGetProductString "
+               "PtGrabNextControllerAxis PtGrabNextControllerButton "
+               "PtIsDebugBuild PtLoadTargaFromDisk PtLockCamera PtPausePhysics "
+               "PtPumpSpinner PtRequestLOSFromObject PtSetFootstepSurface "
+               "ptAgeInfoStruct ptAgeInfoStructRef ptAgeLinkStruct "
+               "ptAgeLinkStructRef ptAgeVault ptAnimation ptAudioControl "
+               "ptAvatar ptBook ptCamera ptCCRAge ptCCRMgr ptCCRPlayerInfo "
+               "ptClimbingWallMsg ptColor ptDniCoordinates ptDniInfoSource "
+               "ptDraw ptDynamicMap ptGUIControl ptGUIControlButton "
+               "ptGUIControlCheckBox ptGUIControlClickMap ptGUIControlDragBar "
+               "ptGUIControlDraggable ptGUIControlDynamicText "
+               "ptGUIControlEditBox ptGUIControlKnob ptGUIControlListBox "
+               "ptGUIControlMultiLineEdit ptGUIControlProgress "
+               "ptGUIControlRadioGroup ptGUIControlTextBox "
+               "ptGUIControlUpDownPair ptGUIControlValue ptGUIDialog "
+               "ptGUIPopUpMenu ptGUISkin ptImage ptInputInterface ptKey "
+               "ptKeyMap ptMarkerMgr ptMatrix44 ptMoviePlayer ptNetLinkingMgr "
+               "ptNotify ptParticle ptPhysics ptPlayer ptPoint3 ptPythonMsg "
+               "ptSceneobject ptSDL ptSDLStateDataRecord ptSimpleStateVariable "
+               "ptSpawnPointInfo ptSpawnPointInfoRef ptStatusLog ptStream "
+               "ptSwimCurrentInterface ptVault ptVaultAgeInfoNode "
+               "ptVaultAgeLinkNode ptVaultChronicleNode ptVaultFolderNode "
+               "ptVaultImageNode ptVaultMarkerListNode ptVaultMarkerNode "
+               "ptVaultNode ptVaultNodeRef ptVaultPlayerInfoListNode "
+               "ptVaultPlayerInfoNode ptVaultSDLNode ptVaultSystemNode "
+               "ptVaultTextNoteNode ptVector3 ptWaveSet pyVaultAgeInfoListNode "
+               "ptBlower ptClientSessionMgr ptCluster ptFileStream "
+               "ptGUIControlCredits ptGUISketchControl ptGrassShader "
+               "ptLinkToAgeEffectsInfo ptLinkToAgeInfo ptLocation ptMemBuffer "
+               "ptPerceptron ptQuaternion ptSDLVar ptSDLAgeTimeElapsedVar "
+               "ptSDLAgeTimeOfDayVar ptSDLBoolVar ptSDLBufferVar ptSDLByteVar "
+               "ptSDLCharVar ptSDLDoubleVar ptSDLDynArrayBoolVar "
+               "ptSDLDynArrayBufferVar ptSDLDynArrayByteVar "
+               "ptSDLDynArrayCharVar ptSDLDynArrayDoubleVar "
+               "ptSDLDynArrayFloatVar ptSDLDynArrayIntVar "
+               "ptSDLDynArrayMatrix44Var ptSDLDynArrayPoint3Var "
+               "ptSDLDynArrayQuaternionVar ptSDLDynArrayRGBAVar "
+               "ptSDLDynArrayStringVar ptSDLDynArrayStructVar "
+               "ptSDLDynArrayTimeVar ptSDLDynArrayUIntVar ptSDLDynArrayUoidVar "
+               "ptSDLDynArrayVector3Var ptSDLFixedArrayBoolVar "
+               "ptSDLFixedArrayBufferVar ptSDLFixedArrayByteVar "
+               "ptSDLFixedArrayCharVar ptSDLFixedArrayDoubleVar "
+               "ptSDLFixedArrayFloatVar ptSDLFixedArrayIntVar "
+               "ptSDLFixedArrayMatrix44Var ptSDLFixedArrayPoint3Var "
+               "ptSDLFixedArrayQuaternionVar ptSDLFixedArrayRGBAVar "
+               "ptSDLFixedArrayStringVar ptSDLFixedArrayStructVar "
+               "ptSDLFixedArrayTimeVar ptSDLFixedArrayUIntVar "
+               "ptSDLFixedArrayUoidVar ptSDLFixedArrayVector3Var "
+               "ptSDLFloatVar ptSDLGameTimeElapsedVar ptSDLIntVar "
+               "ptSDLMatrix44Var ptSDLPoint3Var ptSDLQuaternionVar "
+               "ptSDLRGBAVar ptSDLStringVar ptSDLStructVar ptSDLTimeVar "
+               "ptSDLUIntVar ptSDLUoidVar ptSDLVector3Var ptUnifiedTime "
+               "ptUoid";
+
+    return 0;
 }
 
 
@@ -280,11 +416,14 @@ QString QsciLexerPython::description(int style) const
     case UnclosedString:
         return tr("Unclosed string");
 
-    case HighlightedIdentifier:
-        return tr("Highlighted identifier");
+    case BuiltIns:
+        return tr("Built-In Constants");
 
     case Decorator:
         return tr("Decorator");
+
+    case PlasmaApi:
+        return tr("Plasma API");
     }
 
     return QString();

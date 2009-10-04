@@ -2207,19 +2207,5 @@ static const char * const htmlWordListDesc[] = {
 	0,
 };
 
-static const char * const phpscriptWordListDesc[] = {
-	"", //Unused
-	"", //Unused
-	"", //Unused
-	"", //Unused
-	"PHP keywords",
-	"", //Unused
-	0,
-};
-
 LexerModule lmHTML(SCLEX_HTML, ColouriseHTMLDoc, "hypertext", 0, htmlWordListDesc, 8);
 LexerModule lmXML(SCLEX_XML, ColouriseXMLDoc, "xml", 0, htmlWordListDesc, 8);
-// SCLEX_ASP and SCLEX_PHP should not be used in new code: use SCLEX_HTML instead.
-LexerModule lmASP(SCLEX_ASP, ColouriseASPDoc, "asp", 0, htmlWordListDesc, 8);
-LexerModule lmPHP(SCLEX_PHP, ColourisePHPDoc, "php", 0, htmlWordListDesc, 8);
-LexerModule lmPHPSCRIPT(SCLEX_PHPSCRIPT, ColourisePHPScriptDoc, "phpscript", 0, phpscriptWordListDesc, 8);

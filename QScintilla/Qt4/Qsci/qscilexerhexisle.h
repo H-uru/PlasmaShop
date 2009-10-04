@@ -1,4 +1,4 @@
-// This defines the interface to the QsciLexerProperties class.
+// This defines the interface to the QsciLexerHexIsle class.
 //
 // Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -33,8 +33,8 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCILEXERPROPERTIES_H
-#define QSCILEXERPROPERTIES_H
+#ifndef QSCILEXERHEXISLE_H
+#define QSCILEXERHEXISLE_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -48,7 +48,7 @@ extern "C++" {
 
 //! \brief The QsciLexerProperties class encapsulates the Scintilla
 //! Properties lexer.
-class QSCINTILLA_EXPORT QsciLexerProperties : public QsciLexer
+class QSCINTILLA_EXPORT QsciLexerHexIsle : public QsciLexer
 {
     Q_OBJECT
 
@@ -71,16 +71,25 @@ public:
         //! A default value.
         DefaultValue = 4,
 
-        //! A key
-        Key = 5
+        //! A key.
+        Key = 5,
+
+        //! A number.
+        Number = 6,
+
+        //! A string.
+        String = 7,
+
+        //! A keyword.
+        Keyword = 8
     };
 
-    //! Construct a QsciLexerProperties with parent \a parent.  \a parent is
+    //! Construct a QsciLexerHexIsle with parent \a parent.  \a parent is
     //! typically the QsciScintilla instance.
-    QsciLexerProperties(QObject *parent = 0);
+    QsciLexerHexIsle(QObject *parent = 0);
 
-    //! Destroys the QsciLexerProperties instance.
-    virtual ~QsciLexerProperties();
+    //! Destroys the QsciLexerHexIsle instance.
+    virtual ~QsciLexerHexIsle();
 
     //! Returns the name of the language.
     const char *language() const;
@@ -99,6 +108,9 @@ public:
 
     //! Returns the end-of-line fill for style number \a style.
     bool defaultEolFill(int style) const;
+
+    //! Returns the font for style number \a style.
+    QFont defaultFont(int style) const;
 
     //! Returns the descriptive name for style number \a style.  If the
     //! style is invalid for this language then an empty QString is returned.
@@ -141,8 +153,8 @@ private:
 
     bool fold_compact;
 
-    QsciLexerProperties(const QsciLexerProperties &);
-    QsciLexerProperties &operator=(const QsciLexerProperties &);
+    QsciLexerHexIsle(const QsciLexerHexIsle &);
+    QsciLexerHexIsle &operator=(const QsciLexerHexIsle &);
 };
 
 #ifdef __APPLE__
