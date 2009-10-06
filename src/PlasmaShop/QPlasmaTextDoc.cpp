@@ -1,6 +1,12 @@
 #include "QPlasmaTextDoc.h"
 #include <QGridLayout>
+#include <QSettings>
 #include <Stream/plEncryptedStream.h>
+#include <Stream/hsElfStream.h>
+#include "../QPlasma.h"
+
+#define MARGIN_LINES 0
+#define MARGIN_FOLDERS 1
 
 static QPlasmaTextDoc::EncodingMode DetectEncoding(hsStream* S)
 {
@@ -25,7 +31,7 @@ static QPlasmaTextDoc::EncodingMode DetectEncoding(hsStream* S)
             }
         } else if (markerbuf[0] == 0xEF && markerbuf[1] == 0xBB) {
             if (S->size() >= 3) {
-                S->read(1, markerbuf + 1);
+                S->read(1, markerbuf + 2);
                 if (markerbuf[2] == 0xBF) {
                     // UTF8
                     mode = QPlasmaTextDoc::kTypeUTF8;
@@ -128,46 +134,36 @@ static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
     }
 }
 
-QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
-              : QPlasmaDocument(kDocText, parent)
+static bool isZeroKey(const unsigned int* key)
 {
-    QPalette pal;
+    return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0);
+}
+
+QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
+              : QPlasmaDocument(kDocText, parent),
+                fSyntax(kStxNone), fEncryption(kEncNone), fEncoding(kTypeAnsi),
+                fLexersInited(false), fPersistDirty(false)
+{
+    memset(fDroidKey, 0, sizeof(fDroidKey));
+
     fEditor = new QsciScintilla(this);
     fEditor->setEolMode(QsciScintilla::EolWindows); // Because it's what Plasma uses
-    fEditor->setMarginLineNumbers(1, true);
-    fEditor->setFolding(QsciScintilla::BoxedTreeFoldStyle, 2);
     fEditor->setUtf8(true);
-    fEditor->setTabWidth(4);
-
-    fEditor->setFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fEditor->setMarginsFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fEditor->setMarginsBackgroundColor(pal.color(QPalette::Active, QPalette::Window));
-    fEditor->setMarginsForegroundColor(pal.color(QPalette::Active, QPalette::WindowText));
+    fEditor->SendScintilla(QsciScintillaBase::SCI_SETENDATLASTLINE, 0);
+    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTHTRACKING, 1);
+    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTH, 1000);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
     layout->addWidget(fEditor, 0, 0);
     setLayout(layout);
 
-    fLexerFNI = new QsciLexerFni(fEditor);
-    fLexerFX = new QsciLexerFX(fEditor);
-    fLexerHEX = new QsciLexerHexIsle(fEditor);
-    fLexerINI = new QsciLexerProperties(fEditor);
-    fLexerPY = new QsciLexerPython(fEditor);
-    fLexerSDL = new QsciLexerSDL(fEditor);
-    fLexerXML = new QsciLexerXML(fEditor);
-
-    fLexerFNI->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerFX->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerHEX->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerINI->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerPY->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerSDL->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
-    fLexerXML->setDefaultFont(QFont(PLAT_FONT, PLAT_FONTSIZE));
+    // Initialize the editor settings, fonts, etc
+    updateSettings();
 
     connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
     connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(makeDirty()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(makeClean()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(maybeClean()));
     connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
     connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
 }
@@ -193,6 +189,85 @@ bool QPlasmaTextDoc::canUndo() const
 bool QPlasmaTextDoc::canRedo() const
 { return fEditor->isRedoAvailable(); }
 
+void QPlasmaTextDoc::updateSettings()
+{
+    QSettings settings("PlasmaShop", "PlasmaShop");
+    QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
+                   settings.value("SciFontSize", 10).toInt(),
+                   settings.value("SciFontWeight", QFont::Normal).toInt(),
+                   settings.value("SciFontItalic", false).toBool());
+
+    fEditor->setLexer(NULL);
+    if (fLexersInited) {
+        delete fLexerFNI;
+        delete fLexerFX;
+        delete fLexerHEX;
+        delete fLexerINI;
+        delete fLexerPY;
+        delete fLexerSDL;
+        delete fLexerXML;
+    }
+    fLexerFNI = new QsciLexerFni(fEditor);
+    fLexerFX = new QsciLexerFX(fEditor);
+    fLexerHEX = new QsciLexerHexIsle(fEditor);
+    fLexerINI = new QsciLexerProperties(fEditor);
+    fLexerPY = new QsciLexerPython(fEditor);
+    fLexerSDL = new QsciLexerSDL(fEditor);
+    fLexerXML = new QsciLexerXML(fEditor);
+    fLexersInited = true;
+
+    fLexerFNI->setDefaultFont(textFont);
+    fLexerFX->setDefaultFont(textFont);
+    fLexerHEX->setDefaultFont(textFont);
+    fLexerINI->setDefaultFont(textFont);
+    fLexerPY->setDefaultFont(textFont);
+    fLexerSDL->setDefaultFont(textFont);
+    fLexerXML->setDefaultFont(textFont);
+
+    QFont braceFont = textFont;
+    braceFont.setBold(true);
+    fEditor->setMatchedBraceFont(braceFont);
+    fEditor->setUnmatchedBraceFont(braceFont);
+
+    QPalette pal;
+    fEditor->setMarginsBackgroundColor(pal.color(QPalette::Active, QPalette::Window));
+    fEditor->setMarginsForegroundColor(pal.color(QPalette::Active, QPalette::WindowText));
+    fEditor->setMatchedBraceForegroundColor(QColor(0x00, 0x00, 0xff));
+    fEditor->setUnmatchedBraceForegroundColor(QColor(0xff, 0x00, 0x00));
+    fEditor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+
+    fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
+    fEditor->setIndentationsUseTabs(!settings.value("SciUseSpaces", true).toBool());
+    fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
+    fEditor->setIndentationGuides(settings.value("SciIndentGuides", false).toBool());
+    fEditor->setWhitespaceVisibility(settings.value("SciShowWhitespace", false).toBool()
+                                     ? QsciScintilla::WsVisible : QsciScintilla::WsInvisible);
+    fEditor->setEdgeColor(QColor(0xE0, 0xE0, 0xE0));
+    fEditor->setEdgeMode(settings.value("SciLongLineMark", false).toBool()
+                         ? QsciScintilla::EdgeLine : QsciScintilla::EdgeNone);
+    fEditor->setEdgeColumn(settings.value("SciLongLineSize", 80).toInt());
+
+    // Margin Magic (tm)
+    fEditor->setMarginWidth(MARGIN_LINES, 0);
+    fEditor->setMarginWidth(MARGIN_FOLDERS, 0);
+    if (settings.value("SciMargin", true).toBool()) {
+        fDoLineNumbers = settings.value("SciLineNumberMargin", true).toBool();
+        if (settings.value("SciFoldMargin", true).toBool())
+            fEditor->setFolding(QsciScintilla::BoxedTreeFoldStyle, MARGIN_FOLDERS);
+        fEditor->setMarginLineNumbers(MARGIN_LINES, fDoLineNumbers);
+        adjustLineNumbers();
+        if (!fDoLineNumbers)
+            fEditor->setMarginWidth(MARGIN_LINES, 16);
+    } else {
+        fDoLineNumbers = false;
+        fEditor->setMarginLineNumbers(MARGIN_LINES, false);
+    }
+
+    setSyntax(fSyntax);
+    fEditor->setMarginsFont(textFont);
+    adjustLineNumbers();
+}
+
 void QPlasmaTextDoc::performCut()
 { fEditor->cut(); }
 
@@ -214,16 +289,29 @@ void QPlasmaTextDoc::performUndo()
 void QPlasmaTextDoc::performRedo()
 { fEditor->redo(); }
 
+void QPlasmaTextDoc::expandAll()
+{ fEditor->setFoldAll(false); }
+
+void QPlasmaTextDoc::collapseAll()
+{ fEditor->setFoldAll(true); }
+
 bool QPlasmaTextDoc::loadFile(QString filename)
 {
-    if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
+    if (filename.right(4).toLower() == ".elf") {
+        // Encrypted Log File...  We have to handle it specially
+        hsElfStream S;
+        S.open(filename.toUtf8().data(), fmRead);
+        fEditor->clear();
+        while (!S.eof())
+            fEditor->append(~S.readLine() + "\n");
+        fEditor->setReadOnly(true);
+    } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(pvUnknown);
         S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
-            unsigned int key[4];
-            if (!GetEncryptionKeyFromUser(this, key))
+            if (!GetEncryptionKeyFromUser(this, fDroidKey))
                 return false;
-            S.setKey(key);
+            S.setKey(fDroidKey);
             fEncryption = kEncDroid;
         } else if (S.getEncType() == plEncryptedStream::kEncXtea) {
             fEncryption = kEncXtea;
@@ -242,6 +330,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
 
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
     return QPlasmaDocument::loadFile(filename);
+    fPersistDirty = false;
 }
 
 bool QPlasmaTextDoc::saveTo(QString filename)
@@ -255,10 +344,11 @@ bool QPlasmaTextDoc::saveTo(QString filename)
         plEncryptedStream S(pvUnknown);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
         if (fEncryption == kEncDroid) {
-            unsigned int key[4];
-            if (!GetEncryptionKeyFromUser(this, key))
-                return false;
-            S.setKey(key);
+            if ((fFilename != filename) || isZeroKey(fDroidKey)) {
+                if (!GetEncryptionKeyFromUser(this, fDroidKey))
+                    return false;
+            }
+            S.setKey(fDroidKey);
             type = plEncryptedStream::kEncDroid;
         } else if (fEncryption == kEncAes) {
             type = plEncryptedStream::kEncAES;
@@ -272,6 +362,8 @@ bool QPlasmaTextDoc::saveTo(QString filename)
 
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
     return QPlasmaDocument::saveTo(filename);
+    fEditor->setReadOnly(false);
+    fPersistDirty = false;
 }
 
 void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
@@ -300,18 +392,30 @@ void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
         fEditor->setLexer(fLexerXML);
         break;
     default:
-        fEditor->setLexer(0);
+        fEditor->setLexer(NULL);
+        {
+            QSettings settings("PlasmaShop", "PlasmaShop");
+            QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
+                           settings.value("SciFontSize", 10).toInt(),
+                           settings.value("SciFontWeight", QFont::Normal).toInt(),
+                           settings.value("SciFontItalic", false).toBool());
+            fEditor->setFont(textFont);
+        }
     }
 }
 
 void QPlasmaTextDoc::setEncryption(EncryptionMode enc)
 {
     fEncryption = enc;
+    makeDirty();
+    fPersistDirty = true;
 }
 
 void QPlasmaTextDoc::setEncoding(EncodingMode type)
 {
     fEncoding = type;
+    makeDirty();
+    fPersistDirty = true;
 }
 
 QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::syntax() const
@@ -325,5 +429,12 @@ QPlasmaTextDoc::EncodingMode QPlasmaTextDoc::encoding() const
 
 void QPlasmaTextDoc::adjustLineNumbers()
 {
-    fEditor->setMarginWidth(1, QString(" %1").arg(fEditor->lines()));
+    if (fDoLineNumbers)
+        fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
+}
+
+void QPlasmaTextDoc::maybeClean()
+{
+    if (!fPersistDirty)
+        makeClean();
 }

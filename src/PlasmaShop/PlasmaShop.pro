@@ -12,9 +12,9 @@ LIBS += -L../../../Plasma/bin -lPlasma
 
 # QScintilla
 win32 {
-    DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\"" PLAT_FONTSIZE=10
+    DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\""
 } else {
-    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\"" PLAT_FONTSIZE=10
+    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\""
 }
 INCLUDEPATH += ../../QScintilla/Qt4
 LIBS += -L../../bin -lqscintilla2-ps3
@@ -30,12 +30,20 @@ win32|macx {
     SOURCES += ../3rdParty/qticonloader.cpp
 }
 
+!win32 {
+    target.path = /usr/local/bin
+    INSTALLS += target
+    DEFINES += DATA_PATH="\"\\\"/usr/local/share/PlasmaShop\\\"\""
+}
+
 # PlasmaShop Sources
 HEADERS += Main.h \
+           OptionsDialog.h \
            QPlasmaDocument.h \
            QPlasmaTextDoc.h \
            ../QPlasma.h
 SOURCES += Main.cpp \
+           OptionsDialog.cpp \
            QPlasmaDocument.cpp \
            QPlasmaTextDoc.cpp
 RESOURCES += images.qrc

@@ -960,26 +960,36 @@ public:
     //! Set the background colour used to display matched braces to \a col.
     //! The default is white.
     //!
-    //! \sa setMatchedBraceForegroundColor()
+    //! \sa setMatchedBraceForegroundColor(), setMatchedBraceFont()
     void setMatchedBraceBackgroundColor(const QColor &col);
 
     //! Set the foreground colour used to display matched braces to \a col.
     //! The default is red.
     //!
-    //! \sa setMatchedBraceBackgroundColor()
+    //! \sa setMatchedBraceBackgroundColor(), setMatchedBraceFont()
     void setMatchedBraceForegroundColor(const QColor &col);
+
+    //! Set the font used to display matched braces to \a f.
+    //!
+    //! \sa setMatchedBraceForegroundColor(), setMatchedBraceBackgroundColor()
+    void setMatchedBraceFont(const QFont &f);
 
     //! Set the background colour used to display unmatched braces to \a col.
     //! The default is white.
     //!
-    //! \sa setUnmatchedBraceForegroundColor()
+    //! \sa setUnmatchedBraceForegroundColor(), setUnmatchedBraceFont()
     void setUnmatchedBraceBackgroundColor(const QColor &col);
 
     //! Set the foreground colour used to display unmatched braces to \a col.
     //! The default is blue.
     //!
-    //! \sa setUnmatchedBraceBackgroundColor()
+    //! \sa setUnmatchedBraceBackgroundColor(), setUnmatchedBraceFont()
     void setUnmatchedBraceForegroundColor(const QColor &col);
+
+    //! Set the font used to display unmatched braces to \a f.
+    //!
+    //! \sa setUnmatchedBraceForegroundColor(), setUnmatchedBraceBackgroundColor()
+    void setUnmatchedBraceFont(const QFont &f);
 
     //! Set the visual flags displayed when a line is wrapped.  \a eflag
     //! determines if and where the flag at the end of a line is displayed.
@@ -1130,6 +1140,10 @@ public slots:
     //! If the line \a line is folded then it is unfolded.  Otherwise it is
     //! folded.  This has the same effect as clicking in the fold margin.
     virtual void foldLine(int line);
+
+    //! Set all lines to be either folded or unfolded.
+    //! Why this isn't in here by default is beyond me
+    void setFoldAll(bool folded);
 
     //! Increases the indentation of line \a line by an indentation width.
     //!

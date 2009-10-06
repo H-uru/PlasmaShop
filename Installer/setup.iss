@@ -24,17 +24,18 @@ Name: PrpShop; Description: PrpShop 1.0; Types: Custom Full
 Name: VaultShop; Description: VaultShop 1.0; Types: Custom Full
 
 [Files]
-Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall
-Source: ..\bin\Plasma.dll; DestDir: {app}
-Source: ..\bin\zlib1.dll; DestDir: {app}
-Source: ..\bin\PlasmaShell.dll; DestDir: {app}
-Source: ..\bin\PlasmaShop.exe; DestDir: {app}; Components: PlasmaShop
-Source: ..\bin\PrpShop.exe; DestDir: {app}; Components: PrpShop
-Source: ..\bin\VaultShop.exe; DestDir: {app}; Components: VaultShop
-Source: ..\bin\QtCore4.dll; DestDir: {app}; Components: VaultShop PrpShop PlasmaShop
-Source: ..\bin\QtGui4.dll; DestDir: {app}; Components: VaultShop PrpShop PlasmaShop
-Source: ..\bin\QtOpenGL4.dll; DestDir: {app}; Components: PrpShop
-Source: ..\bin\qscintilla2-ps3.dll; DestDir: {app}; Components: PlasmaShop
+Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
+Source: ..\bin\Plasma.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\zlib1.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: ..\bin\PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
+Source: ..\bin\VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
+Source: ..\bin\QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: ..\bin\QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: ..\bin\QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
+Source: ..\bin\qscintilla2-ps3.dll; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: ..\COPYING; DestDir: {app}
 
 [Run]
 Filename: {tmp}\vcredist_x86.exe; Parameters: /q

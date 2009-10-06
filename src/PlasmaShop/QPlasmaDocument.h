@@ -42,6 +42,7 @@ signals:
     void statusChanged();
 
 public slots:
+    virtual void updateSettings();
     virtual void performCut();
     virtual void performCopy();
     virtual void performPaste();
@@ -55,7 +56,7 @@ protected:
     QString fFilename;
     bool fDirty;
 
-private slots:
+protected slots:
     void makeDirty();
     void makeClean();
 };

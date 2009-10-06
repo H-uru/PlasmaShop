@@ -43,32 +43,10 @@ CONFIG += qt warn_off release dll thread
 INCLUDEPATH = . ../include ../src
 DEFINES = QSCINTILLA_MAKE_DLL QT SCI_LEXER
 
-# Handle both Qt v4 and v3.
-target.path = $$[QT_INSTALL_LIBS]
-isEmpty(target.path) {
-    target.path = $(QTDIR)/lib
+!win32 {
+    target.path = /usr/local/lib
+    INSTALLS += target
 }
-
-header.path = $$[QT_INSTALL_HEADERS]
-header.files = QsciPS3
-isEmpty(header.path) {
-    header.path = $(QTDIR)/include/QsciPS3
-    header.files = QsciPS3/qsci*.h
-}
-
-trans.path = $$[QT_INSTALL_TRANSLATIONS]
-trans.files = qscintilla_*.qm
-isEmpty(trans.path) {
-    trans.path = $(QTDIR)/translations
-}
-
-qsci.path = $$[QT_INSTALL_DATA]
-qsci.files = ../qsci
-isEmpty(qsci.path) {
-    qsci.path = $(QTDIR)
-}
-
-INSTALLS += header trans qsci target
 
 HEADERS = \
     ./QsciPS3/qsciglobal.h \
@@ -185,11 +163,3 @@ SOURCES = \
     ../src/StyleContext.cpp \
     ../src/ViewStyle.cpp \
     ../src/XPM.cpp
-
-TRANSLATIONS = \
-    qscintilla_cs.ts \
-    qscintilla_de.ts \
-    qscintilla_es.ts \
-    qscintilla_fr.ts \
-    qscintilla_pt_br.ts \
-    qscintilla_ru.ts

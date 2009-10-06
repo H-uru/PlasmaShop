@@ -9,7 +9,7 @@
 #include <QMenu>
 #include "QPlasmaDocument.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 83)"
+#define PLASMASHOP_VERSION "3.0 (build 84)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -63,6 +63,7 @@ private slots:
     void onSaveFile();
     void onSaveAs();
     void onRevert();
+    void onOptions();
 
     void onCut();
     void onCopy();
@@ -71,6 +72,25 @@ private slots:
     void onSelectAll();
     void onUndo();
     void onRedo();
+
+    void onTextCollapseAll();
+    void onTextExpandAll();
+    void onTextStxNone();
+    void onTextStxPython();
+    void onTextStxSDL();
+    void onTextStxIni();
+    void onTextStxConsole();
+    void onTextStxXML();
+    void onTextStxHex();
+    void onTextStxFX();
+    void onTextEncNone();
+    void onTextEncXtea();
+    void onTextEncAes();
+    void onTextEncDroid();
+    void onTextTypeAnsi();
+    void onTextTypeUTF8();
+    void onTextTypeUTF16();
+    void onTextTypeUTF32();
 
     void onCloseTab(int idx);
     void onChangeTab(int idx);

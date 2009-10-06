@@ -17,6 +17,11 @@ win32|macx {
     SOURCES += ../3rdParty/qticonloader.cpp
 }
 
+!win32 {
+    target.path = /usr/local/bin
+    INSTALLS += target
+}
+
 # VaultShop Sources
 HEADERS += Main.h \
            ../QPlasma.h \

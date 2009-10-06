@@ -1394,6 +1394,39 @@ void QsciScintilla::foldAll(bool children)
 }
 
 
+// Set all folders to be folded or unfolded.  Like foldAll(), but controllable
+void QsciScintilla::setFoldAll(bool folded)
+{
+    recolor();
+
+    int maxLine = SendScintilla(SCI_GETLINECOUNT);
+
+    for (int line = 0; line < maxLine; line++)
+    {
+        int level = SendScintilla(SCI_GETFOLDLEVEL, line);
+
+        if (!(level & SC_FOLDLEVELHEADERFLAG))
+            continue;
+
+        if (!folded)
+        {
+            SendScintilla(SCI_SETFOLDEXPANDED, line, 1);
+            foldExpand(line, true, false, 0, level);
+            line--;
+        }
+        else
+        {
+            int lineMaxSubord = SendScintilla(SCI_GETLASTCHILD, line, -1);
+
+            SendScintilla(SCI_SETFOLDEXPANDED, line, 0L);
+
+            if (lineMaxSubord > line)
+                SendScintilla(SCI_HIDELINES, line + 1, lineMaxSubord);
+        }
+    }
+}
+
+
 // Handle a fold change.  This is mostly taken from SciTE.
 void QsciScintilla::foldChanged(int line,int levelNow,int levelPrev)
 {
@@ -2651,6 +2684,13 @@ void QsciScintilla::setMatchedBraceForegroundColor(const QColor &col)
 }
 
 
+// Set the matched brace font.
+void QsciScintilla::setMatchedBraceFont(const QFont &f)
+{
+    setStylesFont(f, STYLE_BRACELIGHT);
+}
+
+
 // Set the unmatched brace background colour.
 void QsciScintilla::setUnmatchedBraceBackgroundColor(const QColor &col)
 {
@@ -2662,6 +2702,13 @@ void QsciScintilla::setUnmatchedBraceBackgroundColor(const QColor &col)
 void QsciScintilla::setUnmatchedBraceForegroundColor(const QColor &col)
 {
     SendScintilla(SCI_STYLESETFORE, STYLE_BRACEBAD, col);
+}
+
+
+// Set the unmatched brace font.
+void QsciScintilla::setUnmatchedBraceFont(const QFont &f)
+{
+    setStylesFont(f, STYLE_BRACEBAD);
 }
 
 

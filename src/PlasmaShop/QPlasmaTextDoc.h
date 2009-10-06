@@ -50,6 +50,7 @@ public:
     EncodingMode encoding() const;
 
 public slots:
+    virtual void updateSettings();
     virtual void performCut();
     virtual void performCopy();
     virtual void performPaste();
@@ -57,12 +58,18 @@ public slots:
     virtual void performSelectAll();
     virtual void performUndo();
     virtual void performRedo();
+    void expandAll();
+    void collapseAll();
 
 private:
     QsciScintilla* fEditor;
     SyntaxMode fSyntax;
     EncryptionMode fEncryption;
     EncodingMode fEncoding;
+    bool fDoLineNumbers;
+    bool fLexersInited;
+    bool fPersistDirty;
+    unsigned int fDroidKey[4];
 
     QsciLexerFni* fLexerFNI;
     QsciLexerFX* fLexerFX;
@@ -74,6 +81,7 @@ private:
 
 private slots:
     void adjustLineNumbers();
+    void maybeClean();
 };
 
 #endif

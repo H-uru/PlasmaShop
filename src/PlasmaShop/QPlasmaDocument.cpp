@@ -24,10 +24,10 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
 
     QString ext, fnameNoPath;
     QRegExp re;
-    re.setPattern(".*\\.([^.]*)");
+    re.setPattern(".*\\.([^\\.]*)");
     if (re.indexIn(filename) >= 0)
         ext = re.cap(1).toLower();
-    re.setPattern(".*[\\/]([^\\/]*)");
+    re.setPattern(".*[\\\\\\/]([^\\\\\\/]*)");
     if (re.indexIn(filename) >= 0)
         fnameNoPath = re.cap(1).toLower();
 
@@ -150,6 +150,9 @@ bool QPlasmaDocument::canUndo() const
 
 bool QPlasmaDocument::canRedo() const
 { return false; }
+
+void QPlasmaDocument::updateSettings()
+{ }
 
 void QPlasmaDocument::performCut()
 { }
