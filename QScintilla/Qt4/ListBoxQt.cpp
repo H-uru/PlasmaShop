@@ -39,7 +39,7 @@
 #include <stdlib.h>
 
 #include "SciClasses.h"
-#include "Qsci/qsciscintilla.h"
+#include "QsciPS3/qsciscintilla.h"
 
 
 ListBoxQt::ListBoxQt()

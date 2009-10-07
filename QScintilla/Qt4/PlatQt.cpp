@@ -54,7 +54,7 @@
 #include "Platform.h"
 #include "XPM.h"
 
-#include "Qsci/qsciscintillabase.h"
+#include "QsciPS3/qsciscintillabase.h"
 #include "SciClasses.h"
 
 

@@ -43,7 +43,7 @@
 #include <qdrag.h>
 #include <qmimedata.h>
 
-#include "Qsci/qsciscintillabase.h"
+#include "QsciPS3/qsciscintillabase.h"
 #include "ScintillaQt.h"
 #include "SciClasses.h"
 
