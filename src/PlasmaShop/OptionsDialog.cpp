@@ -35,6 +35,10 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     fVaultEditorPath->setCompleter(new QCompleter(dirModel, fVaultEditorPath));
     QToolButton* browseVaultEditor = new QToolButton(tabProgs);
     browseVaultEditor->setText("...");
+    fImageEditorPath = new QLineEdit(tabProgs);
+    fImageEditorPath->setCompleter(new QCompleter(dirModel, fImageEditorPath));
+    QToolButton* browseImageEditor = new QToolButton(tabProgs);
+    browseImageEditor->setText("...");
 
     QGridLayout* layProgs = new QGridLayout(tabProgs);
     layProgs->setContentsMargins(8, 8, 8, 8);
@@ -46,7 +50,11 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     layProgs->addWidget(new QLabel(tr("Vault Editor:"), tabProgs), 3, 0, 1, 3);
     layProgs->addWidget(fVaultEditorPath, 4, 1);
     layProgs->addWidget(browseVaultEditor, 4, 2);
-    layProgs->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0, 1, 3);
+    layProgs->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 5, 0, 1, 3);
+    layProgs->addWidget(new QLabel(tr("Image Editor:"), tabProgs), 6, 0, 1, 3);
+    layProgs->addWidget(fImageEditorPath, 7, 1);
+    layProgs->addWidget(browseImageEditor, 7, 2);
+    layProgs->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 8, 0, 1, 3);
     tabs->addTab(tabProgs, tr("General"));
 
     // Editor (Scintilla) tab
@@ -105,6 +113,7 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     QSettings settings("PlasmaShop", "PlasmaShop");
     fPrpEditorPath->setText(settings.value("PrpEditorPath", DEFAULT_PRP_EDITOR).toString());
     fVaultEditorPath->setText(settings.value("VaultEditorPath", DEFAULT_VAULT_EDITOR).toString());
+    fImageEditorPath->setText(settings.value("ImageEditorPath", "").toString());
     fSciMargin->setChecked(settings.value("SciMargin", true).toBool());
     fSciFolding->setChecked(settings.value("SciFoldMargin", true).toBool());
     fSciLineNumbers->setChecked(settings.value("SciLineNumberMargin", true).toBool());
@@ -132,6 +141,7 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
     connect(browsePrpEditor, SIGNAL(clicked()), this, SLOT(onBrowsePrpEditor()));
     connect(browseVaultEditor, SIGNAL(clicked()), this, SLOT(onBrowseVaultEditor()));
+    connect(browseImageEditor, SIGNAL(clicked()), this, SLOT(onBrowseImageEditor()));
     connect(fSciMargin, SIGNAL(clicked(bool)), fSciFolding, SLOT(setEnabled(bool)));
     connect(fSciMargin, SIGNAL(clicked(bool)), fSciLineNumbers, SLOT(setEnabled(bool)));
     connect(fSciLongLineMark, SIGNAL(clicked(bool)), fSciLongLineSize, SLOT(setEnabled(bool)));
@@ -155,10 +165,19 @@ void OptionsDialog::onSave()
                               QMessageBox::Ok);
         return;
     }
+    if (!fImageEditorPath->text().isEmpty() &&
+        (!QFile::exists(GetPSBinPath(fImageEditorPath->text())) ||
+         !QFileInfo(GetPSBinPath(fImageEditorPath->text())).isFile())) {
+        QMessageBox::critical(this, tr("Invalid Path"),
+                              tr("You have entered an invalid path to your Image editor."),
+                              QMessageBox::Ok);
+        return;
+    }
 
     QSettings settings("PlasmaShop", "PlasmaShop");
     settings.setValue("PrpEditorPath", fPrpEditorPath->text());
     settings.setValue("VaultEditorPath", fVaultEditorPath->text());
+    settings.setValue("ImageEditorPath", fImageEditorPath->text());
     settings.setValue("SciMargin", fSciMargin->isChecked());
     settings.setValue("SciFoldMargin", fSciFolding->isChecked());
     settings.setValue("SciLineNumberMargin", fSciLineNumbers->isChecked());
@@ -201,6 +220,15 @@ void OptionsDialog::onBrowseVaultEditor()
         fVaultEditorPath->setText(path);
 }
 
+void OptionsDialog::onBrowseImageEditor()
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("Select Image Editor"),
+                                                GetPSBinPath(fImageEditorPath->text()),
+                                                EXECFILTER);
+    if (!path.isEmpty())
+        fImageEditorPath->setText(path);
+}
+
 void OptionsDialog::onSetFont()
 {
     fSciFont->setFont(QFontDialog::getFont(0, fSciFont->font(), this,
@@ -209,6 +237,12 @@ void OptionsDialog::onSetFont()
 
 
 /* Path getter magic */
+#include <QDesktopServices>
+#ifdef Q_OS_WIN
+    // For SHGetFolderPath
+    #include <shlobj.h>
+#endif
+
 QString s_binBasePath;
 
 QString GetPSBinPath(QString filename)
@@ -225,4 +259,22 @@ QString GetPSDataPath(QString filename)
     // POSIX stores data in a separate location
     return QDir(DATA_PATH).absoluteFilePath(filename);
 #endif
+}
+
+QString GetAppDataPath()
+{
+#ifdef Q_OS_WIN
+    // Find the Local AppData path
+    WCHAR path[MAX_PATH];
+    SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, path);
+    return QString::fromUtf16(path);
+#else
+    // Just return the user's home dir
+    return QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#endif
+}
+
+QString GetDocumentsPath()
+{
+    return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
 }

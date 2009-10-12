@@ -309,6 +309,9 @@ static void ColouriseHexLine(
                     } else if (styler.Match(startLine + i, "Sec")) {
                         i += strlen("Sec");
                         styler.ColourTo(startLine + i - 1, SCE_HEX_KEYWORD);
+                    } else if (styler.Match(startLine + i, "sec")) {
+                        i += strlen("sec");
+                        styler.ColourTo(startLine + i - 1, SCE_HEX_KEYWORD);
                     } else {
                         // Nothing matched, just move along
                         styler.ColourTo(startLine + i, SCE_PROPS_DEFAULT);

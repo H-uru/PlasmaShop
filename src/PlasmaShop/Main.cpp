@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QProcess>
+#include <QLabel>
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
@@ -173,6 +174,10 @@ PlasmaShopMain::PlasmaShopMain()
     mainTbar->addSeparator();
     mainTbar->addAction(fActions[kEditUndo]);
     mainTbar->addAction(fActions[kEditRedo]);
+    fGameSelector = new QComboBox(mainTbar);
+    mainTbar->addSeparator();
+    mainTbar->addWidget(new QLabel(tr("Game: "), this));
+    mainTbar->addWidget(fGameSelector);
     statusBar();
 
     // Tabbed Editor Pane for open documents
@@ -184,14 +189,14 @@ PlasmaShopMain::PlasmaShopMain()
     // Object Browser
     fBrowserDock = new QDockWidget(tr("File Browser"), this);
     fBrowserDock->setObjectName("BrowserDock");
-    fBrowserTree = new QTreeView(fBrowserDock);
+    fBrowserTree = new QTreeWidget(fBrowserDock);
     fBrowserDock->setWidget(fBrowserTree);
     fBrowserDock->setAllowedAreas(Qt::LeftDockWidgetArea |
                                   Qt::RightDockWidgetArea);
     fBrowserDock->setFeatures(QDockWidget::DockWidgetMovable |
                               QDockWidget::DockWidgetFloatable);
     fBrowserTree->setUniformRowHeights(true);
-    //fBrowserTree->setHeaderHidden(true);
+    fBrowserTree->setHeaderHidden(true);
     fBrowserTree->setContextMenuPolicy(Qt::CustomContextMenu);
     addDockWidget(Qt::LeftDockWidgetArea, fBrowserDock);
 
@@ -244,11 +249,16 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kTextTypeUTF16], SIGNAL(triggered()), this, SLOT(onTextTypeUTF16()));
     connect(fActions[kTextTypeUTF32], SIGNAL(triggered()), this, SLOT(onTextTypeUTF32()));
 
+    connect(fGameSelector, SIGNAL(activated(int)), this, SLOT(onSelectGame(int)));
+    connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
+            this, SLOT(onBrowserItemActivated(QTreeWidgetItem*, int)));
     connect(fEditorPane, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseTab(int)));
     connect(fEditorPane, SIGNAL(currentChanged(int)), this, SLOT(onChangeTab(int)));
 
-    // Set up menus
+    // Set up menus, etc
     onChangeTab(-1);
+    populateGameList();
+    onSelectGame(fGameSelector->currentIndex());
 }
 
 void PlasmaShopMain::loadFile(QString filename)
@@ -259,10 +269,10 @@ void PlasmaShopMain::loadFile(QString filename)
     re.setPattern(".*\\.([^\\.]*)");
     if (re.indexIn(filename) >= 0)
         ext = re.cap(1).toLower();
-    re.setPattern(".*[\\\\\\/]([^\\\\\\/]*)");
+    re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
     if (re.indexIn(filename) >= 0) {
-        fnameNoPath = re.cap(1).toLower();
-        fnameDisplay = re.cap(1);
+        fnameNoPath = re.cap(2).toLower();
+        fnameDisplay = re.cap(2);
     }
 
     DocumentType dtype = kDocUnknown;
@@ -286,8 +296,18 @@ void PlasmaShopMain::loadFile(QString filename)
         return;
     } else if (ext == "pyc") {
         // TODO: Launch Decompyler...
-    } else if (ext == "tga") {
-        // TODO: Launch Image editor...
+    } else if (ext == "tga" || ext == "jpg") {
+        QSettings settings("PlasmaShop", "PlasmaShop");
+        QString editor = settings.value("ImageEditorPath", "").toString();
+        if (!editor.isEmpty()) {
+            QProcess proc;
+            proc.startDetached(GetPSBinPath(editor), QStringList(filename));
+        } else {
+            QMessageBox::information(this, tr("No Image Editor set"),
+                                     tr("Error: You have not set any image editor yet.  "
+                                        "Please set one in the PlasmaShop Options to edit this file."),
+                                     QMessageBox::Ok);
+        }
     } else if (fnameNoPath == "dev_mode.dat") {
         // TODO: Open Dev Mode editor
         return;
@@ -308,13 +328,13 @@ void PlasmaShopMain::loadFile(QString filename)
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
         } else if (dtype == kDocText) {
-            if (ext == "fni")
+            if (ext == "fni" || ext == "cfg")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
             else if (ext == "fx")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxFX);
             else if (ext == "hex")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxHex);
-            else if (ext == "age" || ext == "cfg" || ext == "ini")
+            else if (ext == "age")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxIni);
             else if (ext == "py")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxPython);
@@ -322,10 +342,16 @@ void PlasmaShopMain::loadFile(QString filename)
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxSDL);
             else if (ext == "loc" || ext == "sub" || ext == "xml")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxXML);
+            else if (fnameNoPath == "serverconfig.ini")
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
+            else if (ext == "ini")
+                ((QPlasmaTextDoc*)plDoc)->setSyntax(((QPlasmaTextDoc*)plDoc)->GuessIniType());
             else
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
         }
         connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
+        connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
+        connect(plDoc, SIGNAL(becameClean()), this, SLOT(onDocClean()));
 
         // Update menus
         onChangeTab(fEditorPane->currentIndex());
@@ -499,9 +525,9 @@ void PlasmaShopMain::onSaveAs()
         // Update the displayed filename for the file
         QString fnameDisplay = filename;
         QRegExp re;
-        re.setPattern(".*[\\\\\\/]([^\\\\\\/]*)");
+        re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
         if (re.indexIn(filename) >= 0)
-            fnameDisplay = re.cap(1);
+            fnameDisplay = re.cap(2);
         fEditorPane->setTabText(fEditorPane->currentIndex(), fnameDisplay);
     }
 }
@@ -835,6 +861,39 @@ void PlasmaShopMain::setTextEncoding(int sel)
     fActions[kTextTypeUTF32]->setChecked(sel == kTextTypeUTF32);
 }
 
+void PlasmaShopMain::populateGameList()
+{
+    QSettings settings("PlasmaShop", "PlasmaShop");
+    settings.beginGroup("Games");
+    fGames.clear();
+    fGameSelector->clear();
+    fGameSelector->addItem(tr("(None)"), 0);
+    QStringList gamesList = settings.childKeys();
+    foreach (QString gm, gamesList) {
+        QStringList gmParams = settings.value(gm).toStringList();
+        GameInfo inf;
+        inf.fGameTitle = gm;
+        inf.fGamePath = gmParams[0];
+        inf.fGameType = gmParams[1].toInt();
+        fGames.append(inf);
+        fGameSelector->addItem(GameInfo::GetGameIcon(inf.fGameType),
+                               inf.fGameTitle, fGames.count());
+    }
+    fGameSelector->insertSeparator(fGameSelector->count());
+    fGameSelector->addItem(tr("Edit Games List..."), -1);
+    settings.endGroup();
+
+    QString curGame = settings.value("CurrentGame", QString()).toString();
+    fCurrentGame = 0;
+    if (!curGame.isEmpty()) {
+        for (int i=0; i<fGames.size(); i++) {
+            if (fGames[i].fGameTitle == curGame)
+                fCurrentGame = (i + 1);
+        }
+    }
+    fGameSelector->setCurrentIndex(fCurrentGame);
+}
+
 void PlasmaShopMain::onChangeTab(int idx)
 {
     // Reset menu states
@@ -974,6 +1033,405 @@ void PlasmaShopMain::onChangeTab(int idx)
     }
 }
 
+static void RecursiveAddFiles(QTreeWidgetItem* parent, QString folderType,
+                              QStringList fileFilter, QDir gameRoot)
+{
+    QStringList subdirs = gameRoot.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    foreach (QString dir, subdirs) {
+        gameRoot.cd(dir);
+        QTreeWidgetItem* folder = new QTreeWidgetItem(parent);
+        folder->setIcon(0, QPlasmaDocument::GetDocIcon(folderType));
+        folder->setText(0, dir);
+        folder->setData(0, Qt::UserRole, folderType);
+        RecursiveAddFiles(folder, folderType, fileFilter, gameRoot);
+        if (folder->childCount() == 0)
+            delete folder;
+        gameRoot.cdUp();
+    }
+
+    QStringList files = gameRoot.entryList(fileFilter);
+    foreach (QString f, files) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(parent);
+        item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
+        item->setText(0, f);
+        item->setData(0, Qt::UserRole, gameRoot.filePath(f));
+    }
+}
+
+void PlasmaShopMain::onSelectGame(int gameId)
+{
+    int which = fGameSelector->itemData(gameId).toInt();
+    if (which == -1) {
+        GameListDialog dlg(this);
+        dlg.exec();
+        populateGameList();
+    } else {
+        // Save the selected value
+        QSettings settings("PlasmaShop", "PlasmaShop");
+        settings.setValue("CurrentGame", (fGameSelector->currentIndex() > 0)
+                                         ? fGameSelector->currentText() : QString());
+        fCurrentGame = which;
+    }
+
+    // Update the browser for the selected game
+    fBrowserTree->clear();
+    if (fCurrentGame <= 0)
+        return;
+
+    QRegExp re;
+    int gameType = fGames[fCurrentGame-1].fGameType;
+    QDir gameRoot(fGames[fCurrentGame-1].fGamePath);
+    QDir appDataRoot(GetAppDataPath());
+    QDir docRoot(GetDocumentsPath());
+    gameRoot.setSorting(QDir::Name | QDir::IgnoreCase);
+    gameRoot.setFilter(QDir::Files);
+
+    if (gameRoot.cd("dat")) {
+        // Ages; all game types
+        {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<AGEFOLD>"));
+            fldr->setText(0, tr("Ages"));
+            fldr->setData(0, Qt::UserRole, "<AGEFOLD>");
+            QStringList files = gameRoot.entryList(QStringList("*.age"));
+            foreach (QString f, files) {
+                re.setPattern("(.*)\\.[^\\.]*");
+                QString ageDisp = f;
+                if (re.indexIn(f) >= 0)
+                    ageDisp = re.cap(1);
+                QTreeWidgetItem* age = new QTreeWidgetItem(fldr);
+                age->setIcon(0, QPlasmaDocument::GetDocIcon("<AGE>"));
+                age->setText(0, ageDisp);
+                age->setData(0, Qt::UserRole, "<AGE>");
+
+                QTreeWidgetItem* distFold = new QTreeWidgetItem(age);
+                distFold->setIcon(0, QPlasmaDocument::GetDocIcon("<AGEFOLD>"));
+                distFold->setText(0, tr("Districts"));
+                distFold->setData(0, Qt::UserRole, "<AGEFOLD>");
+                QStringList districts = gameRoot.entryList(QStringList(QString("%1_*.prp").arg(ageDisp)));
+                foreach (QString d, districts) {
+                    re.setPattern("_(District_)?(.*)\\.[^\\.]*");
+                    QString pageDisp = d;
+                    if (re.indexIn(d) >= 0)
+                        pageDisp = re.cap(2);
+                    QTreeWidgetItem* page = new QTreeWidgetItem(distFold);
+                    page->setIcon(0, QPlasmaDocument::GetDocIcon(d));
+                    page->setText(0, pageDisp);
+                    page->setData(0, Qt::UserRole, gameRoot.filePath(d));
+                }
+
+                QTreeWidgetItem* ageFile = new QTreeWidgetItem(age);
+                ageFile->setIcon(0, QPlasmaDocument::GetDocIcon(f));
+                ageFile->setText(0, f);
+                ageFile->setData(0, Qt::UserRole, gameRoot.filePath(f));
+
+                QString csv = ageDisp + ".csv";
+                if (gameRoot.exists(csv)) {
+                    QTreeWidgetItem* csvFile = new QTreeWidgetItem(age);
+                    csvFile->setIcon(0, QPlasmaDocument::GetDocIcon(csv));
+                    csvFile->setText(0, csv);
+                    csvFile->setData(0, Qt::UserRole, gameRoot.filePath(csv));
+                }
+
+                QString fni = ageDisp + ".fni";
+                if (gameRoot.exists(fni)) {
+                    QTreeWidgetItem* fniFile = new QTreeWidgetItem(age);
+                    fniFile->setIcon(0, QPlasmaDocument::GetDocIcon(fni));
+                    fniFile->setText(0, fni);
+                    fniFile->setData(0, Qt::UserRole, gameRoot.filePath(fni));
+                }
+
+                QString sum = ageDisp + ".sum";
+                if (gameRoot.exists(sum)) {
+                    QTreeWidgetItem* sumFile = new QTreeWidgetItem(age);
+                    sumFile->setIcon(0, QPlasmaDocument::GetDocIcon(sum));
+                    sumFile->setText(0, sum);
+                    sumFile->setData(0, Qt::UserRole, gameRoot.filePath(sum));
+                }
+            }
+        }
+
+        // Fonts; all games except Crowthistle
+        if (gameType != GameInfo::kGameCrowthistle) {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<FONTFOLD>"));
+            fldr->setText(0, tr("Fonts"));
+            fldr->setData(0, Qt::UserRole, "<FONTFOLD>");
+
+            // Font packages; Myst 5 and Hex Isle
+            if (gameType == GameInfo::kGameMyst5 || gameType == GameInfo::kGameHexIsle) {
+                if (gameRoot.exists("Fonts.pfp")) {
+                    QTreeWidgetItem* pfpFile = new QTreeWidgetItem(fldr);
+                    pfpFile->setIcon(0, QPlasmaDocument::GetDocIcon("Fonts.pfp"));
+                    pfpFile->setText(0, "Fonts.pfp");
+                    pfpFile->setData(0, Qt::UserRole, gameRoot.filePath("Fonts.pfp"));
+#ifndef Q_OS_WIN
+                } else if (gameRoot.exists("fonts.pfp")) {
+                    // For case-sensitive OSes
+                    QTreeWidgetItem* pfpFile = new QTreeWidgetItem(fldr);
+                    pfpFile->setIcon(0, QPlasmaDocument::GetDocIcon("fonts.pfp"));
+                    pfpFile->setText(0, "fonts.pfp");
+                    pfpFile->setData(0, Qt::UserRole, gameRoot.filePath("fonts.pfp"));
+#endif
+                }
+            }
+            RecursiveAddFiles(fldr, "<FONTFOLD>", QStringList("*.p2f"), gameRoot);
+        }
+
+        // Cursors and Images; Myst 5, CT and Hex Isle
+        if (gameType == GameInfo::kGameMyst5 || gameType == GameInfo::kGameCrowthistle
+            || gameType == GameInfo::kGameHexIsle) {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<IMGFOLD>"));
+            fldr->setText(0, tr("Images"));
+            fldr->setData(0, Qt::UserRole, "<IMGFOLD>");
+            if (gameRoot.exists("Cursors.dat")) {
+                QTreeWidgetItem* csrFile = new QTreeWidgetItem(fldr);
+                csrFile->setIcon(0, QPlasmaDocument::GetDocIcon("Cursors.dat"));
+                csrFile->setText(0, "Cursors.dat");
+                csrFile->setData(0, Qt::UserRole, gameRoot.filePath("Cursors.dat"));
+#ifndef Q_OS_WIN
+            } else if (gameRoot.exists("cursors.dat")) {
+                // For case-sensitive OSes
+                QTreeWidgetItem* csrFile = new QTreeWidgetItem(fldr);
+                csrFile->setIcon(0, QPlasmaDocument::GetDocIcon("cursors.dat"));
+                csrFile->setText(0, "cursors.dat");
+                csrFile->setData(0, Qt::UserRole, gameRoot.filePath("cursors.dat"));
+#endif
+            }
+            RecursiveAddFiles(fldr, "<IMGFOLD>", QStringList("*.tga"), gameRoot);
+        }
+
+        // Avatar and KI Images; Uru Live
+        if (gameType == GameInfo::kGameUruLive) {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<IMGFOLD>"));
+            fldr->setText(0, tr("Images"));
+            fldr->setData(0, Qt::UserRole, "<IMGFOLD>");
+            if (appDataRoot.cd("Uru Live")) {
+                RecursiveAddFiles(fldr, "<IMGFOLD>", QStringList("*.jpg"), appDataRoot);
+                appDataRoot.cdUp();
+            }
+            if (docRoot.cd("Uru Live")) {
+                RecursiveAddFiles(fldr, "<IMGFOLD>", QStringList("*.jpg"), docRoot);
+                docRoot.cdUp();
+            }
+            if (fldr->childCount() == 0)
+                delete fldr;
+        }
+
+        // Game Scripts; Hex Isle
+        if (gameType == GameInfo::kGameHexIsle) {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<AGEFOLD>"));
+            fldr->setText(0, tr("Levels"));
+            fldr->setData(0, Qt::UserRole, "<AGEFOLD>");
+
+            QStringList files = gameRoot.entryList(QStringList("*.hex"));
+            foreach (QString f, files) {
+                QTreeWidgetItem* item = new QTreeWidgetItem(fldr);
+                item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
+                item->setText(0, f);
+                item->setData(0, Qt::UserRole, gameRoot.filePath(f));
+            }
+        }
+
+        // Localization and Subtitles; Uru Live, Myst 5, MQO
+        if (gameType == GameInfo::kGameUruLive || gameType == GameInfo::kGameMyst5
+            || gameType == GameInfo::kGameMQO) {
+            QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+            fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+            fldr->setText(0, tr("Localization"));
+            fldr->setData(0, Qt::UserRole, "<DATAFOLD>");
+            RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
+                              << "*.loc" << "*.sub", gameRoot);
+        }
+
+        gameRoot.cdUp();
+    }
+
+    // Logs; All games
+    {
+        QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+        fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+        fldr->setText(0, tr("Logs"));
+        fldr->setData(0, Qt::UserRole, "<DATAFOLD>");
+
+        // Logs for Uru Live
+        if (gameType == GameInfo::kGameUruLive) {
+            if (appDataRoot.cd("Uru Live")) {
+                QTreeWidgetItem* appData = new QTreeWidgetItem(fldr);
+                appData->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                appData->setText(0, tr("AppData"));
+                appData->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(appData, "<DATAFOLD>", QStringList()
+                                  << "*.txt" << "*.log" << "*.elf", appDataRoot);
+                appDataRoot.cdUp();
+                if (appData->childCount() == 0)
+                    delete appData;
+            }
+            if (docRoot.cd("Uru Live")) {
+                QTreeWidgetItem* docs = new QTreeWidgetItem(fldr);
+                docs->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                docs->setText(0, tr("Uru Live"));
+                docs->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(docs, "<DATAFOLD>", QStringList()
+                                  << "*.txt" << "*.log" << "*.elf", docRoot);
+                docRoot.cdUp();
+                if (docs->childCount() == 0)
+                    delete docs;
+            }
+        }
+
+        // Logs for other games
+        if (gameRoot.cd("Log")) {
+            RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
+                              << "*.txt" << "*.log" << "*.elf", gameRoot);
+            gameRoot.cdUp();
+        }
+#ifndef Q_OS_WIN
+        if (gameRoot.cd("log")) {
+            // For case-sensitive OSes
+            RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
+                              << "*.txt" << "*.log" << "*.elf", gameRoot);
+            gameRoot.cdUp();
+        }
+#endif
+
+        if (fldr->childCount() == 0)
+            delete fldr;
+    }
+
+    if (gameRoot.cd("Python")) {
+        // Python; All games
+        QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+        fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<PYFOLD>"));
+        fldr->setText(0, tr("Python"));
+        fldr->setData(0, Qt::UserRole, "<PYFOLD>");
+        RecursiveAddFiles(fldr, "<PYFOLD>", QStringList()
+                          << "*.pak" << "*.py", gameRoot);
+        gameRoot.cdUp();
+    }
+
+    if (gameRoot.cd("SDL")) {
+        // SDL; All games
+        QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+        fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<SDLFOLD>"));
+        fldr->setText(0, tr("SDL"));
+        fldr->setData(0, Qt::UserRole, "<SDLFOLD>");
+        RecursiveAddFiles(fldr, "<SDLFOLD>", QStringList("*.sdl"), gameRoot);
+        gameRoot.cdUp();
+    }
+
+    // Settings; All games
+    {
+        QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+        fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+        fldr->setText(0, tr("Settings"));
+        fldr->setData(0, Qt::UserRole, "<DATAFOLD>");
+
+        if (gameType == GameInfo::kGameCrowthistle) {
+            // Settings for Crowthistle
+            if (appDataRoot.cd("Crowthistle")) {
+                RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList("*.ini"), appDataRoot);
+                appDataRoot.cdUp();
+            }
+        } else if (gameType == GameInfo::kGameHexIsle) {
+            // Settings for Hex Isle
+            if (appDataRoot.cd("Hexisle")) {
+                RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
+                                  << "*.fni" << "*.ini" << "*.hex", appDataRoot);
+                appDataRoot.cdUp();
+            }
+        } else if (gameType == GameInfo::kGameMyst5) {
+            // Settings for Myst 5
+            if (appDataRoot.cd("Myst V Demo")) {
+                QTreeWidgetItem* appData = new QTreeWidgetItem(fldr);
+                appData->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                appData->setText(0, tr("Demo"));
+                appData->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(appData, "<DATAFOLD>", QStringList("*.ini"), appDataRoot);
+                appDataRoot.cdUp();
+                if (appData->childCount() == 0)
+                    delete appData;
+            }
+            if (appDataRoot.cd("Myst V End of Ages")) {
+                QTreeWidgetItem* appData = new QTreeWidgetItem(fldr);
+                appData->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                appData->setText(0, tr("End of Ages"));
+                appData->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(appData, "<DATAFOLD>", QStringList("*.ini"), appDataRoot);
+                appDataRoot.cdUp();
+                if (appData->childCount() == 0)
+                    delete appData;
+            }
+        } else if (gameType == GameInfo::kGameUruLive) {
+            // Settings for Uru Live
+            if (appDataRoot.cd("Uru Live")) {
+                QTreeWidgetItem* appData = new QTreeWidgetItem(fldr);
+                appData->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                appData->setText(0, tr("AppData"));
+                appData->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(appData, "<DATAFOLD>", QStringList("*.ini"), appDataRoot);
+                appDataRoot.cdUp();
+                if (appData->childCount() == 0)
+                    delete appData;
+            }
+            if (docRoot.cd("Uru Live")) {
+                QTreeWidgetItem* docs = new QTreeWidgetItem(fldr);
+                docs->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+                docs->setText(0, tr("Uru Live"));
+                docs->setData(0, Qt::UserRole, "<DATAFOLD>");
+                RecursiveAddFiles(docs, "<DATAFOLD>", QStringList("*.ini"), docRoot);
+                docRoot.cdUp();
+                if (docs->childCount() == 0)
+                    delete docs;
+            }
+        }
+
+        // All other settings in the game folder
+        RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
+                          << "*.cfg" << "*.ini", gameRoot);
+
+        if (fldr->childCount() == 0)
+            delete fldr;
+    }
+
+    if (gameRoot.cd("fx") && gameType == GameInfo::kGameHexIsle) {
+        // Shaders; Hex Isle
+        QTreeWidgetItem* fldr = new QTreeWidgetItem(fBrowserTree);
+        fldr->setIcon(0, QPlasmaDocument::GetDocIcon("<DATAFOLD>"));
+        fldr->setText(0, tr("Shaders"));
+        fldr->setData(0, Qt::UserRole, "<DATAFOLD>");
+        RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList("*.fx"), gameRoot);
+        gameRoot.cdUp();
+    }
+
+    // Vault; Single-Player Uru
+    if (gameType == GameInfo::kGameUru && gameRoot.exists("sav")) {
+        QTreeWidgetItem* vault = new QTreeWidgetItem(fBrowserTree);
+        vault->setIcon(0, QPlasmaDocument::GetDocIcon("<VAULT>"));
+        vault->setText(0, tr("Single-Player Vault"));
+        vault->setData(0, Qt::UserRole, QString("VAULT:%1").arg(gameRoot.absolutePath()));
+    }
+}
+
+void PlasmaShopMain::onBrowserItemActivated(QTreeWidgetItem* item, int)
+{
+    QString filename = item->data(0, Qt::UserRole).toString();
+    if (filename[0] == '<')
+        return;
+    if (filename.startsWith("VAULT:")) {
+        QString path = filename.mid(6);
+        QSettings settings("PlasmaShop", "PlasmaShop");
+        QString editor = settings.value("VaultEditorPath", DEFAULT_VAULT_EDITOR).toString();
+        QProcess proc;
+        proc.startDetached(GetPSBinPath(editor), QStringList(path));
+        return;
+    }
+    loadFile(filename);
+}
+
 void PlasmaShopMain::updateMenuStatus()
 {
     if (fEditorPane->currentIndex() < 0)
@@ -986,6 +1444,22 @@ void PlasmaShopMain::updateMenuStatus()
     fActions[kEditSelectAll]->setEnabled(doc->canSelectAll());
     fActions[kEditUndo]->setEnabled(doc->canUndo());
     fActions[kEditRedo]->setEnabled(doc->canRedo());
+}
+
+void PlasmaShopMain::onDocDirty()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QString curTitle = fEditorPane->tabText(fEditorPane->currentIndex());
+    fEditorPane->setTabText(fEditorPane->currentIndex(), "* " + curTitle);
+}
+
+void PlasmaShopMain::onDocClean()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QString curTitle = fEditorPane->tabText(fEditorPane->currentIndex());
+    fEditorPane->setTabText(fEditorPane->currentIndex(), curTitle.mid(2));
 }
 
 

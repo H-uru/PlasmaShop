@@ -637,6 +637,8 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
     VaultShopMain mainWnd;
+    if (argc > 1 && QFile::exists(argv[1]))
+        mainWnd.loadGame(argv[1]);
     mainWnd.show();
     return app.exec();
 }

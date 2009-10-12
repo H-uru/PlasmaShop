@@ -49,6 +49,8 @@ public:
     EncryptionMode encryption() const;
     EncodingMode encoding() const;
 
+    SyntaxMode GuessIniType();
+
 public slots:
     virtual void updateSettings();
     virtual void performCut();

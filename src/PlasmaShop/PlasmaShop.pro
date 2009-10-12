@@ -22,6 +22,9 @@ LIBS += -L../../bin -lqscintilla2-ps3
 # Make VS shut up a bit
 win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
 
+# Use shell32.dll for the AppData thing on Windows
+win32:LIBS += -lshell32
+
 # Use the QtIconLoader wrapper
 win32|macx {
     HEADERS += ../3rdParty/qticonloader.h
@@ -39,11 +42,13 @@ win32|macx {
 # PlasmaShop Sources
 HEADERS += Main.h \
            OptionsDialog.h \
+           GameBrowser.h \
            QPlasmaDocument.h \
            QPlasmaTextDoc.h \
            ../QPlasma.h
 SOURCES += Main.cpp \
            OptionsDialog.cpp \
+           GameBrowser.cpp \
            QPlasmaDocument.cpp \
            QPlasmaTextDoc.cpp
 RESOURCES += images.qrc

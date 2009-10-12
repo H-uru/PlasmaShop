@@ -55,5 +55,12 @@
     <file>img/sum.png</file>
     <file>img/hex.png</file>
     <file>img/blank.png</file>
+
+    <!-- Images for game icons -->
+    <file>img/gm_URU.png</file>
+    <file>img/gm_EOA.png</file>
+    <file>img/gm_CT.png</file>
+    <file>img/gm_HI.png</file>
+    <file>img/gm_MQO.png</file>
 </qresource>
 </RCC>

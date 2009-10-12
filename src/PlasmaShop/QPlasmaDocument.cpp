@@ -16,10 +16,14 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
             return QIcon(":/img/gfldr.png");
         else if (filename == "<SDLFOLD>")
             return QIcon(":/img/bfldr.png");
-        else if (filename == "<FONTFOLD>")
+        else if (filename == "<FONTFOLD>" || filename == "<IMGFOLD>")
             return QIcon(":/img/ofldr.png");
         else if (filename == "<DATAFOLD>")
             return QIcon(":/img/wfldr.png");
+        else if (filename == "<AGE>")
+            return QIcon(":/img/age.png");
+        else if (filename == "<VAULT>")
+            return QIcon(":/res/PlasmaShop.png");
     }
 
     QString ext, fnameNoPath;
@@ -27,9 +31,9 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
     re.setPattern(".*\\.([^\\.]*)");
     if (re.indexIn(filename) >= 0)
         ext = re.cap(1).toLower();
-    re.setPattern(".*[\\\\\\/]([^\\\\\\/]*)");
+    re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
     if (re.indexIn(filename) >= 0)
-        fnameNoPath = re.cap(1).toLower();
+        fnameNoPath = re.cap(2).toLower();
 
     if (ext == "age")
         return QIcon(":/img/age.png");
@@ -50,7 +54,7 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
         return QIcon(":/img/py.png");
     else if (ext == "pak")
         return QIcon(":/img/pak.png");
-    else if (ext == "pak")
+    else if (ext == "pfp")
         return QIcon(":/img/pfp.png");
     else if (fnameNoPath == "cursors.dat")
         return QIcon(":/img/cursor_dat.png");

@@ -23,6 +23,7 @@ public:
 private:
     QLineEdit* fPrpEditorPath;
     QLineEdit* fVaultEditorPath;
+    QLineEdit* fImageEditorPath;
 
     QCheckBox* fSciMargin;
     QCheckBox* fSciFolding;
@@ -40,12 +41,15 @@ private slots:
     void onSave();
     void onBrowsePrpEditor();
     void onBrowseVaultEditor();
+    void onBrowseImageEditor();
     void onSetFont();
 };
 
-// Magic for getting special paths for PlasmaShop files
+// Magic for getting special paths
 QString GetPSBinPath(QString filename);
 QString GetPSDataPath(QString filename);
+QString GetAppDataPath();
+QString GetDocumentsPath();
 
 extern QString s_binBasePath;
 

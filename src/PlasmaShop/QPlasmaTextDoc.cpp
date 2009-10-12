@@ -438,3 +438,12 @@ void QPlasmaTextDoc::maybeClean()
     if (!fPersistDirty)
         makeClean();
 }
+
+QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::GuessIniType()
+{
+    for (int ln = 0; ln < fEditor->lines(); ln++) {
+        if (fEditor->text(ln).startsWith('['))
+            return kStxIni;
+    }
+    return kStxConsole;
+}
