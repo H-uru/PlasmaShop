@@ -8,11 +8,14 @@
 #include "../QNumerics.h"
 
 enum {
-    kPreviewSceneNode = 0x1000 | kSceneNode,
-    kPreviewSceneObject = 0x1000 | kSceneObject,
-    kPreviewMipmap = 0x1000 | kMipmap,
-    kPreviewCubicEnvironmap = 0x1000 | kCubicEnvironmap,
-    kPreviewCoordinateInterface = 0x1000 | kCoordinateInterface,
+    kPreview_Type = 0x1000,
+    kPRC_Type = 0x2000,
+
+    kPreviewSceneNode = kPreview_Type | kSceneNode,
+    kPreviewSceneObject = kPreview_Type | kSceneObject,
+    kPreviewMipmap = kPreview_Type | kMipmap,
+    kPreviewCubicEnvironmap = kPreview_Type | kCubicEnvironmap,
+    kPreviewCoordinateInterface = kPreview_Type | kCoordinateInterface,
 };
 
 QIcon pqGetTypeIcon(short);

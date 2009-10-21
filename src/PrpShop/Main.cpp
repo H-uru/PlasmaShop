@@ -37,7 +37,6 @@ PrpShopMain::PrpShopMain()
     // Basic Form Settings
     setWindowTitle("PrpShop " PRPSHOP_VERSION);
     setWindowIcon(QIcon(":/res/PrpShop.svg"));
-    //setWindowIcon(QIcon(":/res/PrpShop.png"));
     setDockOptions(QMainWindow::AnimatedDocks);
 
     // Set up actions
@@ -453,33 +452,7 @@ void PrpShopMain::treeEditPRC()
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
-
-    plCreatable* pCre = item->obj();
-    
-    if (pCre == NULL) {
-        QMessageBox msgBox(QMessageBox::Critical, tr("NULL Object"),
-                           tr("The requested object is not currently loaded"),
-                           QMessageBox::Ok, this);
-        msgBox.exec();
-        return;
-    }
-
-    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
-    QList<QMdiSubWindow*>::Iterator it;
-    for (it = windows.begin(); it != windows.end(); it++) {
-        if (((QPrcEditor*)(*it)->widget())->isMatch(pCre)) {
-            fMdiArea->setActiveSubWindow(*it);
-            break;
-        }
-    }
-    if (it == windows.end()) {
-        QPrcEditor* win = new QPrcEditor(pCre, this);
-        if (win != NULL) {
-            QMdiSubWindow* subWin = fMdiArea->addSubWindow(win);
-            subWin->setWindowIcon(win->windowIcon());
-            subWin->show();
-        }
-    }
+    editCreatable(item->obj(), kPRC_Type | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treePreview()
@@ -487,7 +460,7 @@ void PrpShopMain::treePreview()
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
-    editCreatable(item->obj(), 0x1000 | item->obj()->ClassIndex());
+    editCreatable(item->obj(), kPreview_Type | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treeDelete()

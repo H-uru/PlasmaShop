@@ -36,7 +36,7 @@ QString GameInfo::GetGameTypeName(int type)
 {
     switch (type) {
     case kGameUru:
-        return qApp->tr("Single-Player Uru");
+        return qApp->tr("UU, Alcugs, Uru CC");
     case kGameUruLive:
         return qApp->tr("Uru Live");
     case kGameMyst5:

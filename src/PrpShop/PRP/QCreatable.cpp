@@ -35,6 +35,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 
 /***** Creatable Forms -- think QFactory ;) *****/
+#include "QPrcEditor.h"
 #include "PRP/QSceneNode.h"
 #include "PRP/Animation/QAnimTimeConvert.h"
 #include "PRP/Audio/QAudible.h"
@@ -88,6 +89,9 @@ void QCreatable::closeEvent(QCloseEvent*)
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
 {
     short type = (forceType == -1) ? pCre->ClassIndex() : forceType;
+
+    if ((type & kPRC_Type) != 0)
+        return new QPrcEditor(pCre, parent);
 
     switch (type) {
     // Keyed Object types

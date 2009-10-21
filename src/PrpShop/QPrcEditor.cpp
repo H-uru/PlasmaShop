@@ -7,21 +7,9 @@
 #define MARGIN_FOLDERS 1
 
 QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
-          : QWidget(parent), fDirty(false), fLexersInited(false),
-          fPersistDirty(false), fCreatable(pCre)
+          : QCreatable(pCre, kPRC_Type | pCre->ClassIndex(), parent),
+            fLexersInited(false)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-    QIcon ico = pqGetTypeIcon(pCre->ClassIndex());
-    if (!ico.isNull())
-        setWindowIcon(ico);
-    hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable);
-    if (ko != NULL && ko->getKey().Exists()) {
-        setWindowTitle(pqGetFriendlyClassName(fCreatable->ClassIndex()) +
-                       ": " + ~ko->getKey()->getName());
-    } else {
-        setWindowTitle(pqGetFriendlyClassName(fCreatable->ClassIndex()));
-    }
-    
     fEditor = new QsciScintilla(this);
     fEditor->setUtf8(true);
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETENDATLASTLINE, 0);
@@ -29,7 +17,7 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTH, 1000);
 
     QGridLayout* layout = new QGridLayout(this);
-    layout->setContentsMargins(4, 4, 4, 4);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(fEditor, 0, 0);
     setLayout(layout);
 
@@ -37,39 +25,32 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     updateSettings();
 
     connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(makeDirty()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(maybeClean()));
     connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
     connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
-    
+
+    // Load the creatable
     hsRAMStream* S = new hsRAMStream();
     pfPrcHelper* prc = new pfPrcHelper(S);
-    
     fCreatable->prcWrite(prc);
-    
+
     S->rewind();
-    
     size_t dataSize = S->size() - S->pos();
     unsigned char* buf = new unsigned char[dataSize];
     S->read(dataSize, buf);
 
     QString data = QString::fromUtf8((const char*)buf, dataSize);
     delete[] buf;
-    
+
     fEditor->setText(data);
+    fEditor->setReadOnly(true);
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
-    fPersistDirty = false;
 }
 
-bool QPrcEditor::isMatch(plCreatable* pCre)
-{
-    if (fCreatable == NULL)
-        return false;
-    return (fCreatable == pCre);
-}
+void QPrcEditor::saveDamage()
+{ }
 
-bool QPrcEditor::isDirty() const
-{ return fDirty; }
+QSize QPrcEditor::sizeHint() const
+{ return QSize(500, 400); }
 
 bool QPrcEditor::canCut() const
 { return fEditor->hasSelectedText(); }
@@ -101,9 +82,8 @@ void QPrcEditor::updateSettings()
                    settings.value("SciFontItalic", false).toBool());
 
     fEditor->setLexer(NULL);
-    if (fLexersInited) {
+    if (fLexersInited)
         delete fLexerXML;
-    }
     fLexerXML = new QsciLexerXML(fEditor);
     fLexersInited = true;
 
@@ -174,36 +154,8 @@ void QPrcEditor::performUndo()
 void QPrcEditor::performRedo()
 { fEditor->redo(); }
 
-void QPrcEditor::expandAll()
-{ fEditor->setFoldAll(false); }
-
-void QPrcEditor::collapseAll()
-{ fEditor->setFoldAll(true); }
-
-void QPrcEditor::makeDirty()
-{
-    if (!fDirty) {
-        fDirty = true;
-        emit becameDirty();
-    }
-}
-
-void QPrcEditor::makeClean()
-{
-    if (fDirty) {
-        fDirty = false;
-        emit becameClean();
-    }
-}
-
 void QPrcEditor::adjustLineNumbers()
 {
     if (fDoLineNumbers)
         fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
-}
-
-void QPrcEditor::maybeClean()
-{
-    if (!fPersistDirty)
-        makeClean();
 }

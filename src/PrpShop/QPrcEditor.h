@@ -1,7 +1,8 @@
 #ifndef _QPRCEDITOR_H
 #define _QPRCEDITOR_H
 
-#include <QWidget>
+#include "PRP/QCreatable.h"
+
 #include <QsciPS3/qsciscintilla.h>
 #include <QsciPS3/qscilexerxml.h>
 #include <ResManager/plResManager.h>
@@ -9,7 +10,7 @@
 #include <PRP/KeyedObject/hsKeyedObject.h>
 #include "QPlasmaUtils.h"
 
-class QPrcEditor : public QWidget {
+class QPrcEditor : public QCreatable {
     Q_OBJECT
 
 protected:
@@ -17,15 +18,14 @@ protected:
     QsciLexerXML* fLexerXML;
     bool fDirty;
     bool fLexersInited;
-    bool fPersistDirty;
     bool fDoLineNumbers;
-    plCreatable* fCreatable;
 
 public:
     QPrcEditor(plCreatable* pCre, QWidget* parent = NULL);
-    bool isMatch(plCreatable* pCre);
-    bool isDirty() const;
-    
+    virtual void saveDamage();
+
+    virtual QSize sizeHint() const;
+
     virtual bool canCut() const;
     virtual bool canCopy() const;
     virtual bool canPaste() const;
@@ -43,19 +43,12 @@ public slots:
     virtual void performSelectAll();
     virtual void performUndo();
     virtual void performRedo();
-    void expandAll();
-    void collapseAll();
 
 signals:
-    void becameDirty();
-    void becameClean();
     void statusChanged();
 
 private slots:
-    void makeDirty();
-    void makeClean();
     void adjustLineNumbers();
-    void maybeClean();
 };
 
 #endif

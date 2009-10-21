@@ -10,7 +10,7 @@
     <file>res/def/document-new.png</file>
     <file>res/def/document-open.png</file>
     <file>res/def/document-save.png</file>
-    <file>res/PrpShop.png</file>
+    <file>res/PrpShop.svg</file>
 
     <!-- Images for the Object Tree -->
     <file>img/folder.png</file>

@@ -24,7 +24,7 @@ QIcon pqGetTypeIcon(short classType)
         QIcon(":/img/synch.png"),
     };
 
-    switch (classType & ~0x1000) {
+    switch (classType & ~0x3000) {
     case kSceneNode:
         return s_icons[kIcoSceneNode];
     case kSceneObject:
@@ -534,7 +534,7 @@ QString pqGetFriendlyClassName(short classType)
         S_INVALID, S_INVALID, S_INVALID, S_INVALID, S_INVALID
     };
 
-    classType &= ~0x1000;
+    classType &= ~0x3000;
     if ((unsigned short)classType == 0x8000)
         return "(NULL)";
     if (classType >= 0 && classType < TYPESPACE_MAX)
