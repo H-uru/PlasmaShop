@@ -18,6 +18,7 @@
 #include "QPlasmaUtils.h"
 #include "QKeyDialog.h"
 #include "PRP/QCreatable.h"
+#include "QPrcEditor.h"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance()
@@ -35,7 +36,8 @@ PrpShopMain::PrpShopMain()
 
     // Basic Form Settings
     setWindowTitle("PrpShop " PRPSHOP_VERSION);
-    setWindowIcon(QIcon(":/res/PrpShop.png"));
+    setWindowIcon(QIcon(":/res/PrpShop.svg"));
+    //setWindowIcon(QIcon(":/res/PrpShop.png"));
     setDockOptions(QMainWindow::AnimatedDocks);
 
     // Set up actions
@@ -55,6 +57,7 @@ PrpShopMain::PrpShopMain()
 
     fActions[kTreeClose] = new QAction(tr("&Close"), this);
     fActions[kTreeEdit] = new QAction(tr("&Edit"), this);
+    fActions[kTreeEditPRC] = new QAction(tr("Edit P&RC"), this);
     fActions[kTreePreview] = new QAction(tr("&Preview"), this);
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
     fActions[kTreeImport] = new QAction(tr("&Import..."), this);
@@ -166,6 +169,7 @@ PrpShopMain::PrpShopMain()
 
     connect(fActions[kTreeClose], SIGNAL(triggered()), this, SLOT(treeClose()));
     connect(fActions[kTreeEdit], SIGNAL(triggered()), this, SLOT(treeEdit()));
+    connect(fActions[kTreeEditPRC], SIGNAL(triggered()), this, SLOT(treeEditPRC()));
     connect(fActions[kTreePreview], SIGNAL(triggered()), this, SLOT(treePreview()));
     connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
     connect(fActions[kTreeImport], SIGNAL(triggered()), this, SLOT(treeImport()));
@@ -380,6 +384,7 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         menu.addAction(fActions[kTreeImport]);
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         menu.addAction(fActions[kTreeEdit]);
+        menu.addAction(fActions[kTreeEditPRC]);
         menu.addAction(fActions[kTreePreview]);
         menu.addSeparator();
         menu.addAction(fActions[kTreeDelete]);
@@ -441,6 +446,40 @@ void PrpShopMain::treeEdit()
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj());
+}
+
+void PrpShopMain::treeEditPRC()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+
+    plCreatable* pCre = item->obj();
+    
+    if (pCre == NULL) {
+        QMessageBox msgBox(QMessageBox::Critical, tr("NULL Object"),
+                           tr("The requested object is not currently loaded"),
+                           QMessageBox::Ok, this);
+        msgBox.exec();
+        return;
+    }
+
+    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
+    QList<QMdiSubWindow*>::Iterator it;
+    for (it = windows.begin(); it != windows.end(); it++) {
+        if (((QPrcEditor*)(*it)->widget())->isMatch(pCre)) {
+            fMdiArea->setActiveSubWindow(*it);
+            break;
+        }
+    }
+    if (it == windows.end()) {
+        QPrcEditor* win = new QPrcEditor(pCre, this);
+        if (win != NULL) {
+            QMdiSubWindow* subWin = fMdiArea->addSubWindow(win);
+            subWin->setWindowIcon(win->windowIcon());
+            subWin->show();
+        }
+    }
 }
 
 void PrpShopMain::treePreview()

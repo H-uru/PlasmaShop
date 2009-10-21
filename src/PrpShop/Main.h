@@ -58,8 +58,9 @@ private:
         kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
 
         // Tree Context Menu
-        kTreeClose, kTreeEdit, kTreePreview, kTreeDelete, kTreeImport,
-        kTreeExport, kTreeExportDDS, kTreeExportJPEG, kTreeExportOBJ,
+        kTreeClose, kTreeEdit, kTreeEditPRC, kTreePreview, kTreeDelete,
+        kTreeImport, kTreeExport, kTreeExportDDS, kTreeExportJPEG,
+        kTreeExportOBJ,
 
         kNumActions
     };
@@ -100,6 +101,7 @@ public slots:
 
     void treeClose();
     void treeEdit();
+    void treeEditPRC();
     void treePreview();
     void treeDelete();
     void treeImport();

@@ -3,13 +3,22 @@ TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../3rdParty
 CONFIG += release
-QT += opengl
+QT += opengl svg
 DESTDIR = ../../bin
 RC_FILE = res/PrpShop.rc
 
 # Use libPlasma
 INCLUDEPATH += ../../../Plasma/core
 LIBS += -L../../../Plasma/bin -lPlasma
+
+# QScintilla
+win32 {
+    DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\""
+} else {
+    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\""
+}
+INCLUDEPATH += ../../QScintilla/Qt4
+LIBS += -L../../bin -lqscintilla2-ps3
 
 # Make VS shut up a bit
 win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
@@ -36,6 +45,7 @@ HEADERS += Main.h \
            QKeyDialog.h \
            QPlasmaUtils.h \
            QPlasmaTreeItem.h \
+           QPrcEditor.h \
            PRP/QCreatable.h \
            PRP/QKeyList.h \
            PRP/QMatrix44.h \
@@ -97,6 +107,7 @@ SOURCES += Main.cpp \
            QKeyDialog.cpp \
            QPlasmaUtils.cpp \
            QPlasmaTreeItem.cpp \
+           QPrcEditor.cpp \
            PRP/QCreatable.cpp \
            PRP/QKeyList.cpp \
            PRP/QMatrix44.cpp \
