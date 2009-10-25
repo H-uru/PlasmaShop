@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMdiSubWindow>
+#include <QDropEvent>
+#include <QUrl>
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
@@ -213,6 +215,23 @@ void PrpShopMain::closeEvent(QCloseEvent*)
     settings.setValue("WinState", saveState());
 
     settings.setValue("DialogDir", fDialogDir);
+}
+
+void PrpShopMain::dragEnterEvent(QDragEnterEvent* evt)
+{
+    if (evt->mimeData()->hasUrls())
+        evt->acceptProposedAction();
+}
+
+void PrpShopMain::dropEvent(QDropEvent* evt)
+{
+    if (evt->mimeData()->hasUrls()) {
+        foreach (QUrl url, evt->mimeData()->urls()) {
+            QString filename = url.toLocalFile();
+            if (!filename.isEmpty())
+                loadFile(filename);
+        }
+    }
 }
 
 void PrpShopMain::setPropertyPage(PropWhich which)
@@ -975,5 +994,6 @@ int main(int argc, char* argv[])
     mainWnd.show();
     for (int i=1; i<argc; i++)
         mainWnd.loadFile(argv[i]);
+    mainWnd.setAcceptDrops(true);
     return app.exec();
 }

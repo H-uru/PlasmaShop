@@ -7,6 +7,8 @@
 #include <QCloseEvent>
 #include <QProcess>
 #include <QLabel>
+#include <QDropEvent>
+#include <QUrl>
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
@@ -389,6 +391,23 @@ void PlasmaShopMain::closeEvent(QCloseEvent* evt)
     settings.setValue("WinState", saveState());
 
     settings.setValue("DialogDir", fDialogDir);
+}
+
+void PlasmaShopMain::dragEnterEvent(QDragEnterEvent* evt)
+{
+    if (evt->mimeData()->hasUrls())
+        evt->acceptProposedAction();
+}
+
+void PlasmaShopMain::dropEvent(QDropEvent* evt)
+{
+    if (evt->mimeData()->hasUrls()) {
+        foreach (QUrl url, evt->mimeData()->urls()) {
+            QString filename = url.toLocalFile();
+            if (!filename.isEmpty())
+                loadFile(filename);
+        }
+    }
 }
 
 void PlasmaShopMain::onOpenFile()
@@ -1478,5 +1497,6 @@ int main(int argc, char* argv[])
     mainWnd.show();
     for (int i=1; i<argc; i++)
         mainWnd.loadFile(argv[i]);
+    mainWnd.setAcceptDrops(true);
     return app.exec();
 }

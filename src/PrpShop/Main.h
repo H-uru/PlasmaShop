@@ -86,6 +86,8 @@ public:
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
+    virtual void dragEnterEvent(QDragEnterEvent* evt);
+    virtual void dropEvent(QDropEvent* evt);
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
     QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);

@@ -60,6 +60,8 @@ public:
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);
+    virtual void dragEnterEvent(QDragEnterEvent* evt);
+    virtual void dropEvent(QDropEvent* evt);
 
     void setTextSyntax(int sel);
     void setTextEncryption(int sel);

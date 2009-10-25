@@ -33,6 +33,7 @@ Source: ..\bin\PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: Pr
 Source: ..\bin\VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
 Source: ..\bin\QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
 Source: ..\bin\QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: ..\bin\QtSvg4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
 Source: ..\bin\QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: ..\bin\qscintilla2-ps3.dll; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
 Source: ..\COPYING; DestDir: {app}
