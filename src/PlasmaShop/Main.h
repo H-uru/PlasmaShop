@@ -11,7 +11,7 @@
 #include "QPlasmaDocument.h"
 #include "GameBrowser.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 88)"
+#define PLASMASHOP_VERSION "3.0 (build 90)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT

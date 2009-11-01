@@ -358,6 +358,8 @@ void PlasmaShopMain::loadFile(QString filename)
         // Update menus
         onChangeTab(fEditorPane->currentIndex());
     }
+    // Select the last opened file's tab
+    fEditorPane->setCurrentIndex(fEditorPane->count() - 1);
 }
 
 void PlasmaShopMain::closeEvent(QCloseEvent* evt)
@@ -438,9 +440,6 @@ void PlasmaShopMain::onOpenFile()
         dir.cdUp();
         fDialogDir = dir.absolutePath();
     }
-    // Select the last opened file's tab
-    if (files.count() > 0)
-        fEditorPane->setCurrentIndex(fEditorPane->count() - 1);
 }
 
 void PlasmaShopMain::onSaveFile()
