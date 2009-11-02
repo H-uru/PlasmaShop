@@ -1306,15 +1306,14 @@ void PlasmaShopMain::onSelectGame(int gameId)
             RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
                               << "*.txt" << "*.log" << "*.elf", gameRoot);
             gameRoot.cdUp();
-        }
 #ifndef Q_OS_WIN
-        if (gameRoot.cd("log")) {
+        } else if (gameRoot.cd("log")) {
             // For case-sensitive OSes
             RecursiveAddFiles(fldr, "<DATAFOLD>", QStringList()
                               << "*.txt" << "*.log" << "*.elf", gameRoot);
             gameRoot.cdUp();
-        }
 #endif
+        }
 
         if (fldr->childCount() == 0)
             delete fldr;
