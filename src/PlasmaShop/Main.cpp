@@ -1073,9 +1073,13 @@ void PlasmaShopMain::onSelectGame(int gameId)
         fCurrentGame = which;
     }
 
-    fScanner->scanGame(fGames[fCurrentGame-1].fGameType,
-                       fGames[fCurrentGame-1].fGamePath,
-                       GetAppDataPath(), GetDocumentsPath());
+    if (fCurrentGame == 0) {
+        fBrowserTree->clear();
+    } else {
+        fScanner->scanGame(fGames[fCurrentGame-1].fGameType,
+                           fGames[fCurrentGame-1].fGamePath,
+                           GetAppDataPath(), GetDocumentsPath());
+    }
 }
 
 void PlasmaShopMain::onBrowserItemActivated(QTreeWidgetItem* item, int)
