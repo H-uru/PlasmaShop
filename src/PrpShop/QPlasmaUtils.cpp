@@ -4,8 +4,9 @@
 enum {
     kIcoSceneObj, kIcoSceneNode, kIcoDraw, kIcoDraw2, kIcoSim, kIcoCoord,
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
-    kIcoGUICheck, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2, kIcoGUIProgress,
-    kIcoGUIText, kIcoGUIUpDown, kIcoGUIRadioGroup, kIcoSynch, kNumIcons
+    kIcoGUICheck, kIcoGUIClick, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2,
+    kIcoGUIListBox, kIcoGUIProgress, kIcoGUIText, kIcoGUIUpDown,
+    kIcoGUIRadioGroup, kIcoGUIKnob, kIcoSynch, kNumIcons
 };
 
 QIcon pqGetTypeIcon(short classType)
@@ -17,11 +18,12 @@ QIcon pqGetTypeIcon(short classType)
         QIcon(":/img/snd.png"), QIcon(":/img/layer.png"),
         QIcon(":/img/material.png"), QIcon(":/img/img.png"),
         QIcon(":/img/py.png"), QIcon(":/img/gui_button.png"),
-        QIcon(":/img/gui_check.png"), QIcon(":/img/gui_dialog.png"),
-        QIcon(":/img/gui_edit.png"), QIcon(":/img/gui_edit2.png"),
+        QIcon(":/img/gui_check.png"), QIcon(":/img/gui_click.png"),
+        QIcon(":/img/gui_dialog.png"), QIcon(":/img/gui_edit.png"),
+        QIcon(":/img/gui_edit2.png"), QIcon(":/img/gui_listbox.png"),
         QIcon(":/img/gui_progress.png"), QIcon(":/img/gui_text.png"),
         QIcon(":/img/gui_updown.png"), QIcon(":/img/gui_radiogroup.png"),
-        QIcon(":/img/synch.png"),
+        QIcon(":/img/gui_knob.png"), QIcon(":/img/synch.png"),
     };
 
     switch (classType & ~0x3000) {
@@ -63,10 +65,16 @@ QIcon pqGetTypeIcon(short classType)
         return s_icons[kIcoGUIButton];
     case kGUICheckBoxCtrl:
         return s_icons[kIcoGUICheck];
+    case kGUIClickMapCtrl:
+        return s_icons[kIcoGUIClick];
     case kGUIDialogMod:
         return s_icons[kIcoGUIDialog];
     case kGUIEditBoxMod:
         return s_icons[kIcoGUIEdit];
+    case kGUIKnobCtrl:
+        return s_icons[kIcoGUIKnob];
+    case kGUIListBoxMod:
+        return s_icons[kIcoGUIListBox];
     case kGUIMultiLineEditCtrl:
         return s_icons[kIcoGUIEdit2];
     case kGUIProgressCtrl:

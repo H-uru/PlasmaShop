@@ -10,8 +10,9 @@
 #include <QMenu>
 #include "QPlasmaDocument.h"
 #include "GameBrowser.h"
+#include "GameScanner.h"
 
-#define PLASMASHOP_VERSION "3.0 (build 90)"
+#define PLASMASHOP_VERSION "3.0 Beta (build 92)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -53,9 +54,11 @@ private:
     QComboBox* fGameSelector;
     QList<GameInfo> fGames;
     int fCurrentGame;
+    GameScanner* fScanner;
 
 public:
     PlasmaShopMain();
+    virtual ~PlasmaShopMain();
     void loadFile(QString filename);
 
 protected:

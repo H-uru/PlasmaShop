@@ -41,9 +41,8 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
         return QIcon(":/img/page.png");
     else if (ext == "p2f")
         return QIcon(":/img/font.png");
-    else if (ext == "tga")
+    else if (ext == "tga" || ext == "jpg")
         return QIcon(":/img/img.png");
-    // cfg, csv, fni, ini, mfold, mlist, mfs, xml, fx
     else if (ext == "cfg" || ext == "csv" || ext == "fni" || ext == "fx"  ||
              ext == "ini" || ext == "mfs" || ext == "xml" ||
              ext == "mfold" || ext == "mlist" || fnameNoPath == "dev_mode.dat")

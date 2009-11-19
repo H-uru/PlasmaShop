@@ -30,9 +30,12 @@
     <file>img/synch.png</file>
     <file>img/gui_button.png</file>
     <file>img/gui_check.png</file>
+    <file>img/gui_click.png</file>
     <file>img/gui_dialog.png</file>
     <file>img/gui_edit.png</file>
     <file>img/gui_edit2.png</file>
+    <file>img/gui_knob.png</file>
+    <file>img/gui_listbox.png</file>
     <file>img/gui_progress.png</file>
     <file>img/gui_radiogroup.png</file>
     <file>img/gui_text.png</file>

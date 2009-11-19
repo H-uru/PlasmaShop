@@ -696,12 +696,8 @@ void PrpShopMain::loadFile(QString filename)
             }
             for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++) {
                 QString prp = path.absoluteFilePath(~age->getCommonPageFilename(i, fResMgr.getVer()));
-                if (QFile::exists(prp)) {
+                if (QFile::exists(prp))
                     loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), prp);
-                } else {
-                    plDebug::Warning("Common page %s was not found",
-                                     age->getCommonPageFilename(i, fResMgr.getVer()).cstr());
-                }
             }
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Warning, tr("Error"),

@@ -43,12 +43,14 @@ win32|macx {
 HEADERS += Main.h \
            OptionsDialog.h \
            GameBrowser.h \
+           GameScanner.h \
            QPlasmaDocument.h \
            QPlasmaTextDoc.h \
            ../QPlasma.h
 SOURCES += Main.cpp \
            OptionsDialog.cpp \
            GameBrowser.cpp \
+           GameScanner.cpp \
            QPlasmaDocument.cpp \
            QPlasmaTextDoc.cpp
 RESOURCES += images.qrc
