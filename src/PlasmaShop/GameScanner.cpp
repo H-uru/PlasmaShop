@@ -130,6 +130,7 @@ QTreeWidgetItem* GameScanner::ensurePath(QTreeWidgetItem* root, QStringList path
 void GameScanner::recursiveScan(QStringList path, QDir root)
 {
     bool isDat = (path.size() > 0) && (path[0].toLower() == "dat");
+    bool isReallyDat = (path.size() == 1) && (path[0].toLower() == "dat");
     bool isLog = (path.size() > 0) && (path[0].toLower() == "log");
     bool isPy = (path.size() > 0) && (path[0].toLower() == "python");
     bool isSdl = (path.size() > 0) && (path[0].toLower() == "sdl");
@@ -148,7 +149,7 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
     QStringList files = root.entryList(QDir::Files);
     foreach (QString f, files) {
         QString ftest = f.toLower();
-        if (isDat && ftest.endsWith(".prp")) {
+        if (isReallyDat && ftest.endsWith(".prp")) {
             QStringList parts = f.split('_');
             QTreeWidgetItem* fold = ensurePath(fAgesItem,
                 QStringList() << parts.first(), "<AGEFOLD>");
@@ -156,7 +157,8 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
             item->setText(0, parts.last());
             item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
-        } else if (isDat && (ftest.endsWith(".age") || ftest.endsWith(".csv"))) {
+        } else if (isReallyDat && (ftest.endsWith(".age") || ftest.endsWith(".csv") ||
+                                   ftest.endsWith(".fni") || ftest.endsWith(".sum"))) {
             QString name = f.left(f.length() - 4);  // Trim the extension
             QTreeWidgetItem* fold = ensurePath(fAgesItem,
                 QStringList() << name, "<AGEFOLD>");
@@ -164,15 +166,7 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
             item->setText(0, f);
             item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
-        } else if (ftest.endsWith(".fni") || ftest.endsWith(".sum")) {
-            QString name = f.left(f.length() - 4);  // Trim the extension
-            QTreeWidgetItem* fold = ensurePath(fAgesItem,
-                QStringList() << name, "<AGEFOLD>");
-            QTreeWidgetItem* item = new QTreeWidgetItem(fold);
-            item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
-            item->setText(0, f);
-            item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
-        } else if (isDat && ftest.endsWith(".hex")) {
+        } else if (isReallyDat && ftest.endsWith(".hex")) {
             QTreeWidgetItem* fold = ensurePath(fLevelsItem, datbPath, "<AGEFOLD>");
             QTreeWidgetItem* item = new QTreeWidgetItem(fold);
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
@@ -202,7 +196,8 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
             item->setText(0, f);
             item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
-        } else if (isLog && (ftest.endsWith(".txt") || ftest.endsWith(".log") || ftest.endsWith(".elf"))) {
+        } else if (isLog && (ftest.endsWith(".txt") || ftest.endsWith(".log") ||
+                             ftest.endsWith(".elf"))) {
             QTreeWidgetItem* fold = ensurePath(fLogItem, path.mid(1), "<DATAFOLD>");
             QTreeWidgetItem* item = new QTreeWidgetItem(fold);
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));

@@ -272,6 +272,15 @@ PlasmaShopMain::~PlasmaShopMain()
 
 void PlasmaShopMain::loadFile(QString filename)
 {
+    for (int i=0; i<fEditorPane->count(); i++) {
+        QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(i);
+        if (doc->filename() == filename) {
+            // File already open -- focus it
+            fEditorPane->setCurrentIndex(i);
+            return;
+        }
+    }
+
     // Guess the filetype based on its extension
     QString ext, fnameNoPath, fnameDisplay = filename;
     QRegExp re;
