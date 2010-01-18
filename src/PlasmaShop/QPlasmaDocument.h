@@ -13,6 +13,11 @@ class QPlasmaDocument : public QWidget {
     Q_OBJECT
 
 public:
+    enum EncryptionMode {
+        kEncNone, kEncXtea, kEncAes, kEncDroid,
+    };
+
+public:
     static QIcon GetDocIcon(QString filename);
     static QPlasmaDocument* GetEditor(DocumentType docType, QWidget* parent);
     static bool GetEncryptionKeyFromUser(QWidget* parent, unsigned int* key);
@@ -36,6 +41,9 @@ public:
     bool saveDefault();
     bool revert();
 
+    void setEncryption(EncryptionMode enc);
+    EncryptionMode encryption() const;
+
 signals:
     void becameDirty();
     void becameClean();
@@ -53,12 +61,17 @@ public slots:
 
 protected:
     DocumentType fDocType;
+    EncryptionMode fEncryption;
+    unsigned int fDroidKey[4];
     QString fFilename;
-    bool fDirty;
+    bool fDirty, fPersistDirty;
+
+    static bool isZeroKey(const unsigned int* key);
 
 protected slots:
     void makeDirty();
     void makeClean();
+    void maybeClean();
 };
 
 #endif

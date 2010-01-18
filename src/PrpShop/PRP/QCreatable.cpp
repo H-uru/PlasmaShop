@@ -249,6 +249,7 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
                                       .arg(pqGetFriendlyClassName(type)),
                             QMessageBox::Ok, parent);
             msgBox.exec();
+            return new QPrcEditor(pCre, parent);
         } else {
             QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
                             parent->tr("No previewer is currently available for %1")

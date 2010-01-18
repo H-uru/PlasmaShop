@@ -40,40 +40,50 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     QToolButton* browseImageEditor = new QToolButton(tabProgs);
     browseImageEditor->setText("...");
 
+    QLabel* lblPrpEditor = new QLabel(tr("&PRP Editor:"), tabProgs);
+    lblPrpEditor->setBuddy(fPrpEditorPath);
+    QLabel* lblVaultEditor = new QLabel(tr("&Vault Editor:"), tabProgs);
+    lblVaultEditor->setBuddy(fVaultEditorPath);
+    QLabel* lblImgEditor = new QLabel(tr("&Image Editor:"), tabProgs);
+    lblImgEditor->setBuddy(fImageEditorPath);
+
     QGridLayout* layProgs = new QGridLayout(tabProgs);
     layProgs->setContentsMargins(8, 8, 8, 8);
     layProgs->addItem(new QSpacerItem(16, 0, QSizePolicy::Maximum, QSizePolicy::Minimum), 1, 0);
-    layProgs->addWidget(new QLabel(tr("PRP Editor:"), tabProgs), 0, 0, 1, 3);
+    layProgs->addWidget(lblPrpEditor, 0, 0, 1, 3);
     layProgs->addWidget(fPrpEditorPath, 1, 1);
     layProgs->addWidget(browsePrpEditor, 1, 2);
     layProgs->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 2, 0, 1, 3);
-    layProgs->addWidget(new QLabel(tr("Vault Editor:"), tabProgs), 3, 0, 1, 3);
+    layProgs->addWidget(lblVaultEditor, 3, 0, 1, 3);
     layProgs->addWidget(fVaultEditorPath, 4, 1);
     layProgs->addWidget(browseVaultEditor, 4, 2);
     layProgs->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 5, 0, 1, 3);
-    layProgs->addWidget(new QLabel(tr("Image Editor:"), tabProgs), 6, 0, 1, 3);
+    layProgs->addWidget(lblImgEditor, 6, 0, 1, 3);
     layProgs->addWidget(fImageEditorPath, 7, 1);
     layProgs->addWidget(browseImageEditor, 7, 2);
     layProgs->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 8, 0, 1, 3);
-    tabs->addTab(tabProgs, tr("General"));
+    tabs->addTab(tabProgs, tr("&General"));
 
     // Editor (Scintilla) tab
     QWidget* tabEditor = new QWidget(tabs);
-    fSciMargin = new QCheckBox(tr("Show margins"), tabEditor);
-    fSciFolding = new QCheckBox(tr("Code folding"), tabEditor);
-    fSciLineNumbers = new QCheckBox(tr("Line numbers"), tabEditor);
-    fSciUseSpaces = new QCheckBox(tr("Use spaces instead of tabs"), tabEditor);
-    fSciAutoIndent = new QCheckBox(tr("Auto-indent"), tabEditor);
-    fSciFont = new QPushButton(tr("Editor Font"), tabEditor);
-    fSciIndentGuides = new QCheckBox(tr("Show indentation guides"), tabEditor);
-    fSciShowWhitespace = new QCheckBox(tr("Show whitespace"), tabEditor);
+    fSciMargin = new QCheckBox(tr("Show &margins"), tabEditor);
+    fSciFolding = new QCheckBox(tr("Code f&olding"), tabEditor);
+    fSciLineNumbers = new QCheckBox(tr("&Line numbers"), tabEditor);
+    fSciUseSpaces = new QCheckBox(tr("Use &spaces instead of tabs"), tabEditor);
+    fSciAutoIndent = new QCheckBox(tr("&Auto-indent"), tabEditor);
+    fSciFont = new QPushButton(tr("Editor &Font"), tabEditor);
+    fSciIndentGuides = new QCheckBox(tr("Show in&dentation guides"), tabEditor);
+    fSciShowWhitespace = new QCheckBox(tr("Show &whitespace"), tabEditor);
     fSciTabWidth = new QLineEdit(tabEditor);
-    fSciLongLineMark = new QCheckBox(tr("Long line marker:"), tabEditor);
+    fSciLongLineMark = new QCheckBox(tr("Long line mar&ker:"), tabEditor);
     fSciLongLineSize = new QLineEdit(tabEditor);
     fSciTabWidth->setValidator(new QIntValidator(fSciTabWidth));
     ((QIntValidator*)fSciTabWidth->validator())->setRange(1, 80);
     fSciLongLineSize->setValidator(new QIntValidator(fSciLongLineSize));
     ((QIntValidator*)fSciLongLineSize->validator())->setRange(1, 9999);
+
+    QLabel* lblTabWidth = new QLabel(tr("&Tab Width:"), tabEditor);
+    lblTabWidth->setBuddy(fSciTabWidth);
 
     QGridLayout* layEditor = new QGridLayout(tabEditor);
     layEditor->setContentsMargins(8, 8, 8, 8);
@@ -89,14 +99,14 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     layEditor->addItem(new QSpacerItem(0, 16, QSizePolicy::Minimum, QSizePolicy::Minimum), 3, 0, 1, 5);
     layEditor->addWidget(fSciIndentGuides, 4, 0, 1, 2);
     layEditor->addWidget(fSciShowWhitespace, 5, 0, 1, 2);
-    layEditor->addWidget(new QLabel(tr("Tab Width:"), tabEditor), 4, 3);
+    layEditor->addWidget(lblTabWidth, 4, 3);
     layEditor->addWidget(fSciTabWidth, 4, 4);
     layEditor->addWidget(fSciLongLineMark, 5, 3);
     layEditor->addWidget(fSciLongLineSize, 5, 4);
     fSciTabWidth->setMaximumWidth(40);
     fSciLongLineSize->setMaximumWidth(40);
     layEditor->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding), 6, 5);
-    tabs->addTab(tabEditor, tr("Text Editor"));
+    tabs->addTab(tabEditor, tr("Text &Editor"));
 
     // Lay out the dialog itself
     QGridLayout* dlgLayout = new QGridLayout(this);
@@ -107,7 +117,7 @@ OptionsDialog::OptionsDialog(QWidget* parent)
                                                      Qt::Horizontal, this);
     dlgLayout->addWidget(buttons, 1, 0);
     setFixedSize(sizeHint());
-    setWindowTitle(tr("PlasmaShop Options"));
+    setWindowTitle(tr("PlasmaShop Preferences"));
 
     // Populate the current/default settings
     QSettings settings("PlasmaShop", "PlasmaShop");

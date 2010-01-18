@@ -80,9 +80,9 @@ GameListDialog::GameListDialog(QWidget* parent)
     }
     settings.endGroup();
 
-    QPushButton* btnAdd = new QPushButton(tr("Add..."), this);
-    QPushButton* btnDel = new QPushButton(tr("Remove"), this);
-    QPushButton* btnClose = new QPushButton(tr("Close"), this);
+    QPushButton* btnAdd = new QPushButton(tr("&Add..."), this);
+    QPushButton* btnDel = new QPushButton(tr("&Remove"), this);
+    QPushButton* btnClose = new QPushButton(tr("&Close"), this);
     btnClose->setDefault(true);
 
     QGridLayout* layout = new QGridLayout(this);

@@ -20,14 +20,11 @@ public:
         kStxHex, kStxFX,
     };
 
-    enum EncryptionMode {
-        kEncNone, kEncXtea, kEncAes, kEncDroid,
-    };
-
     enum EncodingMode {
         kTypeAnsi, kTypeUTF8, kTypeUTF16, kTypeUTF32,
     };
 
+public:
     QPlasmaTextDoc(QWidget* parent);
 
     virtual bool canCut() const;
@@ -42,11 +39,9 @@ public:
     virtual bool saveTo(QString filename);
 
     void setSyntax(SyntaxMode syn);
-    void setEncryption(EncryptionMode enc);
     void setEncoding(EncodingMode type);
 
     SyntaxMode syntax() const;
-    EncryptionMode encryption() const;
     EncodingMode encoding() const;
 
     SyntaxMode GuessIniType();
@@ -66,12 +61,9 @@ public slots:
 private:
     QsciScintilla* fEditor;
     SyntaxMode fSyntax;
-    EncryptionMode fEncryption;
     EncodingMode fEncoding;
     bool fDoLineNumbers;
     bool fLexersInited;
-    bool fPersistDirty;
-    unsigned int fDroidKey[4];
 
     QsciLexerFni* fLexerFNI;
     QsciLexerFX* fLexerFX;
@@ -83,7 +75,6 @@ private:
 
 private slots:
     void adjustLineNumbers();
-    void maybeClean();
 };
 
 #endif

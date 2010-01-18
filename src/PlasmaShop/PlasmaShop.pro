@@ -46,11 +46,13 @@ HEADERS += Main.h \
            GameScanner.h \
            QPlasmaDocument.h \
            QPlasmaTextDoc.h \
+           QPlasmaSumFile.h \
            ../QPlasma.h
 SOURCES += Main.cpp \
            OptionsDialog.cpp \
            GameBrowser.cpp \
            GameScanner.cpp \
            QPlasmaDocument.cpp \
-           QPlasmaTextDoc.cpp
+           QPlasmaTextDoc.cpp \
+           QPlasmaSumFile.cpp
 RESOURCES += images.qrc

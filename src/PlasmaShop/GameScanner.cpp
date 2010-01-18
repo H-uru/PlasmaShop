@@ -153,9 +153,12 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
             QStringList parts = f.split('_');
             QTreeWidgetItem* fold = ensurePath(fAgesItem,
                 QStringList() << parts.first(), "<AGEFOLD>");
+            QString fnameDisp = f.mid(parts.first().size() + 1);
+            if (fnameDisp.toLower().startsWith("District_"))
+                fnameDisp = fnameDisp.mid(9);
             QTreeWidgetItem* item = new QTreeWidgetItem(fold);
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
-            item->setText(0, parts.last());
+            item->setText(0, fnameDisp);
             item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
         } else if (isReallyDat && (ftest.endsWith(".age") || ftest.endsWith(".csv") ||
                                    ftest.endsWith(".fni") || ftest.endsWith(".sum"))) {

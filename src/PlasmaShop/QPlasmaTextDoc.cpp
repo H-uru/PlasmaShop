@@ -134,15 +134,10 @@ static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
     }
 }
 
-static bool isZeroKey(const unsigned int* key)
-{
-    return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0);
-}
-
 QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
               : QPlasmaDocument(kDocText, parent),
-                fSyntax(kStxNone), fEncryption(kEncNone), fEncoding(kTypeAnsi),
-                fLexersInited(false), fPersistDirty(false)
+                fSyntax(kStxNone), fEncoding(kTypeAnsi),
+                fLexersInited(false)
 {
     memset(fDroidKey, 0, sizeof(fDroidKey));
 
@@ -330,7 +325,6 @@ bool QPlasmaTextDoc::loadFile(QString filename)
 
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
     return QPlasmaDocument::loadFile(filename);
-    fPersistDirty = false;
 }
 
 bool QPlasmaTextDoc::saveTo(QString filename)
@@ -361,9 +355,8 @@ bool QPlasmaTextDoc::saveTo(QString filename)
     }
 
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
-    return QPlasmaDocument::saveTo(filename);
     fEditor->setReadOnly(false);
-    fPersistDirty = false;
+    return QPlasmaDocument::saveTo(filename);
 }
 
 void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
@@ -404,13 +397,6 @@ void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
     }
 }
 
-void QPlasmaTextDoc::setEncryption(EncryptionMode enc)
-{
-    fEncryption = enc;
-    makeDirty();
-    fPersistDirty = true;
-}
-
 void QPlasmaTextDoc::setEncoding(EncodingMode type)
 {
     fEncoding = type;
@@ -421,9 +407,6 @@ void QPlasmaTextDoc::setEncoding(EncodingMode type)
 QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::syntax() const
 { return fSyntax; }
 
-QPlasmaTextDoc::EncryptionMode QPlasmaTextDoc::encryption() const
-{ return fEncryption; }
-
 QPlasmaTextDoc::EncodingMode QPlasmaTextDoc::encoding() const
 { return fEncoding; }
 
@@ -431,12 +414,6 @@ void QPlasmaTextDoc::adjustLineNumbers()
 {
     if (fDoLineNumbers)
         fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
-}
-
-void QPlasmaTextDoc::maybeClean()
-{
-    if (!fPersistDirty)
-        makeClean();
 }
 
 QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::GuessIniType()

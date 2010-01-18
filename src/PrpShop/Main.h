@@ -16,7 +16,7 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "Build 92"
+#define PRPSHOP_VERSION "Build 95"
 
 class PrpShopMain : public QMainWindow {
     Q_OBJECT
@@ -54,13 +54,12 @@ private:
     enum {
         // Main Menu
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
-        kToolsProperties, kToolsNewObject, kWindowPrev, kWindowNext,
-        kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
+        kToolsProperties, kToolsShowTypeIDs, kToolsNewObject, kWindowPrev,
+        kWindowNext, kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
 
         // Tree Context Menu
         kTreeClose, kTreeEdit, kTreeEditPRC, kTreePreview, kTreeDelete,
-        kTreeImport, kTreeExport, kTreeExportDDS, kTreeExportJPEG,
-        kTreeExportOBJ,
+        kTreeImport, kTreeExport,
 
         kNumActions
     };
@@ -100,6 +99,7 @@ public slots:
     void treeItemActivated(QTreeWidgetItem* item, int column);
     void treeContextMenu(const QPoint& pos);
     void createNewObject();
+    void showTypeIDs(bool show);
 
     void treeClose();
     void treeEdit();
@@ -108,9 +108,6 @@ public slots:
     void treeDelete();
     void treeImport();
     void treeExport();
-    void treeExportDDS();
-    void treeExportJPEG();
-    void treeExportOBJ();
 };
 
 #endif

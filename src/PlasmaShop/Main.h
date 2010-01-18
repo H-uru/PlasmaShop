@@ -12,7 +12,7 @@
 #include "GameBrowser.h"
 #include "GameScanner.h"
 
-#define PLASMASHOP_VERSION "3.0 Beta (build 94)"
+#define PLASMASHOP_VERSION "3.0 Beta (build 95)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -26,7 +26,7 @@ private:
     enum {
         // Main Menu
         kFileNew, kFileOpen, kFileSave, kFileSaveAs, kFileExit, kFileOptions,
-        kFileRevert,
+        kFileRevert, kFileShowBrowser,
         kEditUndo, kEditRedo, kEditCut, kEditCopy, kEditPaste, kEditDelete,
         kEditSelectAll,
         kHelpAbout,

@@ -48,6 +48,7 @@ PrpShopMain::PrpShopMain()
     fActions[kFileSaveAs] = new QAction(tr("Sa&ve As..."), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);
+    fActions[kToolsShowTypeIDs] = new QAction(tr("Show Type &IDs"), this);
     fActions[kToolsNewObject] = new QAction(tr("&New Object..."), this);
     fActions[kWindowPrev] = new QAction(tr("&Previous"), this);
     fActions[kWindowNext] = new QAction(tr("&Next"), this);
@@ -63,9 +64,6 @@ PrpShopMain::PrpShopMain()
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
     fActions[kTreeImport] = new QAction(tr("&Import..."), this);
     fActions[kTreeExport] = new QAction(tr("E&xport..."), this);
-    fActions[kTreeExportDDS] = new QAction(tr("Export &DDS..."), this);
-    fActions[kTreeExportJPEG] = new QAction(tr("Export &JPEG..."), this);
-    fActions[kTreeExportOBJ] = new QAction(tr("Export &OBJ..."), this);
 
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -73,6 +71,8 @@ PrpShopMain::PrpShopMain()
     fActions[kWindowClose]->setShortcut(Qt::CTRL + Qt::Key_W);
     fActions[kToolsProperties]->setCheckable(true);
     fActions[kToolsProperties]->setChecked(true);
+    fActions[kToolsShowTypeIDs]->setCheckable(true);
+    fActions[kToolsShowTypeIDs]->setChecked(false);
 
     // Main Menus
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
@@ -86,6 +86,7 @@ PrpShopMain::PrpShopMain()
 
     QMenu* viewMenu = menuBar()->addMenu(tr("&Tools"));
     viewMenu->addAction(fActions[kToolsProperties]);
+    viewMenu->addAction(fActions[kToolsShowTypeIDs]);
     viewMenu->addSeparator();
     viewMenu->addAction(fActions[kToolsNewObject]);
 
@@ -152,6 +153,8 @@ PrpShopMain::PrpShopMain()
             fPropertyDock, SLOT(setVisible(bool)));
     connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
             fActions[kToolsProperties], SLOT(setChecked(bool)));
+    connect(fActions[kToolsShowTypeIDs], SIGNAL(toggled(bool)),
+            this, SLOT(showTypeIDs(bool)));
     connect(fActions[kToolsNewObject], SIGNAL(triggered()),
             this, SLOT(createNewObject()));
 
@@ -175,9 +178,6 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
     connect(fActions[kTreeImport], SIGNAL(triggered()), this, SLOT(treeImport()));
     connect(fActions[kTreeExport], SIGNAL(triggered()), this, SLOT(treeExport()));
-    connect(fActions[kTreeExportDDS], SIGNAL(triggered()), this, SLOT(treeExportDDS()));
-    connect(fActions[kTreeExportJPEG], SIGNAL(triggered()), this, SLOT(treeExportJPEG()));
-    connect(fActions[kTreeExportOBJ], SIGNAL(triggered()), this, SLOT(treeExportOBJ()));
 
     connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
@@ -200,6 +200,9 @@ PrpShopMain::PrpShopMain()
 
     if (settings.contains("DialogDir"))
         fDialogDir = settings.value("DialogDir").toString();
+
+    fActions[kToolsShowTypeIDs]->setChecked(
+            settings.value("ShowTypeIDs", false).toBool());
 }
 
 void PrpShopMain::closeEvent(QCloseEvent*)
@@ -215,6 +218,7 @@ void PrpShopMain::closeEvent(QCloseEvent*)
     settings.setValue("WinState", saveState());
 
     settings.setValue("DialogDir", fDialogDir);
+    settings.setValue("ShowTypeIDs", s_showTypeIDs);
 }
 
 void PrpShopMain::dragEnterEvent(QDragEnterEvent* evt)
@@ -408,16 +412,6 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         menu.addAction(fActions[kTreeDelete]);
         menu.addAction(fActions[kTreeImport]);
         menu.addAction(fActions[kTreeExport]);
-        if (item->obj()->ClassInstance(kMipmap)) {
-            plMipmap* mipmap = plMipmap::Convert(item->obj());
-            if (mipmap->getCompressionType() == plMipmap::kJPEGCompression)
-                menu.addAction(fActions[kTreeExportJPEG]);
-            else
-                menu.addAction(fActions[kTreeExportDDS]);
-        } else if (item->obj()->ClassInstance(kSceneNode)
-                   || item->obj()->ClassInstance(kSceneObject)) {
-            menu.addAction(fActions[kTreeExportOBJ]);
-        }
         menu.setDefaultAction(fActions[kTreeEdit]);
         fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()->ClassIndex()));
     } else {
@@ -603,30 +597,6 @@ void PrpShopMain::treeExport()
         dir.cdUp();
         fDialogDir = dir.absolutePath();
     }
-}
-
-void PrpShopMain::treeExportDDS()
-{
-    QMessageBox msgBox(QMessageBox::Warning, tr("Export DDS"),
-                       tr("DDS Exporter not yet implemented"),
-                       QMessageBox::Ok, this);
-    msgBox.exec();
-}
-
-void PrpShopMain::treeExportJPEG()
-{
-    QMessageBox msgBox(QMessageBox::Warning, tr("Export JPEG"),
-                       tr("JPEG Exporter not yet implemented"),
-                       QMessageBox::Ok, this);
-    msgBox.exec();
-}
-
-void PrpShopMain::treeExportOBJ()
-{
-    QMessageBox msgBox(QMessageBox::Warning, tr("Export OBJ"),
-                       tr("OBJ Exporter not yet implemented"),
-                       QMessageBox::Ok, this);
-    msgBox.exec();
 }
 
 void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
@@ -911,7 +881,6 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 
     // Find or create the Age folder
     QString ageName = ~page->getAge();
-    QString pageName = ~page->getPage();
     for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
         if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
             parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
@@ -979,6 +948,24 @@ void PrpShopMain::createNewObject()
     }
 }
 
+void PrpShopMain::showTypeIDs(bool show)
+{
+    s_showTypeIDs = show;
+
+    // Refresh the folder display for currently loaded pages
+    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+        for (int j=0; j<ageNode->childCount(); j++) {
+            QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
+            for (int t=0; t<pageNode->childCount(); t++) {
+                QPlasmaTreeItem* typeNode = (QPlasmaTreeItem*)pageNode->child(t);
+                short type = ((QPlasmaTreeItem*)typeNode->child(0))->obj()->ClassIndex();
+                typeNode->setText(0, pqGetFriendlyClassName(type));
+            }
+            pageNode->sortChildren(0, Qt::AscendingOrder);
+        }
+    }
+}
 
 int main(int argc, char* argv[])
 {

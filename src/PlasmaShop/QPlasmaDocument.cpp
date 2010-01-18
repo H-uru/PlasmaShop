@@ -1,5 +1,6 @@
 #include "QPlasmaDocument.h"
 #include "QPlasmaTextDoc.h"
+#include "QPlasmaSumFile.h"
 #include <QInputDialog>
 #include <QSettings>
 #include <QMessageBox>
@@ -23,7 +24,7 @@ QIcon QPlasmaDocument::GetDocIcon(QString filename)
         else if (filename == "<AGE>")
             return QIcon(":/img/age.png");
         else if (filename == "<VAULT>")
-            return QIcon(":/res/PlasmaShop.png");
+            return QIcon(":/img/db.png");
     }
 
     QString ext, fnameNoPath;
@@ -74,6 +75,8 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
     switch (docType) {
     case kDocText:
         return new QPlasmaTextDoc(parent);
+    case kDocManifest:
+        return new QPlasmaSumFile(parent);
     default:
         return NULL;
     }
@@ -121,7 +124,8 @@ bool QPlasmaDocument::GetEncryptionKeyFromUser(QWidget* parent, unsigned int* ke
 }
 
 QPlasmaDocument::QPlasmaDocument(DocumentType docType, QWidget* parent)
-               : QWidget(parent), fDocType(docType), fDirty(false)
+               : QWidget(parent), fDocType(docType), fEncryption(kEncNone),
+                 fDirty(false), fPersistDirty(false)
 { }
 
 DocumentType QPlasmaDocument::docType() const
@@ -181,6 +185,7 @@ void QPlasmaDocument::performRedo()
 bool QPlasmaDocument::loadFile(QString filename)
 {
     fFilename = filename;
+    fPersistDirty = false;
     makeClean();
     return true;
 }
@@ -188,6 +193,7 @@ bool QPlasmaDocument::loadFile(QString filename)
 bool QPlasmaDocument::saveTo(QString filename)
 {
     fFilename = filename;
+    fPersistDirty = false;
     makeClean();
     return true;
 }
@@ -200,6 +206,21 @@ bool QPlasmaDocument::saveDefault()
 bool QPlasmaDocument::revert()
 {
     return loadFile(fFilename);
+}
+
+void QPlasmaDocument::setEncryption(EncryptionMode enc)
+{
+    fEncryption = enc;
+    makeDirty();
+    fPersistDirty = true;
+}
+
+QPlasmaDocument::EncryptionMode QPlasmaDocument::encryption() const
+{ return fEncryption; }
+
+bool QPlasmaDocument::isZeroKey(const unsigned int* key)
+{
+    return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0);
 }
 
 void QPlasmaDocument::makeDirty()
@@ -216,4 +237,10 @@ void QPlasmaDocument::makeClean()
         fDirty = false;
         emit becameClean();
     }
+}
+
+void QPlasmaDocument::maybeClean()
+{
+    if (!fPersistDirty)
+        makeClean();
 }

@@ -31,9 +31,10 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileNew] = new QAction(qStdIcon("document-new"), tr("&New..."), this);
     fActions[kFileOpen] = new QAction(qStdIcon("document-open"), tr("&Open..."), this);
     fActions[kFileSave] = new QAction(qStdIcon("document-save"), tr("&Save"), this);
-    fActions[kFileSaveAs] = new QAction(qStdIcon("document-save-as"), tr("Sa&ve As..."), this);
+    fActions[kFileSaveAs] = new QAction(qStdIcon("document-save-as"), tr("Save &As..."), this);
     fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&vert"), this);
-    fActions[kFileOptions] = new QAction(tr("&Options..."), this);
+    fActions[kFileOptions] = new QAction(tr("&Preferences..."), this);
+    fActions[kFileShowBrowser] = new QAction(tr("Show File &Browser"), this);
     fActions[kFileExit] = new QAction(qStdIcon("application-exit"), tr("E&xit"), this);
     fActions[kEditUndo] = new QAction(qStdIcon("edit-undo"), tr("&Undo"), this);
     fActions[kEditRedo] = new QAction(qStdIcon("edit-redo"), tr("&Redo"), this);
@@ -64,7 +65,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextTypeUTF8] = new QAction(tr("UTF-&8"), this);
     fActions[kTextTypeUTF16] = new QAction(tr("UTF-1&6"), this);
     fActions[kTextTypeUTF32] = new QAction(tr("UTF-&32"), this);
-    fActions[kTextExpandAll] = new QAction(tr("&Expand All"), this);
+    fActions[kTextExpandAll] = new QAction(tr("E&xpand All"), this);
     fActions[kTextCollapseAll] = new QAction(tr("&Collapse All"), this);
 
     fActions[kTreeOpen] = new QAction(tr("&Open"), this);
@@ -115,6 +116,7 @@ PlasmaShopMain::PlasmaShopMain()
     fileMenu->addAction(fActions[kFileRevert]);
     fileMenu->addSeparator();
     fileMenu->addAction(fActions[kFileOptions]);
+    fileMenu->addAction(fActions[kFileShowBrowser]);
     fileMenu->addSeparator();
     fileMenu->addAction(fActions[kFileExit]);
 
@@ -146,12 +148,12 @@ PlasmaShopMain::PlasmaShopMain()
     text_stxMenu->addAction(fActions[kTextStxXML]);
     text_stxMenu->addAction(fActions[kTextStxHex]);
     text_stxMenu->addAction(fActions[kTextStxFX]);
-    QMenu* text_encMenu = fTextMenu->addMenu(tr("&Encryption"));
+    QMenu* text_encMenu = fTextMenu->addMenu(tr("Encr&yption"));
     text_encMenu->addAction(fActions[kTextEncNone]);
     text_encMenu->addAction(fActions[kTextEncXtea]);
     text_encMenu->addAction(fActions[kTextEncAes]);
     text_encMenu->addAction(fActions[kTextEncDroid]);
-    QMenu* text_typeMenu = fTextMenu->addMenu(tr("&File Encoding"));
+    QMenu* text_typeMenu = fTextMenu->addMenu(tr("File &Encoding"));
     text_typeMenu->addAction(fActions[kTextTypeAnsi]);
     text_typeMenu->addAction(fActions[kTextTypeUTF8]);
     text_typeMenu->addAction(fActions[kTextTypeUTF16]);
@@ -179,7 +181,9 @@ PlasmaShopMain::PlasmaShopMain()
     mainTbar->addAction(fActions[kEditRedo]);
     fGameSelector = new QComboBox(mainTbar);
     mainTbar->addSeparator();
-    mainTbar->addWidget(new QLabel(tr("Game: "), this));
+    QLabel* lblGame = new QLabel(tr("&Game: "), this);
+    lblGame->setBuddy(fGameSelector);
+    mainTbar->addWidget(lblGame);
     mainTbar->addWidget(fGameSelector);
     statusBar();
 
@@ -197,7 +201,8 @@ PlasmaShopMain::PlasmaShopMain()
     fBrowserDock->setAllowedAreas(Qt::LeftDockWidgetArea |
                                   Qt::RightDockWidgetArea);
     fBrowserDock->setFeatures(QDockWidget::DockWidgetMovable |
-                              QDockWidget::DockWidgetFloatable);
+                              QDockWidget::DockWidgetFloatable |
+                              QDockWidget::DockWidgetClosable);
     fBrowserTree->setUniformRowHeights(true);
     fBrowserTree->setHeaderHidden(true);
     fBrowserTree->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -224,6 +229,7 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(onSaveAs()));
     connect(fActions[kFileRevert], SIGNAL(triggered()), this, SLOT(onRevert()));
     connect(fActions[kFileOptions], SIGNAL(triggered()), this, SLOT(onOptions()));
+    connect(fActions[kFileShowBrowser], SIGNAL(triggered()), fBrowserDock, SLOT(show()));
     connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
 
     connect(fActions[kEditCut], SIGNAL(triggered()), this, SLOT(onCut()));

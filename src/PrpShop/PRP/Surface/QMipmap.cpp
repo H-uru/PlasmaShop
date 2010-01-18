@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QPainter>
+#include "../QLinkLabel.h"
 #include "../../QPlasmaUtils.h"
 
 /* QTextureBox */
@@ -243,11 +244,39 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
     fPreviewLink->setCreatable(tex);
     fPreviewLink->setForceType(kPreviewMipmap);
 
+    QLinkLabel* xDDSLink = new QLinkLabel(tr("Export DDS..."), this);
+    QLinkLabel* iDDSLink = new QLinkLabel(tr("Import DDS..."), this);
+    QLinkLabel* xBMPLink = new QLinkLabel(tr("Export Bitmap..."), this);
+    QLinkLabel* iBMPLink = new QLinkLabel(tr("Import Bitmap..."), this);
+    QLinkLabel* xJPGLink = new QLinkLabel(tr("Export Jpeg..."), this);
+    QLinkLabel* iJPGLink = new QLinkLabel(tr("Import Jpeg..."), this);
+
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(grpFlags, 0, 0, 1, 3);
     layout->addWidget(grpProps, 1, 0, 1, 3);
-    layout->addWidget(fPreviewLink, 3, 0, 1, 3);
+    layout->addWidget(fPreviewLink, 2, 0, 1, 3);
+    layout->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 3, 0, 1, 3);
+    layout->addWidget(xDDSLink, 4, 0);
+    layout->addWidget(iDDSLink, 5, 0);
+    layout->addWidget(xBMPLink, 4, 1);
+    layout->addWidget(iBMPLink, 5, 1);
+    layout->addWidget(xJPGLink, 4, 2);
+    layout->addWidget(iJPGLink, 5, 2);
+
+    if (tex->getCompressionType() == plBitmap::kJPEGCompression) {
+        xDDSLink->setEnabled(false);
+        xBMPLink->setEnabled(false);
+        xJPGLink->setEnabled(true);
+    } else if (tex->getCompressionType() == plBitmap::kDirectXCompression) {
+        xDDSLink->setEnabled(true);
+        xBMPLink->setEnabled(false);
+        xJPGLink->setEnabled(false);
+    } else {
+        xDDSLink->setEnabled(false);
+        xBMPLink->setEnabled(true);
+        xJPGLink->setEnabled(false);
+    }
 }
 
 void QMipmap::saveDamage()

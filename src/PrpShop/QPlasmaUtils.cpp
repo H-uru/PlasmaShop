@@ -1,6 +1,8 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 
+bool s_showTypeIDs = false;
+
 enum {
     kIcoSceneObj, kIcoSceneNode, kIcoDraw, kIcoDraw2, kIcoSim, kIcoCoord,
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
@@ -545,8 +547,13 @@ QString pqGetFriendlyClassName(short classType)
     classType &= ~0x3000;
     if ((unsigned short)classType == 0x8000)
         return "(NULL)";
-    if (classType >= 0 && classType < TYPESPACE_MAX)
-        return s_names[classType];
+    if (classType >= 0 && classType < TYPESPACE_MAX) {
+        if (s_showTypeIDs)
+            return QString("[%1] %2").arg(classType, 4, 16, QChar('0'))
+                                     .arg(s_names[classType]);
+        else
+            return s_names[classType];
+    }
     return S_INVALID;
 }
 
