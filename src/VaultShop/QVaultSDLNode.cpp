@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QDoubleValidator>
 #include <Vault/plVaultNodeTypes.h>
 #include <Stream/hsRAMStream.h>
 #include <Debug/plDebug.h>
@@ -126,12 +127,44 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
                           .arg(color.r).arg(color.g).arg(color.b).arg(color.a);
             }
             break;
+        case plVarDescriptor::kPoint3:
+            {
+                hsVector3 vec = ((plSimpleStateVariable*)var)->Vector(i);
+                result += QString("hsPoint3(%1,%2,%3)")
+                          .arg(vec.X).arg(vec.Y).arg(vec.Z);
+            }
+            break;
+        case plVarDescriptor::kVector3:
+            {
+                hsVector3 vec = ((plSimpleStateVariable*)var)->Vector(i);
+                result += QString("hsVector3(%1,%2,%3)")
+                          .arg(vec.X).arg(vec.Y).arg(vec.Z);
+            }
+            break;
+        case plVarDescriptor::kQuaternion:
+            {
+                hsQuat quat = ((plSimpleStateVariable*)var)->Quat(i);
+                result += QString("hsQuat(%1,%2,%3,%4)")
+                          .arg(quat.X).arg(quat.Y).arg(quat.Z).arg(quat.W);
+            }
+            break;
         case plVarDescriptor::kAgeTimeOfDay:
             {
                 QDateTime dt;
                 if (!((plSimpleStateVariable*)var)->getTimeStamp().atEpoch()) {
                     dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
-                    result += dt.toString("yyyy/MM/dd hh:mm:ss");
+                    result += dt.toString(Qt::SystemLocaleShortDate);
+                } else {
+                    result += "N/A";
+                }
+            }
+            break;
+        case plVarDescriptor::kTime:
+            {
+                QDateTime dt;
+                if (!((plSimpleStateVariable*)var)->Time(i).atEpoch()) {
+                    dt.setTime_t(((plSimpleStateVariable*)var)->Time(i).getSecs());
+                    result += dt.toString(Qt::SystemLocaleShortDate);
                 } else {
                     result += "N/A";
                 }
@@ -162,7 +195,7 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
 }
 
 QSDLEditor::QSDLEditor(QWidget* parent)
-          : QWidget(parent), fSDLVersion(-1)
+          : QWidget(parent), fRecord(NULL), fIOwnRecord(false), fSDLVersion(-1)
 {
     fSDLList = new QTreeWidget(this);
     fSDLList->setColumnCount(2);
@@ -186,6 +219,12 @@ QSDLEditor::QSDLEditor(QWidget* parent)
 
     connect(fSDLList, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(itemSelected(QTreeWidgetItem*, QTreeWidgetItem*)));
+}
+
+QSDLEditor::~QSDLEditor()
+{
+    if (fIOwnRecord && fRecord != NULL)
+        delete fRecord;
 }
 
 void QSDLEditor::setMgrs(plResManager* mgr, plSDLMgr* sdl)
@@ -215,18 +254,14 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
         msgBox.exec();
         return;
     }
-    fRecord.setDescriptor(desc);
-    fRecord.read(&S, fResMgr);
+    plStateDataRecord* rec = new plStateDataRecord();
+    rec->setDescriptor(desc);
+    rec->read(&S, fResMgr);
     if (S.size() != S.pos()) {
         plDebug::Debug("[%s] SDL size-read difference: %d",
                        fSDLName.cstr(), S.size() - S.pos());
     }
-
-    for (size_t i=0; i<fRecord.getNumVars(); i++)
-        addVar(fRecord.get(i), fSDLList->invisibleRootItem());
-    fSDLList->expandAll();
-    fSDLList->resizeColumnToContents(0);
-    fSDLList->resizeColumnToContents(1);
+    setRecord(rec, true);
 }
 
 plVaultBlob QSDLEditor::saveBlob()
@@ -241,12 +276,33 @@ plVaultBlob QSDLEditor::saveBlob()
     hsRAMStream S;
     S.setVer(pvPots);
     plStateDataRecord::WriteStreamHeader(&S, fSDLName, fSDLVersion, NULL);
-    fRecord.write(&S, fResMgr);
+    fRecord->write(&S, fResMgr);
     unsigned char* data = new unsigned char[S.size()];
     S.copyTo(data, S.size());
     blob.setData(S.size(), data);
     delete[] data;
     return blob;
+}
+
+void QSDLEditor::setRecord(plStateDataRecord* rec, bool own)
+{
+    fSDLList->clear();
+    fSDLVersion = -1;
+    if (fIOwnRecord && fRecord != NULL)
+        delete fRecord;
+    fIOwnRecord = own;
+    fRecord = rec;
+
+    for (size_t i=0; i<fRecord->getNumVars(); i++)
+        addVar(fRecord->get(i), fSDLList->invisibleRootItem());
+    fSDLList->expandAll();
+    fSDLList->resizeColumnToContents(1);
+    fSDLList->resizeColumnToContents(0);
+
+    if (fRecord->getNumVars() > 0) {
+        fSDLList->topLevelItem(0)->setSelected(true);
+        itemSelected(fSDLList->topLevelItem(0), NULL);
+    }
 }
 
 void QSDLEditor::addVar(plStateVariable* var, QTreeWidgetItem* parent)
@@ -262,7 +318,7 @@ void QSDLEditor::setupVarEditorCommon(plStateVariable* var)
         QString("%1[%2]:")
         .arg(~var->getDescriptor()->getName())
         .arg(var->getCount()), fEditorPanel), 0, 0);
-    fEditorLayout->addWidget(fEditorWhich, 0, 1, 1, 2);
+    fEditorLayout->addWidget(fEditorWhich, 0, 1, 1, 4);
 
     connect(fEditorWhich, SIGNAL(valueChanged(int)), this, SLOT(indexChanged(int)));
 }
@@ -273,7 +329,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
         return;
 
     plStateVariable* var = ((QSDLTreeItem*)item)->variable();
-    if (var == NULL || var->getCount() < (size_t)which)
+    if (var == NULL || var->getCount() == 0 || var->getCount() < (size_t)which)
         return;
 
     fCurrentWhich = which;
@@ -289,6 +345,9 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
         break;
     case plVarDescriptor::kByte:
         fIntEdit->setValue(((plSimpleStateVariable*)var)->Byte(which));
+        break;
+    case plVarDescriptor::kFloat:
+        fStringEdit->setText(QString("%1").arg(((plSimpleStateVariable*)var)->Float(which)));
         break;
     case plVarDescriptor::kString:
         fStringEdit->setText(~((plSimpleStateVariable*)var)->String(which));
@@ -322,6 +381,40 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
             fColorEdit->setColor(color);
         }
         break;
+    case plVarDescriptor::kPoint3:
+    case plVarDescriptor::kVector3:
+        {
+            hsVector3 vec = ((plSimpleStateVariable*)var)->Vector(which);
+            fGeomEdit[0]->setText(QString("%1").arg(vec.X));
+            fGeomEdit[1]->setText(QString("%1").arg(vec.Y));
+            fGeomEdit[2]->setText(QString("%1").arg(vec.Z));
+        }
+        break;
+    case plVarDescriptor::kQuaternion:
+        {
+            hsQuat quat = ((plSimpleStateVariable*)var)->Quat(which);
+            fGeomEdit[0]->setText(QString("%1").arg(quat.X));
+            fGeomEdit[1]->setText(QString("%1").arg(quat.Y));
+            fGeomEdit[2]->setText(QString("%1").arg(quat.Z));
+            fGeomEdit[3]->setText(QString("%1").arg(quat.W));
+        }
+        break;
+    case plVarDescriptor::kAgeTimeOfDay:
+        {
+            QDateTime dt;
+            dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
+            fDTEdit->setDateTime(dt);
+            fIntEdit->setValue(((plSimpleStateVariable*)var)->getTimeStamp().getMicros());
+        }
+        break;
+    case plVarDescriptor::kTime:
+        {
+            QDateTime dt;
+            dt.setTime_t(((plSimpleStateVariable*)var)->Time(which).getSecs());
+            fDTEdit->setDateTime(dt);
+            fIntEdit->setValue(((plSimpleStateVariable*)var)->Time(which).getMicros());
+        }
+        break;
     default:
         break;
     }
@@ -333,7 +426,7 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
         return;
 
     plStateVariable* var = ((QSDLTreeItem*)item)->variable();
-    if (var == NULL || var->getCount() < (size_t)which)
+    if (var == NULL || var->getCount() == 0 || var->getCount() < (size_t)which)
         return;
 
     switch (var->getDescriptor()->getType()) {
@@ -348,6 +441,9 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
         break;
     case plVarDescriptor::kByte:
         ((plSimpleStateVariable*)var)->Byte(which) = fIntEdit->value();
+        break;
+    case plVarDescriptor::kFloat:
+        ((plSimpleStateVariable*)var)->Float(which) = fStringEdit->text().toDouble(NULL);
         break;
     case plVarDescriptor::kString:
         ((plSimpleStateVariable*)var)->String(which) = ~fStringEdit->text();
@@ -381,6 +477,34 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
             ((plSimpleStateVariable*)var)->Color32(which).a = (unsigned char)(color.a * 255);
         }
         break;
+    case plVarDescriptor::kPoint3:
+    case plVarDescriptor::kVector3:
+        {
+            ((plSimpleStateVariable*)var)->Vector(which).X = fGeomEdit[0]->text().toDouble(NULL);
+            ((plSimpleStateVariable*)var)->Vector(which).Y = fGeomEdit[1]->text().toDouble(NULL);
+            ((plSimpleStateVariable*)var)->Vector(which).Z = fGeomEdit[2]->text().toDouble(NULL);
+        }
+        break;
+    case plVarDescriptor::kQuaternion:
+        {
+            ((plSimpleStateVariable*)var)->Quat(which).X = fGeomEdit[0]->text().toDouble(NULL);
+            ((plSimpleStateVariable*)var)->Quat(which).Y = fGeomEdit[1]->text().toDouble(NULL);
+            ((plSimpleStateVariable*)var)->Quat(which).Z = fGeomEdit[2]->text().toDouble(NULL);
+            ((plSimpleStateVariable*)var)->Quat(which).W = fGeomEdit[3]->text().toDouble(NULL);
+        }
+        break;
+    case plVarDescriptor::kAgeTimeOfDay:
+        {
+            plUnifiedTime ts;
+            ts.setSecs(fDTEdit->dateTime().toTime_t());
+            ts.setMicros(fIntEdit->value());
+            ((plSimpleStateVariable*)var)->setTimeStamp(ts);
+        }
+        break;
+    case plVarDescriptor::kTime:
+        ((plSimpleStateVariable*)var)->Time(which).setSecs(fDTEdit->dateTime().toTime_t());
+        ((plSimpleStateVariable*)var)->Time(which).setMicros(fIntEdit->value());
+        break;
     default:
         break;
     }
@@ -407,34 +531,41 @@ void QSDLEditor::itemSelected(QTreeWidgetItem* current, QTreeWidgetItem* previou
             fComboEdit->addItem("False");
             fComboEdit->addItem("True");
             fEditorLayout->addWidget(new QLabel("Boolean:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fComboEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fComboEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kInt:
             setupVarEditorCommon(var);
             fIntEdit = new QSpinBox(fEditorPanel);
             fIntEdit->setRange(-0x80000000, 0x7FFFFFFF);
             fEditorLayout->addWidget(new QLabel("Int:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kShort:
             setupVarEditorCommon(var);
             fIntEdit = new QSpinBox(fEditorPanel);
             fIntEdit->setRange(-0x8000, 0x7FFF);
             fEditorLayout->addWidget(new QLabel("Short:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kByte:
             setupVarEditorCommon(var);
             fIntEdit = new QSpinBox(fEditorPanel);
             fIntEdit->setRange(0, 0xFF);
             fEditorLayout->addWidget(new QLabel("Byte:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fIntEdit, 1, 1, 1, 4);
+            break;
+        case plVarDescriptor::kFloat:
+            setupVarEditorCommon(var);
+            fStringEdit = new QLineEdit(fEditorPanel);
+            fStringEdit->setValidator(new QDoubleValidator(fStringEdit));
+            fEditorLayout->addWidget(new QLabel("Float:", fEditorPanel), 1, 0);
+            fEditorLayout->addWidget(fStringEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kString:
             setupVarEditorCommon(var);
             fStringEdit = new QLineEdit(fEditorPanel);
             fEditorLayout->addWidget(new QLabel("String:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fStringEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fStringEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kKey:
             setupVarEditorCommon(var);
@@ -447,29 +578,93 @@ void QSDLEditor::itemSelected(QTreeWidgetItem* current, QTreeWidgetItem* previou
                 fComboEdit->addItem(pdUnifiedTypeMap::ClassName(i));
             fStringEdit = new QLineEdit(fEditorPanel);
             fEditorLayout->addWidget(new QLabel("Key Location:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fLocationEdit[0], 1, 1);
-            fEditorLayout->addWidget(fLocationEdit[1], 1, 2);
+            fEditorLayout->addWidget(fLocationEdit[0], 1, 1, 1, 2);
+            fEditorLayout->addWidget(fLocationEdit[1], 1, 3, 1, 2);
             fEditorLayout->addWidget(new QLabel("Key Type:", fEditorPanel), 2, 0);
-            fEditorLayout->addWidget(fComboEdit, 2, 1, 1, 2);
+            fEditorLayout->addWidget(fComboEdit, 2, 1, 1, 4);
             fEditorLayout->addWidget(new QLabel("Key Name:", fEditorPanel), 3, 0);
-            fEditorLayout->addWidget(fStringEdit, 3, 1, 1, 2);
+            fEditorLayout->addWidget(fStringEdit, 3, 1, 1, 4);
             break;
         case plVarDescriptor::kRGB8:
             setupVarEditorCommon(var);
             fColorEdit = new QColorEdit(false, fEditorPanel);
             fEditorLayout->addWidget(new QLabel("Color:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fColorEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fColorEdit, 1, 1, 1, 4);
             break;
         case plVarDescriptor::kRGBA8:
             setupVarEditorCommon(var);
             fColorEdit = new QColorEdit(true, fEditorPanel);
             fEditorLayout->addWidget(new QLabel("Color:", fEditorPanel), 1, 0);
-            fEditorLayout->addWidget(fColorEdit, 1, 1, 1, 2);
+            fEditorLayout->addWidget(fColorEdit, 1, 1, 1, 4);
+            break;
+        case plVarDescriptor::kPoint3:
+            setupVarEditorCommon(var);
+            fGeomEdit[0] = new QLineEdit(fEditorPanel);
+            fGeomEdit[0]->setValidator(new QDoubleValidator(fGeomEdit[0]));
+            fGeomEdit[1] = new QLineEdit(fEditorPanel);
+            fGeomEdit[1]->setValidator(new QDoubleValidator(fGeomEdit[1]));
+            fGeomEdit[2] = new QLineEdit(fEditorPanel);
+            fGeomEdit[2]->setValidator(new QDoubleValidator(fGeomEdit[2]));
+            fEditorLayout->addWidget(new QLabel("Point:", fEditorPanel), 1, 0);
+            fEditorLayout->addWidget(fGeomEdit[0], 1, 1);
+            fEditorLayout->addWidget(fGeomEdit[1], 1, 2);
+            fEditorLayout->addWidget(fGeomEdit[2], 1, 3);
+            break;
+        case plVarDescriptor::kVector3:
+            setupVarEditorCommon(var);
+            fGeomEdit[0] = new QLineEdit(fEditorPanel);
+            fGeomEdit[0]->setValidator(new QDoubleValidator(fGeomEdit[0]));
+            fGeomEdit[1] = new QLineEdit(fEditorPanel);
+            fGeomEdit[1]->setValidator(new QDoubleValidator(fGeomEdit[1]));
+            fGeomEdit[2] = new QLineEdit(fEditorPanel);
+            fGeomEdit[2]->setValidator(new QDoubleValidator(fGeomEdit[2]));
+            fEditorLayout->addWidget(new QLabel("Vector:", fEditorPanel), 1, 0);
+            fEditorLayout->addWidget(fGeomEdit[0], 1, 1);
+            fEditorLayout->addWidget(fGeomEdit[1], 1, 2);
+            fEditorLayout->addWidget(fGeomEdit[2], 1, 3);
+            break;
+        case plVarDescriptor::kQuaternion:
+            setupVarEditorCommon(var);
+            fGeomEdit[0] = new QLineEdit(fEditorPanel);
+            fGeomEdit[0]->setValidator(new QDoubleValidator(fGeomEdit[0]));
+            fGeomEdit[1] = new QLineEdit(fEditorPanel);
+            fGeomEdit[1]->setValidator(new QDoubleValidator(fGeomEdit[1]));
+            fGeomEdit[2] = new QLineEdit(fEditorPanel);
+            fGeomEdit[2]->setValidator(new QDoubleValidator(fGeomEdit[2]));
+            fGeomEdit[3] = new QLineEdit(fEditorPanel);
+            fGeomEdit[3]->setValidator(new QDoubleValidator(fGeomEdit[3]));
+            fEditorLayout->addWidget(new QLabel("Quat:", fEditorPanel), 1, 0);
+            fEditorLayout->addWidget(fGeomEdit[0], 1, 1);
+            fEditorLayout->addWidget(fGeomEdit[1], 1, 2);
+            fEditorLayout->addWidget(fGeomEdit[2], 1, 3);
+            fEditorLayout->addWidget(fGeomEdit[3], 1, 4);
+            break;
+        case plVarDescriptor::kAgeTimeOfDay:
+        case plVarDescriptor::kTime:
+            setupVarEditorCommon(var);
+            fDTEdit = new QDateTimeEdit(fEditorPanel);
+            fIntEdit = new QSpinBox(fEditorPanel);
+            fIntEdit->setRange(0, 999999);
+            fEditorLayout->addWidget(new QLabel("Time:", fEditorPanel), 1, 0);
+            fEditorLayout->addWidget(fDTEdit, 1, 1, 1, 4);
+            fEditorLayout->addWidget(new QLabel("+Micros:", fEditorPanel), 2, 0);
+            fEditorLayout->addWidget(fIntEdit, 2, 1, 1, 4);
+            break;
+        case plVarDescriptor::kStateDescriptor:
+            // Handled differently, ignore
             break;
         default:
+            QMessageBox::information(this, "", tr("Editor Type: %1")
+                                     .arg(var->getDescriptor()->getType()),
+                                     QMessageBox::Ok);
             break;
         }
-        setVarCustomEdit(current, 0);
+        if (var->getCount() == 0) {
+            for (int i=0; i<fEditorLayout->count(); i++)
+                fEditorLayout->itemAt(i)->widget()->setEnabled(false);
+        } else {
+            setVarCustomEdit(current, 0);
+        }
     }
     fEditorLayout->update();
 }

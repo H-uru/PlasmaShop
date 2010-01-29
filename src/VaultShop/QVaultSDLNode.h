@@ -7,6 +7,7 @@
 #include <QTreeWidget>
 #include <QSpinBox>
 #include <QGridLayout>
+#include <QDateTimeEdit>
 #include <SDL/plSDLMgr.h>
 #include <SDL/plStateVariable.h>
 #include <SDL/plStateDataRecord.h>
@@ -22,7 +23,8 @@ public:
     static QString GetSDLName(plVaultBlob blob);
 
 private:
-    plStateDataRecord fRecord;
+    plStateDataRecord* fRecord;
+    bool fIOwnRecord;
     plResManager* fResMgr;
     plSDLMgr* fSDLMgr;
     plString fSDLName;
@@ -38,13 +40,17 @@ private:
     QLineEdit* fStringEdit;
     QSpinBox* fLocationEdit[2];
     QColorEdit* fColorEdit;
+    QDateTimeEdit* fDTEdit;
+    QLineEdit* fGeomEdit[4];
 
 public:
     QSDLEditor(QWidget* parent);
+    ~QSDLEditor();
     void setMgrs(plResManager* mgr, plSDLMgr* sdl);
 
     void loadBlob(plVaultBlob blob);
     plVaultBlob saveBlob();
+    void setRecord(plStateDataRecord* rec, bool own=false);
 
 private:
     void addVar(plStateVariable* var, QTreeWidgetItem* parent);

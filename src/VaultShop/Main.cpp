@@ -58,11 +58,35 @@ void VaultShopMain::VaultInfo::save()
 }
 
 
+/* SaveInfo */
+VaultShopMain::SaveInfo::SaveInfo(QString filename)
+             : fSaveFile(filename)
+{
+    fSave = new plNetGameServerState();
+    hsFileStream FS(pvPots);
+    FS.open(fSaveFile.toUtf8(), fmRead);
+    fSave->read(&FS);
+}
+
+VaultShopMain::SaveInfo::~SaveInfo()
+{
+    if (fSave != NULL)
+        delete fSave;
+}
+
+void VaultShopMain::SaveInfo::save()
+{
+    hsFileStream FS(pvPots);
+    FS.open(fSaveFile.toUtf8(), fmCreate);
+    fSave->write(&FS);
+}
+
+
 /* VaultShopMain */
 VaultShopMain::VaultShopMain()
 {
     // Basic Form Settings
-    setWindowTitle("VaultShop 1.0");
+    setWindowTitle("VaultShop 1.1");
     //setWindowIcon(QIcon(":/res/VaultShop.png"));
 
     // Set up actions
@@ -114,6 +138,7 @@ VaultShopMain::VaultShopMain()
     fGenericEditor = new QVaultNode(fNodeTab);
     fNodeTab->addTab(fGenericEditor, tr("Node Properties"));
     fCustomEditor = NULL;
+    fSavEditor = NULL;
     fEditorTabPreference = 0;
 
     // Layout
@@ -159,9 +184,12 @@ VaultShopMain::VaultShopMain()
 
 VaultShopMain::~VaultShopMain()
 {
-    std::list<VaultInfo*>::iterator it;
-    for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
-        delete *it;
+    std::list<VaultInfo*>::iterator vi;
+    for (vi = fLoadedVaults.begin(); vi != fLoadedVaults.end(); vi++)
+        delete *vi;
+    std::list<SaveInfo*>::iterator si;
+    for (si = fLoadedSaves.begin(); si != fLoadedSaves.end(); si++)
+        delete *si;
 }
 
 void VaultShopMain::closeEvent(QCloseEvent*)
@@ -182,12 +210,13 @@ VaultShopMain::VaultInfo* VaultShopMain::findCurrentVault(QTreeWidgetItem* item)
         item = fVaultTree->currentItem();
     if (item == NULL)
         return NULL;
-    while (item->parent() != NULL)
+    while (item->parent() != NULL) {
         item = item->parent();
-    std::list<VaultInfo*>::iterator it;
-    for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++) {
-        if ((*it)->fRootItem == item)
-            return *it;
+        std::list<VaultInfo*>::iterator it;
+        for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++) {
+            if ((*it)->fRootItem == item)
+                return *it;
+        }
     }
     return NULL;
 }
@@ -281,15 +310,23 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
         disconnect(fCustomEditor, 0, 0, 0);
         delete fCustomEditor;
         fCustomEditor = NULL;
+    } else if (fSavEditor != NULL) {
+        fEditorTabPreference = fNodeTab->currentIndex();
+        fNodeTab->removeTab(0);
+        disconnect(fSavEditor, 0, 0, 0);
+        delete fSavEditor;
+        fSavEditor = NULL;
     }
 
     if (current != NULL && current->data(0, kRoleNodeID).toInt() > 0) {
         VaultInfo* vault = findCurrentVault(current);
         if (vault == NULL) {
             fGenericEditor->setNode(plVaultNode());
+            fGenericEditor->hide();
         } else {
             plVaultNode node = vault->fVault->getNode(current->data(0, kRoleNodeID).toInt());
             fGenericEditor->setNode(node);
+            fGenericEditor->show();
             fCustomEditor = QVaultNodeEdit::MakeEditor(fNodeTab, node, &fResMgr, &fSDLMgr);
             if (fCustomEditor != NULL) {
                 fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
@@ -300,6 +337,21 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
         }
     } else {
         fGenericEditor->setNode(plVaultNode());
+        fGenericEditor->hide();
+        if (current != NULL && !current->data(0, kRoleSavFile).toString().isEmpty()) {
+            // Find the sav data
+            std::list<SaveInfo*>::iterator it;
+            for (it = fLoadedSaves.begin(); it != fLoadedSaves.end(); it++) {
+                if ((*it)->fSaveFile == current->data(0, kRoleSavFile).toString())
+                    break;
+            }
+            if (it != fLoadedSaves.end()) {
+                fSavEditor = new QGameServerState(fNodeTab);
+                fSavEditor->loadSav((*it)->fSave);
+                fNodeTab->insertTab(0, fSavEditor, tr("Save Data"));
+                fNodeTab->setCurrentIndex(fEditorTabPreference);
+            }
+        }
     }
 }
 
@@ -318,19 +370,31 @@ void VaultShopMain::loadGame(QString path)
     for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
         delete *it;
     fLoadedVaults.clear();
+    std::list<SaveInfo*>::iterator si;
+    for (si = fLoadedSaves.begin(); si != fLoadedSaves.end(); si++)
+        delete *si;
+    fLoadedSaves.clear();
+    fVaultTree->clear();
 
     if (QFile::exists(path + "/sav/vault.dat"))
-        loadVault(path + "/sav/vault.dat", "Vault Root");
+        loadVault(path + "/sav/vault.dat", "Vault Root", fVaultTree->invisibleRootItem());
     QDir vdir(path + "/sav/");
     if (vdir.exists()) {
         QStringList vaultList = vdir.entryList(
             QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable | QDir::Hidden);
         QStringList::const_iterator it;
         for (it = vaultList.constBegin(); it != vaultList.constEnd(); it++) {
-            QString vaultPath = path + "/sav/" + *it + "/current/vault.dat";
+            QString vaultPath = path + "/sav/" + *it + "/current";
             try {
-                if (QFile::exists(vaultPath))
-                    loadVault(vaultPath, QString("%1's Vault").arg(HexToStr(*it)));
+                if (QFile::exists(vaultPath + "/vault.dat")) {
+                    QTreeWidgetItem* dataRoot = new QTreeWidgetItem(fVaultTree, QStringList(HexToStr(*it)));
+                    dataRoot->setIcon(0, QIcon(":/img/rfldr.png"));
+                    dataRoot->setData(0, kRoleNodeID, -1);
+                    dataRoot->setStatusTip(0, *it);
+
+                    loadSaves(vaultPath, dataRoot);
+                    loadVault(vaultPath + "/vault.dat", QString("Vault"), dataRoot);
+                }
             } catch (hsException ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error loading vault %1: %2")
@@ -381,14 +445,14 @@ void VaultShopMain::openGame()
         loadGame(dirname);
 }
 
-void VaultShopMain::loadVault(QString filename, QString vaultName)
+void VaultShopMain::loadVault(QString filename, QString vaultName, QTreeWidgetItem* parent)
 {
     // Fix filename to contain the absolute path >.<
     QDir dir(filename);
     filename = dir.absolutePath();
 
     VaultInfo* vault = new VaultInfo(filename);
-    vault->fRootItem = new QTreeWidgetItem(fVaultTree, QStringList() << vaultName);
+    vault->fRootItem = new QTreeWidgetItem(parent, QStringList() << vaultName);
     vault->fRootItem->setIcon(0, QIcon(":/img/rfldr.png"));
     vault->fRootItem->setData(0, kRoleNodeID, -1);
     vault->fRootItem->setStatusTip(0, filename);
@@ -414,6 +478,52 @@ QTreeWidgetItem* VaultShopMain::loadNode(const plVaultNode& node, QTreeWidgetIte
     for (size_t i=0; i<children.size(); i++)
         loadNode(children[i], item, vault);
     return item;
+}
+
+void VaultShopMain::loadSaves(QString path, QTreeWidgetItem* parent)
+{
+    QDir dir(path);
+    QStringList savs = dir.entryList(QStringList("*.sav"), QDir::Files, QDir::Name);
+    if (savs.length() == 0)
+        return;
+
+    QTreeWidgetItem* savRoot = new QTreeWidgetItem(parent, QStringList("Saves"));
+    savRoot->setIcon(0, QIcon(":/img/rfldr.png"));
+    savRoot->setData(0, kRoleNodeID, -1);
+    savRoot->setStatusTip(0, path);
+
+    foreach (QString sav, savs) {
+        sav = dir.absoluteFilePath(sav);
+
+        // Create or find the age folder
+        QTreeWidgetItem* ageRoot = NULL;
+        QString fn = sav.mid(sav.lastIndexOf(QChar('/')) + 1);
+        fn = fn.left(fn.lastIndexOf(QChar('.')));
+        QString ageName = fn.left(fn.lastIndexOf(QChar('_')));
+        QString ageUuid = fn.mid(fn.lastIndexOf(QChar('_')) + 1);
+
+        for (int i=0; i<parent->childCount(); i++) {
+            if (parent->child(i)->text(0) == ageName) {
+                ageRoot = parent->child(i);
+                break;
+            }
+        }
+        if (ageRoot == NULL) {
+            ageRoot = new QTreeWidgetItem(savRoot, QStringList(ageName));
+            ageRoot->setIcon(0, QIcon(":/img/age.png"));
+            ageRoot->setData(0, kRoleNodeID, -1);
+            ageRoot->setStatusTip(0, ageName);
+        }
+
+        QTreeWidgetItem* sdlNode = new QTreeWidgetItem(ageRoot, QStringList(ageUuid));
+        sdlNode->setIcon(0, QIcon(":/img/data.png"));
+        sdlNode->setData(0, kRoleNodeID, -1);
+        sdlNode->setData(0, kRoleSavFile, sav);
+        sdlNode->setStatusTip(0, QString("%1 %2").arg(ageName).arg(ageUuid));
+
+        SaveInfo* saveInfo = new SaveInfo(sav);
+        fLoadedSaves.push_back(saveInfo);
+    }
 }
 
 void VaultShopMain::openNode()
@@ -470,9 +580,14 @@ void VaultShopMain::performSave()
     saveNode(fVaultTree->currentItem(), fNodeTab->currentIndex());
 
     // Save all vaults to their files
-    std::list<VaultInfo*>::iterator it;
-    for (it = fLoadedVaults.begin(); it != fLoadedVaults.end(); it++)
-        (*it)->save();
+    std::list<VaultInfo*>::iterator vi;
+    for (vi = fLoadedVaults.begin(); vi != fLoadedVaults.end(); vi++)
+        (*vi)->save();
+
+    // Save all saves to their files
+    std::list<SaveInfo*>::iterator si;
+    for (si = fLoadedSaves.begin(); si != fLoadedSaves.end(); si++)
+        (*si)->save();
 }
 
 void VaultShopMain::treeContextMenu(const QPoint& pos)

@@ -76,10 +76,6 @@ Root: HKCR; SubKey: .elf; ValueType: string; ValueData: ElfFile; Flags: uninsdel
 Root: HKCR; SubKey: ElfFile; ValueType: string; ValueData: Encrypted Log; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: ElfFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; Subkey: ElfFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,1; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; SubKey: .pak; ValueType: string; ValueData: PlasmaPakFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; SubKey: PlasmaPakFile; ValueType: string; ValueData: Python Package; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; SubKey: PlasmaPakFile\Shell\Open\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
-Root: HKCR; Subkey: PlasmaPakFile\DefaultIcon; ValueType: string; ValueData: {app}\PlasmaShell.dll,5; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: .loc; ValueType: string; ValueData: LocFile; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: LocFile; ValueType: string; ValueData: Plasma Localization Data; Flags: uninsdeletekey; Tasks: Associations; Components: PlasmaShop
 Root: HKCR; SubKey: LocFile\Shell\Edit\Command; ValueType: string; ValueData: """{app}\PlasmaShop.exe"" ""%1"""; Flags: uninsdeletevalue; Tasks: Associations; Components: PlasmaShop

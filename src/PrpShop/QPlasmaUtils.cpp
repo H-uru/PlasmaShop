@@ -549,7 +549,7 @@ QString pqGetFriendlyClassName(short classType)
         return "(NULL)";
     if (classType >= 0 && classType < TYPESPACE_MAX) {
         if (s_showTypeIDs)
-            return QString("[%1] %2").arg(classType, 4, 16, QChar('0'))
+            return QString("[%1] %2").arg(classType, 4, 16, QChar('0')).toUpper()
                                      .arg(s_names[classType]);
         else
             return s_names[classType];

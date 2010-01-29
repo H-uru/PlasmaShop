@@ -8,17 +8,19 @@
 #include <QAction>
 
 #include <Vault/plVaultStore.h>
+#include <SDL/plNetGameServerState.h>
 #include <list>
 
 #include "QVaultNode.h"
 #include "QVaultNodeEdit.h"
+#include "QGameServerState.h"
 
 class VaultShopMain : public QMainWindow {
     Q_OBJECT
 
 public:
     enum TreeRoles {
-        kRoleNodeID = Qt::UserRole
+        kRoleNodeID = Qt::UserRole, kRoleSavFile,
     };
 
 private:
@@ -27,6 +29,7 @@ private:
     QTabWidget* fNodeTab;
     QVaultNode* fGenericEditor;
     QVaultNodeEdit* fCustomEditor;
+    QGameServerState* fSavEditor;
     int fEditorTabPreference;
 
     // Menu actions
@@ -48,14 +51,26 @@ private:
         void save();
     };
     std::list<VaultInfo*> fLoadedVaults;
+
+    struct SaveInfo {
+        plNetGameServerState* fSave;
+        QString fSaveFile;
+
+        SaveInfo(QString filename);
+        ~SaveInfo();
+        void save();
+    };
+    std::list<SaveInfo*> fLoadedSaves;
+
     plResManager fResMgr;
     plSDLMgr fSDLMgr;
 
 public:
     VaultShopMain();
     virtual ~VaultShopMain();
-    void loadVault(QString filename, QString vaultName);
+    void loadVault(QString filename, QString vaultName, QTreeWidgetItem* parent);
     QTreeWidgetItem* loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
+    void loadSaves(QString path, QTreeWidgetItem* parent);
     void loadGame(QString path);
 
 signals:

@@ -27,6 +27,7 @@ HEADERS += Main.h \
            ../QPlasma.h \
            ../QColorEdit.h \
            ../QLinkLabel.h \
+           QGameServerState.h \
            QVaultNode.h \
            QVaultNodeEdit.h \
            QVaultFolderNode.h \
@@ -41,6 +42,7 @@ HEADERS += Main.h \
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
+           QGameServerState.cpp \
            QVaultNode.cpp \
            QVaultNodeEdit.cpp \
            QVaultFolderNode.cpp \

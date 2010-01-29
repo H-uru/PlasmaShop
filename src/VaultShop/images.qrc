@@ -11,7 +11,7 @@
     <file>res/def/document-open.png</file>
     <file>res/def/document-save.png</file>
 
-    <!-- Images for the Node Tree -->
+    <!-- Images for the Vault Tree -->
     <file>img/admin.png</file>
     <file>img/age.png</file>
     <file>img/agei.png</file>
@@ -30,5 +30,6 @@
     <file>img/unknown.png</file>
     <file>img/wfldr.png</file>
     <file>img/yfldr.png</file>
+    <file>img/sceneobj.png</file>
 </qresource>
 </RCC>
