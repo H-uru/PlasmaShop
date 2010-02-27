@@ -9,6 +9,7 @@
 #include "QVaultPlayerInfoNode.h"
 #include "QVaultAgeNode.h"
 #include "QVaultAgeInfoNode.h"
+#include "QVaultImageNode.h"
 
 /* QVaultNodeEdit */
 QVaultNodeEdit::QVaultNodeEdit(QWidget* parent)
@@ -34,6 +35,9 @@ QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& n
         break;
     case plVault::kNodeTextNote:
         editor = new QVaultTextNode(parent);
+        break;
+    case plVault::kNodeImage:
+        editor = new QVaultImageNode(parent);
         break;
     case plVault::kNodeSDL:
         editor = new QVaultSDLNode(parent);

@@ -1,13 +1,12 @@
+PLSLIBS = core
+include(../../config)
+
 # General Configuration
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../3rdParty
 CONFIG += release
-DESTDIR = ../../bin
-
-# Use libPlasma
-INCLUDEPATH += ../../../Plasma/core
-LIBS += -L../../../Plasma/bin -lPlasma
+DESTDIR = ../../bin$${PLAT_BITS}
 
 # Use the QtIconLoader wrapper
 win32|macx {
@@ -38,7 +37,8 @@ HEADERS += Main.h \
            QVaultPlayerNode.h \
            QVaultPlayerInfoNode.h \
            QVaultAgeNode.h \
-           QVaultAgeInfoNode.h
+           QVaultAgeInfoNode.h \
+           QVaultImageNode.h
 SOURCES += Main.cpp \
            ../QColorEdit.cpp \
            ../QLinkLabel.cpp \
@@ -53,5 +53,6 @@ SOURCES += Main.cpp \
            QVaultPlayerNode.cpp \
            QVaultPlayerInfoNode.cpp \
            QVaultAgeNode.cpp \
-           QVaultAgeInfoNode.cpp
+           QVaultAgeInfoNode.cpp \
+           QVaultImageNode.cpp
 RESOURCES += images.qrc

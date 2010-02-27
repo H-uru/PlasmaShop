@@ -1,0 +1,23 @@
+# Set this to 64 on Win64 builds
+# For Win32 builds and all Unix/Mac builds, leave this alone
+PLAT_BITS =
+
+# QScintilla Defaults
+win32 {
+    DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\""
+} else {
+    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\""
+}
+
+# Make VS shut up a bit
+win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
+
+# Add libPlasma
+contains(PLSLIBS, core) {
+    INCLUDEPATH *= ../../../Plasma/core
+    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lPlasma
+}
+contains(PLSLIBS, net) {
+    INCLUDEPATH *= ../../../Plasma/core
+    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lPlasmaNet
+}

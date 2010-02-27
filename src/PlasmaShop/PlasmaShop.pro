@@ -1,26 +1,17 @@
+PLSLIBS = core
+include(../../config)
+
 # General Configuration
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../3rdParty
 CONFIG += release
-DESTDIR = ../../bin
+DESTDIR = ../../bin$${PLAT_BITS}
 RC_FILE = res/PlasmaShop.rc
 
-# Use libPlasma
-INCLUDEPATH += ../../../Plasma/core
-LIBS += -L../../../Plasma/bin -lPlasma
-
 # QScintilla
-win32 {
-    DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\""
-} else {
-    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\""
-}
 INCLUDEPATH += ../../QScintilla/Qt4
-LIBS += -L../../bin -lqscintilla2-ps3
-
-# Make VS shut up a bit
-win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
+LIBS += -L../../bin$${PLAT_BITS} -lqscintilla2-ps3
 
 # Use shell32.dll for the AppData thing on Windows
 win32:LIBS += -lshell32

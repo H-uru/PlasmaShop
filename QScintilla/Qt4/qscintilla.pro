@@ -32,13 +32,14 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
+include(../../config)
 
 # This must be kept in sync with configure.py.
 !win32:VERSION = 5.1.0
 
 TEMPLATE = lib
 TARGET = qscintilla2-ps3
-DESTDIR = ../../bin
+DESTDIR = ../../bin$${PLAT_BITS}
 CONFIG += qt warn_off release dll thread
 INCLUDEPATH = . ../include ../src
 DEFINES = QSCINTILLA_MAKE_DLL QT SCI_LEXER

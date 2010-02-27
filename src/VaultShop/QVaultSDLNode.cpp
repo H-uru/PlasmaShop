@@ -292,6 +292,7 @@ void QSDLEditor::setRecord(plStateDataRecord* rec, bool own)
         delete fRecord;
     fIOwnRecord = own;
     fRecord = rec;
+    fSDLVersion = rec->getDescriptor()->getVersion();
 
     for (size_t i=0; i<fRecord->getNumVars(); i++)
         addVar(fRecord->get(i), fSDLList->invisibleRootItem());

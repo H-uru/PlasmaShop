@@ -21,7 +21,7 @@ Name: Custom; Description: Custom; Flags: iscustom
 [Components]
 Name: PlasmaShop; Description: PlasmaShop 3.0; Types: Custom Full
 Name: PrpShop; Description: PrpShop 1.0; Types: Custom Full
-Name: VaultShop; Description: VaultShop 1.0; Types: Custom Full
+Name: VaultShop; Description: VaultShop 1.1; Types: Custom Full
 
 [Files]
 Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
