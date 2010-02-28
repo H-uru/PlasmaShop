@@ -12,7 +12,7 @@
 #include "GameBrowser.h"
 #include "GameScanner.h"
 
-#define PLASMASHOP_VERSION "3.0 Beta (build 95)"
+#define PLASMASHOP_VERSION "3.0 Beta (build 98)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -48,6 +48,7 @@ private:
 
     // Editor-specific menus (for dynamically hiding)
     QMenu* fTextMenu;
+    QMenu* fHelpMenu;
 
     // Game Browser
     QTreeWidget* fBrowserTree;

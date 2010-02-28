@@ -139,7 +139,8 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
 
     QStringList subdirs = root.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     foreach (QString dir, subdirs) {
-        root.cd(dir);
+        if (!root.cd(dir))
+            continue;
         path.push_back(dir);
         recursiveScan(path, root);
         path.pop_back();
@@ -245,7 +246,8 @@ void GameScanner::recursiveAppDataScan(QStringList path, QDir root)
 {
     QStringList subdirs = root.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     foreach (QString dir, subdirs) {
-        root.cd(dir);
+        if (!root.cd(dir))
+            continue;
         path.push_back(dir);
         recursiveAppDataScan(path, root);
         path.pop_back();
@@ -295,7 +297,8 @@ void GameScanner::recursiveDocumentScan(QStringList path, QDir root)
 {
     QStringList subdirs = root.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     foreach (QString dir, subdirs) {
-        root.cd(dir);
+        if (!root.cd(dir))
+            continue;
         path.push_back(dir);
         recursiveDocumentScan(path, root);
         path.pop_back();
@@ -343,43 +346,27 @@ void GameScanner::recursiveDocumentScan(QStringList path, QDir root)
 
 void GameScanner::scan()
 {
-    QDir root;
-    root.setCurrent(fAppDataDir);
-    if (fGameType == GameInfo::kGameCrowthistle && root.cd("Crowthistle")) {
+    QDir root(fAppDataDir);
+    if (fGameType == GameInfo::kGameCrowthistle && root.cd("Crowthistle"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    }
-    if (fGameType == GameInfo::kGameHexIsle && root.cd("HexIsle")) {
+    else if (fGameType == GameInfo::kGameHexIsle && root.cd("HexIsle"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    }
-    if (fGameType == GameInfo::kGameUruLive && root.cd("Uru Live")) {
+    else if (fGameType == GameInfo::kGameUruLive && root.cd("Uru Live"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    }
-    if (fGameType == GameInfo::kGameUruLive && root.cd("MagiQuest Online")) {
+    else if (fGameType == GameInfo::kGameMQO && root.cd("MagiQuest Online"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    }
-    if (fGameType == GameInfo::kGameMyst5 && root.cd("Myst V End of Ages")) {
+    else if (fGameType == GameInfo::kGameMyst5 && root.cd("Myst V End of Ages"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    } else if (fGameType == GameInfo::kGameMyst5 && root.cd("Myst V Demo")) {
+    else if (fGameType == GameInfo::kGameMyst5 && root.cd("Myst V Demo"))
         recursiveAppDataScan(QStringList(), root);
-        root.cdUp();
-    }
 
-    root.setCurrent(fDocumentsDir);
-    if (fGameType == GameInfo::kGameUruLive && root.cd("Uru Live")) {
+    root = fDocumentsDir;
+    if (fGameType == GameInfo::kGameUruLive && root.cd("Uru Live"))
         recursiveDocumentScan(QStringList(), root);
-        root.cdUp();
-    }
-    if (fGameType == GameInfo::kGameMQO && root.cd("MagiQuest Online")) {
+    else if (fGameType == GameInfo::kGameMQO && root.cd("MagiQuest Online"))
         recursiveDocumentScan(QStringList(), root);
-        root.cdUp();
-    }
 
-    root.setCurrent(fGameDir);
+    root = fGameDir;
     root.setSorting(QDir::Name | QDir::IgnoreCase);
     recursiveScan(QStringList(), root);
 
@@ -396,8 +383,8 @@ void GameScanner::scan()
     fAppDataItem->setHidden(fAppDataItem->childCount() == 0);
     fDocumentsItem->setHidden(fDocumentsItem->childCount() == 0);
 
-    root.setCurrent(fGameDir);
-    if (fGameType == GameInfo::kGameUru && root.exists("sav")) {
+    root = fGameDir;
+    if (fGameType == GameInfo::kGameUru && root.exists("sav/vault.dat")) {
         QTreeWidgetItem* vault = new QTreeWidgetItem(fTree);
         vault->setIcon(0, QPlasmaDocument::GetDocIcon("<VAULT>"));
         vault->setText(0, tr("Single-Player Vault"));

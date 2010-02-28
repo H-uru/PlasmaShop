@@ -18,8 +18,6 @@
 #include "QPlasmaTextDoc.h"
 #include "GameScanner.h"
 
-static QString s_textMenuTitle;
-
 PlasmaShopMain::PlasmaShopMain()
 {
     // Basic Form Settings
@@ -132,8 +130,7 @@ PlasmaShopMain::PlasmaShopMain()
     editMenu->addAction(fActions[kEditSelectAll]);
 
     // Editor-specific menus
-    s_textMenuTitle = tr("&Text");
-    fTextMenu = menuBar()->addMenu(s_textMenuTitle);
+    fTextMenu = menuBar()->addMenu(tr("&Text"));
     fTextMenu->addAction(fActions[kTextFind]);
     fTextMenu->addAction(fActions[kTextFindNext]);
     fTextMenu->addAction(fActions[kTextFindPrev]);
@@ -163,8 +160,8 @@ PlasmaShopMain::PlasmaShopMain()
     fTextMenu->addAction(fActions[kTextCollapseAll]);
 
     // Help menu is always at the end
-    QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(fActions[kHelpAbout]);
+    fHelpMenu = menuBar()->addMenu(tr("&Help"));
+    fHelpMenu->addAction(fActions[kHelpAbout]);
 
     // Toolbars
     QToolBar* mainTbar = addToolBar(tr("Main Toolbar"));
@@ -185,6 +182,7 @@ PlasmaShopMain::PlasmaShopMain()
     lblGame->setBuddy(fGameSelector);
     mainTbar->addWidget(lblGame);
     mainTbar->addWidget(fGameSelector);
+    fGameSelector->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     statusBar();
 
     // Tabbed Editor Pane for open documents
@@ -937,7 +935,8 @@ void PlasmaShopMain::populateGameList()
 void PlasmaShopMain::onChangeTab(int idx)
 {
     // Reset menu states
-    fTextMenu->setTitle(QString());
+    menuBar()->removeAction(fTextMenu->menuAction());
+    fTextMenu->setEnabled(false);
 
     fActions[kTextFind]->setEnabled(false);
     fActions[kTextFindNext]->setEnabled(false);
@@ -985,7 +984,9 @@ void PlasmaShopMain::onChangeTab(int idx)
 
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(idx);
     if (doc->docType() == kDocText) {
-        fTextMenu->setTitle(s_textMenuTitle);
+        menuBar()->insertMenu(fHelpMenu->menuAction(), fTextMenu);
+        fTextMenu->setEnabled(true);
+
         fActions[kTextFind]->setEnabled(true);
         fActions[kTextFindNext]->setEnabled(true);
         fActions[kTextFindPrev]->setEnabled(true);
