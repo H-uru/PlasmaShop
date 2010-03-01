@@ -25,7 +25,7 @@ Name: VaultShop; Description: VaultShop 1.1; Types: Custom Full
 
 [Files]
 Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
-Source: ..\bin\Plasma.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\HSPlasma.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\zlib1.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop

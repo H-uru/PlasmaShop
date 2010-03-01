@@ -15,9 +15,9 @@ win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
 # Add libPlasma
 contains(PLSLIBS, core) {
     INCLUDEPATH *= ../../../Plasma/core
-    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lPlasma
+    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasma
 }
 contains(PLSLIBS, net) {
     INCLUDEPATH *= ../../../Plasma/core
-    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lPlasmaNet
+    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasmaNet
 }
