@@ -302,7 +302,7 @@ void PlasmaShopMain::loadFile(QString filename)
         ext == "fni" || ext == "fx"  || ext == "hex" || ext == "ini" ||
         ext == "loc" || ext == "log" || ext == "mfs" || ext == "py"  ||
         ext == "sdl" || ext == "sub" || ext == "txt" || ext == "xml" ||
-        ext == "mfold" || ext == "mlist") {
+        ext == "inf" || ext == "mfold" || ext == "mlist") {
         dtype = kDocText;
     } else if (ext == "p2f") {
         dtype = kDocFont;
@@ -330,9 +330,9 @@ void PlasmaShopMain::loadFile(QString filename)
                                         "Please set one in the PlasmaShop Options to edit this file."),
                                      QMessageBox::Ok);
         }
+        return;
     } else if (fnameNoPath == "dev_mode.dat") {
         // TODO: Open Dev Mode editor
-        return;
     } else {
         QMessageBox::critical(this, tr("Unsupported File Type"),
                               tr("Error: File %1 has an unsupported file type (%2)")
@@ -349,6 +349,7 @@ void PlasmaShopMain::loadFile(QString filename)
             // Error loading the file.  Remove it now to avoid problems later
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
+            return;
         } else if (dtype == kDocText) {
             if (ext == "fni" || ext == "cfg")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
@@ -377,9 +378,14 @@ void PlasmaShopMain::loadFile(QString filename)
 
         // Update menus
         onChangeTab(fEditorPane->currentIndex());
+
+        // Select the last opened file's tab
+        fEditorPane->setCurrentIndex(fEditorPane->count() - 1);
+    } else {
+        QMessageBox::critical(this, tr("Oops"),
+                              tr("No editor is currently available for %1")
+                              .arg(fnameNoPath), QMessageBox::Ok);
     }
-    // Select the last opened file's tab
-    fEditorPane->setCurrentIndex(fEditorPane->count() - 1);
 }
 
 void PlasmaShopMain::closeEvent(QCloseEvent* evt)
