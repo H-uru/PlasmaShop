@@ -5,6 +5,9 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QPainter>
+#include <QSettings>
+#include <QFileDialog>
+#include <QMessageBox>
 #include "../QLinkLabel.h"
 #include "../../QPlasmaUtils.h"
 
@@ -246,37 +249,32 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
 
     QLinkLabel* xDDSLink = new QLinkLabel(tr("Export DDS..."), this);
     QLinkLabel* iDDSLink = new QLinkLabel(tr("Import DDS..."), this);
-    QLinkLabel* xBMPLink = new QLinkLabel(tr("Export Bitmap..."), this);
-    QLinkLabel* iBMPLink = new QLinkLabel(tr("Import Bitmap..."), this);
     QLinkLabel* xJPGLink = new QLinkLabel(tr("Export Jpeg..."), this);
     QLinkLabel* iJPGLink = new QLinkLabel(tr("Import Jpeg..."), this);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
-    layout->addWidget(grpFlags, 0, 0, 1, 3);
-    layout->addWidget(grpProps, 1, 0, 1, 3);
-    layout->addWidget(fPreviewLink, 2, 0, 1, 3);
-    layout->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 3, 0, 1, 3);
+    layout->addWidget(grpFlags, 0, 0, 1, 2);
+    layout->addWidget(grpProps, 1, 0, 1, 2);
+    layout->addWidget(fPreviewLink, 2, 0, 1, 2);
+    layout->addItem(new QSpacerItem(0, 8, QSizePolicy::Minimum, QSizePolicy::Minimum), 3, 0, 1, 2);
     layout->addWidget(xDDSLink, 4, 0);
     layout->addWidget(iDDSLink, 5, 0);
-    layout->addWidget(xBMPLink, 4, 1);
-    layout->addWidget(iBMPLink, 5, 1);
-    layout->addWidget(xJPGLink, 4, 2);
-    layout->addWidget(iJPGLink, 5, 2);
+    layout->addWidget(xJPGLink, 4, 1);
+    layout->addWidget(iJPGLink, 5, 1);
 
     if (tex->getCompressionType() == plBitmap::kJPEGCompression) {
         xDDSLink->setEnabled(false);
-        xBMPLink->setEnabled(false);
         xJPGLink->setEnabled(true);
-    } else if (tex->getCompressionType() == plBitmap::kDirectXCompression) {
-        xDDSLink->setEnabled(true);
-        xBMPLink->setEnabled(false);
-        xJPGLink->setEnabled(false);
     } else {
-        xDDSLink->setEnabled(false);
-        xBMPLink->setEnabled(true);
+        xDDSLink->setEnabled(true);
         xJPGLink->setEnabled(false);
     }
+
+    connect(xDDSLink, SIGNAL(activated()), this, SLOT(onExportDDS()));
+    connect(xJPGLink, SIGNAL(activated()), this, SLOT(onExportJPEG()));
+    connect(iDDSLink, SIGNAL(activated()), this, SLOT(onImportDDS()));
+    connect(iJPGLink, SIGNAL(activated()), this, SLOT(onImportJPEG()));
 }
 
 void QMipmap::saveDamage()
@@ -299,4 +297,90 @@ void QMipmap::saveDamage()
                 | (fFlags[kIsOffscreen]->isChecked() ? plBitmap::kIsOffscreen : 0)
                 | (fFlags[kIsProjected]->isChecked() ? plBitmap::kIsProjected : 0)
                 | (fFlags[kIsOrtho]->isChecked() ? plBitmap::kIsOrtho : 0));
+}
+
+void QMipmap::onExportDDS()
+{
+    QSettings settings("PlasmaShop", "PrpShop");
+    QString exportDir = settings.value("ExportDir").toString();
+    if (exportDir.isEmpty())
+        exportDir = settings.value("DialogDir").toString();
+
+    plMipmap* tex = (plMipmap*)fCreatable;
+    QString filename = (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
+    filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), exportDir + "/" + filename,
+                                            "DDS Files (*.dds)");
+    if (filename.isEmpty())
+        return;
+
+    hsFileStream S;
+    if (!S.open(~filename, fmCreate)) {
+        QMessageBox::critical(this, tr("Error exporting DDS"),
+                              tr("Error: Could not open file %1 for writing").arg(filename),
+                              QMessageBox::Ok);
+        return;
+    }
+    tex->writeToStream(&S);
+    S.close();
+
+    QDir dir = QDir(filename);
+    dir.cdUp();
+    settings.setValue("ExportDir", dir.absolutePath());
+}
+
+void QMipmap::onExportJPEG()
+{
+    QSettings settings("PlasmaShop", "PrpShop");
+    QString exportDir = settings.value("ExportDir").toString();
+    if (exportDir.isEmpty())
+        exportDir = settings.value("DialogDir").toString();
+
+    plMipmap* tex = (plMipmap*)fCreatable;
+    exportDir.append("/" + (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG"), exportDir,
+                                                    "JPEG Files (*.jpg)");
+    if (filename.isEmpty())
+        return;
+
+    hsFileStream S;
+    int extPos = filename.lastIndexOf(QChar('.'));
+    if (extPos < 0)
+        extPos = filename.length();
+    filename = filename.left(extPos) + ~tex->getSuggestedExt();
+    if (!S.open(~filename, fmCreate)) {
+        QMessageBox::critical(this, tr("Error exporting JPEG"),
+                              tr("Error: Could not open file %1 for writing").arg(filename),
+                              QMessageBox::Ok);
+        return;
+    }
+    tex->writeToStream(&S);
+    S.close();
+
+    filename = filename.left(extPos) + ".alpha" + ~tex->getSuggestedAlphaExt();
+    if (!S.open(~filename, fmCreate)) {
+        QMessageBox::critical(this, tr("Error exporting JPEG"),
+                              tr("Error: Could not open file %1 for writing").arg(filename),
+                              QMessageBox::Ok);
+        return;
+    }
+    tex->writeAlphaToStream(&S);
+    S.close();
+
+    QDir dir = QDir(filename);
+    dir.cdUp();
+    settings.setValue("ExportDir", dir.absolutePath());
+}
+
+void QMipmap::onImportDDS()
+{
+    QMessageBox::critical(this, tr("Not implemented"),
+                          tr("DDS importing is not yet implemented"),
+                          QMessageBox::Ok);
+}
+
+void QMipmap::onImportJPEG()
+{
+    QMessageBox::critical(this, tr("Not implemented"),
+                          tr("JPEG importing is not yet implemented"),
+                          QMessageBox::Ok);
 }

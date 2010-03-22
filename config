@@ -18,6 +18,6 @@ contains(PLSLIBS, core) {
     LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasma
 }
 contains(PLSLIBS, net) {
-    INCLUDEPATH *= ../../../Plasma/core
+    INCLUDEPATH *= ../../../Plasma/net
     LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasmaNet
 }

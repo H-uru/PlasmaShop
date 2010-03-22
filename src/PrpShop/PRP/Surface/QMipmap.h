@@ -57,6 +57,12 @@ protected:
 public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
     virtual void saveDamage();
+
+private slots:
+    void onExportDDS();
+    void onExportJPEG();
+    void onImportDDS();
+    void onImportJPEG();
 };
 
 QString getCompressionText(plBitmap* tex);
