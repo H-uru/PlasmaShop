@@ -12,7 +12,7 @@
 #include "GameBrowser.h"
 #include "GameScanner.h"
 
-#define PLASMASHOP_VERSION "3.0 Beta (build 100)"
+#define PLASMASHOP_VERSION "3.0 Beta (build 102)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT
@@ -32,7 +32,7 @@ private:
         kHelpAbout,
 
         // Text Editor Menu
-        kTextFind, kTextFindNext, kTextFindPrev, kTextReplace,
+        kTextFind, kTextFindNext, kTextReplace,
         kTextStxNone, kTextStxPython, kTextStxSDL, kTextStxIni,
         kTextStxConsole, kTextStxXML, kTextStxHex, kTextStxFX,
         kTextEncNone, kTextEncXtea, kTextEncAes, kTextEncDroid,
@@ -87,6 +87,9 @@ private slots:
     void onUndo();
     void onRedo();
 
+    void onTextFind();
+    void onTextFindNext();
+    void onTextReplace();
     void onTextCollapseAll();
     void onTextExpandAll();
     void onTextStxNone();

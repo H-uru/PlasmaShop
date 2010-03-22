@@ -45,7 +45,6 @@ PlasmaShopMain::PlasmaShopMain()
 
     fActions[kTextFind] = new QAction(qStdIcon("edit-find"), tr("&Find..."), this);
     fActions[kTextFindNext] = new QAction(tr("Find &Next"), this);
-    fActions[kTextFindPrev] = new QAction(tr("Find &Previous"), this);
     fActions[kTextReplace] = new QAction(qStdIcon("edit-find-replace"), tr("&Replace..."), this);
     fActions[kTextStxNone] = new QAction(tr("&None"), this);
     fActions[kTextStxPython] = new QAction(tr("&Python"), this);
@@ -84,7 +83,6 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kEditSelectAll]->setShortcut(Qt::CTRL + Qt::Key_A);
     fActions[kTextFind]->setShortcut(Qt::CTRL + Qt::Key_F);
     fActions[kTextFindNext]->setShortcut(Qt::Key_F3);
-    fActions[kTextFindPrev]->setShortcut(Qt::SHIFT + Qt::Key_F3);
     fActions[kTextReplace]->setShortcut(Qt::CTRL + Qt::Key_R);
 
     fActions[kTextStxNone]->setCheckable(true);
@@ -133,7 +131,6 @@ PlasmaShopMain::PlasmaShopMain()
     fTextMenu = menuBar()->addMenu(tr("&Text"));
     fTextMenu->addAction(fActions[kTextFind]);
     fTextMenu->addAction(fActions[kTextFindNext]);
-    fTextMenu->addAction(fActions[kTextFindPrev]);
     fTextMenu->addAction(fActions[kTextReplace]);
     fTextMenu->addSeparator();
     QMenu* text_stxMenu = fTextMenu->addMenu(tr("&Syntax"));
@@ -238,6 +235,9 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kEditUndo], SIGNAL(triggered()), this, SLOT(onUndo()));
     connect(fActions[kEditRedo], SIGNAL(triggered()), this, SLOT(onRedo()));
 
+    connect(fActions[kTextFind], SIGNAL(triggered()), this, SLOT(onTextFind()));
+    connect(fActions[kTextFindNext], SIGNAL(triggered()), this, SLOT(onTextFindNext()));
+    connect(fActions[kTextReplace], SIGNAL(triggered()), this, SLOT(onTextReplace()));
     connect(fActions[kTextCollapseAll], SIGNAL(triggered()), this, SLOT(onTextCollapseAll()));
     connect(fActions[kTextExpandAll], SIGNAL(triggered()), this, SLOT(onTextExpandAll()));
     connect(fActions[kTextStxNone], SIGNAL(triggered()), this, SLOT(onTextStxNone()));
@@ -661,6 +661,36 @@ void PlasmaShopMain::onRedo()
     doc->performRedo();
 }
 
+void PlasmaShopMain::onTextFind()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    if (doc->docType() != kDocText)
+        return;
+    ((QPlasmaTextDoc*)doc)->textFind();
+}
+
+void PlasmaShopMain::onTextFindNext()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    if (doc->docType() != kDocText)
+        return;
+    ((QPlasmaTextDoc*)doc)->textFindNext();
+}
+
+void PlasmaShopMain::onTextReplace()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    if (doc->docType() != kDocText)
+        return;
+    ((QPlasmaTextDoc*)doc)->textReplace();
+}
+
 void PlasmaShopMain::onTextExpandAll()
 {
     if (fEditorPane->currentIndex() < 0)
@@ -946,7 +976,6 @@ void PlasmaShopMain::onChangeTab(int idx)
 
     fActions[kTextFind]->setEnabled(false);
     fActions[kTextFindNext]->setEnabled(false);
-    fActions[kTextFindPrev]->setEnabled(false);
     fActions[kTextReplace]->setEnabled(false);
     fActions[kTextExpandAll]->setEnabled(false);
     fActions[kTextCollapseAll]->setEnabled(false);
@@ -995,7 +1024,6 @@ void PlasmaShopMain::onChangeTab(int idx)
 
         fActions[kTextFind]->setEnabled(true);
         fActions[kTextFindNext]->setEnabled(true);
-        fActions[kTextFindPrev]->setEnabled(true);
         fActions[kTextReplace]->setEnabled(true);
         fActions[kTextExpandAll]->setEnabled(true);
         fActions[kTextCollapseAll]->setEnabled(true);

@@ -9,6 +9,11 @@
 #include <QsciPS3/qscilexerpython.h>
 #include <QsciPS3/qscilexersdl.h>
 #include <QsciPS3/qscilexerxml.h>
+#include <QDialog>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QLabel>
+#include <QPushButton>
 #include "QPlasmaDocument.h"
 
 class QPlasmaTextDoc : public QPlasmaDocument {
@@ -57,6 +62,13 @@ public slots:
     virtual void performRedo();
     void expandAll();
     void collapseAll();
+    void textFind();
+    void textFindNext();
+    void textReplace();
+
+    bool onFind(QString text, bool regex, bool cs, bool wo, bool reverse);
+    void onReplace(QString newText);
+    bool onReplaceAll(QString text, bool regex, bool cs, bool wo, QString newText);
 
 private:
     QsciScintilla* fEditor;
@@ -75,6 +87,30 @@ private:
 
 private slots:
     void adjustLineNumbers();
+};
+
+
+class TextFindDialog : public QDialog {
+    Q_OBJECT
+
+private:
+    QPlasmaTextDoc* fDocument;
+    QLineEdit* fFindText;
+    QLineEdit* fNewText;
+    QCheckBox* fRegEx;
+    QCheckBox* fCaseSensitive;
+    QCheckBox* fWholeWord;
+    QCheckBox* fReverse;
+    QPushButton* fBtnSkip;
+
+public:
+    TextFindDialog(QPlasmaTextDoc* parent, bool replace);
+    virtual ~TextFindDialog();
+
+private slots:
+    void handleFind();
+    void handleSkip();
+    void handleReplaceAll();
 };
 
 #endif

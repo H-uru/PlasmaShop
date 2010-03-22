@@ -1,6 +1,7 @@
 #include "QPlasmaTextDoc.h"
 #include <QGridLayout>
 #include <QSettings>
+#include <QMessageBox>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "../QPlasma.h"
@@ -8,6 +9,152 @@
 #define MARGIN_LINES 0
 #define MARGIN_FOLDERS 1
 
+// To preserve settings within a session
+static struct {
+    QString text, newText;
+    bool regex, cs, wo, reverse;
+    class TextFindDialog* current;
+} s_findSettings = { QString(), QString(), false, true, false, false, NULL };
+
+/* Find/Replace dialog */
+TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
+              : QDialog(parent)
+{
+    s_findSettings.current = this;
+    fDocument = parent;
+    setAttribute(Qt::WA_DeleteOnClose);
+    if (replace)
+        setWindowTitle(tr("Find and Replace..."));
+    else
+        setWindowTitle(tr("Find..."));
+
+    fFindText = new QLineEdit(s_findSettings.text, this);
+    if (replace)
+        fNewText = new QLineEdit(s_findSettings.newText, this);
+    else
+        fNewText = NULL;
+    fCaseSensitive = new QCheckBox(tr("&Case Sensitive"), this);
+    fRegEx = new QCheckBox(tr("&Regular Expression Search"), this);
+    fWholeWord = new QCheckBox(tr("Match &Whole Word"), this);
+    fReverse = new QCheckBox(tr("Search &Up"), this);
+    fFindText->selectAll();
+    fCaseSensitive->setChecked(s_findSettings.cs);
+    fRegEx->setChecked(s_findSettings.regex);
+    fWholeWord->setChecked(s_findSettings.wo);
+    fReverse->setChecked(s_findSettings.reverse);
+
+    QWidget* buttonPanel = new QWidget(this);
+    QPushButton* btnFind = new QPushButton(replace ? tr("&Replace") : tr("&Find"), buttonPanel);
+    QPushButton* btnReplaceAll = NULL;
+    if (replace) {
+        btnReplaceAll = new QPushButton(tr("Replace &All"), buttonPanel);
+        fBtnSkip = new QPushButton(tr("&Skip"), buttonPanel);
+        fBtnSkip->setEnabled(false);
+    }
+    QPushButton* btnCancel = new QPushButton(tr("&Cancel"), buttonPanel);
+
+    QGridLayout* buttonLayout = new QGridLayout(buttonPanel);
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setVerticalSpacing(4);
+    int idx = 0;
+    buttonLayout->addWidget(btnFind, idx++, 0);
+    if (replace) {
+        buttonLayout->addWidget(btnReplaceAll, idx++, 0);
+        buttonLayout->addWidget(fBtnSkip, idx++, 0);
+    }
+    buttonLayout->addWidget(btnCancel, idx++, 0);
+    buttonLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), idx, 0);
+
+    QGridLayout* layout = new QGridLayout(this);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setVerticalSpacing(4);
+    layout->setHorizontalSpacing(8);
+    idx = 0;
+    layout->addWidget(new QLabel(tr("Search String:"), this), idx, 0);
+    layout->addWidget(fFindText, idx++, 1);
+    if (replace) {
+        layout->addWidget(new QLabel(tr("Replace with:"), this), idx, 0);
+        layout->addWidget(fNewText, idx++, 1);
+    }
+    layout->addItem(new QSpacerItem(0, 16, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum), idx++, 0, 1, 2);
+    layout->addWidget(fCaseSensitive, idx++, 1);
+    layout->addWidget(fRegEx, idx++, 1);
+    layout->addWidget(fWholeWord, idx++, 1);
+    layout->addWidget(fReverse, idx++, 1);
+    layout->addWidget(buttonPanel, 0, 2, idx, 1);
+
+    connect(btnFind, SIGNAL(clicked()), this, SLOT(handleFind()));
+    connect(btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    if (replace) {
+        connect(btnReplaceAll, SIGNAL(clicked()), this, SLOT(handleReplaceAll()));
+        connect(fBtnSkip, SIGNAL(clicked()), this, SLOT(handleSkip()));
+    }
+
+    resize(sizeHint().width() * 1.5, sizeHint().height());
+}
+
+TextFindDialog::~TextFindDialog()
+{
+    s_findSettings.text = fFindText->text();
+    if (fNewText != NULL)
+        s_findSettings.newText = fNewText->text();
+    s_findSettings.regex = fRegEx->isChecked();
+    s_findSettings.cs = fCaseSensitive->isChecked();
+    s_findSettings.wo = fWholeWord->isChecked();
+    s_findSettings.reverse = fReverse->isChecked();
+    s_findSettings.current = NULL;
+}
+
+void TextFindDialog::handleFind()
+{
+    if (fNewText != NULL) {
+        // Replace
+        if (!fBtnSkip->isEnabled()) {
+            if (!fDocument->onFind(fFindText->text(), fRegEx->isChecked(),
+                                   fCaseSensitive->isChecked(), fWholeWord->isChecked(),
+                                   fReverse->isChecked())) {
+                QMessageBox::critical(this, tr("Not found"),
+                                      tr("The pattern '%1' was not found in the current document")
+                                      .arg(fFindText->text()), QMessageBox::Ok);
+                accept();
+            }
+            fBtnSkip->setEnabled(true);
+        } else {
+            fDocument->onReplace(fNewText->text());
+            fDocument->textFindNext();
+        }
+    } else {
+        // Find (and close)
+        if (!fDocument->onFind(fFindText->text(), fRegEx->isChecked(),
+                               fCaseSensitive->isChecked(), fWholeWord->isChecked(),
+                               fReverse->isChecked())) {
+            QMessageBox::critical(this, tr("Not found"),
+                                  tr("The pattern '%1' was not found in the current document")
+                                  .arg(fFindText->text()), QMessageBox::Ok);
+        }
+        accept();
+    }
+}
+
+void TextFindDialog::handleSkip()
+{
+    fDocument->textFindNext();
+}
+
+void TextFindDialog::handleReplaceAll()
+{
+    if (!fDocument->onReplaceAll(fFindText->text(), fRegEx->isChecked(),
+                                 fCaseSensitive->isChecked(), fWholeWord->isChecked(),
+                                 fNewText->text())) {
+        QMessageBox::critical(this, tr("Not found"),
+                              tr("The pattern '%1' was not found in the current document")
+                              .arg(fFindText->text()), QMessageBox::Ok);
+    }
+    accept();
+}
+
+
+/* QPlasmaTextDoc */
 static QPlasmaTextDoc::EncodingMode DetectEncoding(hsStream* S)
 {
     unsigned char markerbuf[4];
@@ -289,6 +436,65 @@ void QPlasmaTextDoc::expandAll()
 
 void QPlasmaTextDoc::collapseAll()
 { fEditor->setFoldAll(true); }
+
+void QPlasmaTextDoc::textFind()
+{
+    if (s_findSettings.current != NULL) {
+        s_findSettings.current->raise();
+        return;
+    }
+
+    TextFindDialog* dlg = new TextFindDialog(this, false);
+    dlg->show();
+    dlg->raise();
+    dlg->activateWindow();
+}
+
+void QPlasmaTextDoc::textFindNext()
+{
+    fEditor->findNext();
+}
+
+void QPlasmaTextDoc::textReplace()
+{
+    if (s_findSettings.current != NULL) {
+        s_findSettings.current->raise();
+        return;
+    }
+
+    TextFindDialog* dlg = new TextFindDialog(this, true);
+    dlg->show();
+    dlg->raise();
+    dlg->activateWindow();
+}
+
+bool QPlasmaTextDoc::onFind(QString text, bool regex, bool cs, bool wo, bool reverse)
+{
+    if (fEditor->length() == 0)
+        return false;
+    return fEditor->findFirst(text, regex, cs, wo, true, !reverse);
+}
+
+void QPlasmaTextDoc::onReplace(QString newText)
+{
+    fEditor->replace(newText);
+}
+
+bool QPlasmaTextDoc::onReplaceAll(QString text, bool regex, bool cs, bool wo, QString newText)
+{
+    if (fEditor->length() == 0)
+        return false;
+
+    int ln, idx;
+    fEditor->getCursorPosition(&ln, &idx);
+    if (!fEditor->findFirst(text, regex, cs, wo, false, true, 0, 0))
+        return false;
+    do {
+        fEditor->replace(newText);
+    } while (fEditor->findNext());
+    fEditor->setCursorPosition(ln, idx);
+    return true;
+}
 
 bool QPlasmaTextDoc::loadFile(QString filename)
 {
