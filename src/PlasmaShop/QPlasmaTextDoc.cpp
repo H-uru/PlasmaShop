@@ -2,6 +2,7 @@
 #include <QGridLayout>
 #include <QSettings>
 #include <QMessageBox>
+#include <qticonloader.h>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "../QPlasma.h"
@@ -14,7 +15,7 @@ static struct {
     QString text, newText;
     bool regex, cs, wo, reverse;
     class TextFindDialog* current;
-} s_findSettings = { QString(), QString(), false, true, false, false, NULL };
+} s_findSettings = { QString(), QString(), false, false, false, false, NULL };
 
 /* Find/Replace dialog */
 TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
@@ -23,20 +24,23 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
     s_findSettings.current = this;
     fDocument = parent;
     setAttribute(Qt::WA_DeleteOnClose);
-    if (replace)
-        setWindowTitle(tr("Find and Replace..."));
-    else
+    if (replace) {
+        setWindowTitle(tr("Replace..."));
+        setWindowIcon(qStdIcon("edit-find-replace"));
+    } else {
         setWindowTitle(tr("Find..."));
+        setWindowIcon(qStdIcon("edit-find"));
+    }
 
     fFindText = new QLineEdit(s_findSettings.text, this);
     if (replace)
         fNewText = new QLineEdit(s_findSettings.newText, this);
     else
         fNewText = NULL;
-    fCaseSensitive = new QCheckBox(tr("&Case Sensitive"), this);
-    fRegEx = new QCheckBox(tr("&Regular Expression Search"), this);
-    fWholeWord = new QCheckBox(tr("Match &Whole Word"), this);
-    fReverse = new QCheckBox(tr("Search &Up"), this);
+    fCaseSensitive = new QCheckBox(tr("&Case sensitive"), this);
+    fRegEx = new QCheckBox(tr("&Regular expression search"), this);
+    fWholeWord = new QCheckBox(tr("Match &whole word"), this);
+    fReverse = new QCheckBox(tr("Search &up"), this);
     fFindText->selectAll();
     fCaseSensitive->setChecked(s_findSettings.cs);
     fRegEx->setChecked(s_findSettings.regex);
@@ -70,7 +74,7 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
     layout->setVerticalSpacing(4);
     layout->setHorizontalSpacing(8);
     idx = 0;
-    layout->addWidget(new QLabel(tr("Search String:"), this), idx, 0);
+    layout->addWidget(new QLabel(tr("Search string:"), this), idx, 0);
     layout->addWidget(fFindText, idx++, 1);
     if (replace) {
         layout->addWidget(new QLabel(tr("Replace with:"), this), idx, 0);

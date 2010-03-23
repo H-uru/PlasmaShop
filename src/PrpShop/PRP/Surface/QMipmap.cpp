@@ -51,15 +51,17 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
     fImageData = new unsigned char[size];
     tex->DecompressImage(level, fImageData, size);
 
-    // Manipulate the data from RGBA to BGRA
-    unsigned int* dp = (unsigned int*)fImageData;
-    for (size_t i=0; i<size; i += 4) {
-        //unsigned int alpha = doAlpha ? (*dp & 0xFF000000) : 0xFF000000;
-        *dp = (*dp & 0xFF000000)
-            | (*dp & 0x00FF0000) >> 16
-            | (*dp & 0x0000FF00)
-            | (*dp & 0x000000FF) << 16;
-        dp++;
+    if (tex->getCompressionType() != plMipmap::kUncompressed) {
+        // Manipulate the data from RGBA to BGRA
+        unsigned int* dp = (unsigned int*)fImageData;
+        for (size_t i=0; i<size; i += 4) {
+            //unsigned int alpha = doAlpha ? (*dp & 0xFF000000) : 0xFF000000;
+            *dp = (*dp & 0xFF000000)
+                | (*dp & 0x00FF0000) >> 16
+                | (*dp & 0x0000FF00)
+                | (*dp & 0x000000FF) << 16;
+            dp++;
+        }
     }
     fImage = new QImage(fImageData, tex->getLevelWidth(level),
                         tex->getLevelHeight(level), QImage::Format_ARGB32);
