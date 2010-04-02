@@ -167,7 +167,7 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     fTagID->setRange(0, 0x7FFFFFFF);
     fTagID->setValue(ctrl->getTagID());
     fVisible = new QCheckBox(tr("Visible"), guiProcTab);
-    fVisible->setChecked(ctrl->getVisible());
+    fVisible->setChecked(ctrl->isVisible());
 
     fProcType = new QComboBox(guiProcTab);
     fProcType->addItems(QStringList() << "(NULL)" << tr("Console Command")
@@ -191,8 +191,8 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     guiProcLayout->addWidget(fProcCommandLabel, 2, 0);
     guiProcLayout->addWidget(fProcCommand, 2, 1, 1, 2);
     fSoundIndices = new QIntListWidget(-0x80000000, 0x7FFFFFFF, xTabs);
-    for (size_t i=0; i<ctrl->getNumSoundIndices(); i++)
-        fSoundIndices->addValue(ctrl->getSoundIndex(i));
+    for (size_t i=0; i<ctrl->getSoundIndices().getSize(); i++)
+        fSoundIndices->addValue(ctrl->getSoundIndices()[i]);
     xTabs->addTab(guiProcTab, tr("Proc Handler"));
     xTabs->addTab(fSoundIndices, tr("Sound Indices"));
 
@@ -226,12 +226,8 @@ void QGUIControlMod::saveDamage()
 {
     pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
 
-    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++) {
-        if (fModFlags[i]->isChecked())
-            ctrl->setFlag(i);
-        else
-            ctrl->clearFlag(i);
-    }
+    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
+        ctrl->setFlag(i, fModFlags[i]->isChecked());
 
     if (fColorSchemeGrp->isChecked()) {
         if (ctrl->getColorScheme() == NULL)
@@ -256,9 +252,10 @@ void QGUIControlMod::saveDamage()
         ctrl->setHandler(new pfGUICloseDlgProc());
     }
 
-    ctrl->clearSoundIndices();
+    hsTArray<int> indices;
     foreach (int idx, fSoundIndices->values())
-        ctrl->addSoundIndex(idx);
+        indices.append(idx);
+    ctrl->setSoundIndices(indices);
 }
 
 void QGUIControlMod::setDynTextMap()

@@ -167,7 +167,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     fMaxFalloff = new QIntEdit(this);
     fMinFalloff = new QIntEdit(this);
     fCurrVolume = new QFloatEdit(this);
-    fDesiredVol = new QFloatEdit(this);
+    fDesiredVolume = new QFloatEdit(this);
     fSoundType = new QComboBox(this);
     fSoundType->addItems(QStringList() << "Sound FX" << "Ambience"
                          << "Background Music" << "GUI Sound" << "NPC Voices");
@@ -184,7 +184,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     fMaxFalloff->setValue(obj->getMaxFalloff());
     fMinFalloff->setValue(obj->getMinFalloff());
     fCurrVolume->setValue(obj->getCurrVolume());
-    fDesiredVol->setValue(obj->getDesiredVol());
+    fDesiredVolume->setValue(obj->getDesiredVolume());
     fSoundType->setCurrentIndex(obj->getType());
     fOuterVol->setValue(obj->getOuterVol());
     fInnerCone->setValue(obj->getInnerCone());
@@ -324,7 +324,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Current Vol:"), this), 4, 0);
     layout->addWidget(fCurrVolume, 4, 1);
     layout->addWidget(new QLabel(tr("Desired Vol:"), this), 5, 0);
-    layout->addWidget(fDesiredVol, 5, 1);
+    layout->addWidget(fDesiredVolume, 5, 1);
     layout->addWidget(new QLabel(tr("Type:"), this), 6, 0);
     layout->addWidget(fSoundType, 6, 1);
     layout->addWidget(new QLabel(tr("Outer Volume:"), this), 1, 2);
@@ -366,7 +366,7 @@ void QWinSound::saveDamage()
     obj->setTime(fTime->value());
     obj->setFalloff(fMinFalloff->value(), fMaxFalloff->value());
     obj->setCurrVolume(fCurrVolume->value());
-    obj->setDesiredVol(fDesiredVol->value());
+    obj->setDesiredVolume(fDesiredVolume->value());
     obj->setType(fSoundType->currentIndex());
     obj->setOuterVol(fOuterVol->value());
     obj->setCone(fInnerCone->value(), fOuterCone->value());

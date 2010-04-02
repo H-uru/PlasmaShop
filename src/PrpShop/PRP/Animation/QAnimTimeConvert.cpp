@@ -183,8 +183,8 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     fCallbackList->headerItem()->setText(0, tr("Idx"));
     fCallbackList->headerItem()->setText(1, tr("Type"));
     fCallbackList->setContextMenuPolicy(Qt::CustomContextMenu);
-    for (size_t i=0; i<obj->getNumCallbacks(); i++) {
-        plEventCallbackMsg* msg = obj->getCallback(i);
+    for (size_t i=0; i<obj->getCallbacks().getSize(); i++) {
+        plEventCallbackMsg* msg = obj->getCallbacks()[i];
         QTreeWidgetItem* item = new QTreeWidgetItem(fCallbackList,
             QStringList() << QString("%1").arg(i) << pqGetFriendlyClassName(msg->ClassIndex()));
         item->setIcon(0, pqGetTypeIcon(msg->ClassIndex()));
@@ -266,7 +266,7 @@ void QAnimTimeConvert::callbackContextMenu(const QPoint& pos)
     QAction* sel = menu.exec(fCallbackList->viewport()->mapToGlobal(pos));
     if (sel == addObjItem) {
         plEventCallbackMsg* msg = new plEventCallbackMsg();
-        int id = obj->getNumCallbacks();
+        int id = obj->getCallbacks().getSize();
         QTreeWidgetItem* item = new QTreeWidgetItem(fCallbackList,
             QStringList() << QString("%1").arg(id) << pqGetFriendlyClassName(msg->ClassIndex()));
         item->setIcon(0, pqGetTypeIcon(msg->ClassIndex()));
@@ -282,7 +282,7 @@ void QAnimTimeConvert::callbackContextMenu(const QPoint& pos)
 void QAnimTimeConvert::activateCallbackItem(QTreeWidgetItem* item, int)
 {
     plAnimTimeConvert* obj = (plAnimTimeConvert*)fCreatable;
-    PrpShopMain::Instance()->editCreatable(obj->getCallback(fCallbackList->indexOfTopLevelItem(item)));
+    PrpShopMain::Instance()->editCreatable(obj->getCallbacks()[fCallbackList->indexOfTopLevelItem(item)]);
 }
 
 void QAnimTimeConvert::newEaseIn(short type)

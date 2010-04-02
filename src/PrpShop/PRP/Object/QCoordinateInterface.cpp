@@ -48,8 +48,8 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     xformTab->addTab(fWorldToLocal, tr("World to Local"));
 
     fChildren = new QKeyList(this);
-    for (size_t i=0; i<intf->getNumChildren(); i++)
-        fChildren->addKey(intf->getChild(i));
+    for (size_t i=0; i<intf->getChildren().getSize(); i++)
+        fChildren->addKey(intf->getChildren()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -73,10 +73,10 @@ void QCoordinateInterface::saveDamage()
     for (size_t i=0; i<plCoordinateInterface::kNumProps; i++)
         intf->setProperty(i, fCBProperties[i]->isChecked());
 
-    intf->getLocalToParent() = fLocalToParent->value();
-    intf->getParentToLocal() = fParentToLocal->value();
-    intf->getLocalToWorld() = fLocalToWorld->value();
-    intf->getWorldToLocal() = fWorldToLocal->value();
+    intf->setLocalToParent(fLocalToParent->value());
+    intf->setParentToLocal(fParentToLocal->value());
+    intf->setLocalToWorld(fLocalToWorld->value());
+    intf->setWorldToLocal(fWorldToLocal->value());
 
     intf->clearChildren();
     QList<plKey> children = fChildren->keys();

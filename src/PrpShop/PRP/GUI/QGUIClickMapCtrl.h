@@ -3,7 +3,7 @@
 
 #include "../QCreatable.h"
 
-#include <PRP/GUI/pfGUIClickMapCtrl.h>
+#include <PRP/GUI/pfGUIMisc.hpp>
 #include <QCheckBox>
 #include "../QObjLink.h"
 

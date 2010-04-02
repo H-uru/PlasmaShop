@@ -12,10 +12,10 @@ QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
     QTabWidget* tab = new QTabWidget(this);
     fSceneKeys = new QKeyList(tab);
     fPoolKeys = new QKeyList(tab);
-    for (size_t i=0; i<node->getNumSceneObjects(); i++)
-        fSceneKeys->addKey(node->getSceneObject(i));
-    for (size_t i=0; i<node->getNumPoolObjects(); i++)
-        fPoolKeys->addKey(node->getPoolObject(i));
+    for (size_t i=0; i<node->getSceneObjects().getSize(); i++)
+        fSceneKeys->addKey(node->getSceneObjects()[i]);
+    for (size_t i=0; i<node->getPoolObjects().getSize(); i++)
+        fPoolKeys->addKey(node->getPoolObjects()[i]);
     tab->addTab(fSceneKeys, tr("Scene Objects"));
     tab->addTab(fPoolKeys, tr("Pool Objects"));
 

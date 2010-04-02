@@ -128,8 +128,8 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
         fDrawKeys->addKey(intf->getDrawable(i), intf->getDrawableKey(i));
 
     fRegions = new QKeyList(childTab);
-    for (size_t i=0; i<intf->getNumRegions(); i++)
-        fRegions->addKey(intf->getRegion(i));
+    for (size_t i=0; i<intf->getRegions().getSize(); i++)
+        fRegions->addKey(intf->getRegions()[i]);
 
     childTab->addTab(fDrawKeys, tr("Drawables"));
     childTab->addTab(fRegions, tr("Regions"));

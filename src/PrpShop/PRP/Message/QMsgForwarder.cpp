@@ -9,8 +9,8 @@ QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
     plMsgForwarder* obj = (plMsgForwarder*)fCreatable;
 
     fForwardKeys = new QKeyList(this);
-    for (size_t i=0; i<obj->getNumForwardKeys(); i++)
-        fForwardKeys->addKey(obj->getForwardKey(i));
+    for (size_t i=0; i<obj->getForwardKeys().getSize(); i++)
+        fForwardKeys->addKey(obj->getForwardKeys()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

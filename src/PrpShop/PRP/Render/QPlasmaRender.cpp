@@ -249,10 +249,10 @@ void QPlasmaRender::build(int navMode, int drawMode)
                 continue;
             for (size_t idx=0; idx<di.fIndices.getSize(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
-                hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
-                for (size_t lay = 0; lay < mat->getNumLayers(); lay++) {
-                    if (fLayers.find(mat->getLayer(lay)) == fLayers.end()) {
-                        fLayers[mat->getLayer(lay)] = LayerInfo(layIdx, 0);
+                hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
+                for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
+                    if (fLayers.find(mat->getLayers()[lay]) == fLayers.end()) {
+                        fLayers[mat->getLayers()[lay]] = LayerInfo(layIdx, 0);
                         layIdx++;
                     }
                 }
@@ -514,10 +514,10 @@ void QPlasmaRender::compileObject(plKey key)
                     xform = ice->getLocalToWorld();
             }
 
-            hsGMaterial* mat = hsGMaterial::Convert(span->getMaterial(ice->getMaterialIdx())->getObj());
-            for (size_t lay = 0; lay < mat->getNumLayers(); lay++) {
+            hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
+            for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
             //size_t lay = 0 ; {
-                plLayerInterface* layer = plLayerInterface::Convert(mat->getLayer(lay)->getObj());
+                plLayerInterface* layer = plLayerInterface::Convert(mat->getLayers()[lay]->getObj());
 
                 bool is2Sided = ((fDrawMode & kDrawForce2Sided) != 0)
                              || ((layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0)

@@ -13,8 +13,8 @@ QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setForceType(kSynchedObject);
 
     fImages = new QKeyList(this);
-    for (size_t i=0; i<mod->getNumImages(); i++)
-        fImages->addKey(mod->getImage(i));
+    for (size_t i=0; i<mod->getImages().getSize(); i++)
+        fImages->addKey(mod->getImages()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

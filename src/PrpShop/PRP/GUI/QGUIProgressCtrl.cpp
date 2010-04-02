@@ -45,8 +45,8 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~ctrl->getAnimName());
     fAnimationKeys = new QKeyList(this);
-    for (size_t i=0; i<ctrl->getNumAnimKeys(); i++)
-        fAnimationKeys->addKey(ctrl->getAnimKey(i));
+    for (size_t i=0; i<ctrl->getAnimKeys().getSize(); i++)
+        fAnimationKeys->addKey(ctrl->getAnimKeys()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -68,12 +68,8 @@ void QGUIProgressCtrl::saveDamage()
 {
     pfGUIProgressCtrl* ctrl = (pfGUIProgressCtrl*)fCreatable;
 
-    for (size_t i=0; i<kModFlagCount; i++) {
-        if (fModFlags[i]->isChecked())
-            ctrl->setFlag(i + kModFlagStart);
-        else
-            ctrl->clearFlag(i + kModFlagStart);
-    }
+    for (size_t i=0; i<kModFlagCount; i++)
+        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());

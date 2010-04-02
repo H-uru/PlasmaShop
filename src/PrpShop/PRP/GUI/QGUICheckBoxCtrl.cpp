@@ -15,11 +15,11 @@ QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~ctrl->getAnimName());
     fAnimationKeys = new QKeyList(this);
-    for (size_t i=0; i<ctrl->getNumAnimKeys(); i++)
-        fAnimationKeys->addKey(ctrl->getAnimKey(i));
+    for (size_t i=0; i<ctrl->getAnimKeys().getSize(); i++)
+        fAnimationKeys->addKey(ctrl->getAnimKeys()[i]);
 
     fValue = new QCheckBox(tr("Checked"), this);
-    fValue->setChecked(ctrl->getChecked());
+    fValue->setChecked(ctrl->isChecked());
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

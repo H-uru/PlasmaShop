@@ -134,12 +134,12 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
     fFileName = new QLineEdit(~mod->getFilename(), this);
 
     fReceivers = new QKeyList(this);
-    for (size_t i=0; i<mod->getNumReceivers(); i++)
-        fReceivers->addKey(mod->getReceiver(i));
+    for (size_t i=0; i<mod->getReceivers().getSize(); i++)
+        fReceivers->addKey(mod->getReceivers()[i]);
 
     fParams = new QPythonParamList(this);
-    for (size_t i=0; i<mod->getNumParameters(); i++)
-        fParams->addParam(mod->getParameter(i));
+    for (size_t i=0; i<mod->getParameters().getSize(); i++)
+        fParams->addParam(mod->getParameters()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

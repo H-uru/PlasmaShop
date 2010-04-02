@@ -14,8 +14,8 @@ QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* paren
     fSynchObjLink->setForceType(kSynchedObject);
 
     fIntfKeys = new QKeyList(this);
-    for (size_t i=0; i<obj->getNumIntfKeys(); i++)
-        fIntfKeys->addKey(obj->getIntfKey(i));
+    for (size_t i=0; i<obj->getIntfKeys().getSize(); i++)
+        fIntfKeys->addKey(obj->getIntfKeys()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

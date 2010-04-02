@@ -168,12 +168,8 @@ void QGUIPopUpMenu::saveDamage()
 {
     pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
 
-    for (size_t i=0; i<kModFlagCount; i++) {
-        if (fModFlags[i]->isChecked())
-            ctrl->setFlag(i + kModFlagStart);
-        else
-            ctrl->clearFlag(i + kModFlagStart);
-    }
+    for (size_t i=0; i<kModFlagCount; i++)
+        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setAlignment((pfGUIPopUpMenu::Alignment)fAlignment->currentIndex());
     ctrl->setMargin(fMargin->value());

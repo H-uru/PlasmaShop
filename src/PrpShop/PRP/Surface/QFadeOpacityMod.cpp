@@ -10,7 +10,7 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kFadeOpacityMod, parent)
 {
     plFadeOpacityMod* mod = (plFadeOpacityMod*)fCreatable;
-    
+
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
     fSynchObjLink->setCreatable(mod);
@@ -23,10 +23,10 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
     fFlags[kBoundsCenter] = new QCheckBox(tr("Bounds Centered"), grpFlags);
     layFlags->addWidget(fFlags[kBoundsCenter], 0, 0);
     fFlags[kBoundsCenter]->setChecked(mod->getFlag(plFadeOpacityMod::kBoundsCenter));
-    
+
     fUp = new QFloatEdit(this);
     fUp->setValue(mod->getFadeUp());
-    
+
     fDown = new QFloatEdit(this);
     fDown->setValue(mod->getFadeDown());
 
@@ -44,11 +44,7 @@ void QFadeOpacityMod::saveDamage()
 {
     plFadeOpacityMod* mod = (plFadeOpacityMod*)fCreatable;
 
-    if (fFlags[kBoundsCenter]->isChecked())
-        mod->setFlag(plFadeOpacityMod::kBoundsCenter);
-    else
-        mod->clearFlag(plFadeOpacityMod::kBoundsCenter);
-
+    mod->setFlag(plFadeOpacityMod::kBoundsCenter, fFlags[kBoundsCenter]->isChecked());
     mod->setFadeUp(fUp->value());
     mod->setFadeDown(fDown->value());
 }

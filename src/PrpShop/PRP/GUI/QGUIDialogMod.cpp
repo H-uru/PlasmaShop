@@ -40,8 +40,8 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
     fVersion->setValue(dlg->getVersion());
 
     fControls = new QKeyList(this);
-    for (size_t i=0; i<dlg->getNumControls(); i++)
-        fControls->addKey(dlg->getControl(i));
+    for (size_t i=0; i<dlg->getControls().getSize(); i++)
+        fControls->addKey(dlg->getControls()[i]);
 
     fRenderMod = new QCreatableLink(this);
     fRenderMod->setKey(dlg->getRenderMod());
@@ -95,11 +95,7 @@ void QGUIDialogMod::saveDamage()
 {
     pfGUIDialogMod* dlg = (pfGUIDialogMod*)fCreatable;
 
-    if (fModFlagModal->isChecked())
-        dlg->setFlag(pfGUIDialogMod::kModal);
-    else
-        dlg->clearFlag(pfGUIDialogMod::kModal);
-
+    dlg->setFlag(pfGUIDialogMod::kModal, fModFlagModal->isChecked());
     fColorScheme->saveColorScheme(&dlg->getColorScheme());
     dlg->setName(~fName->text());
     dlg->setTagID(fTagID->value());

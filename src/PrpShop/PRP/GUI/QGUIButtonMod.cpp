@@ -21,8 +21,8 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
     fAnimName = new QLineEdit(animationGrp);
     fAnimName->setText(~ctrl->getAnimationName());
     fAnimationKeys = new QKeyList(animationGrp);
-    for (size_t i=0; i<ctrl->getNumAnimationKeys(); i++)
-        fAnimationKeys->addKey(ctrl->getAnimationKey(i));
+    for (size_t i=0; i<ctrl->getAnimationKeys().getSize(); i++)
+        fAnimationKeys->addKey(ctrl->getAnimationKeys()[i]);
     QGridLayout* animationLayout = new QGridLayout(animationGrp);
     animationLayout->addWidget(new QLabel(tr("Anim Name:"), animationGrp), 0, 0);
     animationLayout->addWidget(fAnimName, 0, 1);
@@ -32,8 +32,8 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
     fMouseOverAnimName = new QLineEdit(mouseOverAnimGrp);
     fMouseOverAnimName->setText(~ctrl->getMouseOverAnimName());
     fMouseOverAnimKeys = new QKeyList(mouseOverAnimGrp);
-    for (size_t i=0; i<ctrl->getNumMouseOverKeys(); i++)
-        fMouseOverAnimKeys->addKey(ctrl->getMouseOverKey(i));
+    for (size_t i=0; i<ctrl->getMouseOverKeys().getSize(); i++)
+        fMouseOverAnimKeys->addKey(ctrl->getMouseOverKeys()[i]);
     QGridLayout* mouseOverAnimLayout = new QGridLayout(mouseOverAnimGrp);
     mouseOverAnimLayout->addWidget(new QLabel(tr("Anim Name:"), mouseOverAnimGrp), 0, 0);
     mouseOverAnimLayout->addWidget(fMouseOverAnimName, 0, 1);

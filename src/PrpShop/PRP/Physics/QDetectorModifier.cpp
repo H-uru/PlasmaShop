@@ -16,8 +16,8 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setForceType(kSynchedObject);
 
     fReceivers = new QKeyList(this);
-    for (size_t i=0; i<obj->getNumReceivers(); i++)
-        fReceivers->addKey(obj->getReceiver(i));
+    for (size_t i=0; i<obj->getReceivers().getSize(); i++)
+        fReceivers->addKey(obj->getReceivers()[i]);
 
     fRemoteMod = new QCreatableLink(this);
     fRemoteMod->setKey(obj->getRemoteMod());

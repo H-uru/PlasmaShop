@@ -65,10 +65,10 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
     QTabWidget* objTab = new QTabWidget(this);
     fLayers = new QKeyList(objTab);
     fPiggyBacks = new QKeyList(objTab);
-    for (size_t i=0; i<mat->getNumLayers(); i++)
-        fLayers->addKey(mat->getLayer(i));
-    for (size_t i=0; i<mat->getNumPiggyBacks(); i++)
-        fPiggyBacks->addKey(mat->getPiggyBack(i));
+    for (size_t i=0; i<mat->getLayers().getSize(); i++)
+        fLayers->addKey(mat->getLayers()[i]);
+    for (size_t i=0; i<mat->getPiggyBacks().getSize(); i++)
+        fPiggyBacks->addKey(mat->getPiggyBacks()[i]);
     objTab->addTab(fLayers, tr("Layers"));
     objTab->addTab(fPiggyBacks, tr("Piggy Backs"));
 

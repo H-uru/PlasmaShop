@@ -45,8 +45,8 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~ctrl->getAnimName());
     fAnimationKeys = new QKeyList(this);
-    for (size_t i=0; i<ctrl->getNumAnimationKeys(); i++)
-        fAnimationKeys->addKey(ctrl->getAnimationKey(i));
+    for (size_t i=0; i<ctrl->getAnimationKeys().getSize(); i++)
+        fAnimationKeys->addKey(ctrl->getAnimationKeys()[i]);
 
     for (size_t i=0; i<3; i++) {
         fStartPos[i] = new QFloatEdit(this);
@@ -92,12 +92,8 @@ void QGUIKnobCtrl::saveDamage()
 {
     pfGUIKnobCtrl* ctrl = (pfGUIKnobCtrl*)fCreatable;
 
-    for (size_t i=0; i<kModFlagCount; i++) {
-        if (fModFlags[i]->isChecked())
-            ctrl->setFlag(i + kModFlagStart);
-        else
-            ctrl->clearFlag(i + kModFlagStart);
-    }
+    for (size_t i=0; i<kModFlagCount; i++)
+        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());

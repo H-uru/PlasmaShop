@@ -40,10 +40,10 @@ QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
     QTabWidget* objTab = new QTabWidget(this);
     fInterfaceList = new QKeyList(objTab);
     fModifierList = new QKeyList(objTab);
-    for (size_t i=0; i<obj->getNumInterfaces(); i++)
-        fInterfaceList->addKey(obj->getInterface(i));
-    for (size_t i=0; i<obj->getNumModifiers(); i++)
-        fModifierList->addKey(obj->getModifier(i));
+    for (size_t i=0; i<obj->getInterfaces().getSize(); i++)
+        fInterfaceList->addKey(obj->getInterfaces()[i]);
+    for (size_t i=0; i<obj->getModifiers().getSize(); i++)
+        fModifierList->addKey(obj->getModifiers()[i]);
     objTab->addTab(fInterfaceList, tr("Interfaces"));
     objTab->addTab(fModifierList, tr("Modifiers"));
 

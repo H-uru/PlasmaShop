@@ -64,12 +64,8 @@ void QGUITextBoxMod::saveDamage()
 {
     pfGUITextBoxMod* ctrl = (pfGUITextBoxMod*)fCreatable;
 
-    for (size_t i=0; i<kModFlagCount; i++) {
-        if (fModFlags[i]->isChecked())
-            ctrl->setFlag(i + kModFlagStart);
-        else
-            ctrl->clearFlag(i + kModFlagStart);
-    }
+    for (size_t i=0; i<kModFlagCount; i++)
+        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setText(~fText->toPlainText());
     ctrl->setLocalizationPath(QStrToWStr(fLocalizationPath->text()));

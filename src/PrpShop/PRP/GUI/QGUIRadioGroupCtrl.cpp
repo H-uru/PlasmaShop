@@ -25,10 +25,10 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
 
     fControls = new QKeyList(this);
     fDefaultValue = new QComboBox(this);
-    for (size_t i=0; i<ctrl->getNumControls(); i++) {
-        fControls->addKey(ctrl->getControl(i));
-        fDefaultValue->addItem(pqGetTypeIcon(ctrl->getControl(i)->getType()),
-                               ~ctrl->getControl(i)->getName());
+    for (size_t i=0; i<ctrl->getControls().getSize(); i++) {
+        fControls->addKey(ctrl->getControls()[i]);
+        fDefaultValue->addItem(pqGetTypeIcon(ctrl->getControls()[i]->getType()),
+                               ~ctrl->getControls()[i]->getName());
     }
     fDefaultValue->setCurrentIndex(ctrl->getDefaultValue());
 
@@ -51,10 +51,8 @@ void QGUIRadioGroupCtrl::saveDamage()
 {
     pfGUIRadioGroupCtrl* ctrl = (pfGUIRadioGroupCtrl*)fCreatable;
 
-    if (fModFlagAllowNoSelection->isChecked())
-        ctrl->setFlag(pfGUIRadioGroupCtrl::kAllowNoSelection);
-    else
-        ctrl->clearFlag(pfGUIRadioGroupCtrl::kAllowNoSelection);
+    ctrl->setFlag(pfGUIRadioGroupCtrl::kAllowNoSelection,
+                  fModFlagAllowNoSelection->isChecked());
 
     ctrl->clearControls();
     QList<plKey> ctrlKeys = fControls->keys();

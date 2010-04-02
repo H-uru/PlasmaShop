@@ -55,7 +55,7 @@ protected:
     QIntEdit* fInnerCone;
     QIntEdit* fOuterCone;
     QFloatEdit* fCurrVolume;
-    QFloatEdit* fDesiredVol;
+    QFloatEdit* fDesiredVolume;
     QFloatEdit* fFadedVolume;
     QCreatableLink* fSoftRegion;
     QCreatableLink* fSoftOcclusionRegion;
