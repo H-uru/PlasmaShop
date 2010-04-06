@@ -16,8 +16,6 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
-#define PRPSHOP_VERSION "Build 103"
-
 class PrpShopMain : public QMainWindow {
     Q_OBJECT
 
@@ -92,6 +90,7 @@ protected:
     QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
 
 public slots:
+    void newPage();
     void openFiles();
     void performSave();
     void performSaveAs();

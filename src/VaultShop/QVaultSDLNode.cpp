@@ -223,7 +223,7 @@ QSDLEditor::QSDLEditor(QWidget* parent)
 
 QSDLEditor::~QSDLEditor()
 {
-    if (fIOwnRecord && fRecord != NULL)
+    if (fIOwnRecord)
         delete fRecord;
 }
 
@@ -288,7 +288,7 @@ void QSDLEditor::setRecord(plStateDataRecord* rec, bool own)
 {
     fSDLList->clear();
     fSDLVersion = -1;
-    if (fIOwnRecord && fRecord != NULL)
+    if (fIOwnRecord)
         delete fRecord;
     fIOwnRecord = own;
     fRecord = rec;

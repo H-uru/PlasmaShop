@@ -46,10 +46,8 @@ VaultShopMain::VaultInfo::VaultInfo(QString filename)
 
 VaultShopMain::VaultInfo::~VaultInfo()
 {
-    if (fVault != NULL)
-        delete fVault;
-    if (fRootItem != NULL)
-        delete fRootItem;
+    delete fVault;
+    delete fRootItem;
 }
 
 void VaultShopMain::VaultInfo::save()
@@ -70,8 +68,7 @@ VaultShopMain::SaveInfo::SaveInfo(QString filename)
 
 VaultShopMain::SaveInfo::~SaveInfo()
 {
-    if (fSave != NULL)
-        delete fSave;
+    delete fSave;
 }
 
 void VaultShopMain::SaveInfo::save()

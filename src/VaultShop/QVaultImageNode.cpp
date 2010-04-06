@@ -17,14 +17,12 @@ QStaticImage::QStaticImage(QWidget* parent)
 
 QStaticImage::~QStaticImage()
 {
-    if (fImg != NULL)
-        delete fImg;
+    delete fImg;
 }
 
 void QStaticImage::set(QPixmap* img)
 {
-    if (fImg != NULL)
-        delete fImg;
+    delete fImg;
     fImg = img;
     //fScale.setWidth((400.0 / fImg->width()) * fImg->width());
     //fScale.setHeight((400.0 / fImg->width()) * fImg->height());

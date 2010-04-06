@@ -18,18 +18,14 @@ QTextureBox::QTextureBox(QWidget* parent)
 
 QTextureBox::~QTextureBox()
 {
-    if (fImage != NULL)
-        delete fImage;
-    if (fImageData != NULL)
-        delete[] fImageData;
+    delete fImage;
+    delete[] fImageData;
 }
 
 void QTextureBox::setTexture(plMipmap* tex, int level)
 {
-    if (fImage != NULL)
-        delete fImage;
-    if (fImageData != NULL)
-        delete[] fImageData;
+    delete fImage;
+    delete[] fImageData;
 
     if (tex == NULL) {
         fImage = NULL;

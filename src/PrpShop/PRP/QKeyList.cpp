@@ -99,8 +99,7 @@ void QStringListWidget::addString(const QString& str)
 void QStringListWidget::delString(int idx)
 {
     QListWidgetItem* item = takeItem(idx);
-    if (item != NULL)
-        delete item;
+    delete item;
     fStrings.erase(fStrings.begin() + idx);
 }
 
@@ -149,8 +148,7 @@ void QIntListWidget::addValue(int value)
 void QIntListWidget::delValue(int idx)
 {
     QListWidgetItem* item = takeItem(idx);
-    if (item != NULL)
-        delete item;
+    delete item;
     fValues.erase(fValues.begin() + idx);
 }
 
@@ -199,8 +197,7 @@ void QDoubleListWidget::addValue(double value)
 void QDoubleListWidget::delValue(int idx)
 {
     QListWidgetItem* item = takeItem(idx);
-    if (item != NULL)
-        delete item;
+    delete item;
     fValues.erase(fValues.begin() + idx);
 }
 

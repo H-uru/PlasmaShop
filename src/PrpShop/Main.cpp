@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 #include <QMdiSubWindow>
 #include <QDropEvent>
 #include <QUrl>
@@ -21,6 +22,8 @@
 #include "QKeyDialog.h"
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
+
+#define PRPSHOP_VERSION "Build 105"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance()
@@ -144,6 +147,7 @@ PrpShopMain::PrpShopMain()
     addDockWidget(Qt::LeftDockWidgetArea, fPropertyDock);
 
     // Global UI Signals
+    connect(fActions[kFileNewPage], SIGNAL(triggered()), this, SLOT(newPage()));
     connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
     connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(openFiles()));
     connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(performSave()));
@@ -275,9 +279,9 @@ void PrpShopMain::setPropertyPage(PropWhich which)
             QGroupBox* locationGrp = new QGroupBox(tr("Location"), group);
             QGridLayout* locationLayout = new QGridLayout(locationGrp);
             fSeqPrefix = new QSpinBox(locationGrp);
-            fSeqPrefix->setRange(-0x10000, 0xFFFF);
+            fSeqPrefix->setRange(-0x00800000, 0x007FFFFF);
             fSeqSuffix = new QSpinBox(locationGrp);
-            fSeqSuffix->setRange(-0x10000, 0xFFFF);
+            fSeqSuffix->setRange(-0x00008000, 0x00007FFF);
             fLocationFlags[kLocLocalOnly] = new QCheckBox(tr("Local Only"), locationGrp);
             fLocationFlags[kLocVolatile] = new QCheckBox(tr("Volatile"), locationGrp);
             fLocationFlags[kLocItinerant] = new QCheckBox(tr("Itinerant"), locationGrp);
@@ -625,6 +629,71 @@ void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
             subWin->show();
         }
     }
+}
+
+void PrpShopMain::newPage()
+{
+    static PlasmaVer s_pvMap[] = {
+        pvPrime, pvPots, pvLive, pvEoa, pvHex, pvUniversal,
+    };
+
+    QDialog dlg;
+    dlg.setWindowTitle(tr("New Page..."));
+    dlg.setWindowIcon(qStdIcon("document-new"));
+
+    QComboBox* dlg_gameVer = new QComboBox(&dlg);
+    dlg_gameVer->addItems(QStringList() << "UU / Prime" << "Uru CC / PotS / Alcugs"
+                                        << "Uru Live / MQO" << "Myst 5 / Crowthistle"
+                                        << "Hex Isle" << "Universal (unsupported)");
+    dlg_gameVer->setCurrentIndex(1);
+    QLineEdit* dlg_ageName = new QLineEdit(&dlg);
+    QLineEdit* dlg_pageName = new QLineEdit(&dlg);
+
+    QGroupBox* locationGrp = new QGroupBox(tr("Location"), &dlg);
+    QGridLayout* locationLayout = new QGridLayout(locationGrp);
+    QSpinBox* dlg_seqPrefix = new QSpinBox(locationGrp);
+    dlg_seqPrefix->setRange(-0x00800000, 0x007FFFFF);
+    QSpinBox* dlg_seqSuffix = new QSpinBox(locationGrp);
+    dlg_seqSuffix->setRange(-0x00008000, 0x00007FFF);
+    locationLayout->addWidget(new QLabel(tr("Page ID:"), locationGrp), 0, 0);
+    locationLayout->addWidget(dlg_seqPrefix, 0, 1);
+    locationLayout->addWidget(dlg_seqSuffix, 0, 2);
+
+    QDialogButtonBox* btnBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                    Qt::Horizontal, &dlg);
+    dlg.connect(btnBox, SIGNAL(accepted()), &dlg, SLOT(accept()));
+    dlg.connect(btnBox, SIGNAL(rejected()), &dlg, SLOT(reject()));
+
+    QGridLayout* layout = new QGridLayout(&dlg);
+    layout->addWidget(new QLabel(tr("Version:"), &dlg), 0, 0);
+    layout->addWidget(dlg_gameVer, 0, 1);
+    layout->addWidget(new QLabel(tr("Age:"), &dlg), 1, 0);
+    layout->addWidget(dlg_ageName, 1, 1);
+    layout->addWidget(new QLabel(tr("Page:"), &dlg), 2, 0);
+    layout->addWidget(dlg_pageName, 2, 1);
+    layout->addWidget(locationGrp, 3, 0, 1, 2);
+    layout->addItem(new QSpacerItem(0, 16, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 4, 0, 1, 2);
+    layout->addWidget(btnBox, 5, 0, 1, 2);
+
+    if (dlg.exec() != QDialog::Accepted)
+        return;
+
+    PlasmaVer selPVer = s_pvMap[dlg_gameVer->currentIndex()];
+    fResMgr.setVer(selPVer, true);
+
+    plPageInfo* page = new plPageInfo(~dlg_ageName->text(), ~dlg_pageName->text());
+    plLocation loc;
+    loc.setSeqPrefix(dlg_seqPrefix->value());
+    loc.setPageNum(dlg_seqSuffix->value());
+    page->setLocation(loc);
+    fResMgr.AddPage(page);
+
+    QString filename = dlg_ageName->text();
+    if (selPVer < pvEoa)
+        filename += "_District";
+    filename += "_" + dlg_pageName->text();
+    loadPage(page, filename);
+    fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
 void PrpShopMain::openFiles()

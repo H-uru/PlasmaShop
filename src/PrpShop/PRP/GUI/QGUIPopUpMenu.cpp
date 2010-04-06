@@ -333,8 +333,7 @@ void QPopUpMenuItemDialog::setProcType(int typeIdx)
     if (fItem == NULL)
         return;
 
-    if (fItem->fHandler != NULL)
-        delete fItem->fHandler;
+    delete fItem->fHandler;
 
     switch (typeIdx) {
     case pfGUICtrlProcWriteableObject::kNull:

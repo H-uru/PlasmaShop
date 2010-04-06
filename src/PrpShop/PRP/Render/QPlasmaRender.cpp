@@ -260,8 +260,7 @@ void QPlasmaRender::build(int navMode, int drawMode)
         }
     }
 
-    if (fTexList != NULL)
-        delete[] fTexList;
+    delete[] fTexList;
     fTexList = new GLuint[layIdx];
     glGenTextures(layIdx, fTexList);
     std::map<plKey, LayerInfo>::iterator it;
