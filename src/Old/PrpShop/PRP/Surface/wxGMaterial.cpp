@@ -1,3 +1,19 @@
+/* This file is part of PlasmaShop.
+ *
+ * PlasmaShop is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PlasmaShop is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "wxGMaterial.h"
 #include "../../wxObjSelectFrame.h"
 #include <wx/sizer.h>
@@ -39,7 +55,7 @@ void wxGMaterial::AddPropPages(wxNotebook* nb)
 {
     wxSynchedObject::AddPropPages(nb);
     hsGMaterial* mat = hsGMaterial::Convert(fKey->getObj());
-    
+
     wxPanel* nbpage = new wxPanel(nb);
     cbCompShaded = new wxCheckBox(nbpage, wxID_ANY, wxT("Shaded"));
     cbCompEnvironMap = new wxCheckBox(nbpage, wxID_ANY, wxT("EnvironMap"));
@@ -132,7 +148,7 @@ void wxGMaterial::SaveDamage()
 {
     wxSynchedObject::SaveDamage();
     hsGMaterial* mat = hsGMaterial::Convert(fKey->getObj());
-    
+
     mat->setCompFlags((cbCompShaded->GetValue() ? hsGMaterial::kCompShaded : 0)
                     | (cbCompEnvironMap->GetValue() ? hsGMaterial::kCompEnvironMap : 0)
                     | (cbCompProjectOnto->GetValue() ? hsGMaterial::kCompProjectOnto : 0)
@@ -282,7 +298,7 @@ void wxGMaterial::OnLayerAddClick(wxMenuEvent& evt)
     hsGMaterial* mat = hsGMaterial::Convert(fKey->getObj());
     std::vector<plKey> keys = fResMgr->getKeys(fKey->getLocation(), kLayer);
     std::vector<plKey> animKeys = fResMgr->getKeys(fKey->getLocation(), kLayerAnimation);
-    
+
     size_t keyEnd = keys.size();
     keys.resize(keys.size() + animKeys.size());
     std::copy(animKeys.begin(), animKeys.end(), keys.begin() + keyEnd);
@@ -390,7 +406,7 @@ void wxGMaterial::OnPiggyAddClick(wxMenuEvent& evt)
     hsGMaterial* mat = hsGMaterial::Convert(fKey->getObj());
     std::vector<plKey> keys = fResMgr->getKeys(fKey->getLocation(), kLayer);
     std::vector<plKey> animKeys = fResMgr->getKeys(fKey->getLocation(), kLayerAnimation);
-    
+
     size_t keyEnd = keys.size();
     keys.resize(keys.size() + animKeys.size());
     std::copy(animKeys.begin(), animKeys.end(), keys.begin() + keyEnd);
