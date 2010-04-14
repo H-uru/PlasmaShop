@@ -1,14 +1,17 @@
-.*\.o
-.*\.a
-.*\.so
-.*\.log
-.*\.dSYM
-Makefile
+syntax: glob
+*.o
+*.a
+*.log
+*.dSYM
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
-moc_.*\.cpp
-qrc_.*\.cpp
+moc_*.cpp
+qrc_*.cpp
 bin/PlasmaShop
 bin/PrpShop
 bin/VaultShop
+
+syntax: regexp
+Makefile(\..*)?$
+.*\.so(\..*)?$
