@@ -27,7 +27,7 @@ QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
     QIcon ico = pqGetTypeIcon(type);
     if (!ico.isNull())
         setWindowIcon(ico);
-    hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable);
+    hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable, false);
     if (ko != NULL && ko->getKey().Exists()) {
         setWindowTitle(pqGetFriendlyClassName(type) +
                        ": " + ~ko->getKey()->getName());
