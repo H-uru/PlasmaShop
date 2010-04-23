@@ -6,7 +6,7 @@ PLAT_BITS =
 win32 {
     DEFINES += PLAT_FONT="\"\\\"Courier New\\\"\""
 } else {
-    DEFINES += PLAT_FONT="\"\\\"Monospace\\\"\""
+    DEFINES += PLAT_FONT="\"\\\"Droid Sans Mono\\\"\""
 }
 
 # Make VS shut up a bit
@@ -14,10 +14,10 @@ win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
 
 # Add libPlasma
 contains(PLSLIBS, core) {
-    INCLUDEPATH *= ../../../Plasma/core
-    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasma
+    INCLUDEPATH *= ../../../libhsplasma/core
+    LIBS *= -L../../../libhsplasma/bin$${PLAT_BITS} -lHSPlasma
 }
 contains(PLSLIBS, net) {
-    INCLUDEPATH *= ../../../Plasma/net
-    LIBS *= -L../../../Plasma/bin$${PLAT_BITS} -lHSPlasmaNet
+    INCLUDEPATH *= ../../../libhsplasma/net
+    LIBS *= -L../../../libhsplasma/bin$${PLAT_BITS} -lHSPlasmaNet
 }
