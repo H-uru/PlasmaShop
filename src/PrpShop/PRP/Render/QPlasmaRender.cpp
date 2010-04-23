@@ -339,7 +339,7 @@ bool QPlasmaRender::buildMipmap(plMipmap* map, GLuint id, GLuint target) {
             return false;
         }
     } else if (map->getCompressionType() == plBitmap::kJPEGCompression) {
-        size_t imgsize = map->getImageSize();
+        size_t imgsize = map->getTotalSize();
         unsigned char* imgbuf = new unsigned char[imgsize];
         try {
             map->DecompressImage(0, imgbuf, imgsize);

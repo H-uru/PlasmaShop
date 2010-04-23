@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <Util/plDDSurface.h>
 #include "../QLinkLabel.h"
 #include "../../QPlasmaUtils.h"
 
@@ -145,23 +146,19 @@ QString getCompressionText(plBitmap* tex)
         switch (tex->getDXCompression()) {
         case plBitmap::kDXT1:
             return "DXT1";
-        case plBitmap::kDXT2:
-            return "DXT2";
         case plBitmap::kDXT3:
             return "DXT3";
-        case plBitmap::kDXT4:
-            return "DXT4";
         case plBitmap::kDXT5:
             return "DXT5";
         }
     } else if (tex->getCompressionType() == plBitmap::kJPEGCompression) {
         switch (tex->getARGBType()) {
         case plBitmap::kRGB8888:
-            return "JPEG (RGB8888)";
+            return "JPEG (ARGB8888)";
         case plBitmap::kRGB4444:
-            return "JPEG (RGB4444)";
+            return "JPEG (ARGB4444)";
         case plBitmap::kRGB1555:
-            return "JPEG (RGB1555)";
+            return "JPEG (ARGB1555)";
         case plBitmap::kInten8:
             return "JPEG (Greyscale)";
         case plBitmap::kAInten88:
@@ -170,18 +167,18 @@ QString getCompressionText(plBitmap* tex)
     } else {
         switch (tex->getARGBType()) {
         case plBitmap::kRGB8888:
-            return "Uncompressed (RGB8888)";
+            return "Uncompressed (ARGB8888)";
         case plBitmap::kRGB4444:
-            return "Uncompressed (RGB4444)";
+            return "Uncompressed (ARGB4444)";
         case plBitmap::kRGB1555:
-            return "Uncompressed (RGB1555)";
+            return "Uncompressed (ARGB1555)";
         case plBitmap::kInten8:
             return "Uncompressed (Greyscale)";
         case plBitmap::kAInten88:
             return "Uncompressed (Alpha+Greyscale)";
         }
     }
-    return "(Invalid)";
+    return "(INVALID)";
 }
 
 QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
@@ -313,6 +310,80 @@ void QMipmap::saveDamage()
                 | (fFlags[kIsOrtho]->isChecked() ? plBitmap::kIsOrtho : 0));
 }
 
+void QMipmap::makeJColorSurface(const plMipmap* tex, hsStream* S)
+{
+    if (tex->getCompressionType() != plBitmap::kJPEGCompression) {
+        QMessageBox::critical(this, tr("Error exporting JPEG"),
+                              tr("Texture is not in a supported export format"),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    plDDSurface dds;
+    dds.fFlags = plDDSurface::DDSD_CAPS | plDDSurface::DDSD_HEIGHT
+               | plDDSurface::DDSD_WIDTH | plDDSurface::DDSD_PIXELFORMAT
+               | plDDSurface::DDSD_LINEARSIZE;
+    dds.fCaps = plDDSurface::DDSCAPS_TEXTURE;
+    dds.fHeight = tex->getHeight();
+    dds.fWidth = tex->getWidth();
+    dds.fLinearSize = dds.fHeight * dds.fWidth * 3;
+    dds.fPixelFormat.fFlags = plDDSurface::DDPF_RGB;
+    dds.fPixelFormat.fBitDepth = 24;
+    dds.fPixelFormat.fRBitMask = 0xFF0000;
+    dds.fPixelFormat.fGBitMask = 0x00FF00;
+    dds.fPixelFormat.fBBitMask = 0x0000FF;
+
+    // Strip down data to 24 bits
+    unsigned char* data = new unsigned char[dds.fLinearSize];
+    unsigned char* dp = data;
+    const unsigned char* sp = (const unsigned char*)tex->getImageData();
+    for (size_t i=0; i<tex->getLevelSize(0); i += 4) {
+        *dp++ = *sp++;  // Blue
+        *dp++ = *sp++;  // Green
+        *dp++ = *sp++;  // Red
+        sp++;           // Skip alpha
+    }
+    dds.setData(dds.fLinearSize, data);
+    delete[] data;
+
+    dds.write(S);
+}
+
+void QMipmap::makeJAlphaSurface(const plMipmap* tex, hsStream* S)
+{
+    if (tex->getCompressionType() != plBitmap::kJPEGCompression) {
+        QMessageBox::critical(this, tr("Error exporting JPEG"),
+                              tr("Texture is not in a supported export format"),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    plDDSurface dds;
+    dds.fFlags = plDDSurface::DDSD_CAPS | plDDSurface::DDSD_HEIGHT
+               | plDDSurface::DDSD_WIDTH | plDDSurface::DDSD_PIXELFORMAT
+               | plDDSurface::DDSD_LINEARSIZE;
+    dds.fCaps = plDDSurface::DDSCAPS_TEXTURE;
+    dds.fHeight = tex->getHeight();
+    dds.fWidth = tex->getWidth();
+    dds.fLinearSize = dds.fHeight * dds.fWidth;
+    dds.fPixelFormat.fFlags = plDDSurface::DDPF_LUMINANCE;
+    dds.fPixelFormat.fBitDepth = 8;
+    dds.fPixelFormat.fLuminanceBitMask = 0xFF;
+
+    // Strip down data to alpha luminance
+    unsigned char* data = new unsigned char[dds.fLinearSize];
+    unsigned char* dp = data;
+    const unsigned char* sp = (const unsigned char*)tex->getImageData();
+    for (size_t i=0; i<tex->getLevelSize(0); i += 4) {
+        sp += 3;        // Skip RGB
+        *dp++ = *sp++;  // Alpha
+    }
+    dds.setData(dds.fLinearSize, data);
+    delete[] data;
+
+    dds.write(S);
+}
+
 void QMipmap::onExportDDS()
 {
     QSettings settings("PlasmaShop", "PrpShop");
@@ -334,7 +405,14 @@ void QMipmap::onExportDDS()
                               QMessageBox::Ok);
         return;
     }
-    tex->writeToStream(&S);
+    try {
+        plDDSurface dds;
+        dds.setFromMipmap(tex);
+        dds.write(&S);
+    } catch (hsException& ex) {
+        QMessageBox::critical(this, tr("Error exporting DDS"),
+                              QString::fromUtf8(ex.what()), QMessageBox::Ok);
+    }
     S.close();
 
     QDir dir = QDir(filename);
@@ -360,24 +438,30 @@ void QMipmap::onExportJPEG()
     int extPos = filename.lastIndexOf(QChar('.'));
     if (extPos < 0)
         extPos = filename.length();
-    filename = filename.left(extPos) + ~tex->getSuggestedExt();
+    filename = filename.left(extPos) + (tex->isImageJPEG() ? ".jpg" : ".dds");
     if (!S.open(~filename, fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
                               tr("Error: Could not open file %1 for writing").arg(filename),
                               QMessageBox::Ok);
         return;
     }
-    tex->writeToStream(&S);
+    if (tex->isImageJPEG())
+        S.write(tex->getJpegSize(), tex->getJpegImage());
+    else
+        makeJColorSurface(tex, &S);
     S.close();
 
-    filename = filename.left(extPos) + ".alpha" + ~tex->getSuggestedAlphaExt();
+    filename = filename.left(extPos) + (tex->isAlphaJPEG() ? "_ALPHA.jpg" : "_ALPHA.dds");
     if (!S.open(~filename, fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
                               tr("Error: Could not open file %1 for writing").arg(filename),
                               QMessageBox::Ok);
         return;
     }
-    tex->writeAlphaToStream(&S);
+    if (tex->isAlphaJPEG())
+        S.write(tex->getJpegAlphaSize(), tex->getJpegAlpha());
+    else
+        makeJAlphaSurface(tex, &S);
     S.close();
 
     QDir dir = QDir(filename);

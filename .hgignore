@@ -3,7 +3,7 @@ syntax: glob
 *.a
 *.log
 *.dSYM
-CMakeFiles
+.*.swp
 CMakeCache.txt
 cmake_install.cmake
 moc_*.cpp
@@ -15,3 +15,5 @@ bin/VaultShop
 syntax: regexp
 Makefile(\..*)?$
 .*\.so(\..*)?$
+CMakeFiles/
+build/
