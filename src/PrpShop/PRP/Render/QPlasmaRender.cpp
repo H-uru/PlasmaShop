@@ -230,8 +230,8 @@ void QPlasmaRender::center(plKey obj, bool world)
     }
 
     if (world && coord != NULL) {
-        fModelMins = fModelMins * coord->getLocalToWorld();
-        fModelMaxs = fModelMaxs * coord->getLocalToWorld();
+        fModelMins = coord->getLocalToWorld().multPoint(fModelMins);
+        fModelMaxs = coord->getLocalToWorld().multPoint(fModelMaxs);
     }
 
     fViewPos = hsVector3((fModelMaxs.X + fModelMins.X) / 2.0f,
@@ -601,7 +601,7 @@ void QPlasmaRender::compileObject(plKey key)
 
                         hsVector3 vert;
                         if (!xform.IsIdentity())
-                            vert = verts[j].fPos * xform;
+                            vert = xform.multPoint(verts[j].fPos);
                         else
                             vert = verts[j].fPos;
                         glVertex3f(vert.X, vert.Y, vert.Z);
@@ -615,9 +615,9 @@ void QPlasmaRender::compileObject(plKey key)
                                                verts[indices[j+2]].fColor };
                         hsVector3 vert[3];
                         if (!xform.IsIdentity()) {
-                            vert[0] = verts[indices[j+0]].fPos * xform;
-                            vert[1] = verts[indices[j+1]].fPos * xform;
-                            vert[2] = verts[indices[j+2]].fPos * xform;
+                            vert[0] = xform.multPoint(verts[indices[j+0]].fPos);
+                            vert[1] = xform.multPoint(verts[indices[j+1]].fPos);
+                            vert[2] = xform.multPoint(verts[indices[j+2]].fPos);
                         } else {
                             vert[0] = verts[indices[j+0]].fPos;
                             vert[1] = verts[indices[j+1]].fPos;
@@ -648,7 +648,7 @@ void QPlasmaRender::compileObject(plKey key)
 
                         hsVector3 vert;
                         if (!xform.IsIdentity())
-                            vert = verts[indices[j]].fPos * xform;
+                            vert = xform.multPoint(verts[indices[j]].fPos);
                         else
                             vert = verts[indices[j]].fPos;
                         glVertex3f(vert.X, vert.Y, vert.Z);
@@ -660,7 +660,7 @@ void QPlasmaRender::compileObject(plKey key)
                         hsColor32 color(verts[indices[j]].fColor);
 
                         size_t uvwSrc = layer->getUVWSrc() & 0xFFFF;
-                        hsVector3 uvw = verts[indices[j]].fUVWs[uvwSrc] * layer->getTransform();
+                        hsVector3 uvw = layer->getTransform().multPoint(verts[indices[j]].fUVWs[uvwSrc]);
                         glTexCoord3f(uvw.X, uvw.Y, uvw.Z);
 
                         glColor4ub(color.r, color.g, color.b, color.a);
@@ -668,7 +668,7 @@ void QPlasmaRender::compileObject(plKey key)
 
                         hsVector3 vert;
                         if (!xform.IsIdentity())
-                            vert = verts[indices[j]].fPos * xform;
+                            vert = xform.multPoint(verts[indices[j]].fPos);
                         else
                             vert = verts[indices[j]].fPos;
                         glVertex3f(vert.X, vert.Y, vert.Z);

@@ -333,16 +333,9 @@ void QMipmap::makeJColorSurface(const plMipmap* tex, hsStream* S)
     dds.fPixelFormat.fGBitMask = 0x00FF00;
     dds.fPixelFormat.fBBitMask = 0x0000FF;
 
-    // Strip down data to 24 bits
+    // Strip down data to 24 bit color
     unsigned char* data = new unsigned char[dds.fLinearSize];
-    unsigned char* dp = data;
-    const unsigned char* sp = (const unsigned char*)tex->getImageData();
-    for (size_t i=0; i<tex->getLevelSize(0); i += 4) {
-        *dp++ = *sp++;  // Blue
-        *dp++ = *sp++;  // Green
-        *dp++ = *sp++;  // Red
-        sp++;           // Skip alpha
-    }
+    tex->extractColorData(data, dds.fLinearSize);
     dds.setData(dds.fLinearSize, data);
     delete[] data;
 
@@ -372,12 +365,7 @@ void QMipmap::makeJAlphaSurface(const plMipmap* tex, hsStream* S)
 
     // Strip down data to alpha luminance
     unsigned char* data = new unsigned char[dds.fLinearSize];
-    unsigned char* dp = data;
-    const unsigned char* sp = (const unsigned char*)tex->getImageData();
-    for (size_t i=0; i<tex->getLevelSize(0); i += 4) {
-        sp += 3;        // Skip RGB
-        *dp++ = *sp++;  // Alpha
-    }
+    tex->extractAlphaData(data, dds.fLinearSize);
     dds.setData(dds.fLinearSize, data);
     delete[] data;
 
@@ -471,9 +459,39 @@ void QMipmap::onExportJPEG()
 
 void QMipmap::onImportDDS()
 {
-    QMessageBox::critical(this, tr("Not implemented"),
-                          tr("DDS importing is not yet implemented"),
-                          QMessageBox::Ok);
+    QSettings settings("PlasmaShop", "PrpShop");
+    QString exportDir = settings.value("ExportDir").toString();
+    if (exportDir.isEmpty())
+        exportDir = settings.value("DialogDir").toString();
+
+    plMipmap* tex = (plMipmap*)fCreatable;
+    QString filename = QFileDialog::getOpenFileName(this, tr("Import DDS"), exportDir,
+                                                    "DDS Files (*.dds)");
+    if (filename.isEmpty())
+        return;
+
+    hsFileStream S;
+    if (!S.open(~filename, fmRead)) {
+        QMessageBox::critical(this, tr("Error importing DDS"),
+                              tr("Error: Could not open file %1 for reading").arg(filename),
+                              QMessageBox::Ok);
+        return;
+    }
+    try {
+        plDDSurface dds;
+        dds.read(&S);
+        plMipmap* newTex = dds.createMipmap();
+        tex->CopyFrom(newTex);
+        delete newTex;
+    } catch (hsException& ex) {
+        QMessageBox::critical(this, tr("Error importing DDS"),
+                              QString::fromUtf8(ex.what()), QMessageBox::Ok);
+    }
+    S.close();
+
+    QDir dir = QDir(filename);
+    dir.cdUp();
+    settings.setValue("ExportDir", dir.absolutePath());
 }
 
 void QMipmap::onImportJPEG()
