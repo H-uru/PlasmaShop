@@ -64,7 +64,7 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
     fText = new QSmallTextEdit(this);
     fText->setPlainText(~ctrl->getText());
     fLocalizationPath = new QLineEdit(this);
-    fLocalizationPath->setText(WStrToQStr(ctrl->getLocalizationPath()));
+    fLocalizationPath->setText(~ctrl->getLocalizationPath());
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -84,5 +84,5 @@ void QGUITextBoxMod::saveDamage()
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setText(~fText->toPlainText());
-    ctrl->setLocalizationPath(QStrToWStr(fLocalizationPath->text()));
+    ctrl->setLocalizationPath(~fLocalizationPath->text());
 }
