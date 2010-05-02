@@ -74,9 +74,6 @@ public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
     virtual void saveDamage();
 
-    void makeJColorSurface(const plMipmap* tex, hsStream* S);
-    void makeJAlphaSurface(const plMipmap* tex, hsStream* S);
-
 private slots:
     void onExportDDS();
     void onExportJPEG();
