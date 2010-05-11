@@ -310,11 +310,11 @@ void QMipmap::saveDamage()
                 | (fFlags[kIsOrtho]->isChecked() ? plBitmap::kIsOrtho : 0));
 }
 
-void QMipmap::makeJColorSurface(const plMipmap* tex, hsStream* S)
+static void makeJColorSurface(const plMipmap* tex, hsStream* S)
 {
     if (tex->getCompressionType() != plBitmap::kJPEGCompression) {
-        QMessageBox::critical(this, tr("Error exporting JPEG"),
-                              tr("Texture is not in a supported export format"),
+        QMessageBox::critical(NULL, QObject::tr("Error exporting JPEG"),
+                              QObject::tr("Texture is not in a supported export format"),
                               QMessageBox::Ok);
         return;
     }
@@ -342,11 +342,11 @@ void QMipmap::makeJColorSurface(const plMipmap* tex, hsStream* S)
     dds.write(S);
 }
 
-void QMipmap::makeJAlphaSurface(const plMipmap* tex, hsStream* S)
+static void makeJAlphaSurface(const plMipmap* tex, hsStream* S)
 {
     if (tex->getCompressionType() != plBitmap::kJPEGCompression) {
-        QMessageBox::critical(this, tr("Error exporting JPEG"),
-                              tr("Texture is not in a supported export format"),
+        QMessageBox::critical(NULL, QObject::tr("Error exporting JPEG"),
+                              QObject::tr("Texture is not in a supported export format"),
                               QMessageBox::Ok);
         return;
     }
@@ -370,6 +370,60 @@ void QMipmap::makeJAlphaSurface(const plMipmap* tex, hsStream* S)
     delete[] data;
 
     dds.write(S);
+}
+
+static bool getJColorSurface(const plDDSurface& dds, plMipmap* tex)
+{
+    if ((dds.fFlags & plDDSurface::DDSD_HEIGHT) == 0 ||
+        (dds.fFlags & plDDSurface::DDSD_WIDTH) == 0 ||
+        (dds.fFlags & plDDSurface::DDSD_PIXELFORMAT) == 0) {
+        QMessageBox::critical(NULL, QObject::tr("Error importing JPEG"),
+                              QObject::tr("DDSurface does not contain required fields"),
+                              QMessageBox::Ok);
+        return false;
+    }
+    if ((dds.fPixelFormat.fFlags & plDDSurface::DDPF_RGB) == 0 ||
+        (dds.fPixelFormat.fBitDepth != 24) ||
+        (dds.fPixelFormat.fRBitMask != 0xFF0000) ||
+        (dds.fPixelFormat.fGBitMask != 0x00FF00) ||
+        (dds.fPixelFormat.fBBitMask != 0x0000FF)) {
+        QMessageBox::critical(NULL, QObject::tr("Error importing JPEG"),
+                              QObject::tr("DDS file should be in RGB888 format"));
+        return false;
+    }
+
+    tex->Create(dds.fWidth, dds.fHeight, 0, plBitmap::kJPEGCompression, plBitmap::kRGB8888);
+    tex->setColorData(dds.getData(), dds.getDataSize());
+    return true;
+}
+
+static bool getJAlphaSurface(const plDDSurface& dds, plMipmap* tex)
+{
+    if ((dds.fFlags & plDDSurface::DDSD_HEIGHT) == 0 ||
+        (dds.fFlags & plDDSurface::DDSD_WIDTH) == 0 ||
+        (dds.fFlags & plDDSurface::DDSD_PIXELFORMAT) == 0) {
+        QMessageBox::critical(NULL, QObject::tr("Error importing JPEG"),
+                              QObject::tr("DDSurface does not contain required fields"),
+                              QMessageBox::Ok);
+        return false;
+    }
+    if ((dds.fPixelFormat.fFlags & plDDSurface::DDPF_LUMINANCE) == 0 ||
+        (dds.fPixelFormat.fBitDepth != 8) ||
+        (dds.fPixelFormat.fLuminanceBitMask != 0xFF)) {
+        QMessageBox::critical(NULL, QObject::tr("Error importing JPEG"),
+                              QObject::tr("DDS file should be in Luminance 8-bit format"),
+                              QMessageBox::Ok);
+        return false;
+    }
+
+    if (tex->getWidth() != dds.fWidth || tex->getHeight() != dds.fHeight) {
+        QMessageBox::critical(NULL, QObject::tr("Error importing JPEG"),
+                              QObject::tr("Alpha DDS size does not match image size"),
+                              QMessageBox::Ok);
+        return false;
+    }
+    tex->setAlphaData(dds.getData(), dds.getDataSize());
+    return true;
 }
 
 void QMipmap::onExportDDS()
@@ -417,16 +471,20 @@ void QMipmap::onExportJPEG()
 
     plMipmap* tex = (plMipmap*)fCreatable;
     exportDir.append("/" + (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
-    QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG"), exportDir,
-                                                    "JPEG Files (*.jpg)");
+    QString filter = tex->isImageJPEG() ? "JPEG Files (*.jpg)" : "DDS Files (*.dds)";
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG Image"),
+                                                    exportDir, filter);
     if (filename.isEmpty())
         return;
 
+    exportDir.append("_ALPHA");
+    filter = tex->isAlphaJPEG() ? "JPEG Files (*.jpg)" : "DDS Files (*.dds)";
+    QString alphaFname = QFileDialog::getSaveFileName(this, tr("Export JPEG Alpha"),
+                                                      exportDir, filter);
+    if (alphaFname.isEmpty())
+        return;
+
     hsFileStream S;
-    int extPos = filename.lastIndexOf(QChar('.'));
-    if (extPos < 0)
-        extPos = filename.length();
-    filename = filename.left(extPos) + (tex->isImageJPEG() ? ".jpg" : ".dds");
     if (!S.open(~filename, fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
                               tr("Error: Could not open file %1 for writing").arg(filename),
@@ -439,10 +497,9 @@ void QMipmap::onExportJPEG()
         makeJColorSurface(tex, &S);
     S.close();
 
-    filename = filename.left(extPos) + (tex->isAlphaJPEG() ? "_ALPHA.jpg" : "_ALPHA.dds");
-    if (!S.open(~filename, fmCreate)) {
+    if (!S.open(~alphaFname, fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
-                              tr("Error: Could not open file %1 for writing").arg(filename),
+                              tr("Error: Could not open file %1 for writing").arg(alphaFname),
                               QMessageBox::Ok);
         return;
     }
@@ -496,7 +553,81 @@ void QMipmap::onImportDDS()
 
 void QMipmap::onImportJPEG()
 {
-    QMessageBox::critical(this, tr("Not implemented"),
-                          tr("JPEG importing is not yet implemented"),
-                          QMessageBox::Ok);
+    QSettings settings("PlasmaShop", "PrpShop");
+    QString exportDir = settings.value("ExportDir").toString();
+    if (exportDir.isEmpty())
+        exportDir = settings.value("DialogDir").toString();
+
+    plMipmap* tex = (plMipmap*)fCreatable;
+    QString filename = QFileDialog::getOpenFileName(this, tr("Import JPEG"), exportDir,
+                                                    "JPEG Files (*.jpg *.jpeg *.dds)");
+    if (filename.isEmpty())
+        return;
+    QString alphaFname = QFileDialog::getOpenFileName(this, tr("Import JPEG Alpha"), exportDir,
+                                                      "JPEG Files (*.jpg *.jpeg *.dds)");
+    if (alphaFname.isEmpty())
+        return;
+
+    plMipmap newTex;
+    hsFileStream S;
+    bool valid = true;
+    if (!S.open(~filename, fmRead)) {
+        QMessageBox::critical(this, tr("Error importing JPEG"),
+                              tr("Error: Could not open file %1 for reading").arg(filename),
+                              QMessageBox::Ok);
+        valid = false;
+    }
+    if (filename.toLower().endsWith(".dds")) {
+        try {
+            plDDSurface dds;
+            dds.read(&S);
+            if (!getJColorSurface(dds, &newTex))
+                valid = false;
+        } catch (hsException& ex) {
+            QMessageBox::critical(this, tr("Error importing JPEG"),
+                                  QString::fromUtf8(ex.what()), QMessageBox::Ok);
+            valid = false;
+        }
+    } else {
+        unsigned char* data = new unsigned char[S.size()];
+        S.read(S.size(), data);
+        QImage imgTemp(filename);
+        newTex.Create(imgTemp.width(), imgTemp.height(), 0, plBitmap::kJPEGCompression,
+                      plBitmap::kRGB8888);
+        newTex.setImageJPEG(data, S.size());
+        delete[] data;
+    }
+    S.close();
+
+    if (!S.open(~alphaFname, fmRead)) {
+        QMessageBox::critical(this, tr("Error importing JPEG"),
+                              tr("Error: Could not open file %1 for reading").arg(alphaFname),
+                              QMessageBox::Ok);
+        valid = false;
+    }
+    if (alphaFname.toLower().endsWith(".dds")) {
+        try {
+            plDDSurface dds;
+            dds.read(&S);
+            if (!getJAlphaSurface(dds, &newTex))
+                valid = false;
+        } catch (hsException& ex) {
+            QMessageBox::critical(this, tr("Error importing JPEG"),
+                                  QString::fromUtf8(ex.what()), QMessageBox::Ok);
+            valid = false;
+        }
+    } else {
+        unsigned char* data = new unsigned char[S.size()];
+        S.read(S.size(), data);
+        newTex.setAlphaJPEG(data, S.size());
+        delete[] data;
+    }
+    S.close();
+
+    if (valid)
+        tex->CopyFrom(&newTex);
+
+    QDir dir = QDir(filename);
+    dir.cdUp();
+    settings.setValue("ExportDir", dir.absolutePath());
 }

@@ -39,7 +39,7 @@
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
 
-#define PRPSHOP_VERSION "Build 109"
+#define PRPSHOP_VERSION "Build 111"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance()
@@ -596,9 +596,10 @@ void PrpShopMain::treeExport()
     if (item == NULL || item->obj() == NULL)
         return;
 
+    QString fnfix = (~item->obj()->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
     QString genPath = tr("%1/[%2]%3.po").arg(fDialogDir)
                                         .arg(item->obj()->ClassName())
-                                        .arg(~item->obj()->getKey()->getName());
+                                        .arg(fnfix);
     QString filename = QFileDialog::getSaveFileName(this,
                             tr("Export Raw Object"), genPath,
                             "Plasma Objects (*.po *.mof *.uof)");
