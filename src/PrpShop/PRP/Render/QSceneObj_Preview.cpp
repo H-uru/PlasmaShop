@@ -22,7 +22,7 @@
 QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, kPreviewSceneObject, parent)
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     fRender = new QPlasmaRender(this);
     fRender->addObject(obj->getKey());
     fRender->center(obj->getKey(), false);

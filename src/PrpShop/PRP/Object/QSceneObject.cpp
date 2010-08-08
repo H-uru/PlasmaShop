@@ -26,7 +26,7 @@
 QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kSceneObject, parent)
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -83,7 +83,7 @@ QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
 
 void QSceneObject::saveDamage()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
 
     obj->clearInterfaces();
     QList<plKey> interfaces = fInterfaceList->keys();
@@ -98,7 +98,7 @@ void QSceneObject::saveDamage()
 
 void QSceneObject::setDraw()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getDrawInterface().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getDrawInterface());
@@ -112,7 +112,7 @@ void QSceneObject::setDraw()
 
 void QSceneObject::setSim()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getSimInterface().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getSimInterface());
@@ -126,7 +126,7 @@ void QSceneObject::setSim()
 
 void QSceneObject::setCoord()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getCoordInterface().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getCoordInterface());
@@ -140,7 +140,7 @@ void QSceneObject::setCoord()
 
 void QSceneObject::setAudio()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getAudioInterface().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getAudioInterface());
@@ -154,28 +154,28 @@ void QSceneObject::setAudio()
 
 void QSceneObject::unsetDraw()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     obj->setDrawInterface(plKey());
     fDrawIntfLink->setCreatable(NULL);
 }
 
 void QSceneObject::unsetSim()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     obj->setSimInterface(plKey());
     fSimIntfLink->setCreatable(NULL);
 }
 
 void QSceneObject::unsetCoord()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     obj->setCoordInterface(plKey());
     fCoordIntfLink->setCreatable(NULL);
 }
 
 void QSceneObject::unsetAudio()
 {
-    plSceneObject* obj = (plSceneObject*)fCreatable;
+    plSceneObject* obj = plSceneObject::Convert(fCreatable);
     obj->setAudioInterface(plKey());
     fAudioIntfLink->setCreatable(NULL);
 }

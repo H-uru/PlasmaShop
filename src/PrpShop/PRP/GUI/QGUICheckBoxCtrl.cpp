@@ -21,7 +21,7 @@
 QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
                 : QCreatable(pCre, kGUICheckBoxCtrl, parent)
 {
-    pfGUICheckBoxCtrl* ctrl = (pfGUICheckBoxCtrl*)fCreatable;
+    pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -50,7 +50,7 @@ QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUICheckBoxCtrl::saveDamage()
 {
-    pfGUICheckBoxCtrl* ctrl = (pfGUICheckBoxCtrl*)fCreatable;
+    pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
 
     ctrl->setAnimName(~fAnimName->text());
     ctrl->clearAnimKeys();

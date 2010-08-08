@@ -21,7 +21,7 @@
 QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kImageLibMod, parent)
 {
-    plImageLibMod* mod = (plImageLibMod*)fCreatable;
+    plImageLibMod* mod = plImageLibMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -43,7 +43,7 @@ QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
 
 void QImageLibMod::saveDamage()
 {
-    plImageLibMod* mod = (plImageLibMod*)fCreatable;
+    plImageLibMod* mod = plImageLibMod::Convert(fCreatable);
 
     mod->clearImages();
     QList<plKey> imgKeys = fImages->keys();

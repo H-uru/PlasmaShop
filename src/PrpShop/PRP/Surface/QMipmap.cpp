@@ -98,7 +98,7 @@ void QTextureBox::paintEvent(QPaintEvent* evt)
 QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kPreviewMipmap, parent), fLevel(0)
 {
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
 
     QScrollArea* scroll = new QScrollArea(this);
     fTexture = new QTextureBox(scroll);
@@ -132,7 +132,7 @@ void QMipmap_Preview::saveDamage()
 void QMipmap_Preview::setLevel(int level)
 {
     fLevel = level;
-    fTexture->setTexture((plMipmap*)fCreatable, fLevel);
+    fTexture->setTexture(plMipmap::Convert(fCreatable), fLevel);
 }
 
 int QMipmap_Preview::level() const
@@ -184,7 +184,7 @@ QString getCompressionText(plBitmap* tex)
 QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
        : QCreatable(pCre, kMipmap, parent)
 {
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
@@ -290,7 +290,7 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
 
 void QMipmap::saveDamage()
 {
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
 
     tex->setFlags((fFlags[kAlphaChannelFlag]->isChecked() ? plBitmap::kAlphaChannelFlag : 0)
                 | (fFlags[kAlphaBitFlag]->isChecked() ? plBitmap::kAlphaBitFlag : 0)
@@ -433,7 +433,7 @@ void QMipmap::onExportDDS()
     if (exportDir.isEmpty())
         exportDir = settings.value("DialogDir").toString();
 
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
     QString filename = (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
     filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), exportDir + "/" + filename,
                                             "DDS Files (*.dds)");
@@ -469,7 +469,7 @@ void QMipmap::onExportJPEG()
     if (exportDir.isEmpty())
         exportDir = settings.value("DialogDir").toString();
 
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
     exportDir.append("/" + (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
     QString filter = tex->isImageJPEG() ? "JPEG Files (*.jpg)" : "DDS Files (*.dds)";
     QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG Image"),
@@ -521,7 +521,7 @@ void QMipmap::onImportDDS()
     if (exportDir.isEmpty())
         exportDir = settings.value("DialogDir").toString();
 
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
     QString filename = QFileDialog::getOpenFileName(this, tr("Import DDS"), exportDir,
                                                     "DDS Files (*.dds)");
     if (filename.isEmpty())
@@ -558,7 +558,7 @@ void QMipmap::onImportJPEG()
     if (exportDir.isEmpty())
         exportDir = settings.value("DialogDir").toString();
 
-    plMipmap* tex = (plMipmap*)fCreatable;
+    plMipmap* tex = plMipmap::Convert(fCreatable);
     QString filename = QFileDialog::getOpenFileName(this, tr("Import JPEG"), exportDir,
                                                     "JPEG Files (*.jpg *.jpeg *.dds)");
     if (filename.isEmpty())

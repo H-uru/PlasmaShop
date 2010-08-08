@@ -26,7 +26,7 @@
 QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plShadowMaster* obj = (plShadowMaster*)fCreatable;
+    plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
     fOwnerLink->setText(tr("Owner Object"));
@@ -91,7 +91,7 @@ QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
 
 void QShadowMaster::saveDamage()
 {
-    plShadowMaster* obj = (plShadowMaster*)fCreatable;
+    plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
 
     for (size_t i=0; i<plShadowMaster::kNumProps; i++)
         obj->setProperty(i, fProperties[i]->isChecked());
@@ -103,7 +103,7 @@ void QShadowMaster::saveDamage()
 
 void QShadowMaster::setOwner()
 {
-    plShadowMaster* obj = (plShadowMaster*)fCreatable;
+    plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getOwner().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getOwner());
@@ -117,7 +117,7 @@ void QShadowMaster::setOwner()
 
 void QShadowMaster::unsetOwner()
 {
-    plShadowMaster* obj = (plShadowMaster*)fCreatable;
+    plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
     obj->setOwner(plKey());
     fOwnerLink->setCreatable(NULL);
 }

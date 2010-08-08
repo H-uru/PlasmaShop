@@ -24,7 +24,7 @@
 QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
          : QCreatable(pCre, kGMaterial, parent)
 {
-    hsGMaterial* mat = (hsGMaterial*)fCreatable;
+    hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -99,7 +99,7 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
 
 void QMaterial::saveDamage()
 {
-    hsGMaterial* mat = (hsGMaterial*)fCreatable;
+    hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
 
     mat->setCompFlags((fCBFlags[kCbShaded]->isChecked() ? hsGMaterial::kCompShaded : 0)
                     | (fCBFlags[kCbEnvironMap]->isChecked() ? hsGMaterial::kCompEnvironMap : 0)

@@ -23,7 +23,7 @@
 QGUIClickMapCtrl::QGUIClickMapCtrl(plCreatable* pCre, QWidget* parent)
                 : QCreatable(pCre, kGUIClickMapCtrl, parent)
 {
-    pfGUIClickMapCtrl* ctrl = (pfGUIClickMapCtrl*)fCreatable;
+    pfGUIClickMapCtrl* ctrl = pfGUIClickMapCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -50,7 +50,7 @@ QGUIClickMapCtrl::QGUIClickMapCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUIClickMapCtrl::saveDamage()
 {
-    pfGUIClickMapCtrl* ctrl = (pfGUIClickMapCtrl*)fCreatable;
+    pfGUIClickMapCtrl* ctrl = pfGUIClickMapCtrl::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

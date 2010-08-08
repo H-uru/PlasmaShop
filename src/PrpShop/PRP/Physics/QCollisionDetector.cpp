@@ -25,7 +25,7 @@
 QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plCollisionDetector* obj = (plCollisionDetector*)fCreatable;
+    plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
     plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
     plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
 
@@ -91,7 +91,7 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
 
 void QCollisionDetector::saveDamage()
 {
-    plCollisionDetector* obj = (plCollisionDetector*)fCreatable;
+    plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
     plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
     plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
 
@@ -112,7 +112,7 @@ void QCollisionDetector::saveDamage()
 
 void QCollisionDetector::setSubworld()
 {
-    plSubworldRegionDetector* obj = (plSubworldRegionDetector*)fCreatable;
+    plSubworldRegionDetector* obj = plSubworldRegionDetector::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getSubworld().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getSubworld());
@@ -127,7 +127,7 @@ void QCollisionDetector::setSubworld()
 
 void QCollisionDetector::unsetSubworld()
 {
-    plSubworldRegionDetector* obj = (plSubworldRegionDetector*)fCreatable;
+    plSubworldRegionDetector* obj = plSubworldRegionDetector::Convert(fCreatable);
     obj->setSubworld(plKey());
     fSubworld->setCreatable(NULL);
     fSubworld->setText("(None)");

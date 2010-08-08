@@ -22,7 +22,7 @@
 QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* parent)
                       : QCreatable(pCre, kInterfaceInfoModifier, parent)
 {
-    plInterfaceInfoModifier* obj = (plInterfaceInfoModifier*)fCreatable;
+    plInterfaceInfoModifier* obj = plInterfaceInfoModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -43,7 +43,7 @@ QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* paren
 
 void QInterfaceInfoModifier::saveDamage()
 {
-    plInterfaceInfoModifier* obj = (plInterfaceInfoModifier*)fCreatable;
+    plInterfaceInfoModifier* obj = plInterfaceInfoModifier::Convert(fCreatable);
 
     obj->clearIntfKeys();
     QList<plKey> keys = fIntfKeys->keys();

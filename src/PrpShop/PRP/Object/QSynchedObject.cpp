@@ -25,7 +25,7 @@
 QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kSynchedObject, parent)
 {
-    plSynchedObject* obj = (plSynchedObject*)fCreatable;
+    plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Synched Object Flags"), this);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
@@ -75,7 +75,7 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
 
 void QSynchedObject::saveDamage()
 {
-    plSynchedObject* obj = (plSynchedObject*)fCreatable;
+    plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
 
     obj->setFlags((fCBFlags[kCbDontDirty]->isChecked() ? plSynchedObject::kDontDirty : 0)
                 | (fCBFlags[kCbSendReliably]->isChecked() ? plSynchedObject::kSendReliably : 0)

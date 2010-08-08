@@ -133,7 +133,7 @@ void QAnimStage::saveDamage()
 QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, kMultistageBehMod, parent)
 {
-    plMultistageBehMod* obj = (plMultistageBehMod*)fCreatable;
+    plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -194,7 +194,7 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
 
 void QMultistageBehMod::saveDamage()
 {
-    plMultistageBehMod* obj = (plMultistageBehMod*)fCreatable;
+    plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
 
     obj->setFreezePhys(fFreezePhys->isChecked());
     obj->setSmartSeek(fSmartSeek->isChecked());
@@ -208,7 +208,7 @@ void QMultistageBehMod::saveDamage()
 
 void QMultistageBehMod::stageContextMenu(const QPoint& pos)
 {
-    plMultistageBehMod* obj = (plMultistageBehMod*)fCreatable;
+    plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
 
     QMenu menu(this);
     QAction* addObjItem = menu.addAction(tr("Add Stage..."));
@@ -235,6 +235,6 @@ void QMultistageBehMod::stageContextMenu(const QPoint& pos)
 
 void QMultistageBehMod::activateStageItem(QTreeWidgetItem* item, int)
 {
-    plMultistageBehMod* obj = (plMultistageBehMod*)fCreatable;
+    plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
     PrpShopMain::Instance()->editCreatable(obj->getStages()[fStages->indexOfTopLevelItem(item)]);
 }

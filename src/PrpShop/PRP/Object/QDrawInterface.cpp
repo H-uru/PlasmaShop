@@ -119,7 +119,7 @@ int QFindDrawKeyDialog::drawKey() const
 QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kDrawInterface, parent)
 {
-    plDrawInterface* intf = (plDrawInterface*)fCreatable;
+    plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
     fOwnerLink->setText(tr("Owner Object"));
@@ -165,7 +165,7 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
 
 void QDrawInterface::saveDamage()
 {
-    plDrawInterface* intf = (plDrawInterface*)fCreatable;
+    plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
     intf->setProperty(plDrawInterface::kDisable, fDisabled->isChecked());
 
     intf->clearDrawables();
@@ -182,7 +182,7 @@ void QDrawInterface::saveDamage()
 
 void QDrawInterface::setOwner()
 {
-    plDrawInterface* intf = (plDrawInterface*)fCreatable;
+    plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getOwner().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getOwner());
@@ -196,7 +196,7 @@ void QDrawInterface::setOwner()
 
 void QDrawInterface::unsetOwner()
 {
-    plDrawInterface* intf = (plDrawInterface*)fCreatable;
+    plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
     intf->setOwner(plKey());
     fOwnerLink->setCreatable(NULL);
 }

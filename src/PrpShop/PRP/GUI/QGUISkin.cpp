@@ -25,7 +25,7 @@
 QGUISkin::QGUISkin(plCreatable* pCre, QWidget* parent)
         : QCreatable(pCre, kGUISkin, parent), fCurElement(-1)
 {
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
 
     fItemMargin = new QIntEdit(this);
     fItemMargin->setRange(0, 0xFFFF);
@@ -93,7 +93,7 @@ QGUISkin::QGUISkin(plCreatable* pCre, QWidget* parent)
 
 void QGUISkin::saveDamage()
 {
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
 
     skin->setItemMargin(fItemMargin->value());
     skin->setBorderMargin(fBorderMargin->value());
@@ -104,7 +104,7 @@ void QGUISkin::saveElement()
 {
     if (fCurElement < 0)
         return;
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
     skin->getElement(fCurElement).fX = fX->value();
     skin->getElement(fCurElement).fY = fY->value();
     skin->getElement(fCurElement).fWidth = fWidth->value();
@@ -113,7 +113,7 @@ void QGUISkin::saveElement()
 
 void QGUISkin::setTexture()
 {
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (skin->getTexture().Exists())
         dlg.init(PrpShopMain::ResManager(), skin->getTexture());
@@ -128,7 +128,7 @@ void QGUISkin::setTexture()
 
 void QGUISkin::unsetTexture()
 {
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
     skin->setTexture(plKey());
     fTexture->setCreatable(NULL);
     fTexture->setText("(None)");
@@ -136,7 +136,7 @@ void QGUISkin::unsetTexture()
 
 void QGUISkin::setElement(int which)
 {
-    pfGUISkin* skin = (pfGUISkin*)fCreatable;
+    pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
     saveElement();
 
     fCurElement = which;

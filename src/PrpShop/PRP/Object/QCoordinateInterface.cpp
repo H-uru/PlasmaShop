@@ -26,7 +26,7 @@
 QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kCoordinateInterface, parent)
 {
-    plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
+    plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
     fOwnerLink->setText(tr("Owner Object"));
@@ -84,7 +84,7 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
 
 void QCoordinateInterface::saveDamage()
 {
-    plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
+    plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
 
     for (size_t i=0; i<plCoordinateInterface::kNumProps; i++)
         intf->setProperty(i, fCBProperties[i]->isChecked());
@@ -102,7 +102,7 @@ void QCoordinateInterface::saveDamage()
 
 void QCoordinateInterface::setOwner()
 {
-    plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
+    plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getOwner().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getOwner());
@@ -116,7 +116,7 @@ void QCoordinateInterface::setOwner()
 
 void QCoordinateInterface::unsetOwner()
 {
-    plCoordinateInterface* intf = (plCoordinateInterface*)fCreatable;
+    plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
     intf->setOwner(plKey());
     fOwnerLink->setCreatable(NULL);
 }

@@ -27,7 +27,7 @@
 QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kLayerAnimation, parent)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -97,7 +97,7 @@ void QLayerAnimation::saveDamage()
 
 void QLayerAnimation::setBaseLayer()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getUnderLay().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getUnderLay());
@@ -112,7 +112,7 @@ void QLayerAnimation::setBaseLayer()
 
 void QLayerAnimation::unsetBaseLayer()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setUnderLay(plKey());
     fBaseLayer->setCreatable(NULL);
     fBaseLayer->setText("(None)");
@@ -120,7 +120,7 @@ void QLayerAnimation::unsetBaseLayer()
 
 void QLayerAnimation::newPreshade(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setPreshadeCtl(pCre);
     fPreshade->setCreatable(pCre);
@@ -128,7 +128,7 @@ void QLayerAnimation::newPreshade(short type)
 
 void QLayerAnimation::newRuntime(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setRuntimeCtl(pCre);
     fRuntime->setCreatable(pCre);
@@ -136,7 +136,7 @@ void QLayerAnimation::newRuntime(short type)
 
 void QLayerAnimation::newAmbient(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setAmbientCtl(pCre);
     fAmbient->setCreatable(pCre);
@@ -144,7 +144,7 @@ void QLayerAnimation::newAmbient(short type)
 
 void QLayerAnimation::newSpecular(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setSpecularCtl(pCre);
     fSpecular->setCreatable(pCre);
@@ -152,7 +152,7 @@ void QLayerAnimation::newSpecular(short type)
 
 void QLayerAnimation::newOpacity(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setOpacityCtl(pCre);
     fOpacity->setCreatable(pCre);
@@ -160,7 +160,7 @@ void QLayerAnimation::newOpacity(short type)
 
 void QLayerAnimation::newTransform(short type)
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     plController* pCre = plController::Convert(plFactory::Create(type));
     lay->setTransformCtl(pCre);
     fTransform->setCreatable(pCre);
@@ -168,42 +168,42 @@ void QLayerAnimation::newTransform(short type)
 
 void QLayerAnimation::delPreshade()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setPreshadeCtl(NULL);
     fPreshade->setCreatable(NULL);
 }
 
 void QLayerAnimation::delRuntime()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setRuntimeCtl(NULL);
     fRuntime->setCreatable(NULL);
 }
 
 void QLayerAnimation::delAmbient()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setAmbientCtl(NULL);
     fAmbient->setCreatable(NULL);
 }
 
 void QLayerAnimation::delSpecular()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setSpecularCtl(NULL);
     fSpecular->setCreatable(NULL);
 }
 
 void QLayerAnimation::delOpacity()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setOpacityCtl(NULL);
     fOpacity->setCreatable(NULL);
 }
 
 void QLayerAnimation::delTransform()
 {
-    plLayerAnimation* lay = (plLayerAnimation*)fCreatable;
+    plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setTransformCtl(NULL);
     fTransform->setCreatable(NULL);
 }

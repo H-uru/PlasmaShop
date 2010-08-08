@@ -25,7 +25,7 @@
 QCubicEnvironmap::QCubicEnvironmap(plCreatable* pCre, QWidget* parent)
                 : QCreatable(pCre, kCubicEnvironmap, parent)
 {
-    plCubicEnvironmap* tex = (plCubicEnvironmap*)fCreatable;
+    plCubicEnvironmap* tex = plCubicEnvironmap::Convert(fCreatable);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
@@ -115,7 +115,7 @@ QCubicEnvironmap::QCubicEnvironmap(plCreatable* pCre, QWidget* parent)
 
 void QCubicEnvironmap::saveDamage()
 {
-    plCubicEnvironmap* tex = (plCubicEnvironmap*)fCreatable;
+    plCubicEnvironmap* tex = plCubicEnvironmap::Convert(fCreatable);
 
     tex->setFlags((fFlags[kAlphaChannelFlag]->isChecked() ? plBitmap::kAlphaChannelFlag : 0)
                 | (fFlags[kAlphaBitFlag]->isChecked() ? plBitmap::kAlphaBitFlag : 0)

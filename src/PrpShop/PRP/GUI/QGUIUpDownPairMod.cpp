@@ -24,7 +24,7 @@
 QGUIUpDownPairMod::QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, kGUIUpDownPairMod, parent)
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -74,7 +74,7 @@ QGUIUpDownPairMod::QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIUpDownPairMod::saveDamage()
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
 
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());
@@ -82,7 +82,7 @@ void QGUIUpDownPairMod::saveDamage()
 
 void QGUIUpDownPairMod::setUpCtrl()
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getUpControl().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getUpControl());
@@ -97,7 +97,7 @@ void QGUIUpDownPairMod::setUpCtrl()
 
 void QGUIUpDownPairMod::setDownCtrl()
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getDownControl().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getDownControl());
@@ -112,7 +112,7 @@ void QGUIUpDownPairMod::setDownCtrl()
 
 void QGUIUpDownPairMod::unsetUpCtrl()
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
     ctrl->setUpControl(plKey());
     fUpCtrl->setCreatable(NULL);
     fUpCtrl->setText("(None)");
@@ -120,7 +120,7 @@ void QGUIUpDownPairMod::unsetUpCtrl()
 
 void QGUIUpDownPairMod::unsetDownCtrl()
 {
-    pfGUIUpDownPairMod* ctrl = (pfGUIUpDownPairMod*)fCreatable;
+    pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
     ctrl->setDownControl(plKey());
     fDownCtrl->setCreatable(NULL);
     fDownCtrl->setText("(None)");

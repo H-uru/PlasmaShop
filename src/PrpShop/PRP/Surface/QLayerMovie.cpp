@@ -23,7 +23,7 @@
 QLayerMovie::QLayerMovie(plCreatable* pCre, QWidget* parent)
            : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plLayerMovie* lay = (plLayerMovie*)fCreatable;
+    plLayerMovie* lay = plLayerMovie::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
     fLayerAnimLink->setText(tr("Layer Animation Properties"));
@@ -42,6 +42,6 @@ QLayerMovie::QLayerMovie(plCreatable* pCre, QWidget* parent)
 
 void QLayerMovie::saveDamage()
 {
-    plLayerMovie* lay = (plLayerMovie*)fCreatable;
+    plLayerMovie* lay = plLayerMovie::Convert(fCreatable);
     lay->setMovieName(~fMovieName->text());
 }

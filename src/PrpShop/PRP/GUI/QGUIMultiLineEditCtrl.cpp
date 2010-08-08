@@ -24,7 +24,7 @@
 QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)
                      : QCreatable(pCre, kGUIMultiLineEditCtrl, parent)
 {
-    pfGUIMultiLineEditCtrl* ctrl = (pfGUIMultiLineEditCtrl*)fCreatable;
+    pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -52,7 +52,7 @@ void QGUIMultiLineEditCtrl::saveDamage()
 
 void QGUIMultiLineEditCtrl::setScrollCtrl()
 {
-    pfGUIMultiLineEditCtrl* ctrl = (pfGUIMultiLineEditCtrl*)fCreatable;
+    pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getScrollCtrl().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getScrollCtrl());
@@ -67,7 +67,7 @@ void QGUIMultiLineEditCtrl::setScrollCtrl()
 
 void QGUIMultiLineEditCtrl::unsetScrollCtrl()
 {
-    pfGUIMultiLineEditCtrl* ctrl = (pfGUIMultiLineEditCtrl*)fCreatable;
+    pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
     ctrl->setScrollCtrl(plKey());
     fScrollCtrl->setCreatable(NULL);
     fScrollCtrl->setText("(None)");

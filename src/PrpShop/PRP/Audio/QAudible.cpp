@@ -38,7 +38,7 @@ void QAudible::saveDamage()
 QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
            : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plWinAudible* obj = (plWinAudible*)fCreatable;
+    plWinAudible* obj = plWinAudible::Convert(fCreatable);
 
     fSoundKeys = new QKeyList(this);
     for (size_t i=0; i<obj->getSounds().getSize(); i++)
@@ -61,7 +61,7 @@ QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
 
 void QWinAudible::saveDamage()
 {
-    plWinAudible* obj = (plWinAudible*)fCreatable;
+    plWinAudible* obj = plWinAudible::Convert(fCreatable);
 
     obj->clearSounds();
     QList<plKey> keys = fSoundKeys->keys();
@@ -71,7 +71,7 @@ void QWinAudible::saveDamage()
 
 void QWinAudible::setSceneNode()
 {
-    plWinAudible* obj = (plWinAudible*)fCreatable;
+    plWinAudible* obj = plWinAudible::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getSceneNode().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getSceneNode());
@@ -85,7 +85,7 @@ void QWinAudible::setSceneNode()
 
 void QWinAudible::unsetSceneNode()
 {
-    plWinAudible* obj = (plWinAudible*)fCreatable;
+    plWinAudible* obj = plWinAudible::Convert(fCreatable);
     obj->setSceneNode(plKey());
     fSceneNode->setCreatable(NULL);
 }

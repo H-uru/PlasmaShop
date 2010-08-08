@@ -113,7 +113,7 @@ void QGUIColorScheme::saveColorScheme(pfGUIColorScheme* scheme)
 QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -240,7 +240,7 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIControlMod::saveDamage()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 
     for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
         ctrl->setFlag(i, fModFlags[i]->isChecked());
@@ -276,7 +276,7 @@ void QGUIControlMod::saveDamage()
 
 void QGUIControlMod::setDynTextMap()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getDynTextMap().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getDynTextMap());
@@ -291,7 +291,7 @@ void QGUIControlMod::setDynTextMap()
 
 void QGUIControlMod::setDynTextLayer()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getDynTextLayer().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getDynTextLayer());
@@ -306,7 +306,7 @@ void QGUIControlMod::setDynTextLayer()
 
 void QGUIControlMod::setProxy()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getProxy().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getProxy());
@@ -321,7 +321,7 @@ void QGUIControlMod::setProxy()
 
 void QGUIControlMod::setSkin()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getSkin().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getSkin());
@@ -336,7 +336,7 @@ void QGUIControlMod::setSkin()
 
 void QGUIControlMod::unsetDynTextMap()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setDynTextMap(plKey());
     fDynTextMap->setCreatable(NULL);
     fDynTextMap->setText("(None)");
@@ -344,7 +344,7 @@ void QGUIControlMod::unsetDynTextMap()
 
 void QGUIControlMod::unsetDynTextLayer()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setDynTextLayer(plKey());
     fDynTextLayer->setCreatable(NULL);
     fDynTextLayer->setText("(None)");
@@ -352,7 +352,7 @@ void QGUIControlMod::unsetDynTextLayer()
 
 void QGUIControlMod::unsetProxy()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setProxy(plKey());
     fProxy->setCreatable(NULL);
     fProxy->setText("(None)");
@@ -360,7 +360,7 @@ void QGUIControlMod::unsetProxy()
 
 void QGUIControlMod::unsetSkin()
 {
-    pfGUIControlMod* ctrl = (pfGUIControlMod*)fCreatable;
+    pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setSkin(plKey());
     fSkin->setCreatable(NULL);
     fSkin->setText("(None)");

@@ -25,7 +25,7 @@
 QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kFadeOpacityMod, parent)
 {
-    plFadeOpacityMod* mod = (plFadeOpacityMod*)fCreatable;
+    plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -58,7 +58,7 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
 
 void QFadeOpacityMod::saveDamage()
 {
-    plFadeOpacityMod* mod = (plFadeOpacityMod*)fCreatable;
+    plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
 
     mod->setFlag(plFadeOpacityMod::kBoundsCenter, fFlags[kBoundsCenter]->isChecked());
     mod->setFadeUp(fUp->value());

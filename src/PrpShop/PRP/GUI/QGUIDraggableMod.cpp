@@ -23,7 +23,7 @@
 QGUIDraggableMod::QGUIDraggableMod(plCreatable* pCre, QWidget* parent)
                 : QCreatable(pCre, kGUIDraggableMod, parent)
 {
-    pfGUIDraggableMod* ctrl = (pfGUIDraggableMod*)fCreatable;
+    pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -52,7 +52,7 @@ QGUIDraggableMod::QGUIDraggableMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIDraggableMod::saveDamage()
 {
-    pfGUIDraggableMod* ctrl = (pfGUIDraggableMod*)fCreatable;
+    pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

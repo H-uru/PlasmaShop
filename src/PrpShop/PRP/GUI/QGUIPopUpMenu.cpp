@@ -97,7 +97,7 @@ void QPopupMenuItemList::contextMenuEvent(QContextMenuEvent* evt)
 QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, kGUIPopUpMenu, parent)
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
 
     fDialogModLink = new QCreatableLink(this, false);
     fDialogModLink->setText(tr("GUI Dialog Common Properties"));
@@ -182,7 +182,7 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
 
 void QGUIPopUpMenu::saveDamage()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
@@ -193,7 +193,7 @@ void QGUIPopUpMenu::saveDamage()
 
 void QGUIPopUpMenu::setSkin()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getSkin().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getSkin());
@@ -208,7 +208,7 @@ void QGUIPopUpMenu::setSkin()
 
 void QGUIPopUpMenu::setOriginContext()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getOriginContext().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getOriginContext());
@@ -223,7 +223,7 @@ void QGUIPopUpMenu::setOriginContext()
 
 void QGUIPopUpMenu::setOriginAnchor()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getOriginAnchor().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getOriginAnchor());
@@ -238,7 +238,7 @@ void QGUIPopUpMenu::setOriginAnchor()
 
 void QGUIPopUpMenu::unsetSkin()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setSkin(plKey());
     fSkin->setCreatable(NULL);
     fSkin->setText("(None)");
@@ -246,7 +246,7 @@ void QGUIPopUpMenu::unsetSkin()
 
 void QGUIPopUpMenu::unsetOriginContext()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setOriginContext(plKey());
     fOriginContext->setCreatable(NULL);
     fOriginContext->setText("(None)");
@@ -254,7 +254,7 @@ void QGUIPopUpMenu::unsetOriginContext()
 
 void QGUIPopUpMenu::unsetOriginAnchor()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setOriginAnchor(plKey());
     fOriginAnchor->setCreatable(NULL);
     fOriginAnchor->setText("(None)");
@@ -262,7 +262,7 @@ void QGUIPopUpMenu::unsetOriginAnchor()
 
 void QGUIPopUpMenu::addMenuItem()
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->addItem("(New Item)", NULL, plKey(), 0.0f);
     pfGUIPopUpMenu::pfMenuItem& item = ctrl->getItem(ctrl->getNumItems() - 1);
     fMenuItems->addItem(item);
@@ -275,7 +275,7 @@ void QGUIPopUpMenu::addMenuItem()
 
 void QGUIPopUpMenu::editMenuItem(int idx)
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     QPopUpMenuItemDialog dlg(this);
     dlg.init(&ctrl->getItem(idx), idx);
     connect(&dlg, SIGNAL(updateItem(int, QString, bool)),
@@ -285,7 +285,7 @@ void QGUIPopUpMenu::editMenuItem(int idx)
 
 void QGUIPopUpMenu::delMenuItem(int idx)
 {
-    pfGUIPopUpMenu* ctrl = (pfGUIPopUpMenu*)fCreatable;
+    pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->delItem(idx);
 }
 

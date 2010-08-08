@@ -24,7 +24,7 @@
 QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
            : QCreatable(pCre, kOneShotMod, parent)
 {
-    plOneShotMod* obj = (plOneShotMod*)fCreatable;
+    plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -65,7 +65,7 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
 
 void QOneShotMod::saveDamage()
 {
-    plOneShotMod* obj = (plOneShotMod*)fCreatable;
+    plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
 
     obj->setDrivable(fDrivable->isChecked());
     obj->setReversable(fReversable->isChecked());

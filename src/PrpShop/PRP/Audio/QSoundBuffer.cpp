@@ -24,7 +24,7 @@
 QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kSoundBuffer, parent)
 {
-    plSoundBuffer* obj = (plSoundBuffer*)fCreatable;
+    plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
 
     QGroupBox* flagGroup = new QGroupBox(tr("Flags"), this);
     fFlags[kIsExternal] = new QCheckBox(tr("External"), flagGroup);
@@ -97,7 +97,7 @@ QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
 
 void QSoundBuffer::saveDamage()
 {
-    plSoundBuffer* obj = (plSoundBuffer*)fCreatable;
+    plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
 
     obj->setFlags((fFlags[kIsExternal]->isChecked() ? plSoundBuffer::kIsExternal : 0)
                 | (fFlags[kAlwaysExternal]->isChecked() ? plSoundBuffer::kAlwaysExternal : 0)

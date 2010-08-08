@@ -23,7 +23,7 @@
 QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kGUIKnobCtrl, parent)
 {
-    pfGUIKnobCtrl* ctrl = (pfGUIKnobCtrl*)fCreatable;
+    pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -106,7 +106,7 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUIKnobCtrl::saveDamage()
 {
-    pfGUIKnobCtrl* ctrl = (pfGUIKnobCtrl*)fCreatable;
+    pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

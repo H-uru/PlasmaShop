@@ -23,7 +23,7 @@
 QGUIMenuItem::QGUIMenuItem(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kGUIMenuItem, parent)
 {
-    pfGUIMenuItem* ctrl = (pfGUIMenuItem*)fCreatable;
+    pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
 
     fButtonModLink = new QCreatableLink(this, false);
     fButtonModLink->setText(tr("GUI Button Common Properties"));
@@ -50,7 +50,7 @@ QGUIMenuItem::QGUIMenuItem(plCreatable* pCre, QWidget* parent)
 
 void QGUIMenuItem::saveDamage()
 {
-    pfGUIMenuItem* ctrl = (pfGUIMenuItem*)fCreatable;
+    pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

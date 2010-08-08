@@ -23,7 +23,7 @@
 QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
                 : QCreatable(pCre, kGUIProgressCtrl, parent)
 {
-    pfGUIProgressCtrl* ctrl = (pfGUIProgressCtrl*)fCreatable;
+    pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -82,7 +82,7 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUIProgressCtrl::saveDamage()
 {
-    pfGUIProgressCtrl* ctrl = (pfGUIProgressCtrl*)fCreatable;
+    pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

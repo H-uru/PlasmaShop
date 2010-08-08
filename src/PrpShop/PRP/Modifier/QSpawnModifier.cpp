@@ -22,7 +22,7 @@
 QSpawnModifier::QSpawnModifier(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kSpawnModifier, parent)
 {
-    plSpawnModifier* obj = (plSpawnModifier*)fCreatable;
+    plSpawnModifier* obj = plSpawnModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));

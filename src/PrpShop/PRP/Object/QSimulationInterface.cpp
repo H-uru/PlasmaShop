@@ -25,7 +25,7 @@
 QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kSimulationInterface, parent)
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
     fOwnerLink->setText(tr("Owner Object"));
@@ -90,14 +90,14 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
 
 void QSimulationInterface::saveDamage()
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     for (size_t i=0; i<plSimulationInterface::kNumProps; i++)
         intf->setProperty(i, fCBProperties[i]->isChecked());
 }
 
 void QSimulationInterface::setOwner()
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getOwner().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getOwner());
@@ -111,14 +111,14 @@ void QSimulationInterface::setOwner()
 
 void QSimulationInterface::unsetOwner()
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     intf->setOwner(plKey());
     fOwnerLink->setCreatable(NULL);
 }
 
 void QSimulationInterface::setPhysical()
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getPhysical().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getPhysical());
@@ -133,7 +133,7 @@ void QSimulationInterface::setPhysical()
 
 void QSimulationInterface::unsetPhysical()
 {
-    plSimulationInterface* intf = (plSimulationInterface*)fCreatable;
+    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     intf->setPhysical(plKey());
     fPhysicalLink->setCreatable(NULL);
     fPhysicalLink->setText("(Null)");

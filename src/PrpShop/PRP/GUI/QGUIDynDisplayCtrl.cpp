@@ -23,7 +23,7 @@
 QGUIDynDisplayCtrl::QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, kGUIDynDisplayCtrl, parent)
 {
-    pfGUIDynDisplayCtrl* ctrl = (pfGUIDynDisplayCtrl*)fCreatable;
+    pfGUIDynDisplayCtrl* ctrl = pfGUIDynDisplayCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -56,7 +56,7 @@ QGUIDynDisplayCtrl::QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUIDynDisplayCtrl::saveDamage()
 {
-    pfGUIDynDisplayCtrl* ctrl = (pfGUIDynDisplayCtrl*)fCreatable;
+    pfGUIDynDisplayCtrl* ctrl = pfGUIDynDisplayCtrl::Convert(fCreatable);
 
     ctrl->clearTextMaps();
     QList<plKey> mapKeys = fTextMaps->keys();

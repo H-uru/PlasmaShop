@@ -24,7 +24,7 @@
 QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -66,7 +66,7 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
 
 void QDetectorModifier::saveDamage()
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
 
     obj->clearReceivers();
     QList<plKey> recs = fReceivers->keys();
@@ -76,7 +76,7 @@ void QDetectorModifier::saveDamage()
 
 void QDetectorModifier::setRemoteMod()
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getRemoteMod().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getRemoteMod());
@@ -91,7 +91,7 @@ void QDetectorModifier::setRemoteMod()
 
 void QDetectorModifier::setProxy()
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getProxy().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getProxy());
@@ -106,7 +106,7 @@ void QDetectorModifier::setProxy()
 
 void QDetectorModifier::unsetRemoteMod()
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     obj->setRemoteMod(plKey());
     fRemoteMod->setCreatable(NULL);
     fRemoteMod->setText("(None)");
@@ -114,7 +114,7 @@ void QDetectorModifier::unsetRemoteMod()
 
 void QDetectorModifier::unsetProxy()
 {
-    plDetectorModifier* obj = (plDetectorModifier*)fCreatable;
+    plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     obj->setProxy(plKey());
     fProxy->setCreatable(NULL);
     fProxy->setText("(None)");

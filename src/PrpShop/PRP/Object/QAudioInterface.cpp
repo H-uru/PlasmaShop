@@ -25,7 +25,7 @@
 QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kAudioInterface, parent)
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
     fOwnerLink->setText(tr("Owner Object"));
@@ -63,13 +63,13 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
 
 void QAudioInterface::saveDamage()
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     intf->setProperty(plAudioInterface::kDisable, fDisabled->isChecked());
 }
 
 void QAudioInterface::setOwner()
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getOwner().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getOwner());
@@ -83,14 +83,14 @@ void QAudioInterface::setOwner()
 
 void QAudioInterface::unsetOwner()
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     intf->setOwner(plKey());
     fOwnerLink->setCreatable(NULL);
 }
 
 void QAudioInterface::setAudible()
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (intf->getAudible().Exists())
         dlg.init(PrpShopMain::ResManager(), intf->getAudible());
@@ -105,7 +105,7 @@ void QAudioInterface::setAudible()
 
 void QAudioInterface::unsetAudible()
 {
-    plAudioInterface* intf = (plAudioInterface*)fCreatable;
+    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     intf->setAudible(plKey());
     fAudibleLink->setCreatable(NULL);
     fAudibleLink->setText("(Null)");

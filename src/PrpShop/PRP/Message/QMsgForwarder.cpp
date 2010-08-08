@@ -22,7 +22,7 @@
 QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, kMsgForwarder, parent)
 {
-    plMsgForwarder* obj = (plMsgForwarder*)fCreatable;
+    plMsgForwarder* obj = plMsgForwarder::Convert(fCreatable);
 
     fForwardKeys = new QKeyList(this);
     for (size_t i=0; i<obj->getForwardKeys().getSize(); i++)
@@ -37,7 +37,7 @@ QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
 
 void QMsgForwarder::saveDamage()
 {
-    plMsgForwarder* obj = (plMsgForwarder*)fCreatable;
+    plMsgForwarder* obj = plMsgForwarder::Convert(fCreatable);
 
     obj->clearForwardKeys();
     QList<plKey> keys = fForwardKeys->keys();

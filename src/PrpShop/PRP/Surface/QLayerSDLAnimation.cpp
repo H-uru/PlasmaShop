@@ -23,7 +23,7 @@
 QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, kLayerSDLAnimation, parent)
 {
-    plLayerSDLAnimation* lay = (plLayerSDLAnimation*)fCreatable;
+    plLayerSDLAnimation* lay = plLayerSDLAnimation::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
     fLayerAnimLink->setText(tr("Layer Animation Properties"));
@@ -42,6 +42,6 @@ QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
 
 void QLayerSDLAnimation::saveDamage()
 {
-    plLayerSDLAnimation* lay = (plLayerSDLAnimation*)fCreatable;
+    plLayerSDLAnimation* lay = plLayerSDLAnimation::Convert(fCreatable);
     lay->setVarName(~fVarName->text());
 }

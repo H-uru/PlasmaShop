@@ -25,7 +25,7 @@
 QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, kGUIDialogMod, parent)
 {
-    pfGUIDialogMod* dlg = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlg = pfGUIDialogMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -109,7 +109,7 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIDialogMod::saveDamage()
 {
-    pfGUIDialogMod* dlg = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlg = pfGUIDialogMod::Convert(fCreatable);
 
     dlg->setFlag(pfGUIDialogMod::kModal, fModFlagModal->isChecked());
     fColorScheme->saveColorScheme(&dlg->getColorScheme());
@@ -125,7 +125,7 @@ void QGUIDialogMod::saveDamage()
 
 void QGUIDialogMod::setRenderMod()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (dlgMod->getRenderMod().Exists())
         dlg.init(PrpShopMain::ResManager(), dlgMod->getRenderMod());
@@ -140,7 +140,7 @@ void QGUIDialogMod::setRenderMod()
 
 void QGUIDialogMod::setProcReceiver()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (dlgMod->getProcReceiver().Exists())
         dlg.init(PrpShopMain::ResManager(), dlgMod->getProcReceiver());
@@ -155,7 +155,7 @@ void QGUIDialogMod::setProcReceiver()
 
 void QGUIDialogMod::setSceneNode()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (dlgMod->getSceneNode().Exists())
         dlg.init(PrpShopMain::ResManager(), dlgMod->getSceneNode());
@@ -170,7 +170,7 @@ void QGUIDialogMod::setSceneNode()
 
 void QGUIDialogMod::unsetRenderMod()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     dlgMod->setRenderMod(plKey());
     fRenderMod->setCreatable(NULL);
     fRenderMod->setText("(None)");
@@ -178,7 +178,7 @@ void QGUIDialogMod::unsetRenderMod()
 
 void QGUIDialogMod::unsetProcReceiver()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     dlgMod->setProcReceiver(plKey());
     fProcReceiver->setCreatable(NULL);
     fProcReceiver->setText("(None)");
@@ -186,7 +186,7 @@ void QGUIDialogMod::unsetProcReceiver()
 
 void QGUIDialogMod::unsetSceneNode()
 {
-    pfGUIDialogMod* dlgMod = (pfGUIDialogMod*)fCreatable;
+    pfGUIDialogMod* dlgMod = pfGUIDialogMod::Convert(fCreatable);
     dlgMod->setSceneNode(plKey());
     fSceneNode->setCreatable(NULL);
     fSceneNode->setText("(None)");

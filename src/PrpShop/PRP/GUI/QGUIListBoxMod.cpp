@@ -25,7 +25,7 @@
 QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kGUIListBoxMod, parent)
 {
-    pfGUIListBoxMod* ctrl = (pfGUIListBoxMod*)fCreatable;
+    pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -79,7 +79,7 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIListBoxMod::saveDamage()
 {
-    pfGUIListBoxMod* ctrl = (pfGUIListBoxMod*)fCreatable;
+    pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
@@ -87,7 +87,7 @@ void QGUIListBoxMod::saveDamage()
 
 void QGUIListBoxMod::setScrollCtrl()
 {
-    pfGUIListBoxMod* ctrl = (pfGUIListBoxMod*)fCreatable;
+    pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getScrollCtrl().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getScrollCtrl());
@@ -102,7 +102,7 @@ void QGUIListBoxMod::setScrollCtrl()
 
 void QGUIListBoxMod::unsetScrollCtrl()
 {
-    pfGUIListBoxMod* ctrl = (pfGUIListBoxMod*)fCreatable;
+    pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
     ctrl->setScrollCtrl(plKey());
     fScrollCtrl->setCreatable(NULL);
     fScrollCtrl->setText("(None)");

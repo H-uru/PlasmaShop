@@ -27,7 +27,7 @@
 QLayer::QLayer(plCreatable* pCre, QWidget* parent)
       : QCreatable(pCre, kLayer, parent)
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -317,7 +317,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
 
 void QLayer::saveDamage()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
 
     lay->setTransform(fUvwTransform->value());
     lay->setBumpEnvTransform(fBumpEnvTransform->value());
@@ -492,7 +492,7 @@ void QLayer::updateState(hsGMatState& state) const
 
 void QLayer::setBaseLayer()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getUnderLay().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getUnderLay());
@@ -507,7 +507,7 @@ void QLayer::setBaseLayer()
 
 void QLayer::setTexture()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getTexture().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getTexture());
@@ -522,7 +522,7 @@ void QLayer::setTexture()
 
 void QLayer::setVShader()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getVertexShader().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getVertexShader());
@@ -537,7 +537,7 @@ void QLayer::setVShader()
 
 void QLayer::setPShader()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getPixelShader().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getPixelShader());
@@ -552,7 +552,7 @@ void QLayer::setPShader()
 
 void QLayer::unsetBaseLayer()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     lay->setUnderLay(plKey());
     fBaseLayer->setCreatable(NULL);
     fBaseLayer->setText("(None)");
@@ -560,7 +560,7 @@ void QLayer::unsetBaseLayer()
 
 void QLayer::unsetTexture()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     lay->setTexture(plKey());
     fTexture->setCreatable(NULL);
     fTexture->setText("(None)");
@@ -568,7 +568,7 @@ void QLayer::unsetTexture()
 
 void QLayer::unsetVShader()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     lay->setVertexShader(plKey());
     fVShader->setCreatable(NULL);
     fVShader->setText("(None)");
@@ -576,7 +576,7 @@ void QLayer::unsetVShader()
 
 void QLayer::unsetPShader()
 {
-    plLayer* lay = (plLayer*)fCreatable;
+    plLayer* lay = plLayer::Convert(fCreatable);
     lay->setPixelShader(plKey());
     fPShader->setCreatable(NULL);
     fPShader->setText("(None)");

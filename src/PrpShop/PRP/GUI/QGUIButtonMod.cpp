@@ -25,7 +25,7 @@
 QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, kGUIButtonMod, parent)
 {
-    pfGUIButtonMod* ctrl = (pfGUIButtonMod*)fCreatable;
+    pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -86,7 +86,7 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
 
 void QGUIButtonMod::saveDamage()
 {
-    pfGUIButtonMod* ctrl = (pfGUIButtonMod*)fCreatable;
+    pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
 
     ctrl->setAnimationName(~fAnimName->text());
     ctrl->setMouseOverAnimName(~fMouseOverAnimName->text());
@@ -106,7 +106,7 @@ void QGUIButtonMod::saveDamage()
 
 void QGUIButtonMod::setDraggable()
 {
-    pfGUIButtonMod* ctrl = (pfGUIButtonMod*)fCreatable;
+    pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (ctrl->getDraggable().Exists())
         dlg.init(PrpShopMain::ResManager(), ctrl->getDraggable());
@@ -121,7 +121,7 @@ void QGUIButtonMod::setDraggable()
 
 void QGUIButtonMod::unsetDraggable()
 {
-    pfGUIButtonMod* ctrl = (pfGUIButtonMod*)fCreatable;
+    pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
     ctrl->setDraggable(plKey());
     fDraggable->setCreatable(NULL);
     fDraggable->setText("(None)");

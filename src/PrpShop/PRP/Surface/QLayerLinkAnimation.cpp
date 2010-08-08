@@ -25,7 +25,7 @@
 QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
                    : QCreatable(pCre, kLayerLinkAnimation, parent)
 {
-    plLayerLinkAnimation* lay = (plLayerLinkAnimation*)fCreatable;
+    plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
     fLayerAnimLink->setText(tr("Layer Animation Properties"));
@@ -53,13 +53,13 @@ QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
 
 void QLayerLinkAnimation::saveDamage()
 {
-    plLayerLinkAnimation* lay = (plLayerLinkAnimation*)fCreatable;
+    plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
     lay->setLeavingAge(fLeavingAge->isChecked());
 }
 
 void QLayerLinkAnimation::setLinkKey()
 {
-    plLayerLinkAnimation* lay = (plLayerLinkAnimation*)fCreatable;
+    plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (lay->getLinkKey().Exists())
         dlg.init(PrpShopMain::ResManager(), lay->getLinkKey());
@@ -74,7 +74,7 @@ void QLayerLinkAnimation::setLinkKey()
 
 void QLayerLinkAnimation::unsetLinkKey()
 {
-    plLayerLinkAnimation* lay = (plLayerLinkAnimation*)fCreatable;
+    plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
     lay->setLinkKey(plKey());
     fLinkKey->setCreatable(NULL);
     fLinkKey->setText("(None)");

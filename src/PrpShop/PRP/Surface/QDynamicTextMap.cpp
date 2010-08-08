@@ -25,7 +25,7 @@
 QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kDynamicTextMap, parent)
 {
-    plDynamicTextMap* tex = (plDynamicTextMap*)fCreatable;
+    plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
@@ -103,7 +103,7 @@ QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
 
 void QDynamicTextMap::saveDamage()
 {
-    plDynamicTextMap* tex = (plDynamicTextMap*)fCreatable;
+    plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
 
     tex->setFlags((fFlags[kAlphaChannelFlag]->isChecked() ? plBitmap::kAlphaChannelFlag : 0)
                 | (fFlags[kAlphaBitFlag]->isChecked() ? plBitmap::kAlphaBitFlag : 0)

@@ -23,7 +23,7 @@
 QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, kGUIRadioGroupCtrl, parent)
 {
-    pfGUIRadioGroupCtrl* ctrl = (pfGUIRadioGroupCtrl*)fCreatable;
+    pfGUIRadioGroupCtrl* ctrl = pfGUIRadioGroupCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -65,7 +65,7 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
 
 void QGUIRadioGroupCtrl::saveDamage()
 {
-    pfGUIRadioGroupCtrl* ctrl = (pfGUIRadioGroupCtrl*)fCreatable;
+    pfGUIRadioGroupCtrl* ctrl = pfGUIRadioGroupCtrl::Convert(fCreatable);
 
     ctrl->setFlag(pfGUIRadioGroupCtrl::kAllowNoSelection,
                   fModFlagAllowNoSelection->isChecked());

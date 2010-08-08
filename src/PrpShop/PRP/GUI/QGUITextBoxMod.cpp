@@ -42,7 +42,7 @@ public:
 QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kGUITextBoxMod, parent)
 {
-    pfGUITextBoxMod* ctrl = (pfGUITextBoxMod*)fCreatable;
+    pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
     fControlModLink->setText(tr("GUI Control Common Properties"));
@@ -78,7 +78,7 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
 
 void QGUITextBoxMod::saveDamage()
 {
-    pfGUITextBoxMod* ctrl = (pfGUITextBoxMod*)fCreatable;
+    pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
 
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());

@@ -23,7 +23,7 @@
 QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
           : QCreatable(pCre, kSceneNode, parent)
 {
-    plSceneNode* node = (plSceneNode*)fCreatable;
+    plSceneNode* node = plSceneNode::Convert(fCreatable);
 
     QTabWidget* tab = new QTabWidget(this);
     fSceneKeys = new QKeyList(tab);
@@ -44,7 +44,7 @@ QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
 
 void QSceneNode::saveDamage()
 {
-    plSceneNode* node = (plSceneNode*)fCreatable;
+    plSceneNode* node = plSceneNode::Convert(fCreatable);
 
     node->getSceneObjects().clear();
     node->getPoolObjects().clear();

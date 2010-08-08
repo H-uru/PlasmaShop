@@ -172,7 +172,7 @@ void QEaxSourceSettings::closeEvent(QCloseEvent*)
 QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
          : QCreatable(pCre, kSound, parent)
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -377,7 +377,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
 
 void QWinSound::saveDamage()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
 
     obj->setTime(fTime->value());
     obj->setFalloff(fMinFalloff->value(), fMaxFalloff->value());
@@ -417,7 +417,7 @@ void QWinSound::saveDamage()
 
 void QWinSound::setSoftRegion()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getSoftRegion().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getSoftRegion());
@@ -432,7 +432,7 @@ void QWinSound::setSoftRegion()
 
 void QWinSound::setDataBuffer()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getDataBuffer().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getDataBuffer());
@@ -447,7 +447,7 @@ void QWinSound::setDataBuffer()
 
 void QWinSound::setSoftOcclusionRegion()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     QFindKeyDialog dlg(this);
     if (obj->getSoftOcclusionRegion().Exists())
         dlg.init(PrpShopMain::ResManager(), obj->getSoftOcclusionRegion());
@@ -462,7 +462,7 @@ void QWinSound::setSoftOcclusionRegion()
 
 void QWinSound::unsetSoftRegion()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     obj->setSoftRegion(plKey());
     fSoftRegion->setCreatable(NULL);
     fSoftRegion->setText("(Null)");
@@ -470,7 +470,7 @@ void QWinSound::unsetSoftRegion()
 
 void QWinSound::unsetDataBuffer()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     obj->setDataBuffer(plKey());
     fDataBuffer->setCreatable(NULL);
     fDataBuffer->setText("(Null)");
@@ -478,7 +478,7 @@ void QWinSound::unsetDataBuffer()
 
 void QWinSound::unsetSoftOcclusionRegion()
 {
-    plSound* obj = (plSound*)fCreatable;
+    plSound* obj = plSound::Convert(fCreatable);
     obj->setSoftOcclusionRegion(plKey());
     fSoftOcclusionRegion->setCreatable(NULL);
     fSoftOcclusionRegion->setText("(Null)");
@@ -486,9 +486,9 @@ void QWinSound::unsetSoftOcclusionRegion()
 
 void QWinSound::editEaxSettings()
 {
-    QEaxSourceSettings* eaxDlg = new QEaxSourceSettings(&((plSound*)fCreatable)->getEAXSettings());
+    QEaxSourceSettings* eaxDlg = new QEaxSourceSettings(&(plSound::Convert(fCreatable))->getEAXSettings());
     eaxDlg->setWindowTitle(tr("EAX Settings: %1")
-                           .arg(~((plSound*)fCreatable)->getKey()->getName()));
+                           .arg(~(plSound::Convert(fCreatable))->getKey()->getName()));
     eaxDlg->show();
 }
 
@@ -497,7 +497,7 @@ void QWinSound::editEaxSettings()
 QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
            : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
-    plWin32Sound* obj = (plWin32Sound*)fCreatable;
+    plWin32Sound* obj = plWin32Sound::Convert(fCreatable);
 
     fSoundLink = new QCreatableLink(this, false);
     fSoundLink->setText(tr("Sound Properties"));
@@ -517,6 +517,6 @@ QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
 
 void QWin32Sound::saveDamage()
 {
-    plWin32Sound* obj = (plWin32Sound*)fCreatable;
+    plWin32Sound* obj = plWin32Sound::Convert(fCreatable);
     obj->setChannel(fChannel->currentIndex());
 }

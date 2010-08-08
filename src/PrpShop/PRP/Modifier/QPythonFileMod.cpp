@@ -140,7 +140,7 @@ void QPythonParamList::contextMenuEvent(QContextMenuEvent* evt)
 QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kPythonFileMod, parent)
 {
-    plPythonFileMod* mod = (plPythonFileMod*)fCreatable;
+    plPythonFileMod* mod = plPythonFileMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
     fSynchObjLink->setText(tr("Synch Flags"));
@@ -172,7 +172,7 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
 
 void QPythonFileMod::saveDamage()
 {
-    plPythonFileMod* mod = (plPythonFileMod*)fCreatable;
+    plPythonFileMod* mod = plPythonFileMod::Convert(fCreatable);
     mod->setFilename(~fFileName->text());
 
     mod->clearReceivers();
