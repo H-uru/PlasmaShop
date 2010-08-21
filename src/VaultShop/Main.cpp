@@ -16,6 +16,7 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QDesktopServices>
 #include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
@@ -761,7 +762,11 @@ void VaultShopMain::renameVault()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to VaultShop.log
-    plDebug::InitFile(plDebug::kDLAll, "VaultShop.log");
+    QString logpath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    QDir dir;
+    dir.mkpath(logpath);
+    logpath += "/VaultShop.log";
+    plDebug::InitFile(plDebug::kDLAll, ~logpath);
 
     QApplication app(argc, argv);
     VaultShopMain mainWnd;
