@@ -78,7 +78,7 @@ VaultShopMain::SaveInfo::SaveInfo(QString filename)
              : fSaveFile(filename)
 {
     fSave = new plNetGameServerState();
-    hsFileStream FS(pvPots);
+    hsFileStream FS(PlasmaVer::pvPots);
     FS.open(fSaveFile.toUtf8(), fmRead);
     fSave->read(&FS);
 }
@@ -90,7 +90,7 @@ VaultShopMain::SaveInfo::~SaveInfo()
 
 void VaultShopMain::SaveInfo::save()
 {
-    hsFileStream FS(pvPots);
+    hsFileStream FS(PlasmaVer::pvPots);
     FS.open(fSaveFile.toUtf8(), fmCreate);
     fSave->write(&FS);
 }

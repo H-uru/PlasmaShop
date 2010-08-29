@@ -95,7 +95,7 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
 bool QPlasmaSumFile::loadFile(QString filename)
 {
     if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
-        plEncryptedStream S(pvPrime);
+        plEncryptedStream S(PlasmaVer::pvPrime);
         S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
@@ -106,11 +106,11 @@ bool QPlasmaSumFile::loadFile(QString filename)
             fEncryption = kEncXtea;
         } else if (S.getEncType() == plEncryptedStream::kEncAES) {
             fEncryption = kEncAes;
-            S.setVer(pvEoa);
+            S.setVer(PlasmaVer::pvEoa);
         }
         loadSumData(&S);
     } else {
-        hsFileStream S(pvLive);
+        hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmRead);
         fEncryption = kEncNone;
         loadSumData(&S);
@@ -124,11 +124,11 @@ bool QPlasmaSumFile::loadFile(QString filename)
 bool QPlasmaSumFile::saveTo(QString filename)
 {
     if (fEncryption == kEncNone) {
-        hsFileStream S(pvLive);
+        hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmCreate);
         saveSumData(&S);
     } else {
-        plEncryptedStream S(pvPrime);
+        plEncryptedStream S(PlasmaVer::pvPrime);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
         if (fEncryption == kEncDroid) {
             if ((fFilename != filename) || isZeroKey(fDroidKey)) {
@@ -139,7 +139,7 @@ bool QPlasmaSumFile::saveTo(QString filename)
             type = plEncryptedStream::kEncDroid;
         } else if (fEncryption == kEncAes) {
             type = plEncryptedStream::kEncAES;
-            S.setVer(pvEoa);
+            S.setVer(PlasmaVer::pvEoa);
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }

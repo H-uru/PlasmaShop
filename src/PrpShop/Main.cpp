@@ -562,7 +562,7 @@ void PrpShopMain::treeImport()
     QStringList filesIt = files;
     for (QStringList::Iterator it = filesIt.begin(); it != filesIt.end(); it++) {
         try {
-            hsFileStream S(fResMgr.getVer());
+            hsFileStream S((int)fResMgr.getVer());
             S.open(~(*it), fmRead);
             plCreatable* pCre = fResMgr.ReadCreatable(&S);
             hsKeyedObject* ko = hsKeyedObject::Convert(pCre);
@@ -606,7 +606,7 @@ void PrpShopMain::treeExport()
                             "Plasma Objects (*.po *.mof *.uof)");
     if (!filename.isEmpty()) {
         try {
-            hsFileStream S(fResMgr.getVer());
+            hsFileStream S((int)fResMgr.getVer());
             S.open(~filename, fmCreate);
             fResMgr.WriteCreatable(&S, item->obj());
         } catch (std::exception& ex) {
@@ -652,7 +652,8 @@ void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
 void PrpShopMain::newPage()
 {
     static PlasmaVer s_pvMap[] = {
-        pvPrime, pvPots, pvLive, pvEoa, pvHex, pvUniversal,
+        PlasmaVer::pvPrime, PlasmaVer::pvPots, PlasmaVer::pvMoul,
+        PlasmaVer::pvEoa, PlasmaVer::pvHex, PlasmaVer::pvUniversal,
     };
 
     QDialog dlg;
@@ -707,7 +708,7 @@ void PrpShopMain::newPage()
     fResMgr.AddPage(page);
 
     QString filename = dlg_ageName->text();
-    if (selPVer < pvEoa)
+    if (selPVer.isUru())
         filename += "_District";
     filename += "_" + dlg_pageName->text();
     loadPage(page, filename);
@@ -773,7 +774,7 @@ void PrpShopMain::loadFile(QString filename)
             path.cdUp(); // Get rid of the filename >.>
             if (ageItem != NULL && !ageItem->hasTextures()) {
                 QString texPath = ~page->getAge();
-                if (fResMgr.getVer() < pvEoa)
+                if (fResMgr.getVer().isUru())
                     texPath += "_District";
                 texPath += "_Textures.prp";
                 texPath = path.absoluteFilePath(texPath);
@@ -782,7 +783,7 @@ void PrpShopMain::loadFile(QString filename)
             }
             if (ageItem != NULL && !ageItem->hasBuiltIn()) {
                 QString biPath = ~page->getAge();
-                if (fResMgr.getVer() < pvEoa)
+                if (fResMgr.getVer().isUru())
                     biPath += "_District";
                 biPath += "_BuiltIn.prp";
                 biPath = path.absoluteFilePath(biPath);
@@ -860,11 +861,11 @@ void PrpShopMain::performSaveAs()
                     : pageItem->filename();
     QString selFormat;
     switch (fResMgr.getVer()) {
-    case pvPrime: selFormat = s_formats[0];
-    case pvPots:  selFormat = s_formats[1];
-    case pvLive:  selFormat = s_formats[2];
-    case pvEoa:   selFormat = s_formats[3];
-    case pvHex:   selFormat = s_formats[4];
+    case PlasmaVer::pvPrime: selFormat = s_formats[0];
+    case PlasmaVer::pvPots:  selFormat = s_formats[1];
+    case PlasmaVer::pvMoul:  selFormat = s_formats[2];
+    case PlasmaVer::pvEoa:   selFormat = s_formats[3];
+    case PlasmaVer::pvHex:   selFormat = s_formats[4];
     default:      selFormat = s_formats[1];
     }
     QString filename = QFileDialog::getSaveFileName(this,
@@ -877,15 +878,15 @@ void PrpShopMain::performSaveAs()
 
     if (!filename.isEmpty()) {
         if (selFormat == s_formats[0])
-            fResMgr.setVer(pvPrime, true);
+            fResMgr.setVer(PlasmaVer::pvPrime, true);
         else if (selFormat == s_formats[1])
-            fResMgr.setVer(pvPots, true);
+            fResMgr.setVer(PlasmaVer::pvPots, true);
         else if (selFormat == s_formats[2])
-            fResMgr.setVer(pvLive, true);
+            fResMgr.setVer(PlasmaVer::pvMoul, true);
         else if (selFormat == s_formats[3])
-            fResMgr.setVer(pvEoa, true);
+            fResMgr.setVer(PlasmaVer::pvEoa, true);
         else if (selFormat == s_formats[4])
-            fResMgr.setVer(pvHex, true);
+            fResMgr.setVer(PlasmaVer::pvHex, true);
 
         saveFile(pageItem->page(), filename);
         QDir dir = QDir(filename);

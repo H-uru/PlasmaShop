@@ -257,7 +257,7 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
         return;
 
     hsRAMStream S;
-    S.setVer(pvPots);
+    S.setVer(PlasmaVer::pvPots);
     S.copyFrom(blob.getData(), blob.getSize());
 
     plStateDataRecord::ReadStreamHeader(&S, fSDLName, fSDLVersion, NULL);
@@ -290,7 +290,7 @@ plVaultBlob QSDLEditor::saveBlob()
 
     plVaultBlob blob;
     hsRAMStream S;
-    S.setVer(pvPots);
+    S.setVer(PlasmaVer::pvPots);
     plStateDataRecord::WriteStreamHeader(&S, fSDLName, fSDLVersion, NULL);
     fRecord->write(&S, fResMgr);
     unsigned char* data = new unsigned char[S.size()];

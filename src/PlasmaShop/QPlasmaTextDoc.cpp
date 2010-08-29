@@ -527,7 +527,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
             fEditor->append(~S.readLine() + "\n");
         fEditor->setReadOnly(true);
     } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
-        plEncryptedStream S(pvUnknown);
+        plEncryptedStream S(PlasmaVer::pvUnknown);
         S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
@@ -542,7 +542,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         fEncoding = DetectEncoding(&S);
         fEditor->setText(LoadData(&S, fEncoding));
     } else {
-        hsFileStream S(pvUnknown);
+        hsFileStream S(PlasmaVer::pvUnknown);
         S.open(filename.toUtf8().data(), fmRead);
         fEncryption = kEncNone;
         fEncoding = DetectEncoding(&S);
@@ -556,12 +556,12 @@ bool QPlasmaTextDoc::loadFile(QString filename)
 bool QPlasmaTextDoc::saveTo(QString filename)
 {
     if (fEncryption == kEncNone) {
-        hsFileStream S(pvUnknown);
+        hsFileStream S(PlasmaVer::pvUnknown);
         S.open(filename.toUtf8().data(), fmCreate);
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, fEditor->text());
     } else {
-        plEncryptedStream S(pvUnknown);
+        plEncryptedStream S(PlasmaVer::pvUnknown);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
         if (fEncryption == kEncDroid) {
             if ((fFilename != filename) || isZeroKey(fDroidKey)) {
