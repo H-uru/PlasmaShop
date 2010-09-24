@@ -1,6 +1,6 @@
-# Set this to 64 on Win64 builds
-# For Win32 builds and all Unix/Mac builds, leave this alone
-PLAT_BITS =
+# Configure where libHSPlasma is installed
+PLASMA_PATH=<<EDIT ME>>
+PLAT_BITS=
 
 # QScintilla Defaults
 win32 {
@@ -14,10 +14,10 @@ win32:QMAKE_CXXFLAGS += /wd4244 /wd4251 /wd4267 /wd4996
 
 # Add libPlasma
 contains(PLSLIBS, core) {
-    INCLUDEPATH *= ../../../libhsplasma/core
-    LIBS *= -L../../../libhsplasma/bin$${PLAT_BITS} -lHSPlasma
+    INCLUDEPATH *= $${PLASMA_PATH}/include/HSPlasma
+    LIBS        *= -L$${PLASMA_PATH}/lib -lHSPlasma
 }
 contains(PLSLIBS, net) {
-    INCLUDEPATH *= ../../../libhsplasma/net
-    LIBS *= -L../../../libhsplasma/bin$${PLAT_BITS} -lHSPlasmaNet
+    INCLUDEPATH *=  $${PLASMA_PATH}/include/HSPlasmaNet
+    LIBS        *= -L$${PLASMA_PATH}/lib -lHSPlasmaNet
 }
