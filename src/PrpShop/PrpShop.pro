@@ -5,7 +5,7 @@ include(../../config)
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../3rdParty
-CONFIG += debug
+CONFIG += release
 QT += opengl svg
 DESTDIR = ../../bin$${PLAT_BITS}
 RC_FILE = res/PrpShop.rc
