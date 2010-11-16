@@ -2,7 +2,7 @@
 // Scintilla.  It is modelled on QTextEdit - a method of the same name should
 // behave in the same way.
 //
-// Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -25,11 +25,6 @@
 // review the following information:
 // http://trolltech.com/products/qt/licenses/licensing/licensingoverview
 // or contact the sales department at sales@riverbankcomputing.com.
-// 
-// This file is provided "AS IS" with NO WARRANTY OF ANY KIND,
-// INCLUDING THE WARRANTIES OF DESIGN, MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE. Trolltech reserves all rights not expressly
-// granted herein.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -145,6 +140,9 @@ QsciScintilla::QsciScintilla(QWidget *parent)
 // The dtor.
 QsciScintilla::~QsciScintilla()
 {
+    // Detach any current lexer.
+    detachLexer();
+
     doc.undisplay(this);
     delete stdCmds;
 }
@@ -736,8 +734,8 @@ void QsciScintilla::startAutoCompletion(AutoCompletionSource acs,
     SendScintilla(SCI_AUTOCSETCHOOSESINGLE, single);
     SendScintilla(SCI_AUTOCSETSEPARATOR, acSeparator);
 
-    QByteArray chlist = wlist.join(QChar(acSeparator)).toLatin1();
-    SendScintilla(SCI_AUTOCSHOW, last_len, chlist.constData());
+    ScintillaString wlist_s = convertTextQ2S(wlist.join(QChar(acSeparator)));
+    SendScintilla(SCI_AUTOCSHOW, last_len, ScintillaStringData(wlist_s));
 }
 
 
@@ -1230,6 +1228,27 @@ void QsciScintilla::setFolding(FoldStyle folding, int margin)
     }
 
     SendScintilla(SCI_SETMARGINWIDTHN, margin, defaultFoldMarginWidth);
+}
+
+
+// Clear all current folds.
+void QsciScintilla::clearFolds()
+{
+    recolor();
+
+    int maxLine = SendScintilla(SCI_GETLINECOUNT);
+
+    for (int line = 0; line < maxLine; line++)
+    {
+        int level = SendScintilla(SCI_GETFOLDLEVEL, line);
+
+        if (level & SC_FOLDLEVELHEADERFLAG)
+        {
+            SendScintilla(SCI_SETFOLDEXPANDED, line, 1);
+            foldExpand(line, true, false, 0, level);
+            line--;
+        }
+    }
 }
 
 
@@ -1751,12 +1770,13 @@ void QsciScintilla::setSelection(int lineFrom, int indexFrom, int lineTo,
 // Set the background colour of selected text.
 void QsciScintilla::setSelectionBackgroundColor(const QColor &col)
 {
-    SendScintilla(SCI_SETSELBACK, 1, col);
-
-    int alpha = qAlpha(col.rgb());
+    int alpha = col.alpha();
     
-    if (alpha < 255)
-        SendScintilla(SCI_SETSELALPHA, alpha);
+    if (alpha == 255)
+        alpha = SC_ALPHA_NOALPHA;
+
+    SendScintilla(SCI_SETSELBACK, 1, col);
+    SendScintilla(SCI_SETSELALPHA, alpha);
 }
 
 
@@ -1813,12 +1833,13 @@ void QsciScintilla::setCaretForegroundColor(const QColor &col)
 // Set the background colour of the line containing the caret.
 void QsciScintilla::setCaretLineBackgroundColor(const QColor &col)
 {
-    SendScintilla(SCI_SETCARETLINEBACK, col);
+    int alpha = col.alpha();
 
-    int alpha = qAlpha(col.rgb());
-    
-    if (alpha < 255)
-        SendScintilla(SCI_SETCARETLINEBACKALPHA, alpha);
+    if (alpha == 255)
+        alpha = SC_ALPHA_NOALPHA;
+
+    SendScintilla(SCI_SETCARETLINEBACK, col);
+    SendScintilla(SCI_SETCARETLINEBACKALPHA, alpha);
 }
 
 
@@ -2434,7 +2455,7 @@ int QsciScintilla::markerDefine(MarkerSymbol sym, int mnr)
     checkMarker(mnr);
 
     if (mnr >= 0)
-        SendScintilla(SCI_MARKERDEFINE, mnr,static_cast<long>(sym));
+        SendScintilla(SCI_MARKERDEFINE, mnr, static_cast<long>(sym));
 
     return mnr;
 }
@@ -2466,7 +2487,7 @@ int QsciScintilla::markerDefine(const QPixmap &pm, int mnr)
 
 
 // Add a marker to a line.
-int QsciScintilla::markerAdd(int linenr,int mnr)
+int QsciScintilla::markerAdd(int linenr, int mnr)
 {
     if (mnr < 0 || mnr > MARKER_MAX || (allocatedMarkers & (1 << mnr)) == 0)
         return -1;
@@ -2551,7 +2572,11 @@ void QsciScintilla::setMarkerBackgroundColor(const QColor &col, int mnr)
 {
     if (mnr <= MARKER_MAX)
     {
-        int alpha = qAlpha(col.rgb());
+        int alpha = col.alpha();
+
+        // An opaque background would make the text invisible.
+        if (alpha == 255)
+            alpha = SC_ALPHA_NOALPHA;
 
         if (mnr < 0)
         {
@@ -2562,9 +2587,7 @@ void QsciScintilla::setMarkerBackgroundColor(const QColor &col, int mnr)
                 if (am & 1)
                 {
                     SendScintilla(SCI_MARKERSETBACK, m, col);
-
-                    if (alpha < 255)
-                        SendScintilla(SCI_MARKERSETALPHA, m, alpha);
+                    SendScintilla(SCI_MARKERSETALPHA, m, alpha);
                 }
 
                 am >>= 1;
@@ -2573,9 +2596,7 @@ void QsciScintilla::setMarkerBackgroundColor(const QColor &col, int mnr)
         else if (allocatedMarkers & (1 << mnr))
         {
             SendScintilla(SCI_MARKERSETBACK, mnr, col);
-
-            if (alpha < 255)
-                SendScintilla(SCI_MARKERSETALPHA, mnr, alpha);
+            SendScintilla(SCI_MARKERSETALPHA, mnr, alpha);
         }
     }
 }
@@ -2599,7 +2620,9 @@ void QsciScintilla::setMarkerForegroundColor(const QColor &col, int mnr)
             }
         }
         else if (allocatedMarkers & (1 << mnr))
+        {
             SendScintilla(SCI_MARKERSETFORE, mnr, col);
+        }
     }
 }
 
@@ -2609,8 +2632,8 @@ void QsciScintilla::checkMarker(int &mnr)
 {
     if (mnr >= 0)
     {
-        // Check the explicit marker number isn't already allocated.
-        if (mnr > MARKER_MAX || allocatedMarkers & (1 << mnr))
+        // Note that we allow existing markers to be explicitly redefined.
+        if (mnr > MARKER_MAX)
             mnr = -1;
     }
     else
@@ -2712,10 +2735,9 @@ void QsciScintilla::setUnmatchedBraceFont(const QFont &f)
 }
 
 
-// Set the lexer.
-void QsciScintilla::setLexer(QsciLexer *lexer)
+// Detach any lexer.
+void QsciScintilla::detachLexer()
 {
-    // Disconnect any previous lexer.
     if (!lex.isNull())
     {
         lex->setEditor(0);
@@ -2725,6 +2747,14 @@ void QsciScintilla::setLexer(QsciLexer *lexer)
         SendScintilla(SCI_STYLECLEARALL);
         SendScintilla(SCI_CLEARDOCUMENTSTYLE);
     }
+}
+
+
+// Set the lexer.
+void QsciScintilla::setLexer(QsciLexer *lexer)
+{
+    // Detach any current lexer.
+    detachLexer();
 
     // Connect up the new lexer.
     lex = lexer;
@@ -3382,8 +3412,9 @@ void QsciScintilla::showUserList(int id, const QStringList &list)
         return;
 
     SendScintilla(SCI_AUTOCSETSEPARATOR, userSeparator);
-    SendScintilla(SCI_USERLISTSHOW, id,
-            list.join(QChar(userSeparator)).toLatin1().data());
+
+    ScintillaString s = convertTextQ2S(list.join(QChar(userSeparator)));
+    SendScintilla(SCI_USERLISTSHOW, id, ScintillaStringData(s));
 }
 
 
@@ -3528,7 +3559,7 @@ void QsciScintilla::setAnnotationDisplay(QsciScintilla::AnnotationDisplay displa
 // Clear annotations.
 void QsciScintilla::clearAnnotations(int line)
 {
-    if (line < 0)
+    if (line >= 0)
         SendScintilla(SCI_ANNOTATIONSETTEXT, line, (const char *)0);
     else
         SendScintilla(SCI_ANNOTATIONCLEARALL);

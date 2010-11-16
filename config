@@ -18,6 +18,6 @@ contains(PLSLIBS, core) {
     LIBS        *= -L$${PLASMA_PATH}/lib -lHSPlasma
 }
 contains(PLSLIBS, net) {
-    INCLUDEPATH *=  $${PLASMA_PATH}/include/HSPlasmaNet
+    INCLUDEPATH *= $${PLASMA_PATH}/include/HSPlasmaNet
     LIBS        *= -L$${PLASMA_PATH}/lib -lHSPlasmaNet
 }

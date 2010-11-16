@@ -9,11 +9,6 @@ PyQt is licensed under two licenses: the GNU General Public License
 Source (GPL) version of PyQt.  This file explains the principle of dual
 licensing, and which obligations using the GPL version of PyQt implies.
 
-Please note that it is necessary to choose either the Open Source or
-Commercial license at the outset of development. Both Riverbank's and
-Trolltech's commercial license terms do not allow you to start developing
-proprietary software using the Open Source edition.
-
 
 ABOUT DUAL LICENSING
 ====================
@@ -49,22 +44,3 @@ GPL - General Public License. The main obligation for software
 development under the GPL is that anyone using your PyQt-based software
 must have access to the complete source code, and must be able to
 modify and redistribute that software to anyone free of charge.
-
-
-QUESTIONS? 
-==========
-
-You can find additional information about dual licensing at the
-following URLs:
-
-Qt Open Source Edition License FAQ:
-http://www.trolltech.com/developer/faqs/Licensing
-
-Qt Commercial Licensing Page:
-http://www.trolltech.com/products/qt/licenses/licensing
-
-Qt Open Source Licensing Page:
-http://www.trolltech.com/products/qt/licenses/licensing/opensource
-
-Please contact info@trolltech.com with any additional questions about
-our licensing.

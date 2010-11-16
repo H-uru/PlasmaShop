@@ -1,6 +1,6 @@
 // This module implements the portability layer for the Qt port of Scintilla.
 //
-// Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -23,11 +23,6 @@
 // review the following information:
 // http://trolltech.com/products/qt/licenses/licensing/licensingoverview
 // or contact the sales department at sales@riverbankcomputing.com.
-// 
-// This file is provided "AS IS" with NO WARRANTY OF ANY KIND,
-// INCLUDING THE WARRANTIES OF DESIGN, MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE. Trolltech reserves all rights not expressly
-// granted herein.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -215,9 +210,8 @@ private:
             int len, ColourAllocated fore);
     QFontMetrics metrics(Font &font_);
     QString convertText(const char *s, int len);
-    static QRgb convertQRgb(const ColourAllocated &col, unsigned alpha);
     static QColor convertQColor(const ColourAllocated &col,
-            unsigned alpha = 0xff);
+            unsigned alpha = 255);
 
     bool unicodeMode;
     QPaintDevice *pd;
@@ -398,11 +392,11 @@ void SurfaceImpl::AlphaRectangle(PRectangle rc, int cornerSize,
 
     // Assume that "cornerSize" means outline width.
     if (cornerSize > 0)
-        painter->setPen(QPen(QColor(convertQRgb(outline, alphaOutline)), cornerSize));
+        painter->setPen(QPen(convertQColor(outline, alphaOutline), cornerSize));
     else
         painter->setPen(Qt::NoPen);
 
-    painter->setBrush(QColor(convertQRgb(fill, alphaFill)));
+    painter->setBrush(convertQColor(fill, alphaFill));
     painter->drawRect(rc.left, rc.top, w, h);
 }
 
@@ -498,11 +492,11 @@ void SurfaceImpl::MeasureWidths(Font &font_, const char *s, int len,
 
     // The position for each byte of a character is the offset from the start
     // where the following character should be drawn.
-    int i_byte = 0;
+    int i_byte = 0, width = 0;
 
     for (int i_char = 0; i_char < qs.length(); ++i_char)
     {
-        int width = fm.width(qs, i_char + 1);
+        width += fm.width(qs.at(i_char));
 
         if (unicodeMode)
         {
@@ -589,8 +583,9 @@ QString SurfaceImpl::convertText(const char *s, int len)
     return QString::fromLatin1(s, len);
 }
 
-// Convert a Scintilla colour and alpha component to a Qt QRgb.
-QRgb SurfaceImpl::convertQRgb(const ColourAllocated &col, unsigned alpha)
+
+// Convert a Scintilla colour, and alpha component, to a Qt QColor.
+QColor SurfaceImpl::convertQColor(const ColourAllocated &col, unsigned alpha)
 {
     long c = col.AsLong();
 
@@ -598,15 +593,7 @@ QRgb SurfaceImpl::convertQRgb(const ColourAllocated &col, unsigned alpha)
     unsigned g = (c >> 8) & 0xff;
     unsigned b = (c >> 16) & 0xff;
 
-    QRgb rgba = (alpha << 24) | (r << 16) | (g << 8) | b;
-
-    return rgba;
-}
-
-// Convert a Scintilla colour, and optional alpha component, to a Qt QColor.
-QColor SurfaceImpl::convertQColor(const ColourAllocated &col, unsigned alpha)
-{
-    return QColor(convertQRgb(col, alpha));
+    return QColor(r, g, b, alpha);
 }
 
 

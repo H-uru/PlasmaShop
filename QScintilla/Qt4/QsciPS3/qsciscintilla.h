@@ -1,7 +1,7 @@
 // This module defines the "official" high-level API of the Qt port of
 // Scintilla.
 //
-// Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -24,11 +24,6 @@
 // review the following information:
 // http://trolltech.com/products/qt/licenses/licensing/licensingoverview
 // or contact the sales department at sales@riverbankcomputing.com.
-// 
-// This file is provided "AS IS" with NO WARRANTY OF ANY KIND,
-// INCLUDING THE WARRANTIES OF DESIGN, MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE. Trolltech reserves all rights not expressly
-// granted herein.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -470,6 +465,12 @@ public:
     //! is no current lexer then true is returned.
     bool caseSensitive() const;
 
+    //! Clear all current folds, i.e. ensure that all lines are displayed
+    //! unfolded.
+    //!
+    //! \sa setFolding()
+    void clearFolds();
+
     //! Clear all registered images.
     //!
     //! \sa registerImage()
@@ -713,42 +714,43 @@ public:
     //! \sa setMarginWidth(), SCI_GETMARGINWIDTHN
     int marginWidth(int margin) const;
 
-    //! Define a marker using the symbol \a sym with the marker number \a mnr.
-    //! If \a mnr is -1 then the marker number is automatically allocated.  The
-    //! marker number is returned or -1 if the marker number was already
-    //! allocated or too many markers have been defined.
+    //! Define a type of marker using the symbol \a sym with the marker number
+    //! \a mnr.  If \a mnr is -1 then the marker number is automatically
+    //! allocated.  The marker number is returned or -1 if too many types of
+    //! marker have been defined.
     //!
-    //! Markers are small geometric symbols and character used, for example, to
-    //! indicate the current line or, in debuggers, to indicate breakpoints.
+    //! Markers are small geometric symbols and characters used, for example,
+    //! to indicate the current line or, in debuggers, to indicate breakpoints.
     //! If a margin has a width of 0 then its markers are not drawn, but their
     //! background colours affect the background colour of the corresponding
     //! line of text.
     //!
-    //! There may be up to 32 markers defined and each line of text has a set
-    //! of these markers associated with it.  Markers are drawn according to
-    //! their numerical identifier.  Markers try to move with their text by
-    //! tracking where the start of their line moves to.  For example, when a
-    //! line is deleted its markers are added to previous line's markers.
+    //! There may be up to 32 types of marker defined at a time and each line
+    //! of text has a set of marker instances associated with it.  Markers are
+    //! drawn according to their numerical identifier.  Markers try to move
+    //! with their text by tracking where the start of their line moves to.
+    //! For example, when a line is deleted its markers are added to previous
+    //! line's markers.
     //!
-    //! Each marker is identified by a marker number.  Each instance of a
+    //! Each marker type is identified by a marker number.  Each instance of a
     //! marker is identified by a marker handle.
     int markerDefine(MarkerSymbol sym, int mnr = -1);
 
     //! Define a marker using the character \a ch with the marker number
     //! \a mnr.  If \a mnr is -1 then the marker number is automatically
-    //! allocated.  The marker number is returned or -1 if the marker number
-    //! was already allocated or too many markers have been defined.
+    //! allocated.  The marker number is returned or -1 if too many markers
+    //! have been defined.
     int markerDefine(char ch, int mnr = -1);
 
     //! Define a marker using a copy of the pixmap \a pm with the marker number
     //! \a mnr.  If \a mnr is -1 then the marker number is automatically
-    //! allocated.  The marker number is returned or -1 if the marker number
-    //! was already allocated or too many markers have been defined.
+    //! allocated.  The marker number is returned or -1 if too many markers
+    //! have been defined.
     int markerDefine(const QPixmap &pm, int mnr = -1);
 
-    //! Add a marker number \a mnr to line number \a linenr.  A handle for the
-    //! marker is returned which can be used to track the marker's position, or
-    //! -1 if the \a mnr was invalid.
+    //! Add an instance of marker number \a mnr to line number \a linenr.  A
+    //! handle for the marker is returned which can be used to track the
+    //! marker's position, or -1 if the \a mnr was invalid.
     //!
     //! \sa markerDelete(), markerDeleteAll(), markerDeleteHandle()
     int markerAdd(int linenr, int mnr);
@@ -1584,6 +1586,8 @@ private slots:
 
 private:
     typedef QByteArray ScintillaString;
+
+    void detachLexer();
 
     enum IndentState {
         isNone,

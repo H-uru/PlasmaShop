@@ -1,6 +1,6 @@
 // This class defines the "official" low-level API.
 //
-// Copyright (c) 2008 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -23,11 +23,6 @@
 // review the following information:
 // http://trolltech.com/products/qt/licenses/licensing/licensingoverview
 // or contact the sales department at sales@riverbankcomputing.com.
-// 
-// This file is provided "AS IS" with NO WARRANTY OF ANY KIND,
-// INCLUDING THE WARRANTIES OF DESIGN, MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE. Trolltech reserves all rights not expressly
-// granted herein.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -53,6 +48,7 @@ extern "C++" {
 class QColor;
 class QPainter;
 class QPixmap;
+class QMimeData;
 
 class ScintillaQt;
 
@@ -2705,6 +2701,29 @@ signals:
     void SCN_ZOOM();
 
 protected:
+    //! Returns true if the contents of a MIME data object can be decoded and
+    //! inserted into the document.  It is called during drag and paste
+    //! operations.
+    //! \a source is the MIME data object.
+    //!
+    //! \sa fromMimeData(), toMimeData()
+    virtual bool canInsertFromMimeData(const QMimeData *source) const;
+
+    //! Returns the text decoded from a MIME data object.  It is called when a
+    //! drag and drop is completed and when text is pasted from the clipboard.
+    //! \a source is the MIME data object.
+    //!
+    //! \sa canInsertFromMimeData(), toMimeData()
+    virtual QString fromMimeData(const QMimeData *source) const;
+
+    //! Returns a new MIME data object that encodes some text.  It is called
+    //! when a drag and drop is started and when the selection is copied to the
+    //! clipboard.  Ownership of the object is passed to the caller.
+    //! \a text is the text to encode.
+    //!
+    //! \sa canInsertFromMimeData(), fromMimeData()
+    virtual QMimeData *toMimeData(const QString &text) const;
+
     //! Re-implemented to handle the context menu.
     virtual void contextMenuEvent(QContextMenuEvent *e);
 
@@ -2769,6 +2788,8 @@ private:
     ScintillaQt *sci;
     QPoint triple_click_at;
     QTimer triple_click;
+
+    void acceptAction(QDropEvent *e);
 
     QsciScintillaBase(const QsciScintillaBase &);
     QsciScintillaBase &operator=(const QsciScintillaBase &);
