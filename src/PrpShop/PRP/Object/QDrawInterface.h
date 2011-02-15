@@ -32,10 +32,9 @@ class QDrawableList : public QKeyList {
 
 protected:
     QList<int> fDrawKeys;
-    plLocation fLocation;
 
 public:
-    QDrawableList(const plLocation& loc, QWidget* parent = NULL);
+    QDrawableList(plKey container, QWidget* parent = NULL);
 
     void addKey(plKey key, int dkey);
     QList<int> drawKeys() const;

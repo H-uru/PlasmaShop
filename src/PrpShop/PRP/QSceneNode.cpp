@@ -26,8 +26,8 @@ QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
     plSceneNode* node = plSceneNode::Convert(fCreatable);
 
     QTabWidget* tab = new QTabWidget(this);
-    fSceneKeys = new QKeyList(tab);
-    fPoolKeys = new QKeyList(tab);
+    fSceneKeys = new QKeyList(node->getKey(), tab);
+    fPoolKeys = new QKeyList(node->getKey(), tab);
     for (size_t i=0; i<node->getSceneObjects().getSize(); i++)
         fSceneKeys->addKey(node->getSceneObjects()[i]);
     for (size_t i=0; i<node->getPoolObjects().getSize(); i++)

@@ -40,7 +40,7 @@ QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
 {
     plWinAudible* obj = plWinAudible::Convert(fCreatable);
 
-    fSoundKeys = new QKeyList(this);
+    fSoundKeys = new QKeyList(obj->getKey(), this);
     for (size_t i=0; i<obj->getSounds().getSize(); i++)
         fSoundKeys->addKey(obj->getSounds()[i]);
 

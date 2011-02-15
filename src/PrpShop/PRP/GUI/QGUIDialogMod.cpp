@@ -55,7 +55,7 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
     fVersion->setRange(-0x80000000, 0x7FFFFFFF);
     fVersion->setValue(dlg->getVersion());
 
-    fControls = new QKeyList(this);
+    fControls = new QKeyList(dlg->getKey(), this);
     for (size_t i=0; i<dlg->getControls().getSize(); i++)
         fControls->addKey(dlg->getControls()[i]);
 

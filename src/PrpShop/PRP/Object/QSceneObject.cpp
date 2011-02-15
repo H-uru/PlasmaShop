@@ -54,8 +54,8 @@ QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
     layInterfaces->addWidget(fAudioIntfLink, 3, 0);
 
     QTabWidget* objTab = new QTabWidget(this);
-    fInterfaceList = new QKeyList(objTab);
-    fModifierList = new QKeyList(objTab);
+    fInterfaceList = new QKeyList(obj->getKey(), objTab);
+    fModifierList = new QKeyList(obj->getKey(), objTab);
     for (size_t i=0; i<obj->getInterfaces().getSize(); i++)
         fInterfaceList->addKey(obj->getInterfaces()[i]);
     for (size_t i=0; i<obj->getModifiers().getSize(); i++)

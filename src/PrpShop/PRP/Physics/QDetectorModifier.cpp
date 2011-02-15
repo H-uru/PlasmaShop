@@ -31,7 +31,7 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setCreatable(obj);
     fSynchObjLink->setForceType(kSynchedObject);
 
-    fReceivers = new QKeyList(this);
+    fReceivers = new QKeyList(obj->getKey(), this);
     for (size_t i=0; i<obj->getReceivers().getSize(); i++)
         fReceivers->addKey(obj->getReceivers()[i]);
 

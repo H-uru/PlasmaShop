@@ -28,7 +28,7 @@ QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setCreatable(mod);
     fSynchObjLink->setForceType(kSynchedObject);
 
-    fImages = new QKeyList(this);
+    fImages = new QKeyList(mod->getKey(), this);
     for (size_t i=0; i<mod->getImages().getSize(); i++)
         fImages->addKey(mod->getImages()[i]);
 

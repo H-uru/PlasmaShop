@@ -149,7 +149,7 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
 
     fFileName = new QLineEdit(~mod->getFilename(), this);
 
-    fReceivers = new QKeyList(this);
+    fReceivers = new QKeyList(mod->getKey(), this);
     for (size_t i=0; i<mod->getReceivers().getSize(); i++)
         fReceivers->addKey(mod->getReceivers()[i]);
 

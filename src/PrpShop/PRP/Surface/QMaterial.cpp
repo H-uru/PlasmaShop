@@ -79,8 +79,8 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
     fCBFlags[kCbNeedsBlendChannel]->setChecked(mat->getCompFlags() & hsGMaterial::kCompNeedsBlendChannel);
 
     QTabWidget* objTab = new QTabWidget(this);
-    fLayers = new QKeyList(objTab);
-    fPiggyBacks = new QKeyList(objTab);
+    fLayers = new QKeyList(mat->getKey(), objTab);
+    fPiggyBacks = new QKeyList(mat->getKey(), objTab);
     for (size_t i=0; i<mat->getLayers().getSize(); i++)
         fLayers->addKey(mat->getLayers()[i]);
     for (size_t i=0; i<mat->getPiggyBacks().getSize(); i++)

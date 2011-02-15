@@ -60,7 +60,7 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
 
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~ctrl->getAnimName());
-    fAnimationKeys = new QKeyList(this);
+    fAnimationKeys = new QKeyList(ctrl->getKey(), this);
     for (size_t i=0; i<ctrl->getAnimationKeys().getSize(); i++)
         fAnimationKeys->addKey(ctrl->getAnimationKeys()[i]);
 

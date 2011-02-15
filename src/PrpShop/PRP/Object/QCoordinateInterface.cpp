@@ -63,7 +63,7 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     xformTab->addTab(fLocalToWorld, tr("Local to World"));
     xformTab->addTab(fWorldToLocal, tr("World to Local"));
 
-    fChildren = new QKeyList(this);
+    fChildren = new QKeyList(intf->getKey(), this);
     for (size_t i=0; i<intf->getChildren().getSize(); i++)
         fChildren->addKey(intf->getChildren()[i]);
 

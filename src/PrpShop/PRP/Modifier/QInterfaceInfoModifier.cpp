@@ -29,7 +29,7 @@ QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* paren
     fSynchObjLink->setCreatable(obj);
     fSynchObjLink->setForceType(kSynchedObject);
 
-    fIntfKeys = new QKeyList(this);
+    fIntfKeys = new QKeyList(obj->getKey(), this);
     for (size_t i=0; i<obj->getIntfKeys().getSize(); i++)
         fIntfKeys->addKey(obj->getIntfKeys()[i]);
 

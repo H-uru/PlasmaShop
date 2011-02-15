@@ -24,7 +24,7 @@ QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
 {
     plMsgForwarder* obj = plMsgForwarder::Convert(fCreatable);
 
-    fForwardKeys = new QKeyList(this);
+    fForwardKeys = new QKeyList(obj->getKey(), this);
     for (size_t i=0; i<obj->getForwardKeys().getSize(); i++)
         fForwardKeys->addKey(obj->getForwardKeys()[i]);
 

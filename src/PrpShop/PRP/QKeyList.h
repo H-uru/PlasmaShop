@@ -26,9 +26,10 @@ class QKeyList : public QTreeWidget {
 
 protected:
     QList<plKey> fKeys;
+    plKey fContainer;
 
 public:
-    QKeyList(QWidget* parent = NULL);
+    QKeyList(plKey container, QWidget* parent = NULL);
 
     void addKey(plKey key);
     void delItem(int idx);

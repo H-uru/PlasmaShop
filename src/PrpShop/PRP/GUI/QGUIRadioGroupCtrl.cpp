@@ -39,7 +39,7 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlagAllowNoSelection, 0, 0);
     fModFlagAllowNoSelection->setChecked(ctrl->getFlag(pfGUIRadioGroupCtrl::kAllowNoSelection));
 
-    fControls = new QKeyList(this);
+    fControls = new QKeyList(ctrl->getKey(), this);
     fDefaultValue = new QComboBox(this);
     for (size_t i=0; i<ctrl->getControls().getSize(); i++) {
         fControls->addKey(ctrl->getControls()[i]);

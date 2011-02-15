@@ -25,11 +25,9 @@
 #include "../../Main.h"
 
 /* QDrawableList */
-QDrawableList::QDrawableList(const plLocation& loc, QWidget* parent)
-             : QKeyList(parent)
+QDrawableList::QDrawableList(plKey container, QWidget* parent)
+             : QKeyList(container, parent)
 {
-    fLocation = loc;
-
     setColumnCount(2);
     setUniformRowHeights(true);
     setRootIsDecorated(false);
@@ -61,7 +59,7 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
     QAction* sel = menu.exec(evt->globalPos());
     if (sel == addObjItem) {
         QFindDrawKeyDialog dlg(this);
-        dlg.init(PrpShopMain::ResManager(), fLocation);
+        dlg.init(PrpShopMain::ResManager(), fContainer->getLocation());
         if (dlg.exec() == QDialog::Accepted)
             addKey(dlg.selection(), dlg.drawKey());
     } else if (sel == delObjItem) {
@@ -139,11 +137,11 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
 
     QTabWidget* childTab = new QTabWidget(this);
 
-    fDrawKeys = new QDrawableList(intf->getKey()->getLocation(), childTab);
+    fDrawKeys = new QDrawableList(intf->getKey(), childTab);
     for (size_t i=0; i<intf->getNumDrawables(); i++)
         fDrawKeys->addKey(intf->getDrawable(i), intf->getDrawableKey(i));
 
-    fRegions = new QKeyList(childTab);
+    fRegions = new QKeyList(intf->getKey(), childTab);
     for (size_t i=0; i<intf->getRegions().getSize(); i++)
         fRegions->addKey(intf->getRegions()[i]);
 

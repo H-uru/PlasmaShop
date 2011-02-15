@@ -24,8 +24,8 @@
 #include "../Main.h"
 
 /* QKeyList */
-QKeyList::QKeyList(QWidget* parent)
-        : QTreeWidget(parent)
+QKeyList::QKeyList(plKey container, QWidget* parent)
+        : QTreeWidget(parent), fContainer(container)
 {
     setColumnCount(2);
     setUniformRowHeights(true);
@@ -82,7 +82,7 @@ void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
             dlg.init(PrpShopMain::ResManager(), fKeys.back()->getLocation(),
                      fKeys.back()->getType());
         else
-            dlg.init(PrpShopMain::ResManager());
+            dlg.init(PrpShopMain::ResManager(), fContainer->getLocation());
         if (dlg.exec() == QDialog::Accepted) {
             addKey(dlg.selection());
             emit itemAdded(dlg.selection());
