@@ -35,7 +35,7 @@ protected:
 
 public:
     QNewKeyDialog(QWidget* parent = NULL);
-    void init(plResManager* mgr);
+    void init(plResManager* mgr, plLocation loc = plLocation(), short type = -1);
 
     plLocation location() const;
     short type() const;

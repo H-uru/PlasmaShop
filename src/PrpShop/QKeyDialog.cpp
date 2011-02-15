@@ -49,7 +49,7 @@ QNewKeyDialog::QNewKeyDialog(QWidget* parent)
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
-void QNewKeyDialog::init(plResManager* mgr)
+void QNewKeyDialog::init(plResManager* mgr, plLocation loc, short type)
 {
     fLocationBox->clear();
     fTypeBox->clear();
@@ -66,6 +66,19 @@ void QNewKeyDialog::init(plResManager* mgr)
     fTypes = pqGetValidKOTypes();
     for (size_t i=0; i<fTypes.size(); i++)
         fTypeBox->addItem(pqGetTypeIcon(fTypes[i]), pqGetFriendlyClassName(fTypes[i]));
+
+    if (loc.isValid()) {
+        for (size_t i=0; i<fLocations.size(); i++) {
+            if (loc == fLocations[i])
+                fLocationBox->setCurrentIndex(i);
+        }
+    }
+    if (type >= 0) {
+        for (size_t i=0; i<fTypes.size(); i++) {
+            if (type == fTypes[i])
+                fTypeBox->setCurrentIndex(i);
+        }
+    }
 }
 
 plLocation QNewKeyDialog::location() const

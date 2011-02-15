@@ -1014,7 +1014,39 @@ void PrpShopMain::createNewObject()
     }
 
     QNewKeyDialog dlg(this);
-    dlg.init(&fResMgr);
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item != NULL) {
+        if (item->type() == QPlasmaTreeItem::kTypeAge) {
+            if (item->childCount() != 0) {
+                QPlasmaTreeItem* child = (QPlasmaTreeItem*)item->child(0);
+                if (child->type() != QPlasmaTreeItem::kTypePage)
+                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
+                dlg.init(&fResMgr, plLocation(child->page()->getLocation()));
+            } else {
+                dlg.init(&fResMgr);
+            }
+        } else if (item->type() == QPlasmaTreeItem::kTypePage) {
+            dlg.init(&fResMgr, item->page()->getLocation());
+        } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
+            dlg.init(&fResMgr, item->obj()->getKey()->getLocation(),
+                     item->obj()->getKey()->getType());
+        } else {
+            if (item->childCount() != 0) {
+                QPlasmaTreeItem* child = (QPlasmaTreeItem*)item->child(0);
+                if (child->type() != QPlasmaTreeItem::kTypeKO)
+                    throw hsBadParamException(__FILE__, __LINE__, "Got non-KO child");
+                dlg.init(&fResMgr, child->obj()->getKey()->getLocation(),
+                         child->obj()->getKey()->getType());
+            } else {
+                if (item->parent()->type() != QPlasmaTreeItem::kTypePage)
+                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
+                dlg.init(&fResMgr, ((QPlasmaTreeItem*)item->parent())->page()->getLocation());
+            }
+        }
+    } else {
+        dlg.init(&fResMgr);
+    }
+
     if (dlg.exec() == QDialog::Accepted) {
         plLocation loc = dlg.location();
         short type = dlg.type();
