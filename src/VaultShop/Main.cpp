@@ -42,7 +42,7 @@ static QString HexToStr(const QString& hex)
     return str;
 }
 
-static QString StrToHex(const QString& str)
+/*static QString StrToHex(const QString& str)
 {
     QString hex;
     for (int i=0; i<str.size(); i++) {
@@ -50,7 +50,7 @@ static QString StrToHex(const QString& str)
         hex += QString("%1").arg(ch, 16);
     }
     return hex;
-}
+}*/
 
 
 /* VaultInfo */
