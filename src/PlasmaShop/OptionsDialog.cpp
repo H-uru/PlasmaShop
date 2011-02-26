@@ -293,7 +293,7 @@ QString GetAppDataPath()
     // Find the Local AppData path
     WCHAR path[MAX_PATH];
     SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, path);
-    return QString::fromUtf16(path);
+    return QString::fromUtf16((const ushort*)path);
 #else
     // Just return the user's home dir
     return QDesktopServices::storageLocation(QDesktopServices::HomeLocation);

@@ -4,16 +4,12 @@ syntax: glob
 *.log
 *.dSYM
 .*.swp
+*.kdev4
 CMakeCache.txt
 cmake_install.cmake
-moc_*.cpp
-qrc_*.cpp
 bin/PlasmaShop
 bin/PrpShop
 bin/VaultShop
 
 syntax: regexp
-Makefile(\..*)?$
-.*\.so(\..*)?$
-CMakeFiles/
 build/

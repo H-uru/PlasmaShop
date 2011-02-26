@@ -1,4 +1,4 @@
-SET(QScintilla_MOC_Headers
+set(QScintilla_MOC_Headers
     ./QsciPS3/qsciscintilla.h
     ./QsciPS3/qsciscintillabase.h
     ./QsciPS3/qsciabstractapis.h
@@ -14,9 +14,11 @@ SET(QScintilla_MOC_Headers
     ./QsciPS3/qscilexersdl.h
     ./QsciPS3/qscilexerxml.h
     ./QsciPS3/qscimacro.h
-    SciClasses.h)
-SET(QScintilla_Sources
-	qsciscintilla.cpp
+    SciClasses.h
+)
+
+set(QScintilla_Sources
+    qsciscintilla.cpp
     qsciscintillabase.cpp
     qsciabstractapis.cpp
     qsciapis.cpp
@@ -69,10 +71,12 @@ SET(QScintilla_Sources
     ../src/Style.cpp
     ../src/StyleContext.cpp
     ../src/ViewStyle.cpp
-    ../src/XPM.cpp)
+    ../src/XPM.cpp
+)
 
+find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui)
 include(${QT_USE_FILE})
-QT4_WRAP_CPP(QScintilla_MOC ${QScintilla_MOC_Headers})
+qt4_wrap_cpp(QScintilla_MOC ${QScintilla_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/include")
@@ -83,7 +87,12 @@ add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)
 add_library(qscintilla2-ps3 SHARED ${QScintilla_Sources} ${QScintilla_MOC})
 target_link_libraries(qscintilla2-ps3 ${QT_LIBRARIES})
 
-install(TARGETS qscintilla2-ps3
-        DESTINATION lib
-)
-
+if(WIN32)
+    install(TARGETS qscintilla2-ps3
+            DESTINATION .
+    )
+else()
+    install(TARGETS qscintilla2-ps3
+            DESTINATION lib
+    )
+endif()
