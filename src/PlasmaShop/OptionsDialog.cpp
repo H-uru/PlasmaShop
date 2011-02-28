@@ -177,15 +177,17 @@ OptionsDialog::OptionsDialog(QWidget* parent)
 void OptionsDialog::onSave()
 {
     // Validate everything *before* saving
-    if (!QFile::exists(GetPSBinPath(fPrpEditorPath->text())) ||
-        !QFileInfo(GetPSBinPath(fPrpEditorPath->text())).isFile()) {
+    if (!GetPSBinPath(fPrpEditorPath->text()).isEmpty() &&
+        (!QFile::exists(GetPSBinPath(fPrpEditorPath->text())) ||
+         !QFileInfo(GetPSBinPath(fPrpEditorPath->text())).isFile())) {
         QMessageBox::critical(this, tr("Invalid Path"),
                               tr("You have entered an invalid path to your PRP editor."),
                               QMessageBox::Ok);
         return;
     }
-    if (!QFile::exists(GetPSBinPath(fVaultEditorPath->text())) ||
-        !QFileInfo(GetPSBinPath(fVaultEditorPath->text())).isFile()) {
+    if (!GetPSBinPath(fPrpEditorPath->text()).isEmpty() &&
+        (!QFile::exists(GetPSBinPath(fVaultEditorPath->text())) ||
+         !QFileInfo(GetPSBinPath(fVaultEditorPath->text())).isFile())) {
         QMessageBox::critical(this, tr("Invalid Path"),
                               tr("You have entered an invalid path to your Vault editor."),
                               QMessageBox::Ok);

@@ -89,6 +89,7 @@ protected:
     void populateGameList();
 
 private slots:
+    void onNewFile();
     void onOpenFile();
     void onSaveFile();
     void onSaveAs();

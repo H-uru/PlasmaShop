@@ -34,6 +34,7 @@
 #include "OptionsDialog.h"
 #include "QPlasmaTextDoc.h"
 #include "GameScanner.h"
+#include "NewFile.h"
 
 PlasmaShopMain::PlasmaShopMain()
 {
@@ -236,6 +237,7 @@ PlasmaShopMain::PlasmaShopMain()
         fDialogDir = settings.value("DialogDir").toString();
 
     // Signals
+    connect(fActions[kFileNew], SIGNAL(triggered()), this, SLOT(onNewFile()));
     connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(onOpenFile()));
     connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(onSaveFile()));
     connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(onSaveAs()));
@@ -452,6 +454,15 @@ void PlasmaShopMain::dropEvent(QDropEvent* evt)
             if (!filename.isEmpty())
                 loadFile(filename);
         }
+    }
+}
+
+void PlasmaShopMain::onNewFile()
+{
+    NewFileDialog dlg(this);
+    dlg.setModal(true);
+    if (dlg.exec() == QDialog::Accepted) {
+        //TODO
     }
 }
 
