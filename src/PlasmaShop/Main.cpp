@@ -369,7 +369,8 @@ void PlasmaShopMain::loadFile(QString filename)
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
             return;
-        } else if (dtype == kDocText) {
+        }
+        if (dtype == kDocText) {
             if (ext == "fni" || ext == "cfg")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
             else if (ext == "fx")
@@ -461,8 +462,130 @@ void PlasmaShopMain::onNewFile()
 {
     NewFileDialog dlg(this);
     dlg.setModal(true);
-    if (dlg.exec() == QDialog::Accepted) {
-        //TODO
+    if (dlg.exec() != QDialog::Accepted)
+        return;
+
+    DocumentType dtype = kDocUnknown;
+    QString fnameDisplay;
+    QPlasmaTextDoc::SyntaxMode syntax = QPlasmaTextDoc::kStxNone;
+    QPlasmaTextDoc::EncodingMode encoding = QPlasmaTextDoc::kTypeAnsi;
+
+    QPlasmaDocument::EncryptionMode encrypt = QPlasmaDocument::kEncNone;
+    int gameType = fGames.isEmpty() ? GameInfo::kGameNone : fGames[fCurrentGame].fGameType;
+    if (gameType == GameInfo::kGameUru || gameType == GameInfo::kGameUruLive ||
+        gameType == GameInfo::kGameMQO) {
+        encrypt = QPlasmaDocument::kEncXtea;
+    } else if (gameType == GameInfo::kGameMyst5 || gameType == GameInfo::kGameCrowthistle ||
+               gameType == GameInfo::kGameHexIsle) {
+        encrypt = QPlasmaDocument::kEncAes;
+    }
+
+    switch (dlg.fileType()) {
+    case kFileAge:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.age";
+        syntax = QPlasmaTextDoc::kStxIni;
+        break;
+    case kFileCsv:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.csv";
+        break;
+    case kFileFni:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.fni";
+        syntax = QPlasmaTextDoc::kStxConsole;
+        break;
+    case kFileShader:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.fx";
+        syntax = QPlasmaTextDoc::kStxFX;
+        encrypt = QPlasmaDocument::kEncNone;
+        break;
+    case kFileHexLevel:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.hex";
+        syntax = QPlasmaTextDoc::kStxHex;
+        encrypt = QPlasmaDocument::kEncNone;
+        break;
+    case kFileLoc:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.loc";
+        syntax = QPlasmaTextDoc::kStxXML;
+        encrypt = QPlasmaDocument::kEncNone;
+        encoding = QPlasmaTextDoc::kTypeUTF16;
+        break;
+    case kFilePython:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.py";
+        syntax = QPlasmaTextDoc::kStxPython;
+        encrypt = QPlasmaDocument::kEncNone;
+        break;
+    case kFileSDL:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.sdl";
+        syntax = QPlasmaTextDoc::kStxSDL;
+        if (gameType == GameInfo::kGameUruLive || gameType == GameInfo::kGameMQO)
+            encrypt = QPlasmaDocument::kEncDroid;
+        break;
+    case kFileSub:
+        dtype = kDocText;
+        fnameDisplay = "Unnamed.sub";
+        syntax = QPlasmaTextDoc::kStxXML;
+        encoding = QPlasmaTextDoc::kTypeUTF16;
+        break;
+    case kFileFont:
+        dtype = kDocFont;
+        fnameDisplay = "Unnamed.p2f";
+        break;
+    case kFilePak:
+        dtype = kDocPackage;
+        fnameDisplay = "Unnamed.pak";
+        if (gameType == GameInfo::kGameUruLive || gameType == GameInfo::kGameMQO)
+            encrypt = QPlasmaDocument::kEncDroid;
+        break;
+    case kFileCursorPak:
+        dtype = kDocPackage;
+        fnameDisplay = "Cursors.dat";
+        break;
+    case kFileFontPak:
+        dtype = kDocPackage;
+        fnameDisplay = "Fonts.pfp";
+        break;
+    case kFileSum:
+        dtype = kDocManifest;
+        fnameDisplay = "Unnamed.sum";
+        break;
+    default:
+        QMessageBox::critical(this, tr("Unsupported File Type"),
+                              tr("Error: Cannot create unsupported file type"),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    // Create an appropriate editor and add it to the document panel
+    QPlasmaDocument* plDoc = QPlasmaDocument::GetEditor(dtype, this);
+    if (plDoc != NULL) {
+        fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(fnameDisplay), fnameDisplay);
+        plDoc->setFilename(fnameDisplay);
+        if (dtype == kDocText) {
+            ((QPlasmaTextDoc*)plDoc)->setSyntax(syntax);
+            ((QPlasmaTextDoc*)plDoc)->setEncryption(encrypt);
+            ((QPlasmaTextDoc*)plDoc)->setEncoding(encoding);
+            ((QPlasmaTextDoc*)plDoc)->makeClean();
+        }
+        connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
+        connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
+        connect(plDoc, SIGNAL(becameClean()), this, SLOT(onDocClean()));
+
+        // Update menus
+        onChangeTab(fEditorPane->currentIndex());
+
+        // Select the last opened file's tab
+        fEditorPane->setCurrentIndex(fEditorPane->count() - 1);
+    } else {
+        QMessageBox::critical(this, tr("Oops"),
+                              tr("No editor is currently available for this file type"),
+                              QMessageBox::Ok);
     }
 }
 

@@ -43,6 +43,7 @@ private:
 
 private slots:
     void populateFileList(int dummy = 0);
+    void onItemActivated(QListWidgetItem*) { accept(); }
 };
 
 #endif

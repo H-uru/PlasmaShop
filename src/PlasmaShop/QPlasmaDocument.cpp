@@ -144,60 +144,6 @@ QPlasmaDocument::QPlasmaDocument(DocumentType docType, QWidget* parent)
                  fDirty(false), fPersistDirty(false)
 { }
 
-DocumentType QPlasmaDocument::docType() const
-{ return fDocType; }
-
-bool QPlasmaDocument::isDirty() const
-{ return fDirty; }
-
-QString QPlasmaDocument::filename() const
-{ return fFilename; }
-
-bool QPlasmaDocument::canCut() const
-{ return false; }
-
-bool QPlasmaDocument::canCopy() const
-{ return false; }
-
-bool QPlasmaDocument::canPaste() const
-{ return false; }
-
-bool QPlasmaDocument::canDelete() const
-{ return false; }
-
-bool QPlasmaDocument::canSelectAll() const
-{ return false; }
-
-bool QPlasmaDocument::canUndo() const
-{ return false; }
-
-bool QPlasmaDocument::canRedo() const
-{ return false; }
-
-void QPlasmaDocument::updateSettings()
-{ }
-
-void QPlasmaDocument::performCut()
-{ }
-
-void QPlasmaDocument::performCopy()
-{ }
-
-void QPlasmaDocument::performPaste()
-{ }
-
-void QPlasmaDocument::performDelete()
-{ }
-
-void QPlasmaDocument::performSelectAll()
-{ }
-
-void QPlasmaDocument::performUndo()
-{ }
-
-void QPlasmaDocument::performRedo()
-{ }
-
 bool QPlasmaDocument::loadFile(QString filename)
 {
     fFilename = filename;
@@ -214,29 +160,11 @@ bool QPlasmaDocument::saveTo(QString filename)
     return true;
 }
 
-bool QPlasmaDocument::saveDefault()
-{
-    return saveTo(fFilename);
-}
-
-bool QPlasmaDocument::revert()
-{
-    return loadFile(fFilename);
-}
-
 void QPlasmaDocument::setEncryption(EncryptionMode enc)
 {
     fEncryption = enc;
     makeDirty();
     fPersistDirty = true;
-}
-
-QPlasmaDocument::EncryptionMode QPlasmaDocument::encryption() const
-{ return fEncryption; }
-
-bool QPlasmaDocument::isZeroKey(const unsigned int* key)
-{
-    return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0);
 }
 
 void QPlasmaDocument::makeDirty()

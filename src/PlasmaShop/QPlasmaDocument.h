@@ -40,25 +40,27 @@ public:
 
     QPlasmaDocument(DocumentType docType, QWidget* parent);
 
-    DocumentType docType() const;
-    bool isDirty() const;
-    QString filename() const;
+    DocumentType docType() const { return fDocType; }
+    bool isDirty() const { return fDirty; }
 
-    virtual bool canCut() const;
-    virtual bool canCopy() const;
-    virtual bool canPaste() const;
-    virtual bool canDelete() const;
-    virtual bool canSelectAll() const;
-    virtual bool canUndo() const;
-    virtual bool canRedo() const;
+    QString filename() const { return fFilename; }
+    void setFilename(QString filename) { fFilename = filename; }
+
+    virtual bool canCut() const { return false; }
+    virtual bool canCopy() const { return false; }
+    virtual bool canPaste() const { return false; }
+    virtual bool canDelete() const { return false; }
+    virtual bool canSelectAll() const { return false; }
+    virtual bool canUndo() const { return false; }
+    virtual bool canRedo() const { return false; }
 
     virtual bool loadFile(QString filename);
     virtual bool saveTo(QString filename);
-    bool saveDefault();
-    bool revert();
+    bool saveDefault() { return saveTo(fFilename); }
+    bool revert() { return loadFile(fFilename); }
 
     void setEncryption(EncryptionMode enc);
-    EncryptionMode encryption() const;
+    EncryptionMode encryption() const { return fEncryption; }
 
 signals:
     void becameDirty();
@@ -66,14 +68,14 @@ signals:
     void statusChanged();
 
 public slots:
-    virtual void updateSettings();
-    virtual void performCut();
-    virtual void performCopy();
-    virtual void performPaste();
-    virtual void performDelete();
-    virtual void performSelectAll();
-    virtual void performUndo();
-    virtual void performRedo();
+    virtual void updateSettings() { }
+    virtual void performCut() { }
+    virtual void performCopy() { }
+    virtual void performPaste() { }
+    virtual void performDelete() { }
+    virtual void performSelectAll() { }
+    virtual void performUndo() { }
+    virtual void performRedo() { }
 
 protected:
     DocumentType fDocType;
@@ -82,9 +84,10 @@ protected:
     QString fFilename;
     bool fDirty, fPersistDirty;
 
-    static bool isZeroKey(const unsigned int* key);
+    static bool isZeroKey(const unsigned int* key)
+    { return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0); }
 
-protected slots:
+public slots:
     void makeDirty();
     void makeClean();
     void maybeClean();
