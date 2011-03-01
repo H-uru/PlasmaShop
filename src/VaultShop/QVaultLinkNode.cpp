@@ -40,9 +40,6 @@ QVaultLinkNode::QVaultLinkNode(QWidget* parent)
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 2, 0, 1, 3);
 }
 
-QString QVaultLinkNode::getEditorTitle() const
-{ return "Age Link"; }
-
 plVaultNode QVaultLinkNode::saveNode()
 {
     plVaultAgeLinkNode* link = fNode.upcastToAgeLinkNode();

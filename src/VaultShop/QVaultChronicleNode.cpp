@@ -42,9 +42,6 @@ QVaultChronicleNode::QVaultChronicleNode(QWidget* parent)
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 3, 0, 1, 2);
 }
 
-QString QVaultChronicleNode::getEditorTitle() const
-{ return "Chronicle"; }
-
 plVaultNode QVaultChronicleNode::saveNode()
 {
     plVaultChronicleNode* chron = fNode.upcastToChronicleNode();

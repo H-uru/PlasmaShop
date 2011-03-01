@@ -37,9 +37,6 @@ QVaultAgeNode::QVaultAgeNode(QWidget* parent)
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 1, 0);
 }
 
-QString QVaultAgeNode::getEditorTitle() const
-{ return "Age Instance"; }
-
 plVaultNode QVaultAgeNode::saveNode()
 {
     plVaultAgeNode* age = fNode.upcastToAgeNode();

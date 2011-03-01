@@ -49,17 +49,27 @@ public:
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
 
-    hsKeyedObject* obj() const;
-    QString age() const;
-    plPageInfo* page() const;
+    hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
+    QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
+    plPageInfo* page() const { return (type() == kTypePage) ? fPage : NULL; }
 
-    bool hasBuiltIn() const;
-    bool hasTextures() const;
-    void setHasBuiltIn(bool has=true);
-    void setHasTextures(bool has=true);
+    bool hasBuiltIn() const { return (type() == kTypeAge) ? fHasBuiltIn : false; }
+    bool hasTextures() const { return (type() == kTypeAge) ? fHasTextures : false; }
 
-    QString filename() const;
-    void setFilename(const QString& filename);
+    void setHasBuiltIn(bool has=true)
+    {
+        if (type() == kTypeAge)
+            fHasBuiltIn = has;
+    }
+
+    void setHasTextures(bool has=true)
+    {
+        if (type() == kTypeAge)
+            fHasTextures = has;
+    }
+
+    QString filename() const { return fFilename; }
+    void setFilename(const QString& filename) { fFilename = filename; }
 };
 
 #endif

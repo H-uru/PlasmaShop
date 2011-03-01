@@ -126,17 +126,11 @@ QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
     layout->addWidget(scroll, 1, 0);
 }
 
-void QMipmap_Preview::saveDamage()
-{ }
-
 void QMipmap_Preview::setLevel(int level)
 {
     fLevel = level;
     fTexture->setTexture(plMipmap::Convert(fCreatable), fLevel);
 }
-
-int QMipmap_Preview::level() const
-{ return fLevel; }
 
 
 /* QMipmap */

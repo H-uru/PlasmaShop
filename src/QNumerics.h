@@ -28,10 +28,10 @@ public:
     virtual QSize minimumSizeHint() const;
 
     void setRange(double minimum, double maximum, int decimals = 0);
-    double value() const;
+    double value() const { return text().toDouble(); }
 
 public slots:
-    void setValue(double value);
+    void setValue(double value) { setText(QString("%1").arg(value)); }
 };
 
 class QIntEdit : public QLineEdit {
@@ -43,10 +43,10 @@ public:
     virtual QSize minimumSizeHint() const;
 
     void setRange(int minimum, int maximum);
-    int value() const;
+    int value() const { return text().toInt(); }
 
 public slots:
-    void setValue(int value);
+    void setValue(int value) { setText(QString("%1").arg(value)); }
 };
 
 #endif

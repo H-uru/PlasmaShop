@@ -156,11 +156,6 @@ void TextFindDialog::handleFind()
     }
 }
 
-void TextFindDialog::handleSkip()
-{
-    fDocument->textFindNext();
-}
-
 void TextFindDialog::handleReplaceAll()
 {
     if (!fDocument->onReplaceAll(fFindText->text(), fRegEx->isChecked(),
@@ -330,27 +325,6 @@ QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
     connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
 }
 
-bool QPlasmaTextDoc::canCut() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPlasmaTextDoc::canCopy() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPlasmaTextDoc::canPaste() const
-{ return fEditor->isPasteAvailable(); }
-
-bool QPlasmaTextDoc::canDelete() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPlasmaTextDoc::canSelectAll() const
-{ return true; }
-
-bool QPlasmaTextDoc::canUndo() const
-{ return fEditor->isUndoAvailable(); }
-
-bool QPlasmaTextDoc::canRedo() const
-{ return fEditor->isRedoAvailable(); }
-
 void QPlasmaTextDoc::updateSettings()
 {
     QSettings settings("PlasmaShop", "PlasmaShop");
@@ -430,33 +404,6 @@ void QPlasmaTextDoc::updateSettings()
     adjustLineNumbers();
 }
 
-void QPlasmaTextDoc::performCut()
-{ fEditor->cut(); }
-
-void QPlasmaTextDoc::performCopy()
-{ fEditor->copy(); }
-
-void QPlasmaTextDoc::performPaste()
-{ fEditor->paste(); }
-
-void QPlasmaTextDoc::performDelete()
-{ fEditor->removeSelectedText(); }
-
-void QPlasmaTextDoc::performSelectAll()
-{ fEditor->selectAll(true); }
-
-void QPlasmaTextDoc::performUndo()
-{ fEditor->undo(); }
-
-void QPlasmaTextDoc::performRedo()
-{ fEditor->redo(); }
-
-void QPlasmaTextDoc::expandAll()
-{ fEditor->setFoldAll(false); }
-
-void QPlasmaTextDoc::collapseAll()
-{ fEditor->setFoldAll(true); }
-
 void QPlasmaTextDoc::textFind()
 {
     if (s_findSettings.current != NULL) {
@@ -468,11 +415,6 @@ void QPlasmaTextDoc::textFind()
     dlg->show();
     dlg->raise();
     dlg->activateWindow();
-}
-
-void QPlasmaTextDoc::textFindNext()
-{
-    fEditor->findNext();
 }
 
 void QPlasmaTextDoc::textReplace()
@@ -629,12 +571,6 @@ void QPlasmaTextDoc::setEncoding(EncodingMode type)
     makeDirty();
     fPersistDirty = true;
 }
-
-QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::syntax() const
-{ return fSyntax; }
-
-QPlasmaTextDoc::EncodingMode QPlasmaTextDoc::encoding() const
-{ return fEncoding; }
 
 void QPlasmaTextDoc::adjustLineNumbers()
 {

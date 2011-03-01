@@ -17,14 +17,6 @@
 #include "QLinkLabel.h"
 
 /* QLinkLabel */
-QLinkLabel::QLinkLabel(QWidget* parent)
-          : QLabel(parent), fInClick(false)
-{ init(); }
-
-QLinkLabel::QLinkLabel(const QString& text, QWidget* parent)
-          : QLabel(text, parent), fInClick(false)
-{ init(); }
-
 void QLinkLabel::init()
 {
     QFont lblFont = font();

@@ -90,6 +90,3 @@ void QVaultNodeEdit::setNode(const plVaultNode& node)
     fNode = node;
     IRefreshNode();
 }
-
-void QVaultNodeEdit::setMgrs(plResManager*, plSDLMgr*)
-{ }

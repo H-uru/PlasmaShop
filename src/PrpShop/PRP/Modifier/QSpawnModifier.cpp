@@ -33,6 +33,3 @@ QSpawnModifier::QSpawnModifier(plCreatable* pCre, QWidget* parent)
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fSynchObjLink, 0, 0);
 }
-
-void QSpawnModifier::saveDamage()
-{ }

@@ -47,9 +47,6 @@ QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)
     connect(fScrollCtrl, SIGNAL(delObject()), this, SLOT(unsetScrollCtrl()));
 }
 
-void QGUIMultiLineEditCtrl::saveDamage()
-{ }
-
 void QGUIMultiLineEditCtrl::setScrollCtrl()
 {
     pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);

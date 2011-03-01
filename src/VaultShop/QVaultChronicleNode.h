@@ -31,7 +31,7 @@ protected:
 
 public:
     QVaultChronicleNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Chronicle"; }
     virtual plVaultNode saveNode();
 
 protected:

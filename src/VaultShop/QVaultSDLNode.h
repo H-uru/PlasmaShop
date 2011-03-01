@@ -94,9 +94,9 @@ protected:
 
 public:
     QVaultSDLNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "SDL"; }
     virtual plVaultNode saveNode();
-    virtual void setMgrs(plResManager*, plSDLMgr*);
+    virtual void setMgrs(plResManager* mgr, plSDLMgr* sdl) { fSDLEditor->setMgrs(mgr, sdl); }
 
 protected:
     virtual void IRefreshNode();

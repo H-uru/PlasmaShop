@@ -49,9 +49,9 @@ protected:
 
 public:
     QMipmap_Preview(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    virtual void saveDamage() { }
 
-    int level() const;
+    int level() const { return fLevel; }
 
 public slots:
     void setLevel(int level);

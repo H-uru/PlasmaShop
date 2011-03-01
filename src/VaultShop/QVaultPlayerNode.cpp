@@ -52,9 +52,6 @@ QVaultPlayerNode::QVaultPlayerNode(QWidget* parent)
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 3, 0, 1, 2);
 }
 
-QString QVaultPlayerNode::getEditorTitle() const
-{ return "Player"; }
-
 plVaultNode QVaultPlayerNode::saveNode()
 {
     plVaultPlayerNode* player = fNode.upcastToPlayerNode();

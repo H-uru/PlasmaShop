@@ -52,9 +52,6 @@ void QKeyList::delItem(int idx)
     fKeys.erase(fKeys.begin() + idx);
 }
 
-QList<plKey> QKeyList::keys() const
-{ return fKeys; }
-
 void QKeyList::adjustColumns()
 {
     resizeColumnToContents(1);
@@ -119,9 +116,6 @@ void QStringListWidget::delString(int idx)
     fStrings.erase(fStrings.begin() + idx);
 }
 
-QStringList QStringListWidget::strings() const
-{ return fStrings; }
-
 void QStringListWidget::contextMenuEvent(QContextMenuEvent* evt)
 {
     QMenu menu(this);
@@ -168,9 +162,6 @@ void QIntListWidget::delValue(int idx)
     fValues.erase(fValues.begin() + idx);
 }
 
-QList<int> QIntListWidget::values() const
-{ return fValues; }
-
 void QIntListWidget::contextMenuEvent(QContextMenuEvent* evt)
 {
     QMenu menu(this);
@@ -216,9 +207,6 @@ void QDoubleListWidget::delValue(int idx)
     delete item;
     fValues.erase(fValues.begin() + idx);
 }
-
-QList<double> QDoubleListWidget::values() const
-{ return fValues; }
 
 void QDoubleListWidget::contextMenuEvent(QContextMenuEvent* evt)
 {

@@ -42,9 +42,6 @@ QVaultPlayerInfoNode::QVaultPlayerInfoNode(QWidget* parent)
     connect(fPlayerLink, SIGNAL(activated()), this, SLOT(subscribePlayer()));
 }
 
-QString QVaultPlayerInfoNode::getEditorTitle() const
-{ return "Player Info"; }
-
 plVaultNode QVaultPlayerInfoNode::saveNode()
 {
     plVaultPlayerInfoNode* player = fNode.upcastToPlayerInfoNode();

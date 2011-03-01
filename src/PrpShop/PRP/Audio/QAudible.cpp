@@ -30,9 +30,6 @@ QAudible::QAudible(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("No editable fields"), this), 0, 0);
 }
 
-void QAudible::saveDamage()
-{ }
-
 
 /* QWinAudible */
 QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)

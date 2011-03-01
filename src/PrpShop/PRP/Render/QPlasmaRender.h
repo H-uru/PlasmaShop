@@ -58,12 +58,12 @@ public:
 
 public:
     QPlasmaRender(QWidget* parent);
-    ~QPlasmaRender();
+    virtual ~QPlasmaRender();
 
-    QSize minimumSizeHint() const;
-    QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const { return QSize(50, 50); }
+    virtual QSize sizeHint() const { return QSize(400, 400); }
 
-    void addObject(plKey obj);
+    void addObject(plKey obj) { fObjects.append(obj); }
     void setView(const hsVector3& view, float angle = 0.0f);
     void center(plKey obj, bool world);
     void build(int navMode, int drawMode);

@@ -33,6 +33,3 @@ QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
     layout->setVerticalSpacing(0);
     layout->addWidget(fRender, 0, 0);
 }
-
-void QSceneObj_Preview::saveDamage()
-{ }

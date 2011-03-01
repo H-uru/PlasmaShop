@@ -44,16 +44,6 @@ void QFloatEdit::setRange(double minimum, double maximum, int decimals)
     ((QDoubleValidator*)validator())->setRange(minimum, maximum, decimals);
 }
 
-double QFloatEdit::value() const
-{
-    return text().toDouble();
-}
-
-void QFloatEdit::setValue(double value)
-{
-    setText(QString("%1").arg(value));
-}
-
 
 /* QIntEdit */
 QIntEdit::QIntEdit(QWidget* parent)
@@ -79,14 +69,4 @@ QSize QIntEdit::minimumSizeHint() const
 void QIntEdit::setRange(int minimum, int maximum)
 {
     ((QIntValidator*)validator())->setRange(minimum, maximum);
-}
-
-int QIntEdit::value() const
-{
-    return text().toInt();
-}
-
-void QIntEdit::setValue(int value)
-{
-    setText(QString("%1").arg(value));
 }

@@ -88,9 +88,6 @@ void QPythonParamList::delParam(int idx)
     fParams.erase(fParams.begin() + idx);
 }
 
-QList<plPythonParameter> QPythonParamList::params() const
-{ return fParams; }
-
 void QPythonParamList::adjustColumns()
 {
     resizeColumnToContents(0);

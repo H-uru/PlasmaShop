@@ -63,9 +63,6 @@ QVaultAgeInfoNode::QVaultAgeInfoNode(QWidget* parent)
     connect(fAgeCzarLink, SIGNAL(activated()), this, SLOT(subscribeAgeCzar()));
 }
 
-QString QVaultAgeInfoNode::getEditorTitle() const
-{ return "Age Info"; }
-
 plVaultNode QVaultAgeInfoNode::saveNode()
 {
     plVaultAgeInfoNode* age = fNode.upcastToAgeInfoNode();

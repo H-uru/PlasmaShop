@@ -63,31 +63,9 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
 }
 
 void QPrcEditor::saveDamage()
-{ }
-
-QSize QPrcEditor::sizeHint() const
-{ return QSize(500, 400); }
-
-bool QPrcEditor::canCut() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPrcEditor::canCopy() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPrcEditor::canPaste() const
-{ return fEditor->isPasteAvailable(); }
-
-bool QPrcEditor::canDelete() const
-{ return fEditor->hasSelectedText(); }
-
-bool QPrcEditor::canSelectAll() const
-{ return true; }
-
-bool QPrcEditor::canUndo() const
-{ return fEditor->isUndoAvailable(); }
-
-bool QPrcEditor::canRedo() const
-{ return fEditor->isRedoAvailable(); }
+{
+    //TODO
+}
 
 void QPrcEditor::updateSettings()
 {
@@ -148,27 +126,6 @@ void QPrcEditor::updateSettings()
     fEditor->setMarginsFont(textFont);
     adjustLineNumbers();
 }
-
-void QPrcEditor::performCut()
-{ fEditor->cut(); }
-
-void QPrcEditor::performCopy()
-{ fEditor->copy(); }
-
-void QPrcEditor::performPaste()
-{ fEditor->paste(); }
-
-void QPrcEditor::performDelete()
-{ fEditor->removeSelectedText(); }
-
-void QPrcEditor::performSelectAll()
-{ fEditor->selectAll(true); }
-
-void QPrcEditor::performUndo()
-{ fEditor->undo(); }
-
-void QPrcEditor::performRedo()
-{ fEditor->redo(); }
 
 void QPrcEditor::adjustLineNumbers()
 {

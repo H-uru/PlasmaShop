@@ -38,7 +38,7 @@ protected:
 
 public:
     QVaultAgeInfoNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Age Info"; }
     virtual plVaultNode saveNode();
 
 protected:

@@ -26,14 +26,6 @@
 #include "../QPlasma.h"
 
 /* SumData */
-SumData::Entry::Entry()
-       : fTimestamp(0), fUnknown(0)
-{ }
-
-SumData::SumData()
-       : fUnknown(0)
-{ }
-
 void SumData::read(hsStream* S)
 {
     fEntries.resize(S->readInt());

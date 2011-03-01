@@ -57,9 +57,9 @@ class GameConfigDialog : public QDialog {
 
 public:
     GameConfigDialog(const GameInfo& info, QWidget* parent);
-    QString gameTitle() const;
-    QString gameLocation() const;
-    int gameType() const;
+    QString gameTitle() const { return fGameTitle->text(); }
+    QString gameLocation() const { return fGameLocation->text(); }
+    int gameType() const { return fGameType->currentIndex(); }
 
 private slots:
     void onBrowseLocation();

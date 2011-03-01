@@ -32,7 +32,7 @@ protected:
 
 public:
     QVaultTextNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Text Note"; }
     virtual plVaultNode saveNode();
 
 protected:

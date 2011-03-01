@@ -26,8 +26,10 @@ protected:
     bool fInClick;
 
 public:
-    QLinkLabel(QWidget* parent = NULL);
-    QLinkLabel(const QString& text, QWidget* parent = NULL);
+    QLinkLabel(QWidget* parent = 0)
+        : QLabel(parent), fInClick(false) { init(); }
+    QLinkLabel(const QString& text, QWidget* parent = 0)
+        : QLabel(text, parent), fInClick(false) { init(); }
 
 protected:
     void init();

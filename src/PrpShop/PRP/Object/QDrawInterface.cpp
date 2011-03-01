@@ -44,9 +44,6 @@ void QDrawableList::addKey(plKey key, int dkey)
     fDrawKeys << dkey;
 }
 
-QList<int> QDrawableList::drawKeys() const
-{ return fDrawKeys; }
-
 void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
 {
     QMenu menu(this);
@@ -105,12 +102,6 @@ void QFindDrawKeyDialog::init(plResManager* mgr, const plLocation& loc)
         fKeyBox->addItem(~fKeys[i]->getName());
     fDrawKey->setValue(0);
 }
-
-plKey QFindDrawKeyDialog::selection() const
-{ return fKeys[fKeyBox->currentIndex()]; }
-
-int QFindDrawKeyDialog::drawKey() const
-{ return fDrawKey->value(); }
 
 
 /* QDrawInterface */

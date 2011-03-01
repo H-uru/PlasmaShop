@@ -741,12 +741,6 @@ QVaultSDLNode::QVaultSDLNode(QWidget* parent)
     layout->addWidget(fSDLEditor, 1, 1);
 }
 
-QString QVaultSDLNode::getEditorTitle() const
-{ return "SDL"; }
-
-void QVaultSDLNode::setMgrs(plResManager* mgr, plSDLMgr* sdl)
-{ fSDLEditor->setMgrs(mgr, sdl); }
-
 plVaultNode QVaultSDLNode::saveNode()
 {
     plVaultSDLNode* sdl = fNode.upcastToSDLNode();

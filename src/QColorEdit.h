@@ -31,7 +31,7 @@ protected:
 public:
     QColorBox(QWidget* parent = NULL);
     void setColor(QColor col);
-    QColor color() const;
+    QColor color() const { return fColor; }
 
 protected:
     virtual void mousePressEvent(QMouseEvent*);
@@ -53,11 +53,11 @@ protected:
 public:
     QColorEdit(bool doAlpha, QWidget* parent = NULL);
     void setColor(hsColorRGBA color);
-    hsColorRGBA color() const;
+    hsColorRGBA color() const { return fColor; }
 
 protected slots:
     void selectColor();
-    void setAlpha(double alpha);
+    void setAlpha(double alpha) { fColor.a = alpha; }
 };
 
 #endif

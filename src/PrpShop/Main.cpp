@@ -43,11 +43,8 @@
 #define PRPSHOP_VERSION "Build 130"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
-PrpShopMain* PrpShopMain::Instance()
-{ return sInstance; }
-
-plResManager* PrpShopMain::ResManager()
-{ return &sInstance->fResMgr; }
+PrpShopMain* PrpShopMain::Instance() { return sInstance; }
+plResManager* PrpShopMain::ResManager() { return &sInstance->fResMgr; }
 
 PrpShopMain::PrpShopMain()
 {

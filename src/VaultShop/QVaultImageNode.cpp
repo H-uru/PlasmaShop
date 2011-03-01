@@ -45,9 +45,6 @@ void QStaticImage::set(QPixmap* img)
     //setMinimumSize(fScale.width(), fScale.height());
 }
 
-QPixmap* QStaticImage::get() const
-{ return fImg; }
-
 void QStaticImage::refresh()
 {
     resizeEvent(0);
@@ -113,9 +110,6 @@ QVaultImageNode::QVaultImageNode(QWidget* parent)
     connect(btnSave, SIGNAL(clicked()), this, SLOT(IExportImage()));
     connect(btnLoad, SIGNAL(clicked()), this, SLOT(IImportImage()));
 }
-
-QString QVaultImageNode::getEditorTitle() const
-{ return "Image"; }
 
 plVaultNode QVaultImageNode::saveNode()
 {

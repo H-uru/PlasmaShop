@@ -31,7 +31,7 @@ protected:
 
 public:
     QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    virtual void saveDamage() { }
 
 private slots:
     void setScrollCtrl();

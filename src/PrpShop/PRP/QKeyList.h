@@ -33,7 +33,7 @@ public:
 
     void addKey(plKey key);
     void delItem(int idx);
-    QList<plKey> keys() const;
+    QList<plKey> keys() const { return fKeys; }
 
     void adjustColumns();
 
@@ -60,7 +60,7 @@ public:
 
     void addString(const QString& str);
     void delString(int idx);
-    QStringList strings() const;
+    QStringList strings() const { return fStrings; }
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
@@ -79,7 +79,7 @@ public:
 
     void addValue(int value);
     void delValue(int idx);
-    QList<int> values() const;
+    QList<int> values() const { return fValues; }
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
@@ -97,7 +97,7 @@ public:
 
     void addValue(double value);
     void delValue(int idx);
-    QList<double> values() const;
+    QList<double> values() const { return fValues; }
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);

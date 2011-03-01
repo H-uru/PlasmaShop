@@ -49,9 +49,6 @@ QVaultTextNode::QVaultTextNode(QWidget* parent)
     layout->addWidget(fNoteContents, 2, 1);
 }
 
-QString QVaultTextNode::getEditorTitle() const
-{ return "Text Note"; }
-
 plVaultNode QVaultTextNode::saveNode()
 {
     plVaultTextNoteNode* text = fNode.upcastToTextNoteNode();

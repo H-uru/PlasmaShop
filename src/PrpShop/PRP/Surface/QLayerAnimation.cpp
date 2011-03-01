@@ -92,9 +92,6 @@ QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
     connect(fTransform, SIGNAL(delObject()), this, SLOT(delTransform()));
 }
 
-void QLayerAnimation::saveDamage()
-{ }
-
 void QLayerAnimation::setBaseLayer()
 {
     plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);

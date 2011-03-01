@@ -30,7 +30,7 @@ public:
     virtual ~QStaticImage();
 
     void set(QPixmap* img);
-    QPixmap* get() const;
+    QPixmap* get() const { return fImg; }
     void refresh();
 
 protected:
@@ -53,7 +53,7 @@ protected:
 
 public:
     QVaultImageNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Image"; }
     virtual plVaultNode saveNode();
 
 protected slots:

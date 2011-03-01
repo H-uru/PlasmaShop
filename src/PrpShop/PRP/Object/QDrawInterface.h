@@ -37,7 +37,7 @@ public:
     QDrawableList(plKey container, QWidget* parent = NULL);
 
     void addKey(plKey key, int dkey);
-    QList<int> drawKeys() const;
+    QList<int> drawKeys() const { return fDrawKeys; }
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
@@ -57,8 +57,8 @@ public:
     QFindDrawKeyDialog(QWidget* parent = NULL);
     void init(plResManager* mgr, const plLocation& loc);
 
-    plKey selection() const;
-    int drawKey() const;
+    plKey selection() const { return fKeys[fKeyBox->currentIndex()]; }
+    int drawKey() const { return fDrawKey->value(); }
 };
 
 class QDrawInterface : public QCreatable {

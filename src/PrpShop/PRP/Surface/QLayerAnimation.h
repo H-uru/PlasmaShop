@@ -40,7 +40,7 @@ protected:
 
 public:
     QLayerAnimation(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    virtual void saveDamage() { }
 
 protected slots:
     void setBaseLayer();

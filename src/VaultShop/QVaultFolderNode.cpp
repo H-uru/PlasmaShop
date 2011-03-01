@@ -137,9 +137,6 @@ QVaultFolderNode::QVaultFolderNode(QWidget* parent)
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 2, 0, 1, 2);
 }
 
-QString QVaultFolderNode::getEditorTitle() const
-{ return "Folder"; }
-
 plVaultNode QVaultFolderNode::saveNode()
 {
     plVaultFolderNode* folder = fNode.upcastToFolderNode();
@@ -160,21 +157,3 @@ void QVaultFolderNode::IRefreshNode()
     fFolderType->setCurrentIndex(MapFolderType(folder->getFolderType()));
     fFolderName->setText(~folder->getFolderName());
 }
-
-
-/* QVaultPlayerInfoList */
-QVaultPlayerInfoList::QVaultPlayerInfoList(QWidget* parent)
-                    : QVaultFolderNode(parent)
-{ }
-
-QString QVaultPlayerInfoList::getEditorTitle() const
-{ return "Player Info List"; }
-
-
-/* QVaultAgeInfoList */
-QVaultAgeInfoList::QVaultAgeInfoList(QWidget* parent)
-                 : QVaultFolderNode(parent)
-{ }
-
-QString QVaultAgeInfoList::getEditorTitle() const
-{ return "Age Info List"; }

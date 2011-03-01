@@ -29,7 +29,7 @@ protected:
 
 public:
     QVaultAgeNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Age Instance"; }
     virtual plVaultNode saveNode();
 
 protected:

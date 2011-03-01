@@ -43,11 +43,6 @@ QCreatableLink::QCreatableLink(QWidget* parent, bool canEdit)
     setCreatable(NULL);
 }
 
-void QCreatableLink::setText(const QString& str)
-{
-    fObjLabel->setText(str);
-}
-
 void QCreatableLink::setCreatable(plCreatable* pCre)
 {
     fCreatable = pCre;
@@ -64,9 +59,6 @@ void QCreatableLink::setKey(plKey key)
         fObjLabel->setEnabled(false);
     }
 }
-
-void QCreatableLink::setForceType(short forceType)
-{ fForceType = forceType; }
 
 void QCreatableLink::objectActivated()
 {

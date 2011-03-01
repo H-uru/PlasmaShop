@@ -81,15 +81,6 @@ void QNewKeyDialog::init(plResManager* mgr, plLocation loc, short type)
     }
 }
 
-plLocation QNewKeyDialog::location() const
-{ return fLocations[fLocationBox->currentIndex()]; }
-
-short QNewKeyDialog::type() const
-{ return fTypes[fTypeBox->currentIndex()]; }
-
-QString QNewKeyDialog::name() const
-{ return fName->text(); }
-
 
 /* QFindKeyDialog */
 QFindKeyDialog::QFindKeyDialog(QWidget* parent)
@@ -182,14 +173,16 @@ void QFindKeyDialog::init(plResManager* mgr, plKey current)
 
 plKey QFindKeyDialog::selection() const
 {
-    if (fKeyBox->currentIndex() < 0) return plKey();
+    if (fKeyBox->currentIndex() < 0)
+        return plKey();
     return fKeys[fKeyBox->currentIndex()];
 }
 
 void QFindKeyDialog::locationSelected(int idx)
 {
     fTypeBox->clear();
-    if (idx < 0) return;
+    if (idx < 0)
+        return;
 
     fTypes = fResMgr->getTypes(fLocations[idx]);
     for (size_t i=0; i<fTypes.size(); i++)
@@ -199,7 +192,8 @@ void QFindKeyDialog::locationSelected(int idx)
 void QFindKeyDialog::typeSelected(int idx)
 {
     fKeyBox->clear();
-    if (idx < 0) return;
+    if (idx < 0)
+        return;
 
     fKeys = fResMgr->getKeys(fLocations[fLocationBox->currentIndex()], fTypes[idx]);
     for (size_t i=0; i<fKeys.size(); i++)

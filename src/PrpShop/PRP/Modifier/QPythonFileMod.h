@@ -39,7 +39,7 @@ public:
 
     void addParam(const plPythonParameter& param);
     void delParam(int idx);
-    QList<plPythonParameter> params() const;
+    QList<plPythonParameter> params() const { return fParams; }
 
     void adjustColumns();
 

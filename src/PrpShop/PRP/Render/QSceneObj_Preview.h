@@ -28,7 +28,7 @@ protected:
 
 public:
     QSceneObj_Preview(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    virtual void saveDamage() { }
 };
 
 #endif

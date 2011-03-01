@@ -40,25 +40,25 @@ public:
     QPrcEditor(plCreatable* pCre, QWidget* parent = NULL);
     virtual void saveDamage();
 
-    virtual QSize sizeHint() const;
+    virtual QSize sizeHint() const { return QSize(500, 400); }
 
-    virtual bool canCut() const;
-    virtual bool canCopy() const;
-    virtual bool canPaste() const;
-    virtual bool canDelete() const;
-    virtual bool canSelectAll() const;
-    virtual bool canUndo() const;
-    virtual bool canRedo() const;
+    virtual bool canCut() const { return fEditor->hasSelectedText(); }
+    virtual bool canCopy() const { return fEditor->hasSelectedText(); }
+    virtual bool canPaste() const { return fEditor->isPasteAvailable(); }
+    virtual bool canDelete() const { return fEditor->hasSelectedText(); }
+    virtual bool canSelectAll() const { return true; }
+    virtual bool canUndo() const { return fEditor->isUndoAvailable(); }
+    virtual bool canRedo() const { return fEditor->isRedoAvailable(); }
 
 public slots:
     virtual void updateSettings();
-    virtual void performCut();
-    virtual void performCopy();
-    virtual void performPaste();
-    virtual void performDelete();
-    virtual void performSelectAll();
-    virtual void performUndo();
-    virtual void performRedo();
+    virtual void performCut() { fEditor->cut(); }
+    virtual void performCopy() { fEditor->copy(); }
+    virtual void performPaste() { fEditor->paste(); }
+    virtual void performDelete() { fEditor->removeSelectedText(); }
+    virtual void performSelectAll() { fEditor->selectAll(true); }
+    virtual void performUndo() { fEditor->undo(); }
+    virtual void performRedo() { fEditor->redo(); }
 
 signals:
     void statusChanged();

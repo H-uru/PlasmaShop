@@ -31,7 +31,7 @@ protected:
 
 public:
     QVaultLinkNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Age Link"; }
     virtual plVaultNode saveNode();
 
 protected:

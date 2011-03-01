@@ -100,30 +100,3 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
     setText(0, ~page->getPage());
     setIcon(0, QIcon(":/img/page.png"));
 }
-
-hsKeyedObject* QPlasmaTreeItem::obj() const
-{ return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
-
-QString QPlasmaTreeItem::age() const
-{ return (type() == kTypeAge) ? fAge : QString(); }
-
-plPageInfo* QPlasmaTreeItem::page() const
-{ return (type() == kTypePage) ? fPage : NULL; }
-
-bool QPlasmaTreeItem::hasBuiltIn() const
-{ return (type() == kTypeAge) ? fHasBuiltIn : false; }
-
-bool QPlasmaTreeItem::hasTextures() const
-{ return (type() == kTypeAge) ? fHasTextures : false; }
-
-void QPlasmaTreeItem::setHasBuiltIn(bool has)
-{ if (type() == kTypeAge) fHasBuiltIn = has; }
-
-void QPlasmaTreeItem::setHasTextures(bool has)
-{ if (type() == kTypeAge) fHasTextures = has; }
-
-QString QPlasmaTreeItem::filename() const
-{ return fFilename; }
-
-void QPlasmaTreeItem::setFilename(const QString& filename)
-{ fFilename = filename; }

@@ -239,15 +239,6 @@ GameConfigDialog::GameConfigDialog(const GameInfo& info, QWidget* parent)
     setWindowTitle(tr("Game Properties"));
 }
 
-QString GameConfigDialog::gameTitle() const
-{ return fGameTitle->text(); }
-
-QString GameConfigDialog::gameLocation() const
-{ return fGameLocation->text(); }
-
-int GameConfigDialog::gameType() const
-{ return fGameType->currentIndex(); }
-
 void GameConfigDialog::onBrowseLocation()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Find Game Path"),

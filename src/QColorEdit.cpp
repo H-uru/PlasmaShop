@@ -36,9 +36,6 @@ void QColorBox::setColor(QColor col)
     update();
 }
 
-QColor QColorBox::color() const
-{ return fColor; }
-
 void QColorBox::mousePressEvent(QMouseEvent* evt)
 {
     fInClick = (evt->button() == Qt::LeftButton && rect().contains(evt->pos()));
@@ -102,9 +99,6 @@ void QColorEdit::setColor(hsColorRGBA color)
         fAlphaBox->setValue(fColor.a);
 }
 
-hsColorRGBA QColorEdit::color() const
-{ return fColor; }
-
 void QColorEdit::selectColor()
 {
     QColor qtcol;
@@ -112,9 +106,4 @@ void QColorEdit::selectColor()
     QColor col = QColorDialog::getColor(qtcol, this);
     if (col.isValid())
         setColor(hsColorRGBA(col.redF(), col.greenF(), col.blueF(), fColor.a));
-}
-
-void QColorEdit::setAlpha(double alpha)
-{
-    fColor.a = alpha;
 }

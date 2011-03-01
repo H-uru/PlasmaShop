@@ -37,9 +37,9 @@ public:
     QNewKeyDialog(QWidget* parent = NULL);
     void init(plResManager* mgr, plLocation loc = plLocation(), short type = -1);
 
-    plLocation location() const;
-    short type() const;
-    QString name() const;
+    plLocation location() const { return fLocations[fLocationBox->currentIndex()]; }
+    short type() const { return fTypes[fTypeBox->currentIndex()]; }
+    QString name() const { return fName->text(); }
 };
 
 class QFindKeyDialog : public QDialog {

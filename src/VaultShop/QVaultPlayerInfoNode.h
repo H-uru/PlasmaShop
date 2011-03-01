@@ -32,7 +32,7 @@ protected:
 
 public:
     QVaultPlayerInfoNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Player Info"; }
     virtual plVaultNode saveNode();
 
 protected:

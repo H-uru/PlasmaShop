@@ -62,12 +62,6 @@ QPlasmaRender::~QPlasmaRender()
     }
 }
 
-QSize QPlasmaRender::minimumSizeHint() const
-{ return QSize(50, 50); }
-
-QSize QPlasmaRender::sizeHint() const
-{ return QSize(400, 400); }
-
 void QPlasmaRender::initializeGL()
 {
     glShadeModel(GL_SMOOTH);
@@ -165,11 +159,6 @@ void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
         fMouseState = 0;
     if ((fMouseState == 3) && (evt->button() & Qt::MidButton) == 0)
         fMouseState = 0;
-}
-
-void QPlasmaRender::addObject(plKey obj)
-{
-    fObjects.append(obj);
 }
 
 void QPlasmaRender::setView(const hsVector3& view, float angle)

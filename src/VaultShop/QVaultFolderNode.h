@@ -35,7 +35,7 @@ protected:
 
 public:
     QVaultFolderNode(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    virtual QString getEditorTitle() const { return "Folder"; }
     virtual plVaultNode saveNode();
 
 protected:
@@ -47,8 +47,9 @@ protected:
     Q_OBJECT
 
 public:
-    QVaultPlayerInfoList(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    QVaultPlayerInfoList(QWidget* parent)
+        : QVaultFolderNode(parent) { }
+    virtual QString getEditorTitle() const { return "Player Info List"; }
 };
 
 class QVaultAgeInfoList : public QVaultFolderNode {
@@ -56,8 +57,9 @@ protected:
     Q_OBJECT
 
 public:
-    QVaultAgeInfoList(QWidget* parent);
-    virtual QString getEditorTitle() const;
+    QVaultAgeInfoList(QWidget* parent)
+        : QVaultFolderNode(parent) { }
+    virtual QString getEditorTitle() const { return "Age Info List"; }
 };
 
 #endif

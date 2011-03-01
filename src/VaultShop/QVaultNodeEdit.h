@@ -36,7 +36,7 @@ public:
 
     virtual QString getEditorTitle() const = 0;
     virtual plVaultNode saveNode() = 0;
-    virtual void setMgrs(plResManager*, plSDLMgr*);
+    virtual void setMgrs(plResManager*, plSDLMgr*) { }
 
 protected:
     virtual void IRefreshNode() = 0;

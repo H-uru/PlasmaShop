@@ -31,13 +31,14 @@ struct SumData {
         time_t fTimestamp;
         unsigned int fUnknown;
 
-        Entry();
+        Entry() : fTimestamp(0), fUnknown(0) { }
     };
 
     unsigned int fUnknown;
     std::vector<Entry> fEntries;
 
-    SumData();
+    SumData() : fUnknown(0) { }
+
     void read(hsStream* S);
     void write(hsStream* S);
 };

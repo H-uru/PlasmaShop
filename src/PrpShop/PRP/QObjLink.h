@@ -31,10 +31,10 @@ protected:
 
 public:
     QCreatableLink(QWidget* parent = NULL, bool canEdit = true);
-    void setText(const QString& str);
+    void setText(const QString& str) { fObjLabel->setText(str); }
     void setCreatable(plCreatable* pCre);
     void setKey(plKey key);
-    void setForceType(short forceType);
+    void setForceType(short forceType) { fForceType = forceType; }
 
 protected slots:
     void objectActivated();
