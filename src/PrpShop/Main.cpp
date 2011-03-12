@@ -737,7 +737,7 @@ void PrpShopMain::loadFile(QString filename)
     filename = QDir::toNativeSeparators(dir.absolutePath());
 
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
-        //try {
+        try {
             plAgeInfo* age = fResMgr.ReadAge(~filename, true);
             QDir path(filename);
             path.cdUp();
@@ -756,12 +756,12 @@ void PrpShopMain::loadFile(QString filename)
                 if (QFile::exists(prp))
                     loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), prp);
             }
-        //} catch (std::exception& ex) {
-        //    QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-        //                       tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
-        //                       QMessageBox::Ok, this);
-        //    msgBox.exec();
-        //}
+        } catch (std::exception& ex) {
+            QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
+                               tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
+                               QMessageBox::Ok, this);
+            msgBox.exec();
+        }
     } else if (filename.endsWith(".prp", Qt::CaseInsensitive)) {
         try {
             plPageInfo* page = fResMgr.ReadPage(~filename);
