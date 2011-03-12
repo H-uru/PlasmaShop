@@ -731,16 +731,18 @@ void PrpShopMain::openFiles()
 void PrpShopMain::loadFile(QString filename)
 {
     // Fix filename to contain the absolute path >.<
+    // Note: On Win32, Qt will use '/' as a path separator
+    //       But libHSPlasma wants '\', so we must fix this!
     QDir dir(filename);
-    filename = dir.absolutePath();
+    filename = QDir::toNativeSeparators(dir.absolutePath());
 
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
-        try {
+        //try {
             plAgeInfo* age = fResMgr.ReadAge(~filename, true);
             QDir path(filename);
             path.cdUp();
             for (size_t i=0; i<age->getNumPages(); i++) {
-                QString prp = path.absoluteFilePath(~age->getPageFilename(i, fResMgr.getVer()));
+                QString prp = QDir::toNativeSeparators(path.absoluteFilePath(~age->getPageFilename(i, fResMgr.getVer())));
                 if (QFile::exists(prp)) {
                     loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())), prp);
                 } else {
@@ -750,16 +752,16 @@ void PrpShopMain::loadFile(QString filename)
                 }
             }
             for (size_t i=0; i<age->getNumCommonPages(fResMgr.getVer()); i++) {
-                QString prp = path.absoluteFilePath(~age->getCommonPageFilename(i, fResMgr.getVer()));
+                QString prp = QDir::toNativeSeparators(path.absoluteFilePath(~age->getCommonPageFilename(i, fResMgr.getVer())));
                 if (QFile::exists(prp))
                     loadPage(fResMgr.FindPage(age->getCommonPageLoc(i, fResMgr.getVer())), prp);
             }
-        } catch (std::exception& ex) {
-            QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
-                               tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
-                               QMessageBox::Ok, this);
-            msgBox.exec();
-        }
+        //} catch (std::exception& ex) {
+        //    QMessageBox msgBox(QMessageBox::Warning, tr("Error"),
+        //                       tr("Error Loading File %1:\n%2").arg(filename).arg(ex.what()),
+        //                       QMessageBox::Ok, this);
+        //    msgBox.exec();
+        //}
     } else if (filename.endsWith(".prp", Qt::CaseInsensitive)) {
         try {
             plPageInfo* page = fResMgr.ReadPage(~filename);
@@ -774,7 +776,7 @@ void PrpShopMain::loadFile(QString filename)
                 if (fResMgr.getVer().isUru())
                     texPath += "_District";
                 texPath += "_Textures.prp";
-                texPath = path.absoluteFilePath(texPath);
+                texPath = QDir::toNativeSeparators(path.absoluteFilePath(texPath));
                 if (QFile::exists(texPath))
                     loadPage(fResMgr.ReadPage(~texPath), texPath);
             }
@@ -783,7 +785,7 @@ void PrpShopMain::loadFile(QString filename)
                 if (fResMgr.getVer().isUru())
                     biPath += "_District";
                 biPath += "_BuiltIn.prp";
-                biPath = path.absoluteFilePath(biPath);
+                biPath = QDir::toNativeSeparators(path.absoluteFilePath(biPath));
                 if (QFile::exists(biPath))
                     loadPage(fResMgr.ReadPage(~biPath), biPath);
             }
