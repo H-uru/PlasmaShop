@@ -26,8 +26,6 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
-    plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
-    plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
 
     fDetectorLink = new QCreatableLink(this, false);
     fDetectorLink->setText(tr("Detector Properties"));
@@ -38,7 +36,7 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fDetectorLink, 0, 0, 1, 2);
 
-    if (subDet == NULL) {
+    if (!obj->ClassInstance(kSubworldRegionDetector)) {
         // Subworld Region Detector skips the Type property
         QGroupBox* grpType = new QGroupBox(tr("Type"), this);
         QGridLayout* layType = new QGridLayout(grpType);
@@ -65,7 +63,9 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         layout->addWidget(grpType, 1, 0, 1, 2);
     }
 
-    if (subDet != NULL) {
+    if (obj->ClassInstance(kSubworldRegionDetector)) {
+        plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
+
         fSubworld = new QCreatableLink(this);
         fSubworld->setKey(subDet->getSubworld());
         fSubworld->setText(subDet->getSubworld().Exists()
@@ -82,7 +82,8 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         connect(fSubworld, SIGNAL(delObject()), this, SLOT(unsetSubworld()));
     }
 
-    if (plRgn != NULL) {
+    if (obj->ClassInstance(kPanicLinkRegion)) {
+        plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
         fBoolParam = new QCheckBox(tr("Play Link-Out Animation"), this);
         fBoolParam->setChecked(plRgn->getPlayLinkOutAnim());
         layout->addWidget(fBoolParam, 2, 0, 1, 2);
@@ -92,10 +93,8 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
 void QCollisionDetector::saveDamage()
 {
     plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
-    plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
-    plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
 
-    if (subDet == NULL)
+    if (!obj->ClassInstance(kSubworldRegionDetector))
         obj->setType((fTypeFlags[kCBTypeEnter]->isChecked() ? plCollisionDetector::kTypeEnter : 0)
                    | (fTypeFlags[kCBTypeExit]->isChecked() ? plCollisionDetector::kTypeExit : 0)
                    | (fTypeFlags[kCBTypeAny]->isChecked() ? plCollisionDetector::kTypeAny : 0)
@@ -103,11 +102,15 @@ void QCollisionDetector::saveDamage()
                    | (fTypeFlags[kCBTypeUnExit]->isChecked() ? plCollisionDetector::kTypeUnExit : 0)
                    | (fTypeFlags[kCBTypeBump]->isChecked() ? plCollisionDetector::kTypeBump : 0));
 
-    if (subDet != NULL)
+    if (obj->ClassInstance(kSubworldRegionDetector)) {
+        plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
         subDet->setOnExit(fBoolParam->isChecked());
+    }
 
-    if (plRgn != NULL)
+    if (obj->ClassInstance(kPanicLinkRegion)) {
+        plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
         plRgn->setPlayLinkOutAnim(fBoolParam->isChecked());
+    }
 }
 
 void QCollisionDetector::setSubworld()
