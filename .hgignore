@@ -12,4 +12,7 @@ bin/PrpShop
 bin/VaultShop
 
 syntax: regexp
-build/
+^build/
+^build64/
+^Dist/
+^Dist64/
