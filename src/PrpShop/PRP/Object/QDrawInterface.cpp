@@ -16,6 +16,7 @@
 
 #include "QDrawInterface.h"
 
+#include <PRP/Geometry/plDrawableSpans.h>
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
@@ -49,6 +50,8 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
     QMenu menu(this);
     QAction* addObjItem = menu.addAction(tr("Add Object"));
     QAction* delObjItem = menu.addAction(tr("Remove Object"));
+    menu.addSeparator();
+    QAction* openMatItem = menu.addAction(tr("Open Materials"));
 
     if (currentItem() == NULL)
         delObjItem->setEnabled(false);
@@ -61,6 +64,18 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
             addKey(dlg.selection(), dlg.drawKey());
     } else if (sel == delObjItem) {
         delItem(indexOfTopLevelItem(currentItem()));
+    } else if (sel == openMatItem) {
+        plResManager* mgr = PrpShopMain::ResManager();
+        int idx = indexOfTopLevelItem(currentItem());
+        plDrawableSpans* dspans = plDrawableSpans::Convert(mgr->getObject(fKeys[idx]));
+        plDISpanIndex dis = dspans->getDIIndex(fDrawKeys[idx]);
+
+        hsTArray<plKey> mats = dspans->getMaterials();
+        for (size_t i = 0; i < dis.fIndices.getSize(); i++) {
+            plIcicle* ice = dspans->getIcicle(dis.fIndices[i]);
+            hsKeyedObject* mat = mgr->getObject(mats[ice->getMaterialIdx()]);
+            PrpShopMain::Instance()->editCreatable(mat);
+        }
     }
 }
 
