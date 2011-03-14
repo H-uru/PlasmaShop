@@ -25,17 +25,20 @@ Name: VaultShop; Description: VaultShop 1.1; Types: Custom Full
 
 [Files]
 Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
-Source: ..\bin\HSPlasma.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\zlib1.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
-Source: ..\bin\PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
-Source: ..\bin\VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
-Source: ..\bin\QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: ..\bin\QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: ..\bin\QtSvg4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: ..\bin\QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
-Source: ..\bin\qscintilla2-ps3.dll; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: HSPlasma.dll; DestDir: {app}; Flags: ignoreversion
+Source: PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
+Source: PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
+Source: VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
+Source: QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
+Source: QtSvg4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
+Source: qscintilla2-ps3.dll; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: libpng15.dll; DestDir: {app}; Flags: ignoreversion
+Source: zlib1.dll; DestDir: {app}; Flags: ignoreversion
+Source: imageformats\qjpeg4.dll; DestDir: {app}; Flags: ignoreversion
+Source: imageformats\qsvg4.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
 
 [Run]
