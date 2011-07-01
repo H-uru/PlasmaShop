@@ -1,4 +1,3 @@
-syntax: glob
 *.o
 *.a
 *.log
@@ -11,8 +10,7 @@ bin/PlasmaShop
 bin/PrpShop
 bin/VaultShop
 
-syntax: regexp
-^build/
-^build64/
-^Dist/
-^Dist64/
+/build
+/build64
+/Dist
+/Dist64
