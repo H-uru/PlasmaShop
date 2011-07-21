@@ -34,11 +34,9 @@ Source: QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
 Source: QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
 Source: QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: QtSvg4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: qscintilla2-ps3.dll; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
-Source: libpng15.dll; DestDir: {app}; Flags: ignoreversion
 Source: zlib1.dll; DestDir: {app}; Flags: ignoreversion
-Source: imageformats\qjpeg4.dll; DestDir: {app}; Flags: ignoreversion
-Source: imageformats\qsvg4.dll; DestDir: {app}; Flags: ignoreversion
+Source: imageformats\qjpeg4.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qsvg4.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
 
 [Run]
