@@ -155,7 +155,8 @@ set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_MOC} ${PrpShop_RCC})
-target_link_libraries(PrpShop qscintilla2-ps3 ${QT_LIBRARIES} ${QT_QTOPENGL_LIB_DEPENDENCIES} HSPlasma)
+target_link_libraries(PrpShop ${QT_LIBRARIES} ${QT_QTOPENGL_LIB_DEPENDENCIES}
+                      qscintilla2-ps3 HSPlasma)
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

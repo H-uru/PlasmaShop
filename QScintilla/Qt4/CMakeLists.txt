@@ -84,15 +84,5 @@ include_directories("${PROJECT_SOURCE_DIR}/QScintilla/src")
 
 add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)
 
-add_library(qscintilla2-ps3 SHARED ${QScintilla_Sources} ${QScintilla_MOC})
+add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_MOC})
 target_link_libraries(qscintilla2-ps3 ${QT_LIBRARIES})
-
-if(WIN32)
-    install(TARGETS qscintilla2-ps3
-            DESTINATION .
-    )
-else()
-    install(TARGETS qscintilla2-ps3
-            DESTINATION lib
-    )
-endif()
