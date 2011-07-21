@@ -49,8 +49,10 @@ static QStringList makeParamItem(const plPythonParameter& param)
         row << ~param.fStrValue;
     else if (param.fValueType == plPythonParameter::kNone)
         row << "(Null)";
-    else
+    else if (param.fObjKey.Exists())
         row << ~param.fObjKey->getName();
+    else
+        row << "(Null)";
     return row;
 }
 
