@@ -31,6 +31,9 @@
     <file>res/def/edit-find.png</file>
     <file>res/def/edit-select-all.png</file>
     <file>res/def/help-about.png</file>
+    <file>res/def/list-add.png</file>
+    <file>res/def/list-remove.png</file>
+    <file>res/def/view-refresh.png</file>
     <file>res/PlasmaShop.png</file>
 
     <!-- Images for file types -->

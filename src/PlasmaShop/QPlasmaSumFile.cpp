@@ -21,9 +21,11 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QMenu>
+#include <QToolBar>
 #include <QFileDialog>
 #include <QSettings>
 #include <QCryptographicHash>
+#include <qticonloader.h>
 #include "../QPlasma.h"
 
 /* SumData */
@@ -115,14 +117,25 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
     fFileList->setSelectionMode(QAbstractItemView::ExtendedSelection);
     fFileList->setHeaderLabels(QStringList() << "Filename" << "Timestamp" << "MD5");
 
+    QToolBar* toolbar = new QToolBar(this);
+    toolbar->setOrientation(Qt::Vertical);
+    toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolbar->setIconSize(QSize(22, 22));
+
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
     layout->addWidget(fFileList, 0, 0);
+    layout->addWidget(toolbar, 0, 1);
     setLayout(layout);
 
-    fActions[kAUpdate] = new QAction(tr("&Update &all..."), this);
-    fActions[kAAdd] = new QAction(tr("&Add / Update..."), this);
-    fActions[kADel] = new QAction(tr("&Remove"), this);
+    fActions[kAUpdate] = new QAction(qStdIcon("view-refresh"), tr("&Update &all..."), this);
+    fActions[kAAdd] = new QAction(qStdIcon("list-add"), tr("&Add / Update..."), this);
+    fActions[kADel] = new QAction(qStdIcon("list-remove"), tr("&Remove"), this);
+
+    toolbar->addAction(fActions[kAUpdate]);
+    toolbar->addSeparator();
+    toolbar->addAction(fActions[kAAdd]);
+    toolbar->addAction(fActions[kADel]);
 
     connect(fFileList, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onContextMenu(QPoint)));
