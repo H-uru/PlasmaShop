@@ -41,6 +41,8 @@ struct SumData {
 
     void read(hsStream* S);
     void write(hsStream* S);
+
+    void addFrom(QString filename);
 };
 
 class QPlasmaSumFile : public QPlasmaDocument {
