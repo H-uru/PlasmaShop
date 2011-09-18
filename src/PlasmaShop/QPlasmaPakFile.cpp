@@ -268,7 +268,7 @@ QPlasmaPakFile::QPlasmaPakFile(QWidget* parent)
 
     fActions[kAdd] = new QAction(qStdIcon("list-add"), tr("&Add / Update..."), this);
     fActions[kDel] = new QAction(qStdIcon("list-remove"), tr("&Delete"), this);
-    fActions[kExtract] = new QAction(qStdIcon("document-save-as"), tr("&Extract..."), this);
+    fActions[kExtract] = new QAction(qStdIcon("document-save"), tr("&Extract..."), this);
     fActions[kExtractAll] = new QAction(QIcon(":/img/pak.png"), tr("Ex&tract all..."), this);
 
     toolbar->addAction(fActions[kAdd]);

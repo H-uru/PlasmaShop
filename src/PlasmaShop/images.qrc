@@ -9,6 +9,9 @@
     <file>res/win/edit-paste.png</file>
     <file>res/win/edit-undo.png</file>
     <file>res/win/edit-redo.png</file>
+    <file>res/win/list-add.png</file>
+    <file>res/win/list-remove.png</file>
+    <file>res/win/view-refresh.png</file>
     <file>res/mac/document-new.png</file>
     <file>res/mac/document-open.png</file>
     <file>res/mac/document-save.png</file>
@@ -17,6 +20,9 @@
     <file>res/mac/edit-paste.png</file>
     <file>res/mac/edit-undo.png</file>
     <file>res/mac/edit-redo.png</file>
+    <file>res/mac/list-add.png</file>
+    <file>res/mac/list-remove.png</file>
+    <file>res/mac/view-refresh.png</file>
     <file>res/def/document-new.png</file>
     <file>res/def/document-open.png</file>
     <file>res/def/document-save.png</file>
