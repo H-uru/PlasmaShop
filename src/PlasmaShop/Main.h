@@ -51,9 +51,11 @@ private:
         kTextFind, kTextFindNext, kTextReplace,
         kTextStxNone, kTextStxPython, kTextStxSDL, kTextStxIni,
         kTextStxConsole, kTextStxXML, kTextStxHex, kTextStxFX,
-        kTextEncNone, kTextEncXtea, kTextEncAes, kTextEncDroid,
         kTextTypeAnsi, kTextTypeUTF8, kTextTypeUTF16, kTextTypeUTF32,
         kTextExpandAll, kTextCollapseAll,
+
+        // Generic Encryption options
+        kGenEncNone, kGenEncXtea, kGenEncAes, kGenEncDroid,
 
         // Tree Context Menu
         kTreeOpen, kTreeRename, kTreeDelete,
@@ -64,6 +66,7 @@ private:
 
     // Editor-specific menus (for dynamically hiding)
     QMenu* fTextMenu;
+    QMenu* fEncryptMenu;
     QMenu* fHelpMenu;
 
     // Game Browser
@@ -84,8 +87,8 @@ protected:
     virtual void dropEvent(QDropEvent* evt);
 
     void setTextSyntax(int sel);
-    void setTextEncryption(int sel);
     void setTextEncoding(int sel);
+    void setEncryption(int sel);
     void populateGameList();
 
 private slots:
@@ -117,14 +120,15 @@ private slots:
     void onTextStxXML();
     void onTextStxHex();
     void onTextStxFX();
-    void onTextEncNone();
-    void onTextEncXtea();
-    void onTextEncAes();
-    void onTextEncDroid();
     void onTextTypeAnsi();
     void onTextTypeUTF8();
     void onTextTypeUTF16();
     void onTextTypeUTF32();
+
+    void onGenEncNone();
+    void onGenEncXtea();
+    void onGenEncAes();
+    void onGenEncDroid();
 
     void onCloseTab(int idx);
     void onChangeTab(int idx);

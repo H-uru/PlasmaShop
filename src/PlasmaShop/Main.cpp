@@ -73,16 +73,17 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextStxXML] = new QAction(tr("&XML"), this);
     fActions[kTextStxHex] = new QAction(tr("&Hex Isle Level"), this);
     fActions[kTextStxFX] = new QAction(tr("Shader &FX"), this);
-    fActions[kTextEncNone] = new QAction(tr("&None"), this);
-    fActions[kTextEncXtea] = new QAction(tr("&Uru Prime / PotS / UU"), this);
-    fActions[kTextEncAes] = new QAction(tr("Myst &5 / Crowthistle / Hex Isle"), this);
-    fActions[kTextEncDroid] = new QAction(tr("&MOUL / MQO (Requires Key)"), this);
     fActions[kTextTypeAnsi] = new QAction(tr("&ANSI"), this);
     fActions[kTextTypeUTF8] = new QAction(tr("UTF-&8"), this);
     fActions[kTextTypeUTF16] = new QAction(tr("UTF-1&6"), this);
     fActions[kTextTypeUTF32] = new QAction(tr("UTF-&32"), this);
     fActions[kTextExpandAll] = new QAction(tr("E&xpand All"), this);
     fActions[kTextCollapseAll] = new QAction(tr("&Collapse All"), this);
+
+    fActions[kGenEncNone] = new QAction(tr("&None"), this);
+    fActions[kGenEncXtea] = new QAction(tr("&Uru Prime / PotS / UU"), this);
+    fActions[kGenEncAes] = new QAction(tr("Myst &5 / Crowthistle / Hex Isle"), this);
+    fActions[kGenEncDroid] = new QAction(tr("&MOUL / MQO (Requires Key)"), this);
 
     fActions[kTreeOpen] = new QAction(tr("&Open"), this);
     fActions[kTreeRename] = new QAction(tr("&Rename"), this);
@@ -112,14 +113,14 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextStxXML]->setCheckable(true);
     fActions[kTextStxHex]->setCheckable(true);
     fActions[kTextStxFX]->setCheckable(true);
-    fActions[kTextEncNone]->setCheckable(true);
-    fActions[kTextEncXtea]->setCheckable(true);
-    fActions[kTextEncAes]->setCheckable(true);
-    fActions[kTextEncDroid]->setCheckable(true);
     fActions[kTextTypeAnsi]->setCheckable(true);
     fActions[kTextTypeUTF8]->setCheckable(true);
     fActions[kTextTypeUTF16]->setCheckable(true);
     fActions[kTextTypeUTF32]->setCheckable(true);
+    fActions[kGenEncNone]->setCheckable(true);
+    fActions[kGenEncXtea]->setCheckable(true);
+    fActions[kGenEncAes]->setCheckable(true);
+    fActions[kGenEncDroid]->setCheckable(true);
 
     // Main Menus
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
@@ -161,11 +162,6 @@ PlasmaShopMain::PlasmaShopMain()
     text_stxMenu->addAction(fActions[kTextStxXML]);
     text_stxMenu->addAction(fActions[kTextStxHex]);
     text_stxMenu->addAction(fActions[kTextStxFX]);
-    QMenu* text_encMenu = fTextMenu->addMenu(tr("Encr&yption"));
-    text_encMenu->addAction(fActions[kTextEncNone]);
-    text_encMenu->addAction(fActions[kTextEncXtea]);
-    text_encMenu->addAction(fActions[kTextEncAes]);
-    text_encMenu->addAction(fActions[kTextEncDroid]);
     QMenu* text_typeMenu = fTextMenu->addMenu(tr("File &Encoding"));
     text_typeMenu->addAction(fActions[kTextTypeAnsi]);
     text_typeMenu->addAction(fActions[kTextTypeUTF8]);
@@ -174,6 +170,12 @@ PlasmaShopMain::PlasmaShopMain()
     fTextMenu->addSeparator();
     fTextMenu->addAction(fActions[kTextExpandAll]);
     fTextMenu->addAction(fActions[kTextCollapseAll]);
+
+    fEncryptMenu = menuBar()->addMenu(tr("Encr&yption"));
+    fEncryptMenu->addAction(fActions[kGenEncNone]);
+    fEncryptMenu->addAction(fActions[kGenEncXtea]);
+    fEncryptMenu->addAction(fActions[kGenEncAes]);
+    fEncryptMenu->addAction(fActions[kGenEncDroid]);
 
     // Help menu is always at the end
     fHelpMenu = menuBar()->addMenu(tr("&Help"));
@@ -268,14 +270,14 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kTextStxXML], SIGNAL(triggered()), this, SLOT(onTextStxXML()));
     connect(fActions[kTextStxHex], SIGNAL(triggered()), this, SLOT(onTextStxHex()));
     connect(fActions[kTextStxFX], SIGNAL(triggered()), this, SLOT(onTextStxFX()));
-    connect(fActions[kTextEncNone], SIGNAL(triggered()), this, SLOT(onTextEncNone()));
-    connect(fActions[kTextEncXtea], SIGNAL(triggered()), this, SLOT(onTextEncXtea()));
-    connect(fActions[kTextEncAes], SIGNAL(triggered()), this, SLOT(onTextEncAes()));
-    connect(fActions[kTextEncDroid], SIGNAL(triggered()), this, SLOT(onTextEncDroid()));
     connect(fActions[kTextTypeAnsi], SIGNAL(triggered()), this, SLOT(onTextTypeAnsi()));
     connect(fActions[kTextTypeUTF8], SIGNAL(triggered()), this, SLOT(onTextTypeUTF8()));
     connect(fActions[kTextTypeUTF16], SIGNAL(triggered()), this, SLOT(onTextTypeUTF16()));
     connect(fActions[kTextTypeUTF32], SIGNAL(triggered()), this, SLOT(onTextTypeUTF32()));
+    connect(fActions[kGenEncNone], SIGNAL(triggered()), this, SLOT(onGenEncNone()));
+    connect(fActions[kGenEncXtea], SIGNAL(triggered()), this, SLOT(onGenEncXtea()));
+    connect(fActions[kGenEncAes], SIGNAL(triggered()), this, SLOT(onGenEncAes()));
+    connect(fActions[kGenEncDroid], SIGNAL(triggered()), this, SLOT(onGenEncDroid()));
 
     connect(fGameSelector, SIGNAL(activated(int)), this, SLOT(onSelectGame(int)));
     connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
@@ -568,11 +570,10 @@ void PlasmaShopMain::onNewFile()
     if (plDoc != NULL) {
         fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(fnameDisplay), fnameDisplay);
         plDoc->setFilename(fnameDisplay);
+        plDoc->setEncryption(encrypt);
         if (dtype == kDocText) {
             ((QPlasmaTextDoc*)plDoc)->setSyntax(syntax);
-            ((QPlasmaTextDoc*)plDoc)->setEncryption(encrypt);
             ((QPlasmaTextDoc*)plDoc)->setEncoding(encoding);
-            ((QPlasmaTextDoc*)plDoc)->makeClean();
         } else if (dtype == kDocPackage) {
             if (dlg.fileType() == kFilePak)
                 ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kPythonPak);
@@ -581,6 +582,7 @@ void PlasmaShopMain::onNewFile()
             else if (dlg.fileType() == kFileFontPak)
                 ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kFontsPfp);
         }
+        plDoc->makeClean();
         connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
         connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
         connect(plDoc, SIGNAL(becameClean()), this, SLOT(onDocClean()));
@@ -961,50 +963,6 @@ void PlasmaShopMain::onTextStxFX()
     setTextSyntax(kTextStxFX);
 }
 
-void PlasmaShopMain::onTextEncNone()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncryption(QPlasmaTextDoc::kEncNone);
-    setTextEncryption(kTextEncNone);
-}
-
-void PlasmaShopMain::onTextEncXtea()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncryption(QPlasmaTextDoc::kEncXtea);
-    setTextEncryption(kTextEncXtea);
-}
-
-void PlasmaShopMain::onTextEncAes()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncryption(QPlasmaTextDoc::kEncAes);
-    setTextEncryption(kTextEncAes);
-}
-
-void PlasmaShopMain::onTextEncDroid()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncryption(QPlasmaTextDoc::kEncDroid);
-    setTextEncryption(kTextEncDroid);
-}
-
 void PlasmaShopMain::onTextTypeAnsi()
 {
     if (fEditorPane->currentIndex() < 0)
@@ -1049,6 +1007,42 @@ void PlasmaShopMain::onTextTypeUTF32()
     setTextEncoding(kTextTypeUTF32);
 }
 
+void PlasmaShopMain::onGenEncNone()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->setEncryption(QPlasmaDocument::kEncNone);
+    setEncryption(kGenEncNone);
+}
+
+void PlasmaShopMain::onGenEncXtea()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->setEncryption(QPlasmaDocument::kEncXtea);
+    setEncryption(kGenEncXtea);
+}
+
+void PlasmaShopMain::onGenEncAes()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->setEncryption(QPlasmaDocument::kEncAes);
+    setEncryption(kGenEncAes);
+}
+
+void PlasmaShopMain::onGenEncDroid()
+{
+    if (fEditorPane->currentIndex() < 0)
+        return;
+    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
+    doc->setEncryption(QPlasmaDocument::kEncDroid);
+    setEncryption(kGenEncDroid);
+}
+
 void PlasmaShopMain::onCloseTab(int idx)
 {
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(idx);
@@ -1081,20 +1075,20 @@ void PlasmaShopMain::setTextSyntax(int sel)
     fActions[kTextStxFX]->setChecked(sel == kTextStxFX);
 }
 
-void PlasmaShopMain::setTextEncryption(int sel)
-{
-    fActions[kTextEncNone]->setChecked(sel == kTextEncNone);
-    fActions[kTextEncXtea]->setChecked(sel == kTextEncXtea);
-    fActions[kTextEncAes]->setChecked(sel == kTextEncAes);
-    fActions[kTextEncDroid]->setChecked(sel == kTextEncDroid);
-}
-
 void PlasmaShopMain::setTextEncoding(int sel)
 {
     fActions[kTextTypeAnsi]->setChecked(sel == kTextTypeAnsi);
     fActions[kTextTypeUTF8]->setChecked(sel == kTextTypeUTF8);
     fActions[kTextTypeUTF16]->setChecked(sel == kTextTypeUTF16);
     fActions[kTextTypeUTF32]->setChecked(sel == kTextTypeUTF32);
+}
+
+void PlasmaShopMain::setEncryption(int sel)
+{
+    fActions[kGenEncNone]->setChecked(sel == kGenEncNone);
+    fActions[kGenEncXtea]->setChecked(sel == kGenEncXtea);
+    fActions[kGenEncAes]->setChecked(sel == kGenEncAes);
+    fActions[kGenEncDroid]->setChecked(sel == kGenEncDroid);
 }
 
 void PlasmaShopMain::populateGameList()
@@ -1150,17 +1144,17 @@ void PlasmaShopMain::onChangeTab(int idx)
     fActions[kTextStxXML]->setEnabled(false);
     fActions[kTextStxHex]->setEnabled(false);
     fActions[kTextStxFX]->setEnabled(false);
-    fActions[kTextEncNone]->setEnabled(false);
-    fActions[kTextEncXtea]->setEnabled(false);
-    fActions[kTextEncAes]->setEnabled(false);
-    fActions[kTextEncDroid]->setEnabled(false);
     fActions[kTextTypeAnsi]->setEnabled(false);
     fActions[kTextTypeUTF8]->setEnabled(false);
     fActions[kTextTypeUTF16]->setEnabled(false);
     fActions[kTextTypeUTF32]->setEnabled(false);
+    fActions[kGenEncNone]->setEnabled(false);
+    fActions[kGenEncXtea]->setEnabled(false);
+    fActions[kGenEncAes]->setEnabled(false);
+    fActions[kGenEncDroid]->setEnabled(false);
     setTextSyntax(kTextStxNone);
-    setTextEncryption(kTextEncNone);
     setTextEncoding(kTextTypeAnsi);
+    setEncryption(kGenEncNone);
 
     if (idx < 0) {
         fActions[kFileSave]->setEnabled(false);
@@ -1178,10 +1172,14 @@ void PlasmaShopMain::onChangeTab(int idx)
     fActions[kFileSave]->setEnabled(true);
     fActions[kFileSaveAs]->setEnabled(true);
     fActions[kFileRevert]->setEnabled(true);
+    fActions[kGenEncNone]->setEnabled(true);
+    fActions[kGenEncXtea]->setEnabled(true);
+    fActions[kGenEncAes]->setEnabled(true);
+    fActions[kGenEncDroid]->setEnabled(true);
 
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->widget(idx);
     if (doc->docType() == kDocText) {
-        menuBar()->insertMenu(fHelpMenu->menuAction(), fTextMenu);
+        menuBar()->insertMenu(fEncryptMenu->menuAction(), fTextMenu);
         fTextMenu->setEnabled(true);
 
         fActions[kTextFind]->setEnabled(true);
@@ -1198,17 +1196,12 @@ void PlasmaShopMain::onChangeTab(int idx)
         fActions[kTextStxXML]->setEnabled(true);
         fActions[kTextStxHex]->setEnabled(true);
         fActions[kTextStxFX]->setEnabled(true);
-        fActions[kTextEncNone]->setEnabled(true);
-        fActions[kTextEncXtea]->setEnabled(true);
-        fActions[kTextEncAes]->setEnabled(true);
-        fActions[kTextEncDroid]->setEnabled(true);
         fActions[kTextTypeAnsi]->setEnabled(true);
         fActions[kTextTypeUTF8]->setEnabled(true);
         fActions[kTextTypeUTF16]->setEnabled(true);
         fActions[kTextTypeUTF32]->setEnabled(true);
 
         QPlasmaTextDoc::SyntaxMode syn = ((QPlasmaTextDoc*)doc)->syntax();
-        QPlasmaTextDoc::EncryptionMode enc = ((QPlasmaTextDoc*)doc)->encryption();
         QPlasmaTextDoc::EncodingMode type = ((QPlasmaTextDoc*)doc)->encoding();
 
         switch (syn) {
@@ -1238,21 +1231,6 @@ void PlasmaShopMain::onChangeTab(int idx)
             break;
         }
 
-        switch (enc) {
-        case QPlasmaTextDoc::kEncAes:
-            setTextEncryption(kTextEncAes);
-            break;
-        case QPlasmaTextDoc::kEncDroid:
-            setTextEncryption(kTextEncDroid);
-            break;
-        case QPlasmaTextDoc::kEncNone:
-            setTextEncryption(kTextEncNone);
-            break;
-        case QPlasmaTextDoc::kEncXtea:
-            setTextEncryption(kTextEncXtea);
-            break;
-        }
-
         switch (type) {
         case QPlasmaTextDoc::kTypeAnsi:
             setTextEncoding(kTextTypeAnsi);
@@ -1267,6 +1245,21 @@ void PlasmaShopMain::onChangeTab(int idx)
             setTextEncoding(kTextTypeUTF32);
             break;
         }
+    }
+
+    switch (doc->encryption()) {
+    case QPlasmaDocument::kEncAes:
+        setEncryption(kGenEncAes);
+        break;
+    case QPlasmaDocument::kEncDroid:
+        setEncryption(kGenEncDroid);
+        break;
+    case QPlasmaDocument::kEncNone:
+        setEncryption(kGenEncNone);
+        break;
+    case QPlasmaDocument::kEncXtea:
+        setEncryption(kGenEncXtea);
+        break;
     }
 }
 
