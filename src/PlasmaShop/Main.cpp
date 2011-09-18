@@ -33,6 +33,7 @@
 #include "../QPlasma.h"
 #include "OptionsDialog.h"
 #include "QPlasmaTextDoc.h"
+#include "QPlasmaPakFile.h"
 #include "GameScanner.h"
 #include "NewFile.h"
 
@@ -572,6 +573,13 @@ void PlasmaShopMain::onNewFile()
             ((QPlasmaTextDoc*)plDoc)->setEncryption(encrypt);
             ((QPlasmaTextDoc*)plDoc)->setEncoding(encoding);
             ((QPlasmaTextDoc*)plDoc)->makeClean();
+        } else if (dtype == kDocPackage) {
+            if (dlg.fileType() == kFilePak)
+                ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kPythonPak);
+            else if (dlg.fileType() == kFileCursorPak)
+                ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kCursorsDat);
+            else if (dlg.fileType() == kFileFontPak)
+                ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kFontsPfp);
         }
         connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
         connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
@@ -697,16 +705,19 @@ void PlasmaShopMain::onSaveAs()
                    "All Files (*)";
         curFilter = "Manifest Files (*.sum)";
     } else if (doc->docType() == kDocPackage) {
-        typeList = "Cursor Packages (Cursors.dat);;"
-                   "Plasma Font Packages (*.pfp);;"
-                   "Python Packages (*.pak);;"
-                   "All Files (*)";
-        if (fnameNoPath == "cursors.dat")
+        if (((QPlasmaPakFile*)doc)->packageType() == PlasmaPackage::kCursorsDat) {
+            typeList = "Cursor Packages (Cursors.dat);;"
+                       "All Files (*)";
             curFilter = "Cursor Packages (Cursors.dat)";
-        else if (ext == "pfp")
+        } else if (((QPlasmaPakFile*)doc)->packageType() == PlasmaPackage::kFontsPfp) {
+            typeList = "Plasma Font Packages (*.pfp);;"
+                       "All Files (*)";
             curFilter = "Plasma Font Packages (*.pfp)";
-        else
+        } else {
+            typeList = "Python Packages (*.pak);;"
+                       "All Files (*)";
             curFilter = "Python Packages (*.pak)";
+        }
     }
     QString filename = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     doc->filename(),

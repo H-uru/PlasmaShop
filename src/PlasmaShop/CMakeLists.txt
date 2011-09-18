@@ -7,6 +7,7 @@ set(PlasmaShop_MOC_Headers
     QPlasmaDocument.h
     QPlasmaTextDoc.h
     QPlasmaSumFile.h
+    QPlasmaPakFile.h
 )
 
 set(PlasmaShop_Sources
@@ -18,6 +19,7 @@ set(PlasmaShop_Sources
     QPlasmaDocument.cpp
     QPlasmaTextDoc.cpp
     QPlasmaSumFile.cpp
+    QPlasmaPakFile.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)

@@ -17,6 +17,7 @@
 #include "QPlasmaDocument.h"
 #include "QPlasmaTextDoc.h"
 #include "QPlasmaSumFile.h"
+#include "QPlasmaPakFile.h"
 #include <QInputDialog>
 #include <QSettings>
 #include <QMessageBox>
@@ -93,6 +94,8 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
         return new QPlasmaTextDoc(parent);
     case kDocManifest:
         return new QPlasmaSumFile(parent);
+    case kDocPackage:
+        return new QPlasmaPakFile(parent);
     default:
         return NULL;
     }

@@ -65,15 +65,15 @@ void SumData::addFrom(QString filename)
         finfo.suffix() == "pfp" || finfo.suffix() == "p2f" || finfo.suffix() == "dat" ||
         finfo.suffix() == "sub" || finfo.suffix() == "loc" || finfo.suffix() == "csv" ||
         finfo.suffix() == "node")
-        sum.fPath = QString("dat\\%1").arg(finfo.fileName()).toUtf8().data();
+        sum.fPath = ~QString("dat\\%1").arg(finfo.fileName());
     else if (finfo.suffix() == "ogg")
-        sum.fPath = QString("sfx\\%1").arg(finfo.fileName()).toUtf8().data();
+        sum.fPath = ~QString("sfx\\%1").arg(finfo.fileName());
     else if (finfo.suffix() == "pak")
-        sum.fPath = QString("Python\\%1").arg(finfo.fileName()).toUtf8().data();
+        sum.fPath = ~QString("Python\\%1").arg(finfo.fileName());
     else if (finfo.suffix() == "sdl")
-        sum.fPath = QString("SDL\\%1").arg(finfo.fileName()).toUtf8().data();
+        sum.fPath = ~QString("SDL\\%1").arg(finfo.fileName());
     else
-        sum.fPath = finfo.fileName().toUtf8().data();
+        sum.fPath = ~finfo.fileName();
 
     // Calculate updated MD5 hash
     QFile file(filename);
@@ -88,7 +88,7 @@ void SumData::addFrom(QString filename)
     std::vector<Entry>::iterator iter;
     bool updated = false;
     for (iter = fEntries.begin(); iter != fEntries.end(); ++iter) {
-        QString path = iter->fPath.cstr();
+        QString path = ~iter->fPath;
         path.replace('\\', QDir::separator()).replace('/', QDir::separator());
         if (QFileInfo(path).fileName() == finfo.fileName()) {
             iter->fHash = sum.fHash;
@@ -128,7 +128,7 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
     layout->addWidget(toolbar, 0, 1);
     setLayout(layout);
 
-    fActions[kAUpdate] = new QAction(qStdIcon("view-refresh"), tr("&Update &all..."), this);
+    fActions[kAUpdate] = new QAction(qStdIcon("view-refresh"), tr("&Update all..."), this);
     fActions[kAAdd] = new QAction(qStdIcon("list-add"), tr("&Add / Update..."), this);
     fActions[kADel] = new QAction(qStdIcon("list-remove"), tr("&Remove"), this);
 
@@ -148,9 +148,9 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
 
 bool QPlasmaSumFile::loadFile(QString filename)
 {
-    if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
+    if (plEncryptedStream::IsFileEncrypted(~filename)) {
         plEncryptedStream S(PlasmaVer::pvPrime);
-        S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
+        S.open(~filename, fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
                 return false;
@@ -374,10 +374,9 @@ void QPlasmaSumFile::onDel()
     foreach (QTreeWidgetItem* item, fFileList->selectedItems()) {
         int idx = fFileList->indexOfTopLevelItem(item);
         fSumData.fEntries.erase(fSumData.fEntries.begin() + idx);
+        delete item;
     }
 
-    if (fFileList->selectedItems().size() != 0) {
-        loadSumData(NULL);
-        makeDirty();
-    }
+    loadSumData(NULL);
+    makeDirty();
 }
