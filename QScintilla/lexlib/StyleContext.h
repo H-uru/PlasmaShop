@@ -5,20 +5,28 @@
 // Copyright 1998-2004 by Neil Hodgson <neilh@scintilla.org>
 // This file is in the public domain.
 
+#ifndef STYLECONTEXT_H
+#define STYLECONTEXT_H
+
 #ifdef SCI_NAMESPACE
 namespace Scintilla {
 #endif
+
+static inline int MakeLowerCase(int ch) {
+	if (ch < 'A' || ch > 'Z')
+		return ch;
+	else
+		return ch - 'A' + 'a';
+}
 
 // All languages handled so far can treat all characters >= 0x80 as one class
 // which just continues the current token or starts an identifier if in default.
 // DBCS treated specially as the second character can be < 0x80 and hence
 // syntactically significant. UTF-8 avoids this as all trail bytes are >= 0x80
 class StyleContext {
-	Accessor &styler;
+	LexAccessor &styler;
 	unsigned int endPos;
-	StyleContext& operator=(const StyleContext&) {
-		return *this;
-	}
+	StyleContext &operator=(const StyleContext &);
 	void GetNextChar(unsigned int pos) {
 		chNext = static_cast<unsigned char>(styler.SafeGetCharAt(pos+1));
 		if (styler.IsLeadByte(static_cast<char>(chNext))) {
@@ -43,7 +51,7 @@ public:
 	int chNext;
 
 	StyleContext(unsigned int startPos, unsigned int length,
-                        int initStyle, Accessor &styler_, char chMask=31) :
+                        int initStyle, LexAccessor &styler_, char chMask=31) :
 		styler(styler_),
 		endPos(startPos + length),
 		currentPos(startPos),
@@ -66,8 +74,9 @@ public:
 	}
 	void Complete() {
 		styler.ColourTo(currentPos - 1, state);
+		styler.Flush();
 	}
-	bool More() {
+	bool More() const {
 		return currentPos < endPos;
 	}
 	void Forward() {
@@ -110,10 +119,10 @@ public:
 	int GetRelative(int n) {
 		return static_cast<unsigned char>(styler.SafeGetCharAt(currentPos+n));
 	}
-	bool Match(char ch0) {
+	bool Match(char ch0) const {
 		return ch == static_cast<unsigned char>(ch0);
 	}
-	bool Match(char ch0, char ch1) {
+	bool Match(char ch0, char ch1) const {
 		return (ch == static_cast<unsigned char>(ch0)) && (chNext == static_cast<unsigned char>(ch1));
 	}
 	bool Match(const char *s) {
@@ -133,15 +142,15 @@ public:
 		return true;
 	}
 	bool MatchIgnoreCase(const char *s) {
-		if (tolower(ch) != static_cast<unsigned char>(*s))
+		if (MakeLowerCase(ch) != static_cast<unsigned char>(*s))
 			return false;
 		s++;
-		if (tolower(chNext) != static_cast<unsigned char>(*s))
+		if (MakeLowerCase(chNext) != static_cast<unsigned char>(*s))
 			return false;
 		s++;
 		for (int n=2; *s; n++) {
 			if (static_cast<unsigned char>(*s) !=
-				tolower(static_cast<unsigned char>(styler.SafeGetCharAt(currentPos+n))))
+				MakeLowerCase(static_cast<unsigned char>(styler.SafeGetCharAt(currentPos+n))))
 				return false;
 			s++;
 		}
@@ -156,24 +165,4 @@ public:
 }
 #endif
 
-inline bool IsASpace(unsigned int ch) {
-    return (ch == ' ') || ((ch >= 0x09) && (ch <= 0x0d));
-}
-
-inline bool IsASpaceOrTab(unsigned int ch) {
-	return (ch == ' ') || (ch == '\t');
-}
-
-inline bool IsADigit(unsigned int ch) {
-	return (ch >= '0') && (ch <= '9');
-}
-
-inline bool IsADigit(unsigned int ch, unsigned int base) {
-	if (base <= 10) {
-		return (ch >= '0') && (ch < '0' + base);
-	} else {
-		return ((ch >= '0') && (ch <= '9')) ||
-		       ((ch >= 'A') && (ch < 'A' + base - 10)) ||
-		       ((ch >= 'a') && (ch < 'a' + base - 10));
-	}
-}
+#endif

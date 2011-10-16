@@ -43,33 +43,41 @@ set(QScintilla_Sources
     ListBoxQt.cpp
     PlatQt.cpp
     ScintillaQt.cpp
+    ../lexers/LexCPP.cpp
+    ../lexers/LexHTML.cpp
+    ../lexers/LexOthers.cpp
+    ../lexers/LexPython.cpp
+    ../lexers/LexSDL.cpp
+    ../lexlib/Accessor.cpp
+    ../lexlib/CharacterSet.cpp
+    ../lexlib/LexerBase.cpp
+    ../lexlib/LexerModule.cpp
+    ../lexlib/LexerNoExceptions.cpp
+    ../lexlib/LexerSimple.cpp
+    ../lexlib/PropSetSimple.cpp
+    ../lexlib/StyleContext.cpp
+    ../lexlib/WordList.cpp
     ../src/AutoComplete.cpp
     ../src/CallTip.cpp
+    ../src/Catalogue.cpp
     ../src/CellBuffer.cpp
     ../src/CharClassify.cpp
     ../src/ContractionState.cpp
     ../src/Decoration.cpp
     ../src/Document.cpp
-    ../src/DocumentAccessor.cpp
     ../src/Editor.cpp
     ../src/ExternalLexer.cpp
     ../src/Indicator.cpp
     ../src/KeyMap.cpp
-    ../src/KeyWords.cpp
-    ../src/LexCPP.cpp
-    ../src/LexHTML.cpp
-    ../src/LexOthers.cpp
-    ../src/LexPython.cpp
-    ../src/LexSDL.cpp
     ../src/LineMarker.cpp
     ../src/PerLine.cpp
     ../src/PositionCache.cpp
-    ../src/PropSet.cpp
     ../src/RESearch.cpp
     ../src/RunStyles.cpp
     ../src/ScintillaBase.cpp
+    ../src/Selection.cpp
     ../src/Style.cpp
-    ../src/StyleContext.cpp
+    ../src/UniConversion.cpp
     ../src/ViewStyle.cpp
     ../src/XPM.cpp
 )
@@ -80,6 +88,7 @@ qt4_wrap_cpp(QScintilla_MOC ${QScintilla_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/include")
+include_directories("${PROJECT_SOURCE_DIR}/QScintilla/lexlib")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/src")
 
 add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)

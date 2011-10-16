@@ -1,6 +1,6 @@
 // This module defines interface to the QsciPrinter class.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -41,8 +41,11 @@ extern "C++" {
 #include <QsciPS3/qsciscintilla.h>
 
 
+QT_BEGIN_NAMESPACE
 class QRect;
 class QPainter;
+QT_END_NAMESPACE
+
 class QsciScintillaBase;
 
 

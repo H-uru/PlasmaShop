@@ -7,18 +7,21 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <assert.h>
+#include <ctype.h>
 
-#include "Platform.h"
-
-#include "PropSet.h"
-#include "Accessor.h"
-#include "StyleContext.h"
-#include "KeyWords.h"
+#include "ILexer.h"
 #include "Scintilla.h"
 #include "SciLexer.h"
+
+#include "WordList.h"
+#include "LexAccessor.h"
+#include "Accessor.h"
+#include "StyleContext.h"
+#include "CharacterSet.h"
+#include "LexerModule.h"
 
 #ifdef SCI_NAMESPACE
 using namespace Scintilla;
@@ -36,7 +39,7 @@ static bool IsPyComment(Accessor &styler, int pos, int len) {
 enum literalsAllowed { litNone=0, litU=1, litB=2};
 
 static bool IsPyStringTypeChar(int ch, literalsAllowed allowed) {
-	return 
+	return
 		((allowed & litB) && (ch == 'b' || ch == 'B')) ||
 		((allowed & litU) && (ch == 'u' || ch == 'U'));
 }
@@ -137,13 +140,13 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 	WordList &keywords3 = *keywordlists[2];
 
 	// property tab.timmy.whinge.level
-	//	For Python code, checks whether indenting is consistent. 
-	//	The default, 0 turns off indentation checking, 
-	//	1 checks whether each line is potentially inconsistent with the previous line, 
-	//	2 checks whether any space characters occur before a tab character in the indentation, 
-	//	3 checks whether any spaces are in the indentation, and 
+	//	For Python code, checks whether indenting is consistent.
+	//	The default, 0 turns off indentation checking,
+	//	1 checks whether each line is potentially inconsistent with the previous line,
+	//	2 checks whether any space characters occur before a tab character in the indentation,
+	//	3 checks whether any spaces are in the indentation, and
 	//	4 checks for any tab characters in the indentation.
-	//	1 is a good level to use. 
+	//	1 is a good level to use.
 	const int whingeLevel = styler.GetPropertyInt("tab.timmy.whinge.level");
 
 	// property lexer.python.literals.binary
@@ -158,6 +161,10 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 	//	Set to 0 to not recognise Python 3 bytes literals b"x".
 	if (styler.GetPropertyInt("lexer.python.strings.b", 1))
 		allowedLiterals = static_cast<literalsAllowed>(allowedLiterals | litB);
+
+	// property lexer.python.strings.over.newline
+	//      Set to 1 to allow strings to span newline characters.
+	bool stringsOverNewline = styler.GetPropertyInt("lexer.python.strings.over.newline") != 0;
 
 	initStyle = initStyle & 31;
 	if (initStyle == SCE_P_STRINGEOL) {
@@ -205,7 +212,7 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 			}
 			lineCurrent++;
 			if ((sc.state == SCE_P_STRING) || (sc.state == SCE_P_CHARACTER)) {
-				if (inContinuedString) {
+				if (inContinuedString || stringsOverNewline) {
 					inContinuedString = false;
 				} else {
 					sc.ChangeState(SCE_P_STRINGEOL);
@@ -352,7 +359,7 @@ static void ColourisePyDoc(unsigned int startPos, int length, int initStyle,
 				if (sc.ch == '0' && (sc.chNext == 'x' || sc.chNext == 'X')) {
 					base_n_number = true;
 					sc.SetState(SCE_P_NUMBER);
-				} else if (sc.ch == '0' && 
+				} else if (sc.ch == '0' &&
 					(sc.chNext == 'o' || sc.chNext == 'O' || sc.chNext == 'b' || sc.chNext == 'B')) {
 					if (base2or8Literals) {
 						base_n_number = true;
@@ -418,6 +425,8 @@ static void FoldPyDoc(unsigned int startPos, int length, int /*initStyle - unuse
 	// property fold.quotes.python
 	//	This option enables folding multi-line quoted strings when using the Python lexer.
 	const bool foldQuotes = styler.GetPropertyInt("fold.quotes.python") != 0;
+
+	const bool foldCompact = styler.GetPropertyInt("fold.compact") != 0;
 
 	// Backtrack to previous non-blank line so we can determine indent level
 	// for any white space lines (needed esp. within triple quoted strings)
@@ -504,7 +513,7 @@ static void FoldPyDoc(unsigned int startPos, int length, int /*initStyle - unuse
 		}
 
 		const int levelAfterComments = indentNext & SC_FOLDLEVELNUMBERMASK;
-		const int levelBeforeComments = Platform::Maximum(indentCurrentLevel,levelAfterComments);
+		const int levelBeforeComments = Maximum(indentCurrentLevel,levelAfterComments);
 
 		// Now set all the indent levels on the lines we skipped
 		// Do this from end to start.  Once we encounter one line
@@ -517,16 +526,25 @@ static void FoldPyDoc(unsigned int startPos, int length, int /*initStyle - unuse
 		while (--skipLine > lineCurrent) {
 			int skipLineIndent = styler.IndentAmount(skipLine, &spaceFlags, NULL);
 
-			if ((skipLineIndent & SC_FOLDLEVELNUMBERMASK) > levelAfterComments)
-				skipLevel = levelBeforeComments;
+			if (foldCompact) {
+				if ((skipLineIndent & SC_FOLDLEVELNUMBERMASK) > levelAfterComments)
+					skipLevel = levelBeforeComments;
 
-			int whiteFlag = skipLineIndent & SC_FOLDLEVELWHITEFLAG;
+				int whiteFlag = skipLineIndent & SC_FOLDLEVELWHITEFLAG;
 
-			styler.SetLevel(skipLine, skipLevel | whiteFlag);
+				styler.SetLevel(skipLine, skipLevel | whiteFlag);
+			} else {
+				if ((skipLineIndent & SC_FOLDLEVELNUMBERMASK) > levelAfterComments &&
+					!(skipLineIndent & SC_FOLDLEVELWHITEFLAG) &&
+					!IsCommentLine(skipLine, styler))
+					skipLevel = levelBeforeComments;
+
+				styler.SetLevel(skipLine, skipLevel);
+			}
 		}
 
 		// Set fold header on non-quote/non-comment line
-		if (!quote && !comment && !(indentCurrent & SC_FOLDLEVELWHITEFLAG) ) {
+		if (!quote && !comment && !(indentCurrent & SC_FOLDLEVELWHITEFLAG)) {
 			if ((indentCurrent & SC_FOLDLEVELNUMBERMASK) < (indentNext & SC_FOLDLEVELNUMBERMASK))
 				lev |= SC_FOLDLEVELHEADERFLAG;
 		}
@@ -546,7 +564,7 @@ static void FoldPyDoc(unsigned int startPos, int length, int /*initStyle - unuse
 	//styler.SetLevel(lineCurrent, indentCurrent);
 }
 
-static const char * const pythonWordListDesc[] = {
+static const char *const pythonWordListDesc[] = {
 	"Keywords",
 	"Highlighted identifiers",
 	"Plasma API",

@@ -1,6 +1,6 @@
 // This defines the interface to the QsciLexerProperties class.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -66,7 +66,7 @@ public:
         //! A default value.
         DefaultValue = 4,
 
-        //! A key
+        //! A key.
         Key = 5
     };
 
@@ -107,7 +107,18 @@ public:
     //! Returns true if trailing blank lines are included in a fold block.
     //!
     //! \sa setFoldCompact()
-    bool foldCompact() const;
+    bool foldCompact() const {return fold_compact;}
+
+    //! If \a enable is true then initial spaces in a line are allowed.  The
+    //! default is true.
+    //!
+    //! \sa initialSpaces()
+    void setInitialSpaces(bool enable);
+
+    //! Returns true if initial spaces in a line are allowed.
+    //!
+    //! \sa setInitialSpaces()
+    bool initialSpaces() const {return initial_spaces;}
 
 public slots:
     //! If \a fold is true then trailing blank lines are included in a fold
@@ -133,8 +144,10 @@ protected:
 
 private:
     void setCompactProp();
+    void setInitialSpacesProp();
 
     bool fold_compact;
+    bool initial_spaces;
 
     QsciLexerProperties(const QsciLexerProperties &);
     QsciLexerProperties &operator=(const QsciLexerProperties &);

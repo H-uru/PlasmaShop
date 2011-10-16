@@ -1,3 +1,69 @@
+v2.5.1 17th April 2011
+  - Added QsciLexerMatlab and QsciLexerOctave.
+
+v2.5 29th March 2011
+  - Based on Scintilla v2.25.
+  - Rectangular selections are now fully supported and compatible with SciTE.
+  - The signature of the fromMimeData() and toMimeData() methods of
+    QsciScintillaBase have changed incompatibly in order to support rectangular
+    selections.
+  - Added QsciScintilla::setAutoCompletionUseSingle() to replace the now
+    deprecated setAutoCompletionShowSingle().
+  - Added QsciScintilla::autoCompletionUseSingle() to replace the now
+    deprecated autoCompletionShowSingle().
+  - QsciScintilla::setAutoCompletionCaseSensitivity() is no longer ignored if a
+    lexer has been set.
+  - Added FullRectangle, LeftRectangle and Underline to the
+    QsciScintilla::MarkerSymbol enum.
+  - Added setExtraAscent(), extraAscent(), setExtraDescent() and extraDescent()
+    to QsciScintilla.
+  - Added setWhitespaceSize() and whitespaceSize() to QsciScintilla.
+  - Added replaceSelectedText() to QsciScintilla.
+  - Added setWhitespaceBackgroundColor() and setWhitespaceForegroundColor() to
+    QsciScintilla.
+  - Added setWrapIndentMode() and wrapIndentMode() to QsciScintilla.
+  - Added setFirstVisibleLine() to QsciScintilla.
+  - Added setContractedFolds() and contractedFolds() to QsciScintilla.
+  - Added the SCN_HOTSPOTRELEASECLICK() signal to QsciScintillaBase.
+  - The signature of the QsciScintillaBase::SCN_UPDATEUI() signal has changed.
+  - Added the RawString and inactive styles to QsciLexerCPP.
+  - Added MediaRule to QsciLexerCSS.
+  - Added BackquoteString, RawString, KeywordSet5, KeywordSet6 and KeywordSet7
+    to QsciLexerD.
+  - Added setDjangoTemplates(), djangoTemplates(), setMakoTemplates() and
+    makoTemplates() to QsciLexerHTML.
+  - Added KeywordSet5, KeywordSet6, KeywordSet7 and KeywordSet8 to
+    QsciLexerLua.
+  - Added setInitialSpaces() and initialSpaces() to QsciLexerProperties.
+  - Added setFoldCompact(), foldCompact(), setStringsOverNewlineAllowed() and
+    stringsOverNewlineAllowed() to QsciLexerPython.
+  - Added setFoldComments(), foldComments(), setFoldCompact() and foldCompact()
+    to QsciLexerRuby.
+  - Added setFoldComments() and foldComments(), and removed setFoldCompact()
+    and foldCompact() from QsciLexerTCL.
+  - Added setFoldComments(), foldComments(), setFoldCompact(), foldCompact(),
+    setProcessComments(), processComments(), setProcessIf(), and processIf() to
+    QsciLexerTeX.
+  - Added QuotedIdentifier, setDottedWords(), dottedWords(), setFoldAtElse(),
+    foldAtElse(), setFoldOnlyBegin(), foldOnlyBegin(), setHashComments(),
+    hashComments(), setQuotedIdentifiers() and quotedIdentifiers() to
+    QsciLexerSQL.
+  - The Python bindings now allow optional arguments to be specified as keyword
+    arguments.
+  - The Python bindings will now build using the protected-is-public hack if
+    possible.
+
+v2.4.6 23rd December 2010
+  - Added support for indicators to the high-level API, i.e. added the
+    IndicatorStyle enum, the clearIndicatorRange(), fillIndicatorRange(),
+    indicatorDefine(), indicatorDrawUnder(), setIndicatorDrawUnder() and
+    setIndicatorForegroundColor methods, and the indicatorClicked() and
+    indicatorReleased() signals to QsciScintilla.
+  - Added support for the Key style in QsciLexerProperties.
+  - Added an API file for Python v2.7.
+  - Added the --no-timestamp command line option to the Python bindings'
+    configure.py.
+
 v2.4.5 31st August 2010
   - A bug fix release.
 

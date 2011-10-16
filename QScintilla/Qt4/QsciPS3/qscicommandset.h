@@ -1,6 +1,6 @@
 // This defines the interface to the QsciCommandSet class.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -43,7 +43,10 @@ extern "C++" {
 #include <QsciPS3/qscicommand.h>
 
 
+QT_BEGIN_NAMESPACE
 class QSettings;
+QT_END_NAMESPACE
+
 class QsciScintilla;
 
 

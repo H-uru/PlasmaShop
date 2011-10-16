@@ -1,6 +1,6 @@
 // This module implements the QsciStyle class.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -52,7 +52,7 @@ QsciStyle::QsciStyle(int style)
 // A ctor.
 QsciStyle::QsciStyle(int style, const QString &description,
         const QColor &color, const QColor &paper, const QFont &font,
-        bool eol_fill)
+        bool eolFill)
 {
     init(style);
 
@@ -62,15 +62,16 @@ QsciStyle::QsciStyle(int style, const QString &description,
     setPaper(paper);
 
     setFont(font);
-    setEolFill(eol_fill);
+    setEolFill(eolFill);
 }
 
 
 // Initialisation common to all ctors.
 void QsciStyle::init(int style)
 {
-    // The next style number to allocate.
-    static int next_style_nr = QsciScintillaBase::STYLE_MAX;
+    // The next style number to allocate.  The initial values corresponds to
+    // the amount of space that Scintilla initially creates for styles.
+    static int next_style_nr = 63;
 
     // See if a new style should be allocated.  Note that we allow styles to be
     // passed in that are bigger than STYLE_MAX because the styles used for
@@ -152,9 +153,9 @@ void QsciStyle::setFont(const QFont &font)
 
 
 // Set the eol fill attribute.
-void QsciStyle::setEolFill(bool eol_fill)
+void QsciStyle::setEolFill(bool eolFill)
 {
-    style_eol_fill = eol_fill;
+    style_eol_fill = eolFill;
 
     if (style_nr >= 0)
     {

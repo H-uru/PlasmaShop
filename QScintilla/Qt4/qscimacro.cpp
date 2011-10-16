@@ -1,6 +1,6 @@
 // This module implements the QsciMacro class.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -114,12 +114,8 @@ bool QsciMacro::load(const QString &asc)
                 break;
             }
 
-            cmd.text.resize(len - 1);
-
             QByteArray ba = fields[f++].toAscii();
             const char *sp = ba.data();
-
-            char *dp = cmd.text.data();
 
             if (!sp)
             {
@@ -127,12 +123,12 @@ bool QsciMacro::load(const QString &asc)
                 break;
             }
 
-            while (len--)
+            // Because of historical bugs the length field is unreliable.
+            bool embedded_null = false;
+            unsigned char ch;
+
+            while ((ch = *sp++) != '\0')
             {
-                unsigned char ch;
-
-                ch = *sp++;
-
                 if (ch == '"' || ch <= ' ' || ch >= 0x7f)
                 {
                     ok = false;
@@ -153,11 +149,27 @@ bool QsciMacro::load(const QString &asc)
                     ch = (b1 << 4) + b2;
                 }
 
-                *dp++ = ch;
+                if (ch == '\0')
+                {
+                    // Don't add it now as it may be the terminating '\0'.
+                    embedded_null = true;
+                }
+                else
+                {
+                    if (embedded_null)
+                    {
+                        // Add the pending embedded '\0'.
+                        cmd.text += '\0';
+                        embedded_null = false;
+                    }
+
+                    cmd.text += ch;
+                }
             }
 
             if (!ok)
                 break;
+
         }
 
         macro.append(cmd);
@@ -191,9 +203,13 @@ QString QsciMacro::save() const
         {
             // In Qt v3, if the length is greater than zero then it also
             // includes the '\0', so we need to make sure that Qt v4 writes the
-            // '\0'.  (That the '\0' is written at all is probably a historical
-            // bug - using size() instead of length() - which we don't fix so
-            // as not to break old macros.)
+            // '\0'.  That the '\0' is written at all is a bug because
+            // QCString::size() is used instead of QCString::length().  We
+            // don't fix this so as not to break old macros.  However this is
+            // still broken because we have already written the unadjusted
+            // length.  So, in summary, the length field should be interpreted
+            // as a zero/non-zero value, and the end of the data is either at
+            // the next space or the very end of the data.
             ++len;
 
             ms += ' ';

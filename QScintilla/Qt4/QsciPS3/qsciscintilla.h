@@ -1,7 +1,7 @@
 // This module defines the "official" high-level API of the Qt port of
 // Scintilla.
 //
-// Copyright (c) 2010 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2011 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -48,8 +48,10 @@ extern "C++" {
 #include <QsciPS3/qsciscintillabase.h>
 
 
+QT_BEGIN_NAMESPACE
 class QIODevice;
 class QPoint;
+QT_END_NAMESPACE
 
 class QsciCommandSet;
 class QsciLexer;
@@ -98,6 +100,24 @@ public:
 
         //! Annotations are surrounded by a box.
         AnnotationBoxed = ANNOTATION_BOXED
+    };
+
+    //! This enum defines the behavior if an auto-completion list contains a
+    //! single entry.
+    enum AutoCompletionUseSingle {
+        //! The single entry is not used automatically and the auto-completion
+        //! list is displayed.
+        AcusNever,
+
+        //! The single entry is used automatically when auto-completion is
+        //! explicitly requested (using autoCompleteFromAPIs() or
+        //! autoCompleteFromDocument()) but not when auto-completion is
+        //! triggered as the user types.
+        AcusExplicit,
+
+        //! The single entry is used automatically and the auto-completion list
+        //! is not displayed.
+        AcusAlways
     };
 
     //! This enum defines the different sources for auto-completion lists.
@@ -203,7 +223,35 @@ public:
         BoxedTreeFoldStyle
     };
 
-    //! This enum defined the different margin types.
+    //! This enum defines the different indicator styles.
+    enum IndicatorStyle {
+        // A single straight underline.
+        PlainIndicator = INDIC_PLAIN,
+
+        // A squiggly underline.
+        SquiggleIndicator = INDIC_SQUIGGLE,
+
+        // A line of small T shapes.
+        TTIndicator = INDIC_TT,
+
+        // Diagonal hatching.
+        DiagonalIndicator = INDIC_DIAGONAL,
+
+        // Strike out.
+        StrikeIndicator = INDIC_STRIKE,
+
+        // An indicator with no visual appearence.
+        HiddenIndicator = INDIC_HIDDEN,
+
+        // A rectangle around the text.
+        BoxIndicator = INDIC_BOX,
+
+        // A rectangle with rounded corners around the text with the interior
+        // more transparent than the border.
+        RoundBoxIndicator = INDIC_ROUNDBOX
+    };
+
+    //! This enum defines the different margin types.
     enum MarginType {
         //! The margin contains symbols, including those used for folding.
         SymbolMargin = SC_MARGIN_SYMBOL,
@@ -298,15 +346,27 @@ public:
         //! A drawn minus sign in a connected circle.
         CircledMinusConnected = SC_MARK_CIRCLEMINUSCONNECTED,
 
-        //! No symbol is drawn but the line of text is drawn with the same
-        //! background colour.
+        //! No symbol is drawn but the line is drawn with the same background
+        //! color as the marker's.
         Background = SC_MARK_BACKGROUND,
 
         //! Three drawn dots.
         ThreeDots = SC_MARK_DOTDOTDOT,
 
         //! Three drawn arrows pointing right.
-        ThreeRightArrows = SC_MARK_ARROWS
+        ThreeRightArrows = SC_MARK_ARROWS,
+
+        //! A full rectangle (ie. the margin background) using the marker's
+        //! background color.
+        FullRectangle = SC_MARK_FULLRECT,
+
+        //! A left rectangle (ie. the left part of the margin background) using
+        //! the marker's background color.
+        LeftRectangle = SC_MARK_LEFTRECT,
+
+        //! No symbol is drawn but the line is drawn underlined using the
+        //! marker's background color.
+        Underline = SC_MARK_UNDERLINE
     };
 
     //! This enum defines the different whitespace visibility modes.  When
@@ -345,6 +405,21 @@ public:
 
         //! A wrap flag is displayed by the border.
         WrapFlagByBorder
+    };
+
+    //! This enum defines the different line wrap indentation modes.
+    enum WrapIndentMode {
+        //! Wrapped sub-lines are indented by the amount set by
+        //! setWrapVisualFlags().
+        WrapIndentFixed = SC_WRAPINDENT_FIXED,
+
+        //! Wrapped sub-lines are indented by the same amount as the first
+        //! sub-line.
+        WrapIndentSame = SC_WRAPINDENT_SAME,
+
+        //! Wrapped sub-lines are indented by the same amount as the first
+        //! sub-line plus one more level of indentation.
+        WrapIndentIndented = SC_WRAPINDENT_INDENT
     };
 
     //! Construct an empty QsciScintilla with parent \a parent.
@@ -409,7 +484,8 @@ public:
     bool autoCompletionReplaceWord() const;
 
     //! Returns true if the only item in an auto-completion list with a single
-    //! entry is automatically used and the list not displayed.
+    //! entry is automatically used and the list not displayed.  Note that this
+    //! is deprecated and autoCompletionUseSingle() should be used instead.
     //!
     //! \sa setAutoCompletionShowSingle()
     bool autoCompletionShowSingle() const;
@@ -425,6 +501,12 @@ public:
     //!
     //! \sa setAutoCompletionThreshold()
     int autoCompletionThreshold() const {return acThresh;}
+
+    //! Returns the current behavior when an auto-completion list contains a
+    //! single entry.
+    //!
+    //! \sa setAutoCompletionUseSingle()
+    AutoCompletionUseSingle autoCompletionUseSingle() const;
 
     //! Returns true if auto-indentation is enabled.
     //!
@@ -471,6 +553,14 @@ public:
     //! \sa setFolding()
     void clearFolds();
 
+    //! Clears the range of text with indicator \a indicatorNumber starting at
+    //! position \a indexFrom in line \a lineFrom and finishing at position
+    //! \a indexTo in line \a lineTo.
+    //!
+    //! \sa fillIndicatorRange()
+    void clearIndicatorRange(int lineFrom, int indexFrom, int lineTo,
+            int indexTo, int indicatorNumber);
+
     //! Clear all registered images.
     //!
     //! \sa registerImage()
@@ -480,6 +570,12 @@ public:
     //!
     //! \sa setColor()
     QColor color() const;
+
+    //! Returns a list of the line numbers that have contracted folds.  This is
+    //! typically used to save the fold state of a document.
+    //!
+    //! \sa setContractedFolds()
+    QList<int> contractedFolds() const;
 
     //! All the lines of the text have their end-of-lines converted to mode
     //! \a mode.
@@ -529,6 +625,26 @@ public:
     //! \sa setEolVisibility()
     bool eolVisibility() const;
 
+    //! Returns the extra space added to the height of a line above the
+    //! baseline of the text.
+    //!
+    //! \sa setExtraAscent(), extraDescent()
+    int extraAscent() const;
+
+    //! Returns the extra space added to the height of a line below the
+    //! baseline of the text.
+    //!
+    //! \sa setExtraDescent(), extraAscent()
+    int extraDescent() const;
+
+    //! Fills the range of text with indicator \a indicatorNumber starting at
+    //! position \a indexFrom in line \a lineFrom and finishing at position
+    //! \a indexTo in line \a lineTo.
+    //!
+    //! \sa clearIndicatorRange()
+    void fillIndicatorRange(int lineFrom, int indexFrom, int lineTo,
+            int indexTo, int indicatorNumber);
+
     //! Find the next occurrence of the string \a expr and return true if
     //! \a expr was found, otherwise returns false.  If \a expr is found it
     //! becomes the current selection.
@@ -565,6 +681,8 @@ public:
     virtual bool findNext();
 
     //! Returns the number of the first visible line.
+    //!
+    //! \sa setFirstVisibleLine()
     int firstVisibleLine() const;
 
     //! Returns the current folding style.
@@ -616,6 +734,28 @@ public:
     //! \sa setIndentationWidth(), tabWidth()
     int indentationWidth() const;
 
+    //! Define a type of indicator using the style \a style with the indicator
+    //! number \a indicatorNumber.  If \a indicatorNumber is -1 then the
+    //! indicator number is automatically allocated.  The indicator number is
+    //! returned or -1 if too many types of indicator have been defined.
+    //!
+    //! Indicators are used to display additional information over the top of
+    //! styling.  They can be used to show, for example, syntax errors,
+    //! deprecated names and bad indentation by drawing lines under text or
+    //! boxes around text.
+    //!
+    //! There may be up to 32 types of indicator defined at a time.  The first
+    //! 8 are normally used by lexers.  By default indicator number 0 is a
+    //! dark green SquiggleIndicator, 1 is a blue TTIndicator, and 2 is a red
+    //! PlainIndicator.
+    int indicatorDefine(IndicatorStyle style, int indicatorNumber = -1);
+
+    //! Returns true if the indicator \a indicatorNumber is drawn under the
+    //! text (i.e. in the background).  The default is false.
+    //!
+    //! \sa setIndicatorDrawUnder()
+    bool indicatorDrawUnder(int indicatorNumber) const;
+
     //! Returns true if a call tip is currently active.
     bool isCallTipActive() const;
 
@@ -659,9 +799,9 @@ public:
     //! \sa wordCharacters()
     bool isWordCharacter(char ch) const;
 
-    //! Returns the line which is at position \a pos or -1 if there is no line
-    //! at that position.
-    int lineAt(const QPoint &pos) const;
+    //! Returns the line which is at \a point pixel coordinates or -1 if there
+    //! is no line at that point.
+    int lineAt(const QPoint &point) const;
 
     //! QScintilla uses the combination of a line number and a character index
     //! from the start of that line to specify the position of a character
@@ -715,9 +855,9 @@ public:
     int marginWidth(int margin) const;
 
     //! Define a type of marker using the symbol \a sym with the marker number
-    //! \a mnr.  If \a mnr is -1 then the marker number is automatically
-    //! allocated.  The marker number is returned or -1 if too many types of
-    //! marker have been defined.
+    //! \a markerNumber.  If \a markerNumber is -1 then the marker number is
+    //! automatically allocated.  The marker number is returned or -1 if too
+    //! many types of marker have been defined.
     //!
     //! Markers are small geometric symbols and characters used, for example,
     //! to indicate the current line or, in debuggers, to indicate breakpoints.
@@ -734,43 +874,44 @@ public:
     //!
     //! Each marker type is identified by a marker number.  Each instance of a
     //! marker is identified by a marker handle.
-    int markerDefine(MarkerSymbol sym, int mnr = -1);
+    int markerDefine(MarkerSymbol sym, int markerNumber = -1);
 
     //! Define a marker using the character \a ch with the marker number
-    //! \a mnr.  If \a mnr is -1 then the marker number is automatically
-    //! allocated.  The marker number is returned or -1 if too many markers
-    //! have been defined.
-    int markerDefine(char ch, int mnr = -1);
+    //! \a markerNumber.  If \a markerNumber is -1 then the marker number is
+    //! automatically allocated.  The marker number is returned or -1 if too
+    //! many markers have been defined.
+    int markerDefine(char ch, int markerNumber = -1);
 
     //! Define a marker using a copy of the pixmap \a pm with the marker number
-    //! \a mnr.  If \a mnr is -1 then the marker number is automatically
-    //! allocated.  The marker number is returned or -1 if too many markers
-    //! have been defined.
-    int markerDefine(const QPixmap &pm, int mnr = -1);
+    //! \a markerNumber.  If \a markerNumber is -1 then the marker number is
+    //! automatically allocated.  The marker number is returned or -1 if too
+    //! many markers have been defined.
+    int markerDefine(const QPixmap &pm, int markerNumber = -1);
 
-    //! Add an instance of marker number \a mnr to line number \a linenr.  A
-    //! handle for the marker is returned which can be used to track the
-    //! marker's position, or -1 if the \a mnr was invalid.
+    //! Add an instance of marker number \a markerNumber to line number
+    //! \a linenr.  A handle for the marker is returned which can be used to
+    //! track the marker's position, or -1 if the \a markerNumber was invalid.
     //!
     //! \sa markerDelete(), markerDeleteAll(), markerDeleteHandle()
-    int markerAdd(int linenr, int mnr);
+    int markerAdd(int linenr, int markerNumber);
 
     //! Returns the 32 bit mask of marker numbers at line number \a linenr.
     //!
     //! \sa markerAdd()
     unsigned markersAtLine(int linenr) const;
 
-    //! Delete all markers with the marker number \a mnr in the line \a linenr.
-    //! If \a mnr is -1 then delete all markers from line \a linenr.
+    //! Delete all markers with the marker number \a markerNumber in the line
+    //! \a linenr.  If \a markerNumber is -1 then delete all markers from line
+    //! \a linenr.
     //!
     //! \sa markerAdd(), markerDeleteAll(), markerDeleteHandle()
-    void markerDelete(int linenr, int mnr = -1);
+    void markerDelete(int linenr, int markerNumber = -1);
 
-    //! Delete the all markers with the marker number \a mnr.  If \a mnr is -1
-    //! then delete all markers.
+    //! Delete the all markers with the marker number \a markerNumber.  If
+    //! \a markerNumber is -1 then delete all markers.
     //!
     //! \sa markerAdd(), markerDelete(), markerDeleteHandle()
-    void markerDeleteAll(int mnr = -1);
+    void markerDeleteAll(int markerNumber = -1);
 
     //! Delete the the marker instance with the marker handle \a mhandle.
     //!
@@ -899,6 +1040,12 @@ public:
     //! \sa callTipsVisible()
     void setCallTipsVisible(int nr);
 
+    //! Sets each line in the \a folds list of line numbers to be a contracted
+    //! fold.  This is typically used to restore the fold state of a document.
+    //!
+    //! \sa contractedFolds()
+    void setContractedFolds(const QList<int> &folds);
+
     //! Attach the document \a document, replacing the currently attached
     //! document.
     //!
@@ -921,6 +1068,23 @@ public:
     //!
     //! \sa edgeMode()
     void setEdgeMode(EdgeMode mode);
+
+    //! Set the number of the first visible line to \a linenr.
+    //!
+    //! \sa firstVisibleLine()
+    void setFirstVisibleLine(int linenr);
+
+    //! Enables or disables, according to \a under, if the indicator
+    //! \a indicatorNumber is drawn under or over the text (i.e. in the
+    //! background or foreground).  If \a indicatorNumber is -1 then the state
+    //! of all indicators is set.
+    //!
+    //! \sa indicatorDrawUnder()
+    void setIndicatorDrawUnder(bool under, int indicatorNumber = -1);
+
+    //! Set the foreground colour of indicator \a indicatorNumber to \a col.
+    //! If \a indicatorNumber is -1 then the colour of all indicators is set.
+    void setIndicatorForegroundColor(const QColor &col, int indicatorNumber = -1);
 
     //! Set the margin text of line \a line with the text \a text using the
     //! style number \a style.
@@ -947,28 +1111,29 @@ public:
     void clearMarginText(int line = -1);
 
     //! Set the background colour, including the alpha component, of marker
-    //! \a mnr to \a col.  If \a mnr is -1 then the colour of all markers is
-    //! set.  The default is white.
+    //! \a markerNumber to \a col.  If \a markerNumber is -1 then the colour of
+    //! all markers is set.  The default is white.
     //!
     //! \sa setMarkerForegroundColor()
-    void setMarkerBackgroundColor(const QColor &col, int mnr = -1);
+    void setMarkerBackgroundColor(const QColor &col, int markerNumber = -1);
 
-    //! Set the foreground colour of marker \a mnr to \a col.  If \a mnr is -1
-    //! then the colour of all markers is set.  The default is black.
+    //! Set the foreground colour of marker \a markerNumber to \a col.  If
+    //! \a markerNumber is -1 then the colour of all markers is set.  The
+    //! default is black.
     //!
     //! \sa setMarkerBackgroundColor()
-    void setMarkerForegroundColor(const QColor &col, int mnr = -1);
+    void setMarkerForegroundColor(const QColor &col, int markerNumber = -1);
 
     //! Set the background colour used to display matched braces to \a col.
     //! The default is white.
     //!
-    //! \sa setMatchedBraceForegroundColor(), setMatchedBraceFont()
+    //! \sa setMatchedBraceForegroundColor()
     void setMatchedBraceBackgroundColor(const QColor &col);
 
     //! Set the foreground colour used to display matched braces to \a col.
     //! The default is red.
     //!
-    //! \sa setMatchedBraceBackgroundColor(), setMatchedBraceFont()
+    //! \sa setMatchedBraceBackgroundColor()
     void setMatchedBraceForegroundColor(const QColor &col);
 
     //! Set the font used to display matched braces to \a f.
@@ -979,13 +1144,13 @@ public:
     //! Set the background colour used to display unmatched braces to \a col.
     //! The default is white.
     //!
-    //! \sa setUnmatchedBraceForegroundColor(), setUnmatchedBraceFont()
+    //! \sa setUnmatchedBraceForegroundColor()
     void setUnmatchedBraceBackgroundColor(const QColor &col);
 
     //! Set the foreground colour used to display unmatched braces to \a col.
     //! The default is blue.
     //!
-    //! \sa setUnmatchedBraceBackgroundColor(), setUnmatchedBraceFont()
+    //! \sa setUnmatchedBraceBackgroundColor()
     void setUnmatchedBraceForegroundColor(const QColor &col);
 
     //! Set the font used to display unmatched braces to \a f.
@@ -993,13 +1158,13 @@ public:
     //! \sa setUnmatchedBraceForegroundColor(), setUnmatchedBraceBackgroundColor()
     void setUnmatchedBraceFont(const QFont &f);
 
-    //! Set the visual flags displayed when a line is wrapped.  \a eflag
+    //! Set the visual flags displayed when a line is wrapped.  \a endFlag
     //! determines if and where the flag at the end of a line is displayed.
-    //! \a sflag determines if and where the flag at the start of a line is
-    //! displayed.  \a sindent is the number of characters a wrapped line is
+    //! \a startFlag determines if and where the flag at the start of a line is
+    //! displayed.  \a indent is the number of characters a wrapped line is
     //! indented by.  By default no visual flags are displayed.
-    void setWrapVisualFlags(WrapVisualFlag eflag,
-            WrapVisualFlag sflag = WrapFlagNone, int sindent = 0);
+    void setWrapVisualFlags(WrapVisualFlag endFlag,
+            WrapVisualFlag startFlag = WrapFlagNone, int indent = 0);
 
     //! Returns the selected text or an empty string if there is no currently
     //! selected text.
@@ -1018,6 +1183,39 @@ public:
     //!
     //! \sa selectionToEol()
     void setSelectionToEol(bool filled);
+
+    //! Sets the extra space added to the height of a line above the baseline
+    //! of the text to \a extra.
+    //!
+    //! \sa extraAscent(), setExtraDescent()
+    void setExtraAscent(int extra);
+
+    //! Sets the extra space added to the height of a line below the baseline
+    //! of the text to \a extra.
+    //!
+    //! \sa extraDescent(), setExtraAscent()
+    void setExtraDescent(int extra);
+
+    //! Sets the background colour of visible whitespace to \a col.  If \a col
+    //! is an invalid color (the default) then the color specified by the
+    //! current lexer is used.
+    void setWhitespaceBackgroundColor(const QColor &col);
+
+    //! Sets the foreground colour of visible whitespace to \a col.  If \a col
+    //! is an invalid color (the default) then the color specified by the
+    //! current lexer is used.
+    void setWhitespaceForegroundColor(const QColor &col);
+
+    //! Sets the size of the dots used to represent visible whitespace.
+    //!
+    //! \sa whitespaceSize()
+    void setWhitespaceSize(int size);
+
+    //! Sets the line wrap indentation mode to \a mode.  The default is
+    //! WrapIndentFixed.
+    //!
+    //! \sa wrapIndentMode()
+    void setWrapIndentMode(WrapIndentMode mode);
 
     //! Displays a user defined list which can be interacted with like an
     //! auto-completion list.  \a id is an identifier for the list which is
@@ -1056,12 +1254,17 @@ public:
     //! Returns the height in pixels of the text in line number \a linenr.
     int textHeight(int linenr) const;
 
+    //! Returns the size of the dots used to represent visible whitespace.
+    //!
+    //! \sa setWhitespaceSize()
+    int whitespaceSize() const;
+
     //! Returns the visibility of whitespace.
     //!
     //! \sa setWhitespaceVisibility()
     WhitespaceVisibility whitespaceVisibility() const;
 
-    //! Returns the word at the \a point screen coordinates.
+    //! Returns the word at the \a point pixel coordinates.
     QString wordAtPoint(const QPoint &point) const;
 
     //! Returns the set of valid word character as defined by the current
@@ -1076,6 +1279,11 @@ public:
     //!
     //! \sa setWrapMode()
     WrapMode wrapMode() const;
+
+    //! Returns the line wrap indentation mode.
+    //!
+    //! \sa setWrapIndentMode()
+    WrapIndentMode wrapIndentMode() const;
 
     //! Writes the current document to the \a io device and returns true if
     //! there was no error.
@@ -1175,7 +1383,14 @@ public slots:
     virtual void redo();
 
     //! Removes any selected text.
+    //!
+    //! \sa replaceSelectedText()
     virtual void removeSelectedText();
+
+    //! Replaces any selected text with \a text.
+    //!
+    //! \sa removeSelectedText()
+    virtual void replaceSelectedText(const QString &text);
 
     //! Resets the background colour of selected text to the default.
     //!
@@ -1197,8 +1412,7 @@ public slots:
     virtual void selectToMatchingBrace();
 
     //! If \a cs is true then auto-completion lists are case sensitive.  The
-    //! default is true.  This is ignored when the auto-completion source is an
-    //! installed API as the corresponding language determines the case
+    //! default is true.  Note that setting a lexer may change the case
     //! sensitivity.
     //!
     //! \sa autoCompletionCaseSensitivity()
@@ -1216,7 +1430,8 @@ public slots:
     //! displayed.  This only has an effect when auto-completion is explicitly
     //! requested (using autoCompleteFromAPIs() and autoCompleteFromDocument())
     //! and has no effect when auto-completion is triggered as the user types.
-    //! The default is false.
+    //! The default is false.  Note that this is deprecated and
+    //! setAutoCompletionUseSingle() should be used instead.
     //!
     //! \sa autoCompletionShowSingle()
     virtual void setAutoCompletionShowSingle(bool single);
@@ -1236,6 +1451,12 @@ public slots:
     //!
     //! \sa autoCompletionThreshold(), setAutoCompletionWordSeparators()
     virtual void setAutoCompletionThreshold(int thresh);
+
+    //! Sets the behavior of the auto-completion list when it has a single
+    //! entry.  The default is AcusNever.
+    //!
+    //! \sa autoCompletionUseSingle()
+    virtual void setAutoCompletionUseSingle(AutoCompletionUseSingle single);
 
     //! If \a autoindent is true then auto-indentation is enabled.  The default
     //! is false.
@@ -1454,8 +1675,8 @@ public slots:
     //! \sa whitespaceVisibility()
     virtual void setWhitespaceVisibility(WhitespaceVisibility mode);
 
-    //! Sets the line wrap mode to mode \a mode.  The default is that lines are
-    //! not wrapped.
+    //! Sets the line wrap mode to \a mode.  The default is that lines are not
+    //! wrapped.
     //!
     //! \sa wrapMode()
     virtual void setWrapMode(WrapMode mode);
@@ -1511,9 +1732,9 @@ public slots:
 
 signals:
     //! This signal is emitted whenever the cursor position changes.  \a line
-    //! contains the line number and \a pos contains the character position
+    //! contains the line number and \a index contains the character index
     //! within the line.
-    void cursorPositionChanged(int line, int pos);
+    void cursorPositionChanged(int line, int index);
 
     //! This signal is emitted whenever text is selected or de-selected.
     //! \a yes is true if text has been selected and false if text has been
@@ -1523,6 +1744,24 @@ signals:
     //!
     //! \sa copy(), selectionChanged()
     void copyAvailable(bool yes);
+
+    //! This signal is emitted whenever the user clicks on an indicator.  \a
+    //! line is the number of the line where the user clicked.  \a index is the
+    //! character index within the line.  \a state is the state of the modifier
+    //! keys (Qt::ShiftModifier, Qt::ControlModifier and Qt::AltModifer) when
+    //! the user clicked.
+    //!
+    //! \sa indicatorReleased()
+    void indicatorClicked(int line, int index, Qt::KeyboardModifiers state);
+
+    //! This signal is emitted whenever the user releases the mouse on an
+    //! indicator.  \a line is the number of the line where the user clicked.
+    //! \a index is the character index within the line.  \a state is the state
+    //! of the modifier keys (Qt::ShiftModifier, Qt::ControlModifier and
+    //! Qt::AltModifer) when the user released the mouse.
+    //!
+    //! \sa indicatorClicked()
+    void indicatorReleased(int line, int index, Qt::KeyboardModifiers state);
 
     //! This signal is emitted whenever the number of lines of text changes.
     void linesChanged();
@@ -1566,6 +1805,8 @@ signals:
 private slots:
     void handleCallTipClick(int dir);
     void handleCharAdded(int charadded);
+    void handleIndicatorClick(int pos, int modifiers);
+    void handleIndicatorRelease(int pos, int modifiers);
     void handleMarginClick(int pos, int margin, int modifiers);
     void handleModified(int pos, int mtype, const char *text, int len,
             int added, int line, int foldNow, int foldPrev, int token,
@@ -1582,7 +1823,7 @@ private slots:
     void handleStyleFontChange(const QFont &f, int style);
     void handleStylePaperChange(const QColor &c, int style);
 
-    void handleUpdateUI();
+    void handleUpdateUI(int updated);
 
 private:
     typedef QByteArray ScintillaString;
@@ -1604,7 +1845,9 @@ private:
     bool rangeIsWhitespace(long spos, long epos);
     int findStyledWord(const char *text, int style, const char *words);
 
-    void checkMarker(int &mnr);
+    void checkMarker(int &markerNumber);
+    void checkIndicator(int &indicatorNumber);
+    static void allocateId(int &id, unsigned &allocated, int min, int max);
     int currentIndent() const;
     int indentWidth() const;
     bool doFind();
@@ -1625,7 +1868,7 @@ private:
     void gotoMatchingBrace(bool select);
 
     void startAutoCompletion(AutoCompletionSource acs, bool checkThresh,
-            bool single);
+            bool choose_single);
 
     int adjustedCallTipPosition(int ctshift) const;
     bool getSeparator(int &pos) const;
@@ -1635,6 +1878,7 @@ private:
 
     bool ensureRW();
     void insertAtPos(const QString &text, int pos);
+    static int mapModifiers(int modifiers);
 
     ScintillaString styleText(const QList<QsciStyledText> &styled_text,
             char **styles, int style_offset = 0);
@@ -1656,6 +1900,7 @@ private:
     FindState findState;
 
     unsigned allocatedMarkers;
+    unsigned allocatedIndicators;
     int oldPos;
     int ctPos;
     bool selText;
@@ -1672,7 +1917,7 @@ private:
     QStringList ct_entries;
     int ct_cursor;
     QList<int> ct_shifts;
-    bool showSingle;
+    AutoCompletionUseSingle use_single;
     QPointer<QsciLexer> lex;
     QsciCommandSet *stdCmds;
     QsciDocument doc;
