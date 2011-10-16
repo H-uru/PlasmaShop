@@ -359,6 +359,7 @@ void QPlasmaTextDoc::updateSettings()
     fLexerPY->setDefaultFont(textFont);
     fLexerSDL->setDefaultFont(textFont);
     fLexerXML->setDefaultFont(textFont);
+    fEditor->setWhitespaceForegroundColor(QColor(0xA0, 0xA0, 0xA0));
 
     QFont braceFont = textFont;
     braceFont.setBold(true);
