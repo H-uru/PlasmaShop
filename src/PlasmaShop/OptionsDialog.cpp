@@ -180,26 +180,21 @@ void OptionsDialog::onSave()
     if (!GetPSBinPath(fPrpEditorPath->text()).isEmpty() &&
         (!QFile::exists(GetPSBinPath(fPrpEditorPath->text())) ||
          !QFileInfo(GetPSBinPath(fPrpEditorPath->text())).isFile())) {
-        QMessageBox::critical(this, tr("Invalid Path"),
-                              tr("You have entered an invalid path to your PRP editor."),
-                              QMessageBox::Ok);
-        return;
-    }
-    if (!GetPSBinPath(fPrpEditorPath->text()).isEmpty() &&
+        QMessageBox::warning(this, tr("Invalid Path"),
+                             tr("You have entered an invalid path to your PRP editor."),
+                             QMessageBox::Ok);
+    } else if (!GetPSBinPath(fPrpEditorPath->text()).isEmpty() &&
         (!QFile::exists(GetPSBinPath(fVaultEditorPath->text())) ||
          !QFileInfo(GetPSBinPath(fVaultEditorPath->text())).isFile())) {
-        QMessageBox::critical(this, tr("Invalid Path"),
-                              tr("You have entered an invalid path to your Vault editor."),
-                              QMessageBox::Ok);
-        return;
-    }
-    if (!fImageEditorPath->text().isEmpty() &&
+        QMessageBox::warning(this, tr("Invalid Path"),
+                             tr("You have entered an invalid path to your Vault editor."),
+                             QMessageBox::Ok);
+    } else  if (!fImageEditorPath->text().isEmpty() &&
         (!QFile::exists(GetPSBinPath(fImageEditorPath->text())) ||
          !QFileInfo(GetPSBinPath(fImageEditorPath->text())).isFile())) {
-        QMessageBox::critical(this, tr("Invalid Path"),
-                              tr("You have entered an invalid path to your Image editor."),
-                              QMessageBox::Ok);
-        return;
+        QMessageBox::warning(this, tr("Invalid Path"),
+                             tr("You have entered an invalid path to your Image editor."),
+                             QMessageBox::Ok);
     }
 
     QSettings settings("PlasmaShop", "PlasmaShop");

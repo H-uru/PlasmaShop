@@ -348,7 +348,7 @@ bool QPlasmaPakFile::loadPakData(hsStream* S)
         try {
             fPackage.read(S);
         } catch (...) {
-            plDebug::Error("Error reading SUM file %s", fFilename.toUtf8().data());
+            plDebug::Error("Error reading Package file %s", fFilename.toUtf8().data());
             return false;
         }
     }
