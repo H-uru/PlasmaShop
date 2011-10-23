@@ -88,7 +88,7 @@ void PlasmaPackage::read(hsStream* S)
         for (size_t i=0; i<fEntries.size(); i++) {
             if (fEntries[i].fOffset != S->pos())
                 S->seek(fEntries[i].fOffset);
-            uint32_t size = S->readInt() - sizeof(uint32_t);
+            uint32_t size = S->readInt();
             uint8_t* data = new uint8_t[size];
             S->read(size, data);
             fEntries[i].fData = FileBlob(data, size);
@@ -119,7 +119,7 @@ void PlasmaPackage::write(hsStream* S)
             S->writeInt(fEntries[i].fOffset);
         }
         for (size_t i=0; i<fEntries.size(); i++) {
-            S->writeInt(fEntries[i].fData.getSize() + sizeof(uint32_t));
+            S->writeInt(fEntries[i].fData.getSize());
             S->write(fEntries[i].fData.getSize(), fEntries[i].fData.getData());
         }
     } else {
