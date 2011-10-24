@@ -29,6 +29,9 @@
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
+#include <ASTree.h>
+#include <cstdio>
+
 #include "Main.h"
 #include "../QPlasma.h"
 #include "OptionsDialog.h"
@@ -339,7 +342,13 @@ void PlasmaShopMain::loadFile(QString filename)
         proc.startDetached(GetPSBinPath(editor), QStringList(filename));
         return;
     } else if (ext == "pyc") {
-        // TODO: Launch Decompyler...
+        if (decompylePyc(filename)) {
+            filename.replace(".pyc", ".py");
+            ext = "py";
+            dtype = kDocText;
+        } else {
+            return;
+        }
     } else if (ext == "tga" || ext == "jpg") {
         QSettings settings("PlasmaShop", "PlasmaShop");
         QString editor = settings.value("ImageEditorPath", "").toString();
@@ -409,6 +418,48 @@ void PlasmaShopMain::loadFile(QString filename)
                               tr("No editor is currently available for %1")
                               .arg(fnameNoPath), QMessageBox::Ok);
     }
+}
+
+bool PlasmaShopMain::decompylePyc(QString filename)
+{
+    QString output = filename;
+    output.replace(".pyc", ".py");
+
+    if (QFile::exists(output)) {
+        int replace = QMessageBox::question(this, tr("File Exists"),
+                              tr("File %1 already exists.  Would you like to replace it?").arg(output),
+                              QMessageBox::Yes | QMessageBox::No);
+        if (replace == QMessageBox::No)
+            return true;
+    }
+
+    PycModule mod;
+    mod.loadFromFile(filename.toUtf8().data());
+    if (!mod.isValid()) {
+        QMessageBox::critical(this, tr("Decompyle Error"),
+                              tr("Could not load file %1").arg(filename));
+        return false;
+    }
+
+    // Save stdout to be restored later
+    fpos_t pos;
+    fgetpos(stdout, &pos);
+    int oldstdout = dup(fileno(stdout));
+
+    // Decompyle (uses stdout and stderr)
+    freopen(output.toUtf8().data(), "w", stdout);
+    printf("# Source Generated with PlasmaShop 3.0 (Powered by Decompyle++)\n");
+    printf("# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
+           mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
+    decompyle(mod.code(), &mod);
+    fflush(stdout);
+
+    // Restore stdout
+    dup2(oldstdout, fileno(stdout));
+    ::close(oldstdout);
+    clearerr(stdout);
+    fsetpos(stdout, &pos);
+    return true;
 }
 
 void PlasmaShopMain::closeEvent(QCloseEvent* evt)

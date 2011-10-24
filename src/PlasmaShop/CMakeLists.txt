@@ -22,6 +22,38 @@ set(PlasmaShop_Sources
     QPlasmaPakFile.cpp
 )
 
+set(pycdc_SOURCE_DIR ${PROJECT_SOURCE_DIR}/pycdc)
+set(pycdc_Sources
+    ${pycdc_SOURCE_DIR}/ASTNode.cpp
+    ${pycdc_SOURCE_DIR}/ASTree.cpp
+    ${pycdc_SOURCE_DIR}/bytecode.cpp
+    ${pycdc_SOURCE_DIR}/data.cpp
+    ${pycdc_SOURCE_DIR}/pyc_code.cpp
+    ${pycdc_SOURCE_DIR}/pyc_module.cpp
+    ${pycdc_SOURCE_DIR}/pyc_numeric.cpp
+    ${pycdc_SOURCE_DIR}/pyc_object.cpp
+    ${pycdc_SOURCE_DIR}/pyc_sequence.cpp
+    ${pycdc_SOURCE_DIR}/pyc_string.cpp
+
+    ${pycdc_SOURCE_DIR}/bytes/python_10.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_11.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_13.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_14.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_15.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_16.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_20.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_21.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_22.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_23.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_24.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_25.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_26.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_27.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_30.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_31.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_32.cpp
+)
+
 if(NOT WIN32 AND NOT APPLE)
     set(PlasmaShop_Sources "${PlasmaShop_Sources}"
         ../3rdParty/qticonloader.cpp
@@ -41,10 +73,12 @@ qt4_wrap_cpp(PlasmaShop_MOC ${PlasmaShop_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4")
+include_directories("${pycdc_SOURCE_DIR}")
 include_directories("${HSPlasma_INCLUDE_DIRS}")
 
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
-               ${PlasmaShop_Sources} ${PlasmaShop_MOC} ${PlasmaShop_RCC})
+               ${PlasmaShop_Sources} ${pycdc_Sources}
+               ${PlasmaShop_MOC} ${PlasmaShop_RCC})
 target_link_libraries(PlasmaShop qscintilla2-ps3 ${QT_LIBRARIES} HSPlasma)
 
 if(WIN32)
