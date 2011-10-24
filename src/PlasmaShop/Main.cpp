@@ -345,6 +345,8 @@ void PlasmaShopMain::loadFile(QString filename)
     } else if (ext == "pyc") {
         if (decompylePyc(filename)) {
             filename.replace(".pyc", ".py");
+            fnameDisplay.replace(".pyc", ".py");
+            fnameNoPath.replace(".pyc", ".py");
             ext = "py";
             dtype = kDocText;
         } else {
@@ -443,7 +445,8 @@ bool PlasmaShopMain::decompylePyc(QString filename)
     }
 
     pyc_output = fopen(output.toUtf8().data(), "w");
-    fprintf(pyc_output, "# Source Generated with PlasmaShop 3.0 (Powered by Decompyle++)\n");
+    fprintf(pyc_output, "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n");
+    fprintf(pyc_output, "# Powered by Decompyle++\n");
     fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
             mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
     decompyle(mod.code(), &mod);
