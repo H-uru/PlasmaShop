@@ -30,6 +30,7 @@
 #include <Debug/plDebug.h>
 
 #include <ASTree.h>
+#include <data.h>
 #include <cstdio>
 
 #include "Main.h"
@@ -441,24 +442,12 @@ bool PlasmaShopMain::decompylePyc(QString filename)
         return false;
     }
 
-    // Save stdout to be restored later
-    fpos_t pos;
-    fgetpos(stdout, &pos);
-    int oldstdout = dup(fileno(stdout));
-
-    // Decompyle (uses stdout and stderr)
-    freopen(output.toUtf8().data(), "w", stdout);
-    printf("# Source Generated with PlasmaShop 3.0 (Powered by Decompyle++)\n");
-    printf("# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
-           mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
+    pyc_output = fopen(output.toUtf8().data(), "w");
+    fprintf(pyc_output, "# Source Generated with PlasmaShop 3.0 (Powered by Decompyle++)\n");
+    fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
+            mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
     decompyle(mod.code(), &mod);
-    fflush(stdout);
-
-    // Restore stdout
-    dup2(oldstdout, fileno(stdout));
-    ::close(oldstdout);
-    clearerr(stdout);
-    fsetpos(stdout, &pos);
+    fclose(pyc_output);
     return true;
 }
 
