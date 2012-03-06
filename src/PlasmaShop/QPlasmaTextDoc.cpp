@@ -464,14 +464,14 @@ bool QPlasmaTextDoc::loadFile(QString filename)
     if (filename.right(4).toLower() == ".elf") {
         // Encrypted Log File...  We have to handle it specially
         hsElfStream S;
-        S.open(filename.toUtf8().data(), fmRead);
+        if (!S.open(filename.toUtf8().data(), fmRead)) return false;
         fEditor->clear();
         while (!S.eof())
             fEditor->append(~S.readLine() + "\n");
         fEditor->setReadOnly(true);
     } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(PlasmaVer::pvUnknown);
-        S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto);
+        if (!S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto)) return false;
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
                 return false;
@@ -486,7 +486,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         fEditor->setText(LoadData(&S, fEncoding));
     } else {
         hsFileStream S(PlasmaVer::pvUnknown);
-        S.open(filename.toUtf8().data(), fmRead);
+        if (!S.open(filename.toUtf8().data(), fmRead)) return false;
         fEncryption = kEncNone;
         fEncoding = DetectEncoding(&S);
         fEditor->setText(LoadData(&S, fEncoding));
@@ -500,7 +500,7 @@ bool QPlasmaTextDoc::saveTo(QString filename)
 {
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvUnknown);
-        S.open(filename.toUtf8().data(), fmCreate);
+        if (!S.open(filename.toUtf8().data(), fmCreate)) return false;
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, fEditor->text());
     } else {
@@ -518,7 +518,7 @@ bool QPlasmaTextDoc::saveTo(QString filename)
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }
-        S.open(filename.toUtf8().data(), fmCreate, type);
+        if (!S.open(filename.toUtf8().data(), fmCreate, type)) return false;
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, fEditor->text());
     }
