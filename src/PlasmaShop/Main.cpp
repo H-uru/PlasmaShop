@@ -380,6 +380,9 @@ void PlasmaShopMain::loadFile(QString filename)
     if (plDoc != NULL) {
         fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(filename), fnameDisplay);
         if (!plDoc->loadFile(filename)) {
+            QMessageBox::critical(this, tr("Oops"),
+                        tr("Loading %1 failed.").arg(filename),
+                        QMessageBox::Ok);
             // Error loading the file.  Remove it now to avoid problems later
             fEditorPane->removeTab(fEditorPane->count() - 1);
             delete plDoc;
@@ -467,7 +470,12 @@ void PlasmaShopMain::closeEvent(QCloseEvent* evt)
                                       .arg(doc->filename()),
                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
             if (result == QMessageBox::Yes) {
-                doc->saveDefault();
+                if (!doc->saveDefault()) {
+                    QMessageBox::critical(this, tr("Oops"),
+                                tr("Writing to %1 failed.").arg(doc->filename()),
+                                QMessageBox::Ok);
+                    return;
+                }
             } else if (result == QMessageBox::Cancel) {
                 // Don't continue and don't close anything
                 evt->ignore();
@@ -679,8 +687,14 @@ void PlasmaShopMain::onSaveFile()
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
     if (doc->filename() == "<NEW>")
         onSaveAs();
-    else if (doc->isDirty())
-        doc->saveDefault();
+    else if (doc->isDirty()) {
+        if (!doc->saveDefault()) {
+            QMessageBox::critical(this, tr("Oops"),
+                        tr("Writing to %1 failed.").arg(doc->filename()),
+                        QMessageBox::Ok);
+            return;
+        }
+    }
 }
 
 void PlasmaShopMain::onSaveAs()
@@ -768,7 +782,12 @@ void PlasmaShopMain::onSaveAs()
                                                     doc->filename(),
                                                     typeList, &curFilter);
     if (!filename.isEmpty()) {
-        doc->saveTo(filename);
+        if (!doc->saveTo(filename)) {
+            QMessageBox::critical(this, tr("Oops"),
+                        tr("Writing to %1 failed.").arg(filename),
+                        QMessageBox::Ok);
+            return;
+        }
         QDir dir = QDir(filename);
         dir.cdUp();
         fDialogDir = dir.absolutePath();
@@ -1096,11 +1115,18 @@ void PlasmaShopMain::onCloseTab(int idx)
                                      "Would you like to save before closing?")
                                   .arg(doc->filename()),
                                   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        if (result == QMessageBox::Yes)
-            doc->saveDefault();
-        else if (result == QMessageBox::Cancel)
+        if (result == QMessageBox::Yes) {
+            if (!doc->saveDefault()) {
+                QMessageBox::critical(this, tr("Oops"),
+                            tr("Writing to %1 failed.").arg(doc->filename()),
+                            QMessageBox::Ok);
+                return;
+            }
+        }
+        else if (result == QMessageBox::Cancel) {
             // Don't continue and don't close anything
             return;
+        }
     }
     fEditorPane->removeTab(idx);
     delete doc;
