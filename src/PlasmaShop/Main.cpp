@@ -53,7 +53,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileOpen] = new QAction(qStdIcon("document-open"), tr("&Open..."), this);
     fActions[kFileSave] = new QAction(qStdIcon("document-save"), tr("&Save"), this);
     fActions[kFileSaveAs] = new QAction(qStdIcon("document-save-as"), tr("Save &As..."), this);
-    fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&vert"), this);
+    fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&load"), this);
     fActions[kFileOptions] = new QAction(tr("&Preferences..."), this);
     fActions[kFileShowBrowser] = new QAction(tr("Show File &Browser"), this);
     fActions[kFileExit] = new QAction(qStdIcon("application-exit"), tr("E&xit"), this);
@@ -97,6 +97,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
     fActions[kFileSaveAs]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_S);
+    fActions[kFileRevert]->setShortcut(Qt::Key_F5);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
     fActions[kEditUndo]->setShortcut(Qt::CTRL + Qt::Key_Z);
     fActions[kEditRedo]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_Z);
@@ -817,6 +818,9 @@ void PlasmaShopMain::onRevert()
                                   QMessageBox::Yes | QMessageBox::No);
         if (result == QMessageBox::Yes)
             doc->revert();
+    } else {
+        // there are no unsaved changes, but the file itself might have changed (useful especially for logfiles)
+        doc->revert();
     }
 }
 
