@@ -367,7 +367,7 @@ void PlasmaShopMain::loadFile(QString filename)
         }
         return;
     } else if (fnameNoPath == "dev_mode.dat") {
-        // TODO: Open Dev Mode editor
+        dtype = kDocDevMode;
     } else {
         QMessageBox::critical(this, tr("Unsupported File Type"),
                               tr("Error: File %1 has an unsupported file type (%2)")
@@ -779,6 +779,15 @@ void PlasmaShopMain::onSaveAs()
                        "All Files (*)";
             curFilter = "Python Packages (*.pak)";
         }
+    } else if (doc->docType() == kDocDevMode) {
+        typeList = "Device Mode Files (dev_mode.dat);;"
+                   "All Files (*)";
+        curFilter = "Device Mode Files (dev_mode.dat)";
+    } else {
+        QMessageBox::critical(this, tr("Unsupported File Type"),
+                              tr("Error: Cannot save unsupported file type"),
+                              QMessageBox::Ok);
+        return;
     }
     QString filename = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     doc->filename(),
