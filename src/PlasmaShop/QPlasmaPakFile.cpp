@@ -237,7 +237,7 @@ QString PlasmaPackage::getFilter() const
     } else if (fType == kFontsPfp) {
         return "Plasma Fonts (*.p2f)";
     } else {
-        return "Python bytecode (*.pyc *.pyo)";
+        return "Python Bytecode (*.pyc *.pyo)";
     }
 }
 

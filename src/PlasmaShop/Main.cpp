@@ -654,7 +654,7 @@ void PlasmaShopMain::onOpenFile()
 {
     QStringList files = QFileDialog::getOpenFileNames(this,
                             tr("Open File(s)"), fDialogDir,
-                            "All supported Plasma Files (*.age *.cfg *.ini *.fni *.hex *.loc *.sub *.log *.elf *.p2f *.pfp *.pak *.py *.csv *.sdl *.sum *.fx Cursors.dat);;"
+                            "All supported Plasma Files (*.age *.cfg *.ini *.fni *.hex *.loc *.sub *.log *.elf *.p2f *.pfp *.pak *.py *.pyc *.csv *.sdl *.sum *.fx Cursors.dat);;"
                             "Age Files (*.age);;"
                             "Config Files (*.cfg *.ini);;"
                             "Console Files (*.fni);;"
@@ -667,6 +667,7 @@ void PlasmaShopMain::onOpenFile()
                             "Plasma Font Packages (*.pfp);;"
                             "Python Packages (*.pak);;"
                             "Python Source Files (*.py);;"
+                            "Python Bytecode (*.pyc);;"
                             "Relevance Map Files (*.csv);;"
                             "SDL Files (*.sdl);;"
                             "Shader Files (*.fx);;"
