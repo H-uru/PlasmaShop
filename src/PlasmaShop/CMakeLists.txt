@@ -22,6 +22,7 @@ set(PlasmaShop_Sources
     QPlasmaPakFile.cpp
 )
 
+# include pycdc sources
 set(pycdc_SOURCE_DIR ${PROJECT_SOURCE_DIR}/pycdc)
 set(pycdc_Sources
     ${pycdc_SOURCE_DIR}/ASTNode.cpp
@@ -34,7 +35,27 @@ set(pycdc_Sources
     ${pycdc_SOURCE_DIR}/pyc_object.cpp
     ${pycdc_SOURCE_DIR}/pyc_sequence.cpp
     ${pycdc_SOURCE_DIR}/pyc_string.cpp
-
+)
+set(pycdc_Maps
+    ${pycdc_SOURCE_DIR}/bytes/python_10.map
+    ${pycdc_SOURCE_DIR}/bytes/python_11.map
+    ${pycdc_SOURCE_DIR}/bytes/python_13.map
+    ${pycdc_SOURCE_DIR}/bytes/python_14.map
+    ${pycdc_SOURCE_DIR}/bytes/python_15.map
+    ${pycdc_SOURCE_DIR}/bytes/python_16.map
+    ${pycdc_SOURCE_DIR}/bytes/python_20.map
+    ${pycdc_SOURCE_DIR}/bytes/python_21.map
+    ${pycdc_SOURCE_DIR}/bytes/python_22.map
+    ${pycdc_SOURCE_DIR}/bytes/python_23.map
+    ${pycdc_SOURCE_DIR}/bytes/python_24.map
+    ${pycdc_SOURCE_DIR}/bytes/python_25.map
+    ${pycdc_SOURCE_DIR}/bytes/python_26.map
+    ${pycdc_SOURCE_DIR}/bytes/python_27.map
+    ${pycdc_SOURCE_DIR}/bytes/python_30.map
+    ${pycdc_SOURCE_DIR}/bytes/python_31.map
+    ${pycdc_SOURCE_DIR}/bytes/python_32.map
+)
+set(pycdc_GeneratedSources
     ${pycdc_SOURCE_DIR}/bytes/python_10.cpp
     ${pycdc_SOURCE_DIR}/bytes/python_11.cpp
     ${pycdc_SOURCE_DIR}/bytes/python_13.cpp
@@ -53,6 +74,11 @@ set(pycdc_Sources
     ${pycdc_SOURCE_DIR}/bytes/python_31.cpp
     ${pycdc_SOURCE_DIR}/bytes/python_32.cpp
 )
+# run "make" in the pycdc folder to generate the source code
+add_custom_command(OUTPUT ${pycdc_GeneratedSources}
+                   COMMAND ./comp_map.py
+                   DEPENDS ${pycdc_Maps} ${pycdc_SOURCE_DIR}/bytes/comp_map.py
+                   WORKING_DIRECTORY ${pycdc_SOURCE_DIR}/bytes)
 
 if(NOT WIN32 AND NOT APPLE)
     set(PlasmaShop_Sources "${PlasmaShop_Sources}"
@@ -77,7 +103,7 @@ include_directories("${pycdc_SOURCE_DIR}")
 include_directories("${HSPlasma_INCLUDE_DIRS}")
 
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
-               ${PlasmaShop_Sources} ${pycdc_Sources}
+               ${PlasmaShop_Sources} ${pycdc_Sources} ${pycdc_GeneratedSources}
                ${PlasmaShop_MOC} ${PlasmaShop_RCC})
 target_link_libraries(PlasmaShop qscintilla2-ps3 ${QT_LIBRARIES} HSPlasma)
 
