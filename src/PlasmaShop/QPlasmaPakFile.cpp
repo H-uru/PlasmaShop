@@ -94,6 +94,10 @@ void PlasmaPackage::read(hsStream* S)
             if (fEntries[i].fOffset != S->pos())
                 S->seek(fEntries[i].fOffset);
             uint32_t size = S->readInt();
+            if (S->pos() + size > S->size()) {
+                plDebug::Warning("Warning: Pak file: Truncating last entry");
+                size = S->size() - S->pos();
+            }
             uint8_t* data = new uint8_t[size];
             S->read(size, data);
             fEntries[i].fData = FileBlob(data, size);
