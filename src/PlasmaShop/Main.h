@@ -81,9 +81,6 @@ public:
     virtual ~PlasmaShopMain();
     void loadFile(QString filename);
 
-private:
-    bool decompylePyc(QString filename);
-
 protected:
     virtual void closeEvent(QCloseEvent* evt);
     virtual void dragEnterEvent(QDragEnterEvent* evt);

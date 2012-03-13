@@ -91,7 +91,7 @@ struct PlasmaPackage {
     void write(hsStream* S);
 
     void addFrom(QString filename);
-    void writeToFile(FileEntry& ent, QString filename);
+    void writeToFile(const FileEntry& ent, QString filename);
 
     QString displayName(const FileEntry& ent) const;
     QString displaySize(const FileEntry& ent) const;
@@ -112,6 +112,8 @@ public:
         fPackage.fType = type;
     }
     PlasmaPackage::PackageType packageType() const { return fPackage.fType; }
+    
+    static bool decompylePyc(QWidget *parent, QString filename);
 
 private:
     QTreeWidget* fFileList;
@@ -124,6 +126,7 @@ private:
 
     bool loadPakData(hsStream* S);
     bool savePakData(hsStream* S);
+    bool extract(const PlasmaPackage::FileEntry &entry, QString dir, bool yesToAll); //!< @returns the new value for yesToAll
 
 private slots:
     void onContextMenu(QPoint pos);

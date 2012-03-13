@@ -29,10 +29,6 @@
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
-#include <ASTree.h>
-#include <data.h>
-#include <cstdio>
-
 #include "Main.h"
 #include "../QPlasma.h"
 #include "OptionsDialog.h"
@@ -344,7 +340,7 @@ void PlasmaShopMain::loadFile(QString filename)
         proc.startDetached(GetPSBinPath(editor), QStringList(filename));
         return;
     } else if (ext == "pyc") {
-        if (decompylePyc(filename)) {
+        if (QPlasmaPakFile::decompylePyc(this, filename)) {
             filename.replace(".pyc", ".py");
             fnameDisplay.replace(".pyc", ".py");
             fnameNoPath.replace(".pyc", ".py");
@@ -425,37 +421,6 @@ void PlasmaShopMain::loadFile(QString filename)
                               tr("No editor is currently available for %1")
                               .arg(fnameNoPath), QMessageBox::Ok);
     }
-}
-
-bool PlasmaShopMain::decompylePyc(QString filename)
-{
-    QString output = filename;
-    output.replace(".pyc", ".py");
-
-    if (QFile::exists(output)) {
-        int replace = QMessageBox::question(this, tr("File Exists"),
-                              tr("File %1 already exists.  Would you like to replace it?").arg(output),
-                              QMessageBox::Yes | QMessageBox::No);
-        if (replace == QMessageBox::No)
-            return true;
-    }
-
-    PycModule mod;
-    mod.loadFromFile(filename.toUtf8().data());
-    if (!mod.isValid()) {
-        QMessageBox::critical(this, tr("Decompyle Error"),
-                              tr("Could not load file %1").arg(filename));
-        return false;
-    }
-
-    pyc_output = fopen(output.toUtf8().data(), "w");
-    fprintf(pyc_output, "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n");
-    fprintf(pyc_output, "# Powered by Decompyle++\n");
-    fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
-            mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
-    decompyle(mod.code(), &mod);
-    fclose(pyc_output);
-    return true;
 }
 
 void PlasmaShopMain::closeEvent(QCloseEvent* evt)
