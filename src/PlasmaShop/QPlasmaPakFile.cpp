@@ -306,12 +306,14 @@ bool QPlasmaPakFile::loadFile(QString filename)
             fEncryption = kEncAes;
             S.setVer(PlasmaVer::pvEoa);
         }
-        loadPakData(&S);
+        if (!loadPakData(&S))
+            return false;
     } else {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmRead);
         fEncryption = kEncNone;
-        loadPakData(&S);
+        if (!loadPakData(&S))
+            return false;
     }
     fFileList->resizeColumnToContents(1);
     fFileList->resizeColumnToContents(0);
@@ -323,7 +325,8 @@ bool QPlasmaPakFile::saveTo(QString filename)
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmCreate);
-        savePakData(&S);
+        if (!savePakData(&S))
+            return false;
     } else {
         plEncryptedStream S(PlasmaVer::pvPrime);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
@@ -341,7 +344,8 @@ bool QPlasmaPakFile::saveTo(QString filename)
             type = plEncryptedStream::kEncXtea;
         }
         S.open(filename.toUtf8().data(), fmCreate, type);
-        savePakData(&S);
+        if (!savePakData(&S))
+            return false;
     }
     return QPlasmaDocument::saveTo(filename);
 }
@@ -352,8 +356,8 @@ bool QPlasmaPakFile::loadPakData(hsStream* S)
     if (S != NULL) {
         try {
             fPackage.read(S);
-        } catch (...) {
-            plDebug::Error("Error reading Package file %s", fFilename.toUtf8().data());
+        } catch (std::exception &e) {
+            plDebug::Error("Error reading Package file %s: %s", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -372,8 +376,8 @@ bool QPlasmaPakFile::savePakData(hsStream* S)
 {
     try {
         fPackage.write(S);
-    } catch (...) {
-        plDebug::Error("Error writing package file %s", fFilename.toUtf8().data());
+    } catch (std::exception &e) {
+        plDebug::Error("Error writing package file %s: %s", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;
