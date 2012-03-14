@@ -455,10 +455,10 @@ void QPlasmaPakFile::onExtract()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Extract location"),
                                                     gameRoot);
     if (!dir.isEmpty()) {
-        bool yesToAll = false;
+        OverwritingConfirmation confirmation = Ask;
         foreach (QTreeWidgetItem* item, fFileList->selectedItems()) {
             int idx = fFileList->indexOfTopLevelItem(item);
-            yesToAll = extract(fPackage.fEntries[idx], dir, yesToAll);
+            extract(fPackage.fEntries[idx], dir, &confirmation);
         }
     }
 }
@@ -478,14 +478,14 @@ void QPlasmaPakFile::onExtractAll()
                                                     gameRoot);
     if (!dir.isEmpty()) {
         std::vector<PlasmaPackage::FileEntry>::iterator iter;
-        bool yesToAll = false;
+        OverwritingConfirmation confirmation = Ask;
         for (iter = fPackage.fEntries.begin(); iter != fPackage.fEntries.end(); ++iter) {
-            yesToAll = extract(*iter, dir, yesToAll);
+             extract(*iter, dir, &confirmation);
         }
     }
 }
 
-bool QPlasmaPakFile::extract(const PlasmaPackage::FileEntry& entry, QString dir, bool yesToAll)
+void QPlasmaPakFile::extract(const PlasmaPackage::FileEntry& entry, QString dir, OverwritingConfirmation *confirmation)
 {
     QString dispName = fPackage.displayName(entry);
     if (fPackage.fType == PlasmaPackage::kPythonPak)
@@ -493,31 +493,54 @@ bool QPlasmaPakFile::extract(const PlasmaPackage::FileEntry& entry, QString dir,
 
     QString path = dir + QDir::separator() + dispName;
     if (QFileInfo(path).exists()) {
-        int result = yesToAll ? QMessageBox::Yes
-                    : QMessageBox::question(this, tr("Replace file"),
-                                tr("File %1 already exists.  Replace it?").arg(dispName),
-                                QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
-        if (result == QMessageBox::No)
-            return yesToAll;
-        else if (result == QMessageBox::YesToAll)
-            yesToAll = true;
+        int result;
+        if (*confirmation == YesToAll) {
+            result = QMessageBox::Yes;
+        } else if (*confirmation == NoToAll) {
+            result = QMessageBox::No;
+        } else {
+            result = QMessageBox::question(this, tr("Replace file"),
+                                tr("File %1 already exists.  Would you like to replace it?").arg(dispName),
+                                QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll | QMessageBox::NoToAll);
+        }
+        if (result == QMessageBox::YesToAll)
+            *confirmation = YesToAll;
+        else if (result == QMessageBox::NoToAll)
+            *confirmation = NoToAll;
+        if (result == QMessageBox::No || result == QMessageBox::NoToAll)
+            return;
     }
     fPackage.writeToFile(entry, path);
     if (fPackage.fType == PlasmaPackage::kPythonPak)
-        decompylePyc(this, path);
-    return yesToAll;
+        decompylePyc(this, path, confirmation);
 }
 
-bool QPlasmaPakFile::decompylePyc(QWidget *parent, QString filename)
+bool QPlasmaPakFile::decompylePyc(QWidget *parent, QString filename, OverwritingConfirmation *confirmation)
 {
     QString output = filename;
     output.replace(".pyc", ".py");
 
     if (QFile::exists(output)) {
-        int replace = QMessageBox::question(parent, QObject::tr("File Exists"),
+        QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::No;
+        int replace = 0;
+        if (confirmation) {
+            if (*confirmation == YesToAll)
+                replace = QMessageBox::Yes;
+            else if (*confirmation == NoToAll)
+                replace = QMessageBox::No;
+            else
+                buttons |= QMessageBox::YesToAll | QMessageBox::NoToAll;
+        }
+        if (!replace) {
+            replace = QMessageBox::question(parent, QObject::tr("File Exists"),
                               QObject::tr("File %1 already exists.  Would you like to replace it?").arg(output),
-                              QMessageBox::Yes | QMessageBox::No);
-        if (replace == QMessageBox::No)
+                              buttons);
+        }
+        if (replace == QMessageBox::YesToAll)
+            *confirmation = YesToAll;
+        else if (replace == QMessageBox::NoToAll)
+            *confirmation = NoToAll;
+        if (replace == QMessageBox::No || replace == QMessageBox::NoToAll)
             return true;
     }
 
