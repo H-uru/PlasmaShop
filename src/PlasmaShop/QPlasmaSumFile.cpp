@@ -162,12 +162,14 @@ bool QPlasmaSumFile::loadFile(QString filename)
             fEncryption = kEncAes;
             S.setVer(PlasmaVer::pvEoa);
         }
-        loadSumData(&S);
+        if (!loadSumData(&S))
+            return false;
     } else {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmRead);
         fEncryption = kEncNone;
-        loadSumData(&S);
+        if (!loadSumData(&S))
+            return false;
     }
     fFileList->resizeColumnToContents(2);
     fFileList->resizeColumnToContents(1);
@@ -180,7 +182,8 @@ bool QPlasmaSumFile::saveTo(QString filename)
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmCreate);
-        saveSumData(&S);
+        if (!saveSumData(&S))
+            return false;
     } else {
         plEncryptedStream S(PlasmaVer::pvPrime);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
@@ -198,7 +201,8 @@ bool QPlasmaSumFile::saveTo(QString filename)
             type = plEncryptedStream::kEncXtea;
         }
         S.open(filename.toUtf8().data(), fmCreate, type);
-        saveSumData(&S);
+        if (!saveSumData(&S))
+            return false;
     }
     return QPlasmaDocument::saveTo(filename);
 }
@@ -209,8 +213,8 @@ bool QPlasmaSumFile::loadSumData(hsStream* S)
     if (S != NULL) {
         try {
             fSumData.read(S);
-        } catch (...) {
-            plDebug::Error("Error reading SUM file %s", fFilename.toUtf8().data());
+        } catch (std::exception &e) {
+            plDebug::Error("Error reading SUM file %s: %s", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -233,8 +237,8 @@ bool QPlasmaSumFile::saveSumData(hsStream* S)
 {
     try {
         fSumData.write(S);
-    } catch (...) {
-        plDebug::Error("Error writing SUM file %s", fFilename.toUtf8().data());
+    } catch (std::exception &e) {
+        plDebug::Error("Error writing SUM file %s: %s", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;

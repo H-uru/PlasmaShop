@@ -91,7 +91,7 @@ struct PlasmaPackage {
     void write(hsStream* S);
 
     void addFrom(QString filename);
-    void writeToFile(FileEntry& ent, QString filename);
+    void writeToFile(const FileEntry& ent, QString filename);
 
     QString displayName(const FileEntry& ent) const;
     QString displaySize(const FileEntry& ent) const;
@@ -102,6 +102,8 @@ class QPlasmaPakFile : public QPlasmaDocument {
     Q_OBJECT
 
 public:
+    enum OverwritingConfirmation { Ask, YesToAll, NoToAll };
+    
     QPlasmaPakFile(QWidget* parent);
 
     virtual bool loadFile(QString filename);
@@ -112,6 +114,16 @@ public:
         fPackage.fType = type;
     }
     PlasmaPackage::PackageType packageType() const { return fPackage.fType; }
+    
+    /**
+     * Decompile a pyc file.
+     * @param parent the widget to use as aprent for questions and messages
+     * @param filename the file to decompyle
+     * @param confirmation a point to the confirmation state for overwriting files: Set it to NULL if the user should be
+     *      always asked without a way to say yes/no to all.
+     * @return whether the file was successfully decompiled
+     */
+    static bool decompylePyc(QWidget *parent, QString filename, OverwritingConfirmation *confirmation = NULL);
 
 private:
     QTreeWidget* fFileList;
@@ -124,6 +136,7 @@ private:
 
     bool loadPakData(hsStream* S);
     bool savePakData(hsStream* S);
+    void extract(const PlasmaPackage::FileEntry &entry, QString dir, OverwritingConfirmation *confirmation);
 
 private slots:
     void onContextMenu(QPoint pos);
