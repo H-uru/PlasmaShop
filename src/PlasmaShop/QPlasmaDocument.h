@@ -21,7 +21,7 @@
 #include <QIcon>
 
 enum DocumentType {
-    kDocText, kDocFont, kDocPackage, kDocManifest,
+    kDocText, kDocFont, kDocPackage, kDocManifest, kDocDevMode,
     kDocUnknown
 };
 

@@ -26,6 +26,11 @@
 #include <qticonloader.h>
 #include "../QPlasma.h"
 
+#include <ASTree.h>
+#include <data.h>
+#include <cstdio>
+#include "Main.h"
+
 #define PYC_MAGIC_22  (0x0A0DED2D)
 #define PYC_MAGIC_23  (0x0A0DF23B)
 
@@ -89,6 +94,10 @@ void PlasmaPackage::read(hsStream* S)
             if (fEntries[i].fOffset != S->pos())
                 S->seek(fEntries[i].fOffset);
             uint32_t size = S->readInt();
+            if (S->pos() + size > S->size()) {
+                plDebug::Warning("Warning: Pak file: Truncating last entry");
+                size = S->size() - S->pos();
+            }
             uint8_t* data = new uint8_t[size];
             S->read(size, data);
             fEntries[i].fData = FileBlob(data, size);
@@ -151,7 +160,7 @@ void PlasmaPackage::addFrom(QString filename)
     if (fType == kFontsPfp) {
         add.fFontData.readP2F(&S);
     } else {
-        if (fType == kPythonPak)
+        if (fType == kPythonPak) // TODO: compile py to pyc
             add.fName = ~finfo.fileName().replace(".pyc", ".py");
         else
             add.fName = ~finfo.fileName();
@@ -176,7 +185,7 @@ void PlasmaPackage::addFrom(QString filename)
     fEntries.push_back(add);
 }
 
-void PlasmaPackage::writeToFile(FileEntry& ent, QString filename)
+void PlasmaPackage::writeToFile(const FileEntry& ent, QString filename)
 {
     hsFileStream S;
     S.open(QDir::toNativeSeparators(filename).toUtf8().data(), fmCreate);
@@ -237,7 +246,7 @@ QString PlasmaPackage::getFilter() const
     } else if (fType == kFontsPfp) {
         return "Plasma Fonts (*.p2f)";
     } else {
-        return "Python bytecode (*.pyc *.pyo)";
+        return "Python Bytecode (*.pyc *.pyo)";
     }
 }
 
@@ -301,12 +310,14 @@ bool QPlasmaPakFile::loadFile(QString filename)
             fEncryption = kEncAes;
             S.setVer(PlasmaVer::pvEoa);
         }
-        loadPakData(&S);
+        if (!loadPakData(&S))
+            return false;
     } else {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmRead);
         fEncryption = kEncNone;
-        loadPakData(&S);
+        if (!loadPakData(&S))
+            return false;
     }
     fFileList->resizeColumnToContents(1);
     fFileList->resizeColumnToContents(0);
@@ -318,7 +329,8 @@ bool QPlasmaPakFile::saveTo(QString filename)
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvMoul);
         S.open(filename.toUtf8().data(), fmCreate);
-        savePakData(&S);
+        if (!savePakData(&S))
+            return false;
     } else {
         plEncryptedStream S(PlasmaVer::pvPrime);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
@@ -336,7 +348,8 @@ bool QPlasmaPakFile::saveTo(QString filename)
             type = plEncryptedStream::kEncXtea;
         }
         S.open(filename.toUtf8().data(), fmCreate, type);
-        savePakData(&S);
+        if (!savePakData(&S))
+            return false;
     }
     return QPlasmaDocument::saveTo(filename);
 }
@@ -347,8 +360,8 @@ bool QPlasmaPakFile::loadPakData(hsStream* S)
     if (S != NULL) {
         try {
             fPackage.read(S);
-        } catch (...) {
-            plDebug::Error("Error reading Package file %s", fFilename.toUtf8().data());
+        } catch (std::exception &e) {
+            plDebug::Error("Error reading Package file %s: %s", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -367,8 +380,8 @@ bool QPlasmaPakFile::savePakData(hsStream* S)
 {
     try {
         fPackage.write(S);
-    } catch (...) {
-        plDebug::Error("Error writing package file %s", fFilename.toUtf8().data());
+    } catch (std::exception &e) {
+        plDebug::Error("Error writing package file %s: %s", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;
@@ -442,27 +455,10 @@ void QPlasmaPakFile::onExtract()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Extract location"),
                                                     gameRoot);
     if (!dir.isEmpty()) {
-        bool yesToAll = false;
+        OverwritingConfirmation confirmation = Ask;
         foreach (QTreeWidgetItem* item, fFileList->selectedItems()) {
             int idx = fFileList->indexOfTopLevelItem(item);
-            std::vector<PlasmaPackage::FileEntry>::iterator iter = fPackage.fEntries.begin() + idx;
-
-            QString dispName = fPackage.displayName(*iter);
-            if (fPackage.fType == PlasmaPackage::kPythonPak)
-                dispName.replace(".py", ".pyc");
-
-            QString path = dir + QDir::separator() + dispName;
-            if (QFileInfo(path).exists()) {
-                int result = yesToAll ? QMessageBox::Yes
-                           : QMessageBox::question(this, tr("Replace file"),
-                                      tr("File %1 already exists.  Replace it?").arg(dispName),
-                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
-                if (result == QMessageBox::No)
-                    continue;
-                else if (result == QMessageBox::YesToAll)
-                    yesToAll = true;
-            }
-            fPackage.writeToFile(*iter, path);
+            extract(fPackage.fEntries[idx], dir, &confirmation);
         }
     }
 }
@@ -482,24 +478,86 @@ void QPlasmaPakFile::onExtractAll()
                                                     gameRoot);
     if (!dir.isEmpty()) {
         std::vector<PlasmaPackage::FileEntry>::iterator iter;
-        bool yesToAll = false;
+        OverwritingConfirmation confirmation = Ask;
         for (iter = fPackage.fEntries.begin(); iter != fPackage.fEntries.end(); ++iter) {
-            QString dispName = fPackage.displayName(*iter);
-            if (fPackage.fType == PlasmaPackage::kPythonPak)
-                dispName.replace(".py", ".pyc");
-
-            QString path = dir + QDir::separator() + dispName;
-            if (QFileInfo(path).exists()) {
-                int result = yesToAll ? QMessageBox::Yes
-                           : QMessageBox::question(this, tr("Replace file"),
-                                      tr("File %1 already exists.  Replace it?").arg(dispName),
-                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
-                if (result == QMessageBox::No)
-                    continue;
-                else if (result == QMessageBox::YesToAll)
-                    yesToAll = true;
-            }
-            fPackage.writeToFile(*iter, path);
+             extract(*iter, dir, &confirmation);
         }
     }
+}
+
+void QPlasmaPakFile::extract(const PlasmaPackage::FileEntry& entry, QString dir, OverwritingConfirmation *confirmation)
+{
+    QString dispName = fPackage.displayName(entry);
+    if (fPackage.fType == PlasmaPackage::kPythonPak)
+        dispName.replace(".py", ".pyc");
+
+    QString path = dir + QDir::separator() + dispName;
+    if (QFileInfo(path).exists()) {
+        int result;
+        if (*confirmation == YesToAll) {
+            result = QMessageBox::Yes;
+        } else if (*confirmation == NoToAll) {
+            result = QMessageBox::No;
+        } else {
+            result = QMessageBox::question(this, tr("Replace file"),
+                                tr("File %1 already exists.  Would you like to replace it?").arg(dispName),
+                                QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll | QMessageBox::NoToAll);
+        }
+        if (result == QMessageBox::YesToAll)
+            *confirmation = YesToAll;
+        else if (result == QMessageBox::NoToAll)
+            *confirmation = NoToAll;
+        if (result == QMessageBox::No || result == QMessageBox::NoToAll)
+            return;
+    }
+    fPackage.writeToFile(entry, path);
+    if (fPackage.fType == PlasmaPackage::kPythonPak)
+        decompylePyc(this, path, confirmation);
+}
+
+bool QPlasmaPakFile::decompylePyc(QWidget *parent, QString filename, OverwritingConfirmation *confirmation)
+{
+    QString output = filename;
+    output.replace(".pyc", ".py");
+
+    if (QFile::exists(output)) {
+        QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::No;
+        int replace = 0;
+        if (confirmation) {
+            if (*confirmation == YesToAll)
+                replace = QMessageBox::Yes;
+            else if (*confirmation == NoToAll)
+                replace = QMessageBox::No;
+            else
+                buttons |= QMessageBox::YesToAll | QMessageBox::NoToAll;
+        }
+        if (!replace) {
+            replace = QMessageBox::question(parent, QObject::tr("File Exists"),
+                              QObject::tr("File %1 already exists.  Would you like to replace it?").arg(output),
+                              buttons);
+        }
+        if (replace == QMessageBox::YesToAll)
+            *confirmation = YesToAll;
+        else if (replace == QMessageBox::NoToAll)
+            *confirmation = NoToAll;
+        if (replace == QMessageBox::No || replace == QMessageBox::NoToAll)
+            return true;
+    }
+
+    PycModule mod;
+    mod.loadFromFile(filename.toUtf8().data());
+    if (!mod.isValid()) {
+        QMessageBox::critical(parent, QObject::tr("Decompyle Error"),
+                              QObject::tr("Could not load file %1").arg(filename));
+        return false;
+    }
+
+    pyc_output = fopen(output.toUtf8().data(), "w");
+    fprintf(pyc_output, "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n");
+    fprintf(pyc_output, "# Powered by Decompyle++\n");
+    fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
+            mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
+    decompyle(mod.code(), &mod);
+    fclose(pyc_output);
+    return true;
 }

@@ -29,10 +29,6 @@
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
-#include <ASTree.h>
-#include <data.h>
-#include <cstdio>
-
 #include "Main.h"
 #include "../QPlasma.h"
 #include "OptionsDialog.h"
@@ -53,7 +49,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileOpen] = new QAction(qStdIcon("document-open"), tr("&Open..."), this);
     fActions[kFileSave] = new QAction(qStdIcon("document-save"), tr("&Save"), this);
     fActions[kFileSaveAs] = new QAction(qStdIcon("document-save-as"), tr("Save &As..."), this);
-    fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&vert"), this);
+    fActions[kFileRevert] = new QAction(qStdIcon("document-revert"), tr("Re&load"), this);
     fActions[kFileOptions] = new QAction(tr("&Preferences..."), this);
     fActions[kFileShowBrowser] = new QAction(tr("Show File &Browser"), this);
     fActions[kFileExit] = new QAction(qStdIcon("application-exit"), tr("E&xit"), this);
@@ -97,6 +93,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
     fActions[kFileSaveAs]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_S);
+    fActions[kFileRevert]->setShortcut(Qt::Key_F5);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
     fActions[kEditUndo]->setShortcut(Qt::CTRL + Qt::Key_Z);
     fActions[kEditRedo]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_Z);
@@ -343,7 +340,7 @@ void PlasmaShopMain::loadFile(QString filename)
         proc.startDetached(GetPSBinPath(editor), QStringList(filename));
         return;
     } else if (ext == "pyc") {
-        if (decompylePyc(filename)) {
+        if (QPlasmaPakFile::decompylePyc(this, filename)) {
             filename.replace(".pyc", ".py");
             fnameDisplay.replace(".pyc", ".py");
             fnameNoPath.replace(".pyc", ".py");
@@ -366,7 +363,7 @@ void PlasmaShopMain::loadFile(QString filename)
         }
         return;
     } else if (fnameNoPath == "dev_mode.dat") {
-        // TODO: Open Dev Mode editor
+        dtype = kDocDevMode;
     } else {
         QMessageBox::critical(this, tr("Unsupported File Type"),
                               tr("Error: File %1 has an unsupported file type (%2)")
@@ -424,37 +421,6 @@ void PlasmaShopMain::loadFile(QString filename)
                               tr("No editor is currently available for %1")
                               .arg(fnameNoPath), QMessageBox::Ok);
     }
-}
-
-bool PlasmaShopMain::decompylePyc(QString filename)
-{
-    QString output = filename;
-    output.replace(".pyc", ".py");
-
-    if (QFile::exists(output)) {
-        int replace = QMessageBox::question(this, tr("File Exists"),
-                              tr("File %1 already exists.  Would you like to replace it?").arg(output),
-                              QMessageBox::Yes | QMessageBox::No);
-        if (replace == QMessageBox::No)
-            return true;
-    }
-
-    PycModule mod;
-    mod.loadFromFile(filename.toUtf8().data());
-    if (!mod.isValid()) {
-        QMessageBox::critical(this, tr("Decompyle Error"),
-                              tr("Could not load file %1").arg(filename));
-        return false;
-    }
-
-    pyc_output = fopen(output.toUtf8().data(), "w");
-    fprintf(pyc_output, "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n");
-    fprintf(pyc_output, "# Powered by Decompyle++\n");
-    fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
-            mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
-    decompyle(mod.code(), &mod);
-    fclose(pyc_output);
-    return true;
 }
 
 void PlasmaShopMain::closeEvent(QCloseEvent* evt)
@@ -654,7 +620,7 @@ void PlasmaShopMain::onOpenFile()
 {
     QStringList files = QFileDialog::getOpenFileNames(this,
                             tr("Open File(s)"), fDialogDir,
-                            "All supported Plasma Files (*.age *.cfg *.ini *.fni *.hex *.loc *.sub *.log *.elf *.p2f *.pfp *.pak *.py *.csv *.sdl *.sum *.fx Cursors.dat);;"
+                            "All supported Plasma Files (*.age *.cfg *.ini *.fni Cursors.dat *.hex *.loc *.sub *.log *.elf *.sum *.p2f *.pfp *.pak *.py *.pyc *.csv *.sdl *.fx *.mfs *.txt *.xml *.inf *.mfold *.mlist);;"
                             "Age Files (*.age);;"
                             "Config Files (*.cfg *.ini);;"
                             "Console Files (*.fni);;"
@@ -667,6 +633,7 @@ void PlasmaShopMain::onOpenFile()
                             "Plasma Font Packages (*.pfp);;"
                             "Python Packages (*.pak);;"
                             "Python Source Files (*.py);;"
+                            "Python Bytecode (*.pyc);;"
                             "Relevance Map Files (*.csv);;"
                             "SDL Files (*.sdl);;"
                             "Shader Files (*.fx);;"
@@ -777,6 +744,15 @@ void PlasmaShopMain::onSaveAs()
                        "All Files (*)";
             curFilter = "Python Packages (*.pak)";
         }
+    } else if (doc->docType() == kDocDevMode) {
+        typeList = "Device Mode Files (dev_mode.dat);;"
+                   "All Files (*)";
+        curFilter = "Device Mode Files (dev_mode.dat)";
+    } else {
+        QMessageBox::critical(this, tr("Unsupported File Type"),
+                              tr("Error: Cannot save unsupported file type"),
+                              QMessageBox::Ok);
+        return;
     }
     QString filename = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     doc->filename(),
@@ -816,6 +792,9 @@ void PlasmaShopMain::onRevert()
                                   QMessageBox::Yes | QMessageBox::No);
         if (result == QMessageBox::Yes)
             doc->revert();
+    } else {
+        // there are no unsaved changes, but the file itself might have changed (useful especially for logfiles)
+        doc->revert();
     }
 }
 
