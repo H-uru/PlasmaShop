@@ -54,6 +54,7 @@ set(pycdc_Maps
     ${pycdc_SOURCE_DIR}/bytes/python_30.map
     ${pycdc_SOURCE_DIR}/bytes/python_31.map
     ${pycdc_SOURCE_DIR}/bytes/python_32.map
+    ${pycdc_SOURCE_DIR}/bytes/python_33.map
 )
 set(pycdc_GeneratedSources
     ${pycdc_SOURCE_DIR}/bytes/python_10.cpp
@@ -73,6 +74,7 @@ set(pycdc_GeneratedSources
     ${pycdc_SOURCE_DIR}/bytes/python_30.cpp
     ${pycdc_SOURCE_DIR}/bytes/python_31.cpp
     ${pycdc_SOURCE_DIR}/bytes/python_32.cpp
+    ${pycdc_SOURCE_DIR}/bytes/python_33.cpp
 )
 # run "make" in the pycdc folder to generate the source code
 add_custom_command(OUTPUT ${pycdc_GeneratedSources}
