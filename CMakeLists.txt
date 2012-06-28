@@ -19,7 +19,7 @@ endif(WIN32)
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(WARNING_FLAGS "-Wall -Wextra")
     set(CMAKE_CXX_FLAGS "-std=c++0x ${WARNING_FLAGS} ${CMAKE_CXX_FLAGS}")
-    set(CMAKE_C_FLAGS "-std=c++0x ${WARNING_FLAGS} ${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 endif()
 
 add_subdirectory(src/PlasmaShop)
