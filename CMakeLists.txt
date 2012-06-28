@@ -15,10 +15,11 @@ else(WIN32)
     add_definitions(-DDATA_PATH="/usr/local/share/PlasmaShop")
 endif(WIN32)
 
-# do this after QScintilla - it'd generate tons of warnings
+# do this after QScintilla - it generates tons of warnings
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
-    set(CMAKE_C_FLAGS "-Wall -Wextra ${CMAKE_C_FLAGS}")
+    set(WARNING_FLAGS "-Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "-std=c++0x ${WARNING_FLAGS} ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_C_FLAGS "-std=c++0x ${WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 endif()
 
 add_subdirectory(src/PlasmaShop)
