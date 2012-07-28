@@ -255,8 +255,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
     // Preview meta-types
     case kPreviewMipmap:
         return new QMipmap_Preview(pCre, parent);
-    //case kPreviewSceneObject:
-    //    return new QSceneObj_Preview(pCre, parent);
+    case kPreviewSceneObject:
+        return new QSceneObj_Preview(pCre, parent);
 
     default:
         if ((type & 0x1000) == 0) {

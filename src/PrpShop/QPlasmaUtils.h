@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
+#include <PRP/plCreatable.h>
 #include "../QPlasma.h"
 #include "../QNumerics.h"
 
@@ -40,6 +41,6 @@ QIcon pqGetTypeIcon(short);
 QString pqGetFriendlyClassName(short);
 
 std::vector<short> pqGetValidKOTypes();
-bool pqCanPreviewType(short);
+bool pqCanPreviewType(plCreatable* pCre);
 
 #endif
