@@ -431,7 +431,7 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         menu.addAction(fActions[kTreeImport]);
         menu.addAction(fActions[kTreeExport]);
         menu.setDefaultAction(fActions[kTreeEdit]);
-        fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()->ClassIndex()));
+        fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()));
     } else {
         menu.addAction(fActions[kTreeImport]);
     }

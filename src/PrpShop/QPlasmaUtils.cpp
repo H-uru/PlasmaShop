@@ -16,6 +16,7 @@
 
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
+#include <PRP/Object/plSceneObject.h>
 
 bool s_showTypeIDs = false;
 
@@ -599,13 +600,19 @@ std::vector<short> pqGetValidKOTypes()
     return std::vector<short>(s_typeList, s_typeList + s_numTypes);
 }
 
-bool pqCanPreviewType(short type)
+bool pqCanPreviewType(plCreatable* pCre)
 {
+    short type = pCre->ClassIndex();
     static short s_typeList[] = {
         kCoordinateInterface, kCubicEnvironmap, kMipmap, kSceneNode,
-        kSceneObject, kSimulationInterface
+        kSimulationInterface
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
+
+    if (type == kSceneObject) {
+        plSceneObject* tmp = plSceneObject::Convert(pCre);
+        return tmp->getDrawInterface().Exists();
+    }
 
     for (size_t i=0; i<s_numTypes; i++) {
         if (type == s_typeList[i])
