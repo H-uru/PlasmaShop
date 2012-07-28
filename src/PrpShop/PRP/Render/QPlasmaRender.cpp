@@ -265,6 +265,7 @@ void QPlasmaRender::build(int navMode, int drawMode)
         }
     }
 
+    makeCurrent();
     delete[] fTexList;
     fTexList = new GLuint[layIdx];
     glGenTextures(layIdx, fTexList);
