@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
+#include <PRP/plCreatable.h>
 #include "../QPlasma.h"
 #include "../QNumerics.h"
 
@@ -28,6 +29,7 @@ extern bool s_showTypeIDs;
 enum {
     kPreview_Type = 0x1000,
     kPRC_Type = 0x2000,
+    kTargets_Type = 0x4000,
 
     kPreviewSceneNode = kPreview_Type | kSceneNode,
     kPreviewSceneObject = kPreview_Type | kSceneObject,
@@ -41,5 +43,6 @@ QString pqGetFriendlyClassName(short);
 
 std::vector<short> pqGetValidKOTypes();
 bool pqCanPreviewType(short);
+bool pqHasTargets(plCreatable* c);
 
 #endif

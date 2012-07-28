@@ -77,6 +77,7 @@ PrpShopMain::PrpShopMain()
     fActions[kTreeClose] = new QAction(tr("&Close"), this);
     fActions[kTreeEdit] = new QAction(tr("&Edit"), this);
     fActions[kTreeEditPRC] = new QAction(tr("Edit P&RC"), this);
+    fActions[kTreeViewTargets] = new QAction(tr("Show &Targets"), this);
     fActions[kTreePreview] = new QAction(tr("&Preview"), this);
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
     fActions[kTreeImport] = new QAction(tr("&Import..."), this);
@@ -192,6 +193,7 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeClose], SIGNAL(triggered()), this, SLOT(treeClose()));
     connect(fActions[kTreeEdit], SIGNAL(triggered()), this, SLOT(treeEdit()));
     connect(fActions[kTreeEditPRC], SIGNAL(triggered()), this, SLOT(treeEditPRC()));
+    connect(fActions[kTreeViewTargets], SIGNAL(triggered()), this, SLOT(treeShowTargets()));
     connect(fActions[kTreePreview], SIGNAL(triggered()), this, SLOT(treePreview()));
     connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
     connect(fActions[kTreeImport], SIGNAL(triggered()), this, SLOT(treeImport()));
@@ -426,12 +428,14 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         menu.addAction(fActions[kTreeEdit]);
         menu.addAction(fActions[kTreeEditPRC]);
         menu.addAction(fActions[kTreePreview]);
+        menu.addAction(fActions[kTreeViewTargets]);
         menu.addSeparator();
         menu.addAction(fActions[kTreeDelete]);
         menu.addAction(fActions[kTreeImport]);
         menu.addAction(fActions[kTreeExport]);
         menu.setDefaultAction(fActions[kTreeEdit]);
         fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()->ClassIndex()));
+        fActions[kTreeViewTargets]->setEnabled(pqHasTargets(item->obj()));
     } else {
         menu.addAction(fActions[kTreeImport]);
     }
@@ -492,6 +496,13 @@ void PrpShopMain::treePreview()
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPreview_Type | item->obj()->ClassIndex());
+}
+
+void PrpShopMain::treeShowTargets() {
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+    editCreatable(item->obj(), kTargets_Type | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treeDelete()

@@ -52,6 +52,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "QPrcEditor.h"
+#include "QTargetList.h"
 #include "PRP/QSceneNode.h"
 #include "PRP/Animation/QAnimTimeConvert.h"
 #include "PRP/Audio/QAudible.h"
@@ -108,6 +109,9 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
 
     if ((type & kPRC_Type) != 0)
         return new QPrcEditor(pCre, parent);
+
+    if ((type & kTargets_Type) != 0)
+        return new QTargetList(pCre, parent);
 
     switch (type) {
     // Keyed Object types

@@ -560,7 +560,7 @@ QString pqGetFriendlyClassName(short classType)
         S_INVALID, S_INVALID, S_INVALID, S_INVALID, S_INVALID
     };
 
-    classType &= ~0x3000;
+    classType &= ~0x7000;
     if ((unsigned short)classType == 0x8000)
         return "(NULL)";
     if (classType >= 0 && classType < TYPESPACE_MAX) {
@@ -612,4 +612,8 @@ bool pqCanPreviewType(short type)
             return true;
     }
     return false;
+}
+
+bool pqHasTargets(plCreatable* c) {
+    return c->ClassInstance(kModifier);
 }
