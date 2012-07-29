@@ -58,6 +58,7 @@ set(PrpShop_MOC_Headers
     PRP/Surface/QMaterial.h
     PRP/Surface/QMipmap.h
     PRP/Render/QSceneObj_Preview.h
+    PRP/Render/QPlasmaRender.h
 )
 
 set(PrpShop_Sources
