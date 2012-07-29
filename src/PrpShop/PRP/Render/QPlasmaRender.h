@@ -22,7 +22,10 @@
 #include <PRP/KeyedObject/plKey.h>
 #include <PRP/Surface/plMipmap.h>
 
+#include "QTrackball.h"
+
 class QPlasmaRender : public QGLWidget {
+    Q_OBJECT
 protected:
     struct LayerInfo {
         size_t fTexNameId;
@@ -32,29 +35,47 @@ protected:
         LayerInfo(size_t texNameId, GLuint texTarget);
     };
 
+    size_t fTexCount;
     int fDrawMode, fNavMode;
-    int fMouseState;
     QPoint fMouseFrom;
-    float fRotZ, fRotX, fModelDist;
+    float fRotZ, fRotX, fModelDist, fStartDist;
     hsVector3 fViewPos;
     hsVector3 fModelMins, fModelMaxs;
-    hsTArray<plKey> fObjects;
     plKey fCenterObj;
     std::map<plKey, LayerInfo> fLayers;
-    GLuint fRenderListBase;
     GLuint* fTexList;
+    QTrackball fTrackball;
 
 public:
     enum DrawMode {
-        kDrawPoints, kDrawWire, kDrawFlat, kDrawTextured,
+        kDrawPoints, kDrawWire, kDrawFlat, kDrawTextured, kDrawModeNum,
         kDrawModeMask = 0x0000000F,
         kDrawForce2Sided = 1<<4,
         kDrawNo2Sided = 1<<5,
     };
 
+    static const char* kModeNames[kDrawModeNum];
+
     enum NavigationMode {
         kNavModel, kNavScene, kNavModelInScene,
     };
+
+private:
+    struct ObjectInfo {
+        int32_t fPointsList;
+        int32_t fTexturedList;
+        int32_t fSolidList;
+        int32_t fWireframeList;
+
+        void setList(DrawMode mode, int32_t value);
+        int32_t getList(DrawMode mode);
+
+        ObjectInfo() {
+            fPointsList = fTexturedList = fSolidList = fWireframeList = -1;
+        }
+    };
+
+    std::map<plKey, ObjectInfo> fObjects;
 
 public:
     QPlasmaRender(QWidget* parent);
@@ -63,7 +84,7 @@ public:
     virtual QSize minimumSizeHint() const { return QSize(50, 50); }
     virtual QSize sizeHint() const { return QSize(400, 400); }
 
-    void addObject(plKey obj) { fObjects.append(obj); }
+    void addObject(plKey obj) { fObjects[obj] = ObjectInfo(); }
     void setView(const hsVector3& view, float angle = 0.0f);
     void center(plKey obj, bool world);
     void build(int navMode, int drawMode);
@@ -74,13 +95,19 @@ protected:
     virtual void initializeGL();
     virtual void resizeGL(int width, int height);
     virtual void paintGL();
+
+    QPointF pixelPosToViewPos(const QPointF& p);
     virtual void mouseMoveEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void mouseReleaseEvent(QMouseEvent* evt);
 
     bool buildMipmap(plMipmap* map, GLuint id, GLuint target);
     void compileTexture(plKey layer, size_t id);
-    void compileObject(plKey obj);
+    void compileObject(plKey obj, DrawMode mode);
+    void buildNewMode(DrawMode mode);
+
+public slots:
+    void changeMode(int mode);
 };
 
 #endif

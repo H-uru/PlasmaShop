@@ -58,6 +58,7 @@ set(PrpShop_MOC_Headers
     PRP/Surface/QMaterial.h
     PRP/Surface/QMipmap.h
     PRP/Render/QSceneObj_Preview.h
+    PRP/Render/QPlasmaRender.h
 )
 
 set(PrpShop_Sources
@@ -123,6 +124,7 @@ set(PrpShop_Sources
     PRP/Surface/QMipmap.cpp
     PRP/Render/QPlasmaRender.cpp
     PRP/Render/QSceneObj_Preview.cpp
+    PRP/Render/QTrackball.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)

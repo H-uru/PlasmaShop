@@ -34,6 +34,38 @@
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
+const char* QPlasmaRender::kModeNames[] = {
+  "Points", "Wireframe", "Solid", "Textured"  
+};
+
+void multMatrix(const QMatrix4x4& m)
+{
+    static GLfloat mat[16];
+    const qreal *data = m.constData();
+    for (int index = 0; index < 16; ++index)
+        mat[index] = data[index];
+    glMultMatrixf(mat);
+}
+
+void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {
+    switch (mode & kDrawModeMask) {
+    case kDrawFlat: fSolidList = value; break;
+    case kDrawTextured: fTexturedList = value; break;
+    case kDrawWire: fWireframeList = value; break;
+    case kDrawPoints: fPointsList = value; break;
+    }
+}
+
+int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode) {
+    switch (mode & kDrawModeMask) {
+    case kDrawFlat: return fSolidList;
+    case kDrawTextured: return fTexturedList;
+    case kDrawWire: return fWireframeList;
+    case kDrawPoints: return fPointsList;
+    }
+    return 0;
+}
+
 const float RADS = 0.0174532925f;
 static QGLFormat s_format = QGL::DepthBuffer | QGL::StencilBuffer
                           | QGL::Rgba | QGL::AlphaChannel | QGL::DoubleBuffer;
@@ -48,14 +80,19 @@ QPlasmaRender::LayerInfo::LayerInfo(size_t texNameId, GLuint texTarget)
 
 QPlasmaRender::QPlasmaRender(QWidget* parent)
              : QGLWidget(s_format, parent), fDrawMode(kDrawTextured),
-               fNavMode(kNavModel), fMouseState(0), fRotZ(0.0f), fRotX(0.0f),
-               fModelDist(0.0f), fRenderListBase(0), fTexList(NULL)
+               fNavMode(kNavModel), fRotZ(0.0f), fRotX(0.0f),
+               fModelDist(0.0f), fTexList(NULL)
 { }
 
 QPlasmaRender::~QPlasmaRender()
 {
     makeCurrent();
-    glDeleteLists(fRenderListBase, fObjects.getSize());
+    for (auto it = fObjects.begin(); it != fObjects.end(); it++) {
+        ObjectInfo info = it->second;
+        for (size_t i = 0; i < kDrawModeNum; i++)
+            glDeleteLists(info.getList((DrawMode)i), 1);
+    }
+
     if (fTexList != NULL) {
         glDeleteTextures(fLayers.size(), fTexList);
         delete[] fTexList;
@@ -72,6 +109,14 @@ void QPlasmaRender::initializeGL()
 
     if (glCompressedTexImage2DARB == NULL)
         glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)context()->getProcAddress("glCompressedTexImage2DARB");
+
+    fTexList = new GLuint[fTexCount];
+    glGenTextures(fTexCount, fTexList);
+    std::map<plKey, LayerInfo>::iterator it;
+    for (it = fLayers.begin(); it != fLayers.end(); it++)
+        compileTexture((*it).first, (*it).second.fTexNameId);
+
+    buildNewMode((DrawMode)fDrawMode);
 }
 
 void QPlasmaRender::resizeGL(int width, int height)
@@ -79,7 +124,7 @@ void QPlasmaRender::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)width/(float)height, 0.1f, 20000.0f);
+    gluPerspective(45.0f, (float)width/(float)height, 0.001f, 20000.0f);
 }
 
 void QPlasmaRender::paintGL()
@@ -91,8 +136,7 @@ void QPlasmaRender::paintGL()
     glLoadIdentity();
     if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         glTranslatef(0.0f, 0.0f, -fModelDist);
-        glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
-        glRotatef(fRotZ, 0.0f, 0.0f, 1.0f);
+        multMatrix(fTrackball.rotation());
         glTranslatef(-fViewPos.X, -fViewPos.Y, -fViewPos.Z);
     } else {
         glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
@@ -100,34 +144,35 @@ void QPlasmaRender::paintGL()
         glTranslatef(-fViewPos.X, -fViewPos.Y, -fViewPos.Z);
     }
 
-    for (size_t i=0; i<fObjects.getSize(); i++)
-        glCallList(fRenderListBase+i);
+    for (auto it = fObjects.begin(); it != fObjects.end(); it++)
+        glCallList(it->second.getList((DrawMode)fDrawMode));
 }
 
 void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
 {
-    if (fMouseState == 1) {
+    if (evt->buttons() & Qt::LeftButton) {
         if (fNavMode == kNavScene) {
             fViewPos.X += sinf(fRotZ * RADS) * (fMouseFrom.y() - evt->pos().y());
             fViewPos.Y += cosf(fRotZ * RADS) * (fMouseFrom.y() - evt->pos().y());
+            fRotZ += (evt->pos().x() - fMouseFrom.x());
         }
-        fRotZ += (evt->pos().x() - fMouseFrom.x());
+
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            fRotX -= (fMouseFrom.y() - evt->pos().y());
-            if (fRotX < -90.0f) fRotX = -90.0f;
-            if (fRotX > 90.0f) fRotX = 90.0f;
+            fTrackball.move(pixelPosToViewPos(evt->posF()));
         }
-    } else if (fMouseState == 2) {
-        fRotZ += (evt->pos().x() - fMouseFrom.x());
+    } else if (evt->buttons() & Qt::RightButton) {
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            fModelDist += (evt->pos().y() - fMouseFrom.y()) / 4.0f;
+            QPointF delta = evt->posF() - fMouseFrom;
+            float sign = delta.y() > 0 ? 1 : -1;
+            fModelDist = fStartDist + sign * sqrt(delta.x() * delta.x() + delta.y() * delta.y()) / 16.0f;
             if (fModelDist < 0.0f) fModelDist = 0.0f;
         } else {
+            fRotZ += (evt->pos().x() - fMouseFrom.x());
             fRotX -= (fMouseFrom.y() - evt->pos().y());
             if (fRotX < -90.0f) fRotX = -90.0f;
             if (fRotX > 90.0f) fRotX = 90.0f;
         }
-    } else if (fMouseState == 3) {
+    } else if (evt->buttons() & Qt::MidButton) {
         if (fNavMode == kNavScene) {
             fViewPos.Z += (fMouseFrom.y() - evt->pos().y());
             fViewPos.X += sinf((fRotZ + 90.0f) * RADS) * (evt->pos().x() - fMouseFrom.x());
@@ -137,28 +182,29 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
     updateGL();
 }
 
+QPointF QPlasmaRender::pixelPosToViewPos(const QPointF& p)
+{
+    return QPointF(2.0 * float(p.x()) / width() - 1.0,
+                   1.0 - 2.0 * float(p.y()) / height());
+}
+
+
 void QPlasmaRender::mousePressEvent(QMouseEvent* evt)
 {
-    if (fMouseState != 0)
-        return;
-
-    if ((evt->button() & Qt::LeftButton) != 0)
-        fMouseState = 1;
-    else if ((evt->button() & Qt::RightButton) != 0)
-        fMouseState = 2;
-    else if ((evt->button() & Qt::MidButton) != 0)
-        fMouseState = 3;
     fMouseFrom = evt->pos();
+
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+        if (evt->button() & Qt::RightButton)
+            fStartDist = fModelDist;
+        else if (evt->button() & Qt::LeftButton)
+            fTrackball.push(pixelPosToViewPos(evt->posF()));
 }
 
 void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
 {
-    if ((fMouseState == 1) && (evt->button() & Qt::LeftButton) == 0)
-        fMouseState = 0;
-    if ((fMouseState == 2) && (evt->button() & Qt::RightButton) == 0)
-        fMouseState = 0;
-    if ((fMouseState == 3) && (evt->button() & Qt::MidButton) == 0)
-        fMouseState = 0;
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+        if (evt->button() & Qt::LeftButton)
+            fTrackball.release(pixelPosToViewPos(evt->posF()));
 }
 
 void QPlasmaRender::setView(const hsVector3& view, float angle)
@@ -238,9 +284,9 @@ void QPlasmaRender::build(int navMode, int drawMode)
     fDrawMode = drawMode;
 
     fLayers.clear();
-    size_t layIdx = 0;
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        plSceneObject* obj = plSceneObject::Convert(fObjects[i]->getObj());
+    fTexCount = 0;
+    for (auto it = fObjects.begin(); it != fObjects.end(); it++) {
+        plSceneObject* obj = plSceneObject::Convert(it->first->getObj());
         plDrawInterface* draw = GET_KEY_OBJECT(obj->getDrawInterface(), plDrawInterface);
         if (draw == NULL)
             continue;
@@ -257,47 +303,47 @@ void QPlasmaRender::build(int navMode, int drawMode)
                 hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
                 for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
                     if (fLayers.find(mat->getLayers()[lay]) == fLayers.end()) {
-                        fLayers[mat->getLayers()[lay]] = LayerInfo(layIdx, 0);
-                        layIdx++;
+                        fLayers[mat->getLayers()[lay]] = LayerInfo(fTexCount, 0);
+                        fTexCount++;
                     }
                 }
             }
         }
     }
 
-    makeCurrent();
     delete[] fTexList;
-    fTexList = new GLuint[layIdx];
-    glGenTextures(layIdx, fTexList);
-    std::map<plKey, LayerInfo>::iterator it;
-    for (it = fLayers.begin(); it != fLayers.end(); it++)
-        compileTexture((*it).first, (*it).second.fTexNameId);
-
-    fRenderListBase = glGenLists(fObjects.getSize());
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        glNewList(fRenderListBase+i, GL_COMPILE);
-        compileObject(fObjects[i]);
-        glEndList();
-    }
 }
 
 void QPlasmaRender::rebuild()
 {
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        glNewList(fRenderListBase+i, GL_COMPILE);
-        compileObject(fObjects[i]);
+    for (auto it = fObjects.begin(); it != fObjects.end(); it++) {
+        glNewList(it->second.getList((DrawMode)fDrawMode), GL_COMPILE);
+        compileObject(it->first, (DrawMode)fDrawMode);
         glEndList();
+    }
+}
+
+void QPlasmaRender::buildNewMode(DrawMode mode)
+{
+    size_t renderList = glGenLists(fObjects.size());
+    for (auto it = fObjects.begin(); it != fObjects.end(); it++) {
+        if (it->second.getList(mode) >= 0) 
+            continue;
+
+        glNewList(renderList, GL_COMPILE);
+        compileObject(it->first, mode);
+        glEndList();
+        it->second.setList(mode, renderList++);
     }
 }
 
 void QPlasmaRender::rebuildObject(plKey obj)
 {
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        if (fObjects[i] == obj) {
-            glNewList(fRenderListBase+i, GL_COMPILE);
-            compileObject(obj);
-            glEndList();
-        }
+    auto found = fObjects.find(obj);
+    if (found != fObjects.end()) {
+        glNewList(found->second.getList((DrawMode)fDrawMode), GL_COMPILE);
+        compileObject(found->first, (DrawMode)fDrawMode);
+        glEndList();
     }
 }
 
@@ -468,7 +514,7 @@ void drawBoundCube(const hsVector3& mins, const hsVector3& maxs)
     glEnd();
 }
 
-void QPlasmaRender::compileObject(plKey key)
+void QPlasmaRender::compileObject(plKey key, DrawMode mode)
 {
     plSceneObject* obj = plSceneObject::Convert(key->getObj());
     if (obj == NULL)
@@ -524,7 +570,7 @@ void QPlasmaRender::compileObject(plKey key)
             //size_t lay = 0 ; {
                 plLayerInterface* layer = plLayerInterface::Convert(mat->getLayers()[lay]->getObj());
 
-                bool is2Sided = ((fDrawMode & kDrawForce2Sided) != 0)
+                bool is2Sided = ((mode & kDrawForce2Sided) != 0)
                              || ((layer->getState().fMiscFlags & hsGMatState::kMiscTwoSided) != 0)
                              || ((mat->getCompFlags() & hsGMaterial::kCompTwoSided) != 0);
                 float amb[4] = { layer->getAmbient().r, layer->getAmbient().g,
@@ -578,12 +624,12 @@ void QPlasmaRender::compileObject(plKey key)
                     glDisable(GL_TEXTURE_2D);
                 if (linf.fTexTarget != GL_TEXTURE_CUBE_MAP)
                     glDisable(GL_TEXTURE_CUBE_MAP);
-                if ((fDrawMode & kDrawModeMask) == kDrawTextured) {
+                if ((mode & kDrawModeMask) == kDrawTextured) {
                     glEnable(linf.fTexTarget);
                     glBindTexture(linf.fTexTarget, fTexList[linf.fTexNameId]);
                 }
 
-                if ((fDrawMode & kDrawModeMask) == kDrawPoints) {
+                if ((mode & kDrawModeMask) == kDrawPoints) {
                     glBegin(GL_POINTS);
                     for (size_t j = 0; j < verts.getSize(); j++) {
                         hsColor32 color(verts[j].fColor);
@@ -597,7 +643,7 @@ void QPlasmaRender::compileObject(plKey key)
                         glVertex3f(vert.X, vert.Y, vert.Z);
                     }
                     glEnd();
-                } else if ((fDrawMode & kDrawModeMask) == kDrawWire) {
+                } else if ((mode & kDrawModeMask) == kDrawWire) {
                     glBegin(GL_LINES);
                     for (size_t j = 0; j < indices.getSize(); j+=3) {
                         hsColor32 color[3] = { verts[indices[j+0]].fColor,
@@ -630,7 +676,7 @@ void QPlasmaRender::compileObject(plKey key)
                         glVertex3f(vert[0].X, vert[0].Y, vert[0].Z);
                     }
                     glEnd();
-                } else if ((fDrawMode & kDrawModeMask) == kDrawFlat) {
+                } else if ((mode & kDrawModeMask) == kDrawFlat) {
                     glBegin(GL_TRIANGLES);
                     for (size_t j = 0; j < indices.getSize(); j++) {
                         hsColor32 color(verts[indices[j]].fColor);
@@ -644,7 +690,7 @@ void QPlasmaRender::compileObject(plKey key)
                         glVertex3f(vert.X, vert.Y, vert.Z);
                     }
                     glEnd();
-                } else if ((fDrawMode & kDrawModeMask) == kDrawTextured) {
+                } else if ((mode & kDrawModeMask) == kDrawTextured) {
                     glBegin(GL_TRIANGLES);
                     for (size_t j = 0; j < indices.getSize(); j++) {
                         hsColor32 color(verts[indices[j]].fColor);
@@ -682,4 +728,13 @@ void QPlasmaRender::compileObject(plKey key)
         DrawBoundCube(fModelMins, fModelMaxs);
         glEnable(GL_DEPTH_TEST);
     }*/
+}
+
+void QPlasmaRender::changeMode(int mode) {
+    if (mode == fDrawMode)
+        return;
+
+    fDrawMode = mode;
+    buildNewMode((DrawMode)fDrawMode);
+    updateGL();
 }
