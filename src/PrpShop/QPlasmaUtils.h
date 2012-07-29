@@ -29,6 +29,7 @@ extern bool s_showTypeIDs;
 enum {
     kPreview_Type = 0x1000,
     kPRC_Type = 0x2000,
+    kTargets_Type = 0x4000,
 
     kPreviewSceneNode = kPreview_Type | kSceneNode,
     kPreviewSceneObject = kPreview_Type | kSceneObject,
@@ -42,5 +43,6 @@ QString pqGetFriendlyClassName(short);
 
 std::vector<short> pqGetValidKOTypes();
 bool pqCanPreviewType(plCreatable* pCre);
+bool pqHasTargets(plCreatable* c);
 
 #endif

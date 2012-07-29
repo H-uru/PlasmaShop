@@ -5,6 +5,7 @@ set(PrpShop_MOC_Headers
     ../QNumerics.h
     QKeyDialog.h
     QPrcEditor.h
+    QTargetList.h
     PRP/QCreatable.h
     PRP/QKeyList.h
     PRP/QMatrix44.h
@@ -70,6 +71,7 @@ set(PrpShop_Sources
     QPlasmaUtils.cpp
     QPlasmaTreeItem.cpp
     QPrcEditor.cpp
+    QTargetList.cpp
     PRP/QCreatable.cpp
     PRP/QKeyList.cpp
     PRP/QMatrix44.cpp

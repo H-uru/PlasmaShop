@@ -37,6 +37,10 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setCreatable(intf);
     fSynchObjLink->setForceType(kSynchedObject);
 
+    fParentLink = new QCreatableLink(this, false);
+    fParentLink->setText(tr("Parent Interface"));
+    fParentLink->setKey(intf->getParent());
+
     QGroupBox* grpProps = new QGroupBox(tr("Coordinate Interface Properties"), this);
     QGridLayout* layProps = new QGridLayout(grpProps);
     layProps->setVerticalSpacing(0);
@@ -71,11 +75,12 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fOwnerLink, 0, 0);
     layout->addWidget(fSynchObjLink, 1, 0);
-    layout->addWidget(grpProps, 2, 0);
-    layout->addWidget(new QLabel(tr("Transforms:"), this), 3, 0);
-    layout->addWidget(xformTab, 4, 0);
-    layout->addWidget(new QLabel(tr("Children:"), this), 5, 0);
-    layout->addWidget(fChildren, 6, 0);
+    layout->addWidget(fParentLink, 2, 0);
+    layout->addWidget(grpProps, 3, 0);
+    layout->addWidget(new QLabel(tr("Transforms:"), this), 4, 0);
+    layout->addWidget(xformTab, 5, 0);
+    layout->addWidget(new QLabel(tr("Children:"), this), 6, 0);
+    layout->addWidget(fChildren, 7, 0);
     fChildren->adjustColumns();
 
     connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
