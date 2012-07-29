@@ -34,10 +34,6 @@
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
-const char* QPlasmaRender::kModeNames[] = {
-    "Points", "Wireframe", "Solid", "Textured"
-};
-
 void multMatrix(const QMatrix4x4& m)
 {
     static GLfloat mat[16];
@@ -109,6 +105,30 @@ QPlasmaRender::~QPlasmaRender()
         glDeleteTextures(fLayers.size(), fTexList);
         delete[] fTexList;
     }
+}
+
+QActionGroup* QPlasmaRender::createViewActions()
+{
+    QActionGroup* group = new QActionGroup(this);
+    QAction* viewPoints = group->addAction(QIcon(":/img/view-points.png"), tr("Points"));
+    viewPoints->setData((int)kDrawPoints);
+    QAction* viewWire = group->addAction(QIcon(":/img/view-wire.png"), tr("Wireframe"));
+    viewWire->setData((int)kDrawWire);
+    QAction* viewFlat = group->addAction(QIcon(":/img/view-flat.png"), tr("Flat Shaded"));
+    viewFlat->setData((int)kDrawFlat);
+    QAction* viewTextured = group->addAction(QIcon(":/img/view-textured.png"), tr("Textured"));
+    viewTextured->setData((int)kDrawTextured);
+
+    foreach (QAction* action, group->actions()) {
+        action->setCheckable(true);
+
+        // Select the active mode's action
+        if (action->data().toInt() == (int)(fDrawMode & kDrawModeMask))
+            action->setChecked(true);
+    }
+
+    connect(group, SIGNAL(triggered(QAction*)), SLOT(selectDrawMode(QAction*)));
+    return group;
 }
 
 void QPlasmaRender::initializeGL()
@@ -295,7 +315,7 @@ void QPlasmaRender::center(plKey obj, bool world)
     fModelDist = sqrt((szX * szX) + (szY * szY) + (szZ * szZ));
 }
 
-void QPlasmaRender::build(int navMode, int drawMode)
+void QPlasmaRender::build(NavigationMode navMode, DrawMode drawMode)
 {
     fNavMode = navMode;
     fDrawMode = drawMode;
@@ -747,11 +767,11 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
     }*/
 }
 
-void QPlasmaRender::changeMode(int mode) {
+void QPlasmaRender::changeMode(DrawMode mode) {
     if (mode == fDrawMode)
         return;
 
     fDrawMode = mode;
-    buildNewMode((DrawMode)fDrawMode);
+    buildNewMode(fDrawMode);
     updateGL();
 }

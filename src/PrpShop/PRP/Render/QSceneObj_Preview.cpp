@@ -29,26 +29,15 @@ QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
     fRender->build(QPlasmaRender::kNavModel, QPlasmaRender::kDrawTextured);
     QSizePolicy renderPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     fRender->setSizePolicy(renderPolicy);
-    QSignalMapper* mapper = new QSignalMapper(this);
 
-    QWidget* modeButtons = new QWidget(this);
-
-    QHBoxLayout* modeLayout = new QHBoxLayout(modeButtons);
-    modeLayout->setSizeConstraint(QLayout::SetFixedSize);
-    QSizePolicy buttonsPolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-    modeButtons->setSizePolicy(buttonsPolicy);
-    for (int i=0; i < QPlasmaRender::kDrawModeNum; i++) {
-        QRadioButton* tmp = new QRadioButton(QPlasmaRender::kModeNames[i], modeButtons);
-        connect(tmp, SIGNAL(clicked()), mapper, SLOT(map()));
-        mapper->setMapping(tmp, i);
-        modeLayout->addWidget(tmp);
-    }
-
-    connect(mapper, SIGNAL(mapped(int)), fRender, SLOT(changeMode(int)));
+    QToolBar* viewToolbar = new QToolBar(tr("View"), this);
+    viewToolbar->setFloatable(false);
+    QActionGroup* viewActions = fRender->createViewActions();
+    viewToolbar->addActions(viewActions->actions());
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setVerticalSpacing(0);
-    layout->addWidget(modeButtons, 0, 0);
+    layout->addWidget(viewToolbar, 0, 0);
     layout->addWidget(fRender, 1, 0);
 }

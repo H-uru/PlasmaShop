@@ -18,6 +18,7 @@
 #define _QPLASMARENDER_H
 
 #include <QGLWidget>
+#include <QActionGroup>
 #include <Math/hsGeometry3.h>
 #include <PRP/KeyedObject/plKey.h>
 #include <PRP/Surface/plMipmap.h>
@@ -26,6 +27,18 @@
 
 class QPlasmaRender : public QGLWidget {
     Q_OBJECT
+
+public:
+    enum DrawMode {
+        kDrawPoints, kDrawWire, kDrawFlat, kDrawTextured, kDrawModeNum,
+        kDrawModeMask = 0x0000000F,
+        kDrawForce2Sided = 1<<4,
+        kDrawNo2Sided = 1<<5,
+    };
+
+    enum NavigationMode {
+        kNavModel, kNavScene, kNavModelInScene,
+    };
 
 protected:
     struct LayerInfo {
@@ -37,7 +50,8 @@ protected:
     };
 
     size_t fTexCount;
-    int fDrawMode, fNavMode;
+    DrawMode fDrawMode;
+    NavigationMode fNavMode;
     QPoint fMouseFrom;
     float fRotZ, fRotX, fModelDist, fStartDist;
     hsVector3 fViewPos;
@@ -46,20 +60,6 @@ protected:
     std::map<plKey, LayerInfo> fLayers;
     GLuint* fTexList;
     QTrackball fTrackball;
-
-public:
-    enum DrawMode {
-        kDrawPoints, kDrawWire, kDrawFlat, kDrawTextured, kDrawModeNum,
-        kDrawModeMask = 0x0000000F,
-        kDrawForce2Sided = 1<<4,
-        kDrawNo2Sided = 1<<5,
-    };
-
-    static const char* kModeNames[kDrawModeNum];
-
-    enum NavigationMode {
-        kNavModel, kNavScene, kNavModelInScene,
-    };
 
 private:
     struct ObjectInfo {
@@ -88,9 +88,11 @@ public:
     void addObject(plKey obj) { fObjects[obj] = ObjectInfo(); }
     void setView(const hsVector3& view, float angle = 0.0f);
     void center(plKey obj, bool world);
-    void build(int navMode, int drawMode);
+    void build(NavigationMode navMode, DrawMode drawMode);
     void rebuild();
     void rebuildObject(plKey obj);
+
+    QActionGroup* createViewActions();
 
 protected:
     virtual void initializeGL();
@@ -108,7 +110,11 @@ protected:
     void buildNewMode(DrawMode mode);
 
 public slots:
-    void changeMode(int mode);
+    void changeMode(DrawMode mode);
+
+private slots:
+    void selectDrawMode(QAction* action)
+    { changeMode((DrawMode)action->data().toInt()); }
 };
 
 #endif

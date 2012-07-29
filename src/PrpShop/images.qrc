@@ -40,5 +40,10 @@
     <file>img/gui_radiogroup.png</file>
     <file>img/gui_text.png</file>
     <file>img/gui_updown.png</file>
+
+    <file>img/view-points.png</file>
+    <file>img/view-wire.png</file>
+    <file>img/view-flat.png</file>
+    <file>img/view-textured.png</file>
 </qresource>
 </RCC>
