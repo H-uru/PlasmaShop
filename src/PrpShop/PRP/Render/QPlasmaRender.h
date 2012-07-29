@@ -34,6 +34,7 @@ protected:
         LayerInfo(size_t texNameId, GLuint texTarget);
     };
 
+    size_t fTexCount;
     int fDrawMode, fNavMode;
     QPoint fMouseFrom;
     float fRotZ, fRotX, fModelDist, fStartDist;

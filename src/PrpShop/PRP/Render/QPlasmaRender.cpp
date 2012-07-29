@@ -81,6 +81,19 @@ void QPlasmaRender::initializeGL()
 
     if (glCompressedTexImage2DARB == NULL)
         glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)context()->getProcAddress("glCompressedTexImage2DARB");
+
+    fTexList = new GLuint[fTexCount];
+    glGenTextures(fTexCount, fTexList);
+    std::map<plKey, LayerInfo>::iterator it;
+    for (it = fLayers.begin(); it != fLayers.end(); it++)
+        compileTexture((*it).first, (*it).second.fTexNameId);
+
+    fRenderListBase = glGenLists(fObjects.getSize());
+    for (size_t i=0; i<fObjects.getSize(); i++) {
+        glNewList(fRenderListBase+i, GL_COMPILE);
+        compileObject(fObjects[i]);
+        glEndList();
+    }
 }
 
 void QPlasmaRender::resizeGL(int width, int height)
@@ -248,7 +261,7 @@ void QPlasmaRender::build(int navMode, int drawMode)
     fDrawMode = drawMode;
 
     fLayers.clear();
-    size_t layIdx = 0;
+    fTexCount = 0;
     for (size_t i=0; i<fObjects.getSize(); i++) {
         plSceneObject* obj = plSceneObject::Convert(fObjects[i]->getObj());
         plDrawInterface* draw = GET_KEY_OBJECT(obj->getDrawInterface(), plDrawInterface);
@@ -267,28 +280,15 @@ void QPlasmaRender::build(int navMode, int drawMode)
                 hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
                 for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
                     if (fLayers.find(mat->getLayers()[lay]) == fLayers.end()) {
-                        fLayers[mat->getLayers()[lay]] = LayerInfo(layIdx, 0);
-                        layIdx++;
+                        fLayers[mat->getLayers()[lay]] = LayerInfo(fTexCount, 0);
+                        fTexCount++;
                     }
                 }
             }
         }
     }
 
-    makeCurrent();
     delete[] fTexList;
-    fTexList = new GLuint[layIdx];
-    glGenTextures(layIdx, fTexList);
-    std::map<plKey, LayerInfo>::iterator it;
-    for (it = fLayers.begin(); it != fLayers.end(); it++)
-        compileTexture((*it).first, (*it).second.fTexNameId);
-
-    fRenderListBase = glGenLists(fObjects.getSize());
-    for (size_t i=0; i<fObjects.getSize(); i++) {
-        glNewList(fRenderListBase+i, GL_COMPILE);
-        compileObject(fObjects[i]);
-        glEndList();
-    }
 }
 
 void QPlasmaRender::rebuild()
