@@ -18,13 +18,8 @@
 
 #include <cmath>
 
-QTrackball::QTrackball() {
-}
-
-QTrackball::~QTrackball() {
-}
-
-void QTrackball::push(const QPointF& p) {
+void QTrackball::push(const QPointF& p)
+{
     fLastPos = p;
 
     fLastPos3D = QVector3D(p.x(), p.y(), 0.0f);
@@ -38,7 +33,8 @@ void QTrackball::push(const QPointF& p) {
     fLastRotation = fRotation;
 }
 
-void QTrackball::move(const QPointF& p) {
+void QTrackball::move(const QPointF& p)
+{
     QVector3D currentPos3D = QVector3D(p.x(), p.y(), 0.0f);
     float sqrZ = 1 - QVector3D::dotProduct(currentPos3D, currentPos3D);
     if (sqrZ > 0)
@@ -47,7 +43,7 @@ void QTrackball::move(const QPointF& p) {
         currentPos3D.normalize();
 
     QVector3D axis = QVector3D::crossProduct(fLastPos3D, currentPos3D);
-    float angle = 180 / M_PI * 2 * acos(QVector3D::dotProduct(fLastPos3D, currentPos3D));
+    float angle = (180 / M_PI) * 2 * acos(QVector3D::dotProduct(fLastPos3D, currentPos3D));
 
     axis.normalize();
     QQuaternion rotation = QQuaternion::fromAxisAndAngle(axis, angle);
@@ -57,12 +53,4 @@ void QTrackball::move(const QPointF& p) {
 
     fRotation = rotationM * fLastRotation;
 
-}
-
-void QTrackball::release(const QPointF& p) {
-
-}
-
-QMatrix4x4 QTrackball::rotation() const {
-    return fRotation;
 }

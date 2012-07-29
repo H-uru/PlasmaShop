@@ -19,8 +19,6 @@
 #include <PRP/Object/plSceneObject.h>
 #include <QGridLayout>
 
-
-
 QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, kPreviewSceneObject, parent)
 {
@@ -47,7 +45,7 @@ QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
     }
 
     connect(mapper, SIGNAL(mapped(int)), fRender, SLOT(changeMode(int)));
-    
+
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setVerticalSpacing(0);

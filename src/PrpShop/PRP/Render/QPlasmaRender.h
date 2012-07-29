@@ -26,6 +26,7 @@
 
 class QPlasmaRender : public QGLWidget {
     Q_OBJECT
+
 protected:
     struct LayerInfo {
         size_t fTexNameId;

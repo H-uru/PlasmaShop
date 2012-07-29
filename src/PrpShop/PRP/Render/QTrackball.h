@@ -24,14 +24,14 @@
 
 class QTrackball {
 public:
-    QTrackball();
-    virtual ~QTrackball();
+    QTrackball() { }
+    virtual ~QTrackball() { }
 
     void push(const QPointF& p);
     void move(const QPointF& p);
-    void release(const QPointF& p);
+    void release(const QPointF& p) { }
 
-    QMatrix4x4 rotation() const;
+    QMatrix4x4 rotation() const { return fRotation; }
 
 private:
     QMatrix4x4 fRotation;

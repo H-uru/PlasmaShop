@@ -35,7 +35,7 @@
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
 const char* QPlasmaRender::kModeNames[] = {
-  "Points", "Wireframe", "Solid", "Textured"  
+    "Points", "Wireframe", "Solid", "Textured"
 };
 
 void multMatrix(const QMatrix4x4& m)
@@ -49,19 +49,31 @@ void multMatrix(const QMatrix4x4& m)
 
 void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {
     switch (mode & kDrawModeMask) {
-    case kDrawFlat: fSolidList = value; break;
-    case kDrawTextured: fTexturedList = value; break;
-    case kDrawWire: fWireframeList = value; break;
-    case kDrawPoints: fPointsList = value; break;
+    case kDrawFlat:
+        fSolidList = value;
+        break;
+    case kDrawTextured:
+        fTexturedList = value;
+        break;
+    case kDrawWire:
+        fWireframeList = value;
+        break;
+    case kDrawPoints:
+        fPointsList = value;
+        break;
     }
 }
 
 int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode) {
     switch (mode & kDrawModeMask) {
-    case kDrawFlat: return fSolidList;
-    case kDrawTextured: return fTexturedList;
-    case kDrawWire: return fWireframeList;
-    case kDrawPoints: return fPointsList;
+    case kDrawFlat:
+        return fSolidList;
+    case kDrawTextured:
+        return fTexturedList;
+    case kDrawWire:
+        return fWireframeList;
+    case kDrawPoints:
+        return fPointsList;
     }
     return 0;
 }
@@ -165,12 +177,15 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
             QPointF delta = evt->posF() - fMouseFrom;
             float sign = delta.y() > 0 ? 1 : -1;
             fModelDist = fStartDist + sign * sqrt(delta.x() * delta.x() + delta.y() * delta.y()) / 16.0f;
-            if (fModelDist < 0.0f) fModelDist = 0.0f;
+            if (fModelDist < 0.0f)
+                fModelDist = 0.0f;
         } else {
             fRotZ += (evt->pos().x() - fMouseFrom.x());
             fRotX -= (fMouseFrom.y() - evt->pos().y());
-            if (fRotX < -90.0f) fRotX = -90.0f;
-            if (fRotX > 90.0f) fRotX = 90.0f;
+            if (fRotX < -90.0f)
+                fRotX = -90.0f;
+            if (fRotX > 90.0f)
+                fRotX = 90.0f;
         }
     } else if (evt->buttons() & Qt::MidButton) {
         if (fNavMode == kNavScene) {
@@ -193,18 +208,20 @@ void QPlasmaRender::mousePressEvent(QMouseEvent* evt)
 {
     fMouseFrom = evt->pos();
 
-    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         if (evt->button() & Qt::RightButton)
             fStartDist = fModelDist;
         else if (evt->button() & Qt::LeftButton)
             fTrackball.push(pixelPosToViewPos(evt->posF()));
+    }
 }
 
 void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
 {
-    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         if (evt->button() & Qt::LeftButton)
             fTrackball.release(pixelPosToViewPos(evt->posF()));
+    }
 }
 
 void QPlasmaRender::setView(const hsVector3& view, float angle)
