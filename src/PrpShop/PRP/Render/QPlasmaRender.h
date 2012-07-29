@@ -22,6 +22,8 @@
 #include <PRP/KeyedObject/plKey.h>
 #include <PRP/Surface/plMipmap.h>
 
+#include "QTrackball.h"
+
 class QPlasmaRender : public QGLWidget {
 protected:
     struct LayerInfo {
@@ -33,9 +35,8 @@ protected:
     };
 
     int fDrawMode, fNavMode;
-    int fMouseState;
     QPoint fMouseFrom;
-    float fRotZ, fRotX, fModelDist;
+    float fRotZ, fRotX, fModelDist, fStartDist;
     hsVector3 fViewPos;
     hsVector3 fModelMins, fModelMaxs;
     hsTArray<plKey> fObjects;
@@ -43,6 +44,7 @@ protected:
     std::map<plKey, LayerInfo> fLayers;
     GLuint fRenderListBase;
     GLuint* fTexList;
+    QTrackball fTrackball;
 
 public:
     enum DrawMode {
@@ -74,6 +76,8 @@ protected:
     virtual void initializeGL();
     virtual void resizeGL(int width, int height);
     virtual void paintGL();
+
+    QPointF pixelPosToViewPos(const QPointF& p);
     virtual void mouseMoveEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void mouseReleaseEvent(QMouseEvent* evt);

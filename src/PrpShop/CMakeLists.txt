@@ -123,6 +123,7 @@ set(PrpShop_Sources
     PRP/Surface/QMipmap.cpp
     PRP/Render/QPlasmaRender.cpp
     PRP/Render/QSceneObj_Preview.cpp
+    PRP/Render/QTrackball.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)

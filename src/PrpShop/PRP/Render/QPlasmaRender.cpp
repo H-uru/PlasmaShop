@@ -34,6 +34,15 @@
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
+void multMatrix(const QMatrix4x4& m)
+{
+    static GLfloat mat[16];
+    const qreal *data = m.constData();
+    for (int index = 0; index < 16; ++index)
+        mat[index] = data[index];
+    glMultMatrixf(mat);
+}
+
 const float RADS = 0.0174532925f;
 static QGLFormat s_format = QGL::DepthBuffer | QGL::StencilBuffer
                           | QGL::Rgba | QGL::AlphaChannel | QGL::DoubleBuffer;
@@ -48,7 +57,7 @@ QPlasmaRender::LayerInfo::LayerInfo(size_t texNameId, GLuint texTarget)
 
 QPlasmaRender::QPlasmaRender(QWidget* parent)
              : QGLWidget(s_format, parent), fDrawMode(kDrawTextured),
-               fNavMode(kNavModel), fMouseState(0), fRotZ(0.0f), fRotX(0.0f),
+               fNavMode(kNavModel), fRotZ(0.0f), fRotX(0.0f),
                fModelDist(0.0f), fRenderListBase(0), fTexList(NULL)
 { }
 
@@ -91,8 +100,7 @@ void QPlasmaRender::paintGL()
     glLoadIdentity();
     if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         glTranslatef(0.0f, 0.0f, -fModelDist);
-        glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
-        glRotatef(fRotZ, 0.0f, 0.0f, 1.0f);
+        multMatrix(fTrackball.rotation());
         glTranslatef(-fViewPos.X, -fViewPos.Y, -fViewPos.Z);
     } else {
         glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
@@ -106,28 +114,29 @@ void QPlasmaRender::paintGL()
 
 void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
 {
-    if (fMouseState == 1) {
+    if (evt->buttons() & Qt::LeftButton) {
         if (fNavMode == kNavScene) {
             fViewPos.X += sinf(fRotZ * RADS) * (fMouseFrom.y() - evt->pos().y());
             fViewPos.Y += cosf(fRotZ * RADS) * (fMouseFrom.y() - evt->pos().y());
+            fRotZ += (evt->pos().x() - fMouseFrom.x());
         }
-        fRotZ += (evt->pos().x() - fMouseFrom.x());
+
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            fRotX -= (fMouseFrom.y() - evt->pos().y());
-            if (fRotX < -90.0f) fRotX = -90.0f;
-            if (fRotX > 90.0f) fRotX = 90.0f;
+            fTrackball.move(pixelPosToViewPos(evt->posF()));
         }
-    } else if (fMouseState == 2) {
-        fRotZ += (evt->pos().x() - fMouseFrom.x());
+    } else if (evt->buttons() & Qt::RightButton) {
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            fModelDist += (evt->pos().y() - fMouseFrom.y()) / 4.0f;
+            QPointF delta = evt->posF() - fMouseFrom;
+            float sign = delta.y() > 0 ? 1 : -1;
+            fModelDist = fStartDist + sign * sqrt(delta.x() * delta.x() + delta.y() * delta.y()) / 16.0f;
             if (fModelDist < 0.0f) fModelDist = 0.0f;
         } else {
+            fRotZ += (evt->pos().x() - fMouseFrom.x());
             fRotX -= (fMouseFrom.y() - evt->pos().y());
             if (fRotX < -90.0f) fRotX = -90.0f;
             if (fRotX > 90.0f) fRotX = 90.0f;
         }
-    } else if (fMouseState == 3) {
+    } else if (evt->buttons() & Qt::MidButton) {
         if (fNavMode == kNavScene) {
             fViewPos.Z += (fMouseFrom.y() - evt->pos().y());
             fViewPos.X += sinf((fRotZ + 90.0f) * RADS) * (evt->pos().x() - fMouseFrom.x());
@@ -137,28 +146,29 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
     updateGL();
 }
 
+QPointF QPlasmaRender::pixelPosToViewPos(const QPointF& p)
+{
+    return QPointF(2.0 * float(p.x()) / width() - 1.0,
+                   1.0 - 2.0 * float(p.y()) / height());
+}
+
+
 void QPlasmaRender::mousePressEvent(QMouseEvent* evt)
 {
-    if (fMouseState != 0)
-        return;
-
-    if ((evt->button() & Qt::LeftButton) != 0)
-        fMouseState = 1;
-    else if ((evt->button() & Qt::RightButton) != 0)
-        fMouseState = 2;
-    else if ((evt->button() & Qt::MidButton) != 0)
-        fMouseState = 3;
     fMouseFrom = evt->pos();
+
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+        if (evt->button() & Qt::RightButton)
+            fStartDist = fModelDist;
+        else if (evt->button() & Qt::LeftButton)
+            fTrackball.push(pixelPosToViewPos(evt->posF()));
 }
 
 void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
 {
-    if ((fMouseState == 1) && (evt->button() & Qt::LeftButton) == 0)
-        fMouseState = 0;
-    if ((fMouseState == 2) && (evt->button() & Qt::RightButton) == 0)
-        fMouseState = 0;
-    if ((fMouseState == 3) && (evt->button() & Qt::MidButton) == 0)
-        fMouseState = 0;
+    if (fNavMode == kNavModel || fNavMode == kNavModelInScene)
+        if (evt->button() & Qt::LeftButton)
+            fTrackball.release(pixelPosToViewPos(evt->posF()));
 }
 
 void QPlasmaRender::setView(const hsVector3& view, float angle)
