@@ -101,7 +101,7 @@ void QPlasmaRender::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)width/(float)height, 0.1f, 20000.0f);
+    gluPerspective(45.0f, (float)width/(float)height, 0.001f, 20000.0f);
 }
 
 void QPlasmaRender::paintGL()
