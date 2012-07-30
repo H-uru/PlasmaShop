@@ -29,7 +29,7 @@ public:
 
     void push(const QPointF& p);
     void move(const QPointF& p);
-    void release(const QPointF& p) { }
+    void release(const QPointF& /*p*/) { }
 
     QMatrix4x4 rotation() const { return fRotation; }
 
