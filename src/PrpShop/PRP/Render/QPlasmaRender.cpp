@@ -455,13 +455,20 @@ void QPlasmaRender::compileTexture(plKey lay, size_t id)
         }
     }
 
-    if (plMipmap* map = GET_KEY_OBJECT(layTex, plMipmap)) {
+    if (!layTex.Exists() || !layTex.isLoaded()) {
+        plDebug::Warning("Layer %s not loaded", layTex->toString().cstr());
+        fLayers[lay].fTexNameId = 0;
+        return;
+    }
+
+    plCreatable* mapObj = layTex->getObj();
+    if (plMipmap* map = plMipmap::Convert(mapObj, false)) {
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_CUBE_MAP);
         fLayers[lay].fTexTarget = GL_TEXTURE_2D;
         if (!buildMipmap(map, fTexList[id], GL_TEXTURE_2D))
             fLayers[lay].fTexNameId = 0;
-    } else if (plCubicEnvironmap* envMap = GET_KEY_OBJECT(layTex, plCubicEnvironmap)) {
+    } else if (plCubicEnvironmap* envMap = plCubicEnvironmap::Convert(mapObj, false)) {
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_CUBE_MAP);
         fLayers[lay].fTexTarget = GL_TEXTURE_CUBE_MAP;
