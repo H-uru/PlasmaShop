@@ -757,6 +757,12 @@ void PrpShopMain::loadFile(QString filename)
     QDir dir(filename);
     filename = QDir::toNativeSeparators(dir.absolutePath());
 
+    PageUnloadCallback prevCallback = fResMgr.SetPageUnloadFunc([this, &prevCallback](const plLocation& loc) {
+        emit closeWindows(loc);
+        if (prevCallback != NULL)
+            prevCallback(loc);
+    });
+
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
             plAgeInfo* age = fResMgr.ReadAge(~filename, true);
@@ -822,6 +828,8 @@ void PrpShopMain::loadFile(QString filename)
                            QMessageBox::Ok, this);
         msgBox.exec();
     }
+
+    fResMgr.SetPageUnloadFunc(prevCallback);
     fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
@@ -983,7 +991,6 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     QPlasmaTreeItem* parent = NULL;
     QPlasmaTreeItem* item = fLoadedLocations.value(page->getLocation(), NULL);
     if (item != NULL) {
-        closeWindows(page->getLocation());
         qDeleteAll(item->takeChildren());
     } else {
         // Find or create the Age folder

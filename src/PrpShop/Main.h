@@ -104,7 +104,6 @@ protected:
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
     QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
-    void closeWindows(const plLocation& loc);
 
 public slots:
     void newPage();
@@ -116,6 +115,7 @@ public slots:
     void treeContextMenu(const QPoint& pos);
     void createNewObject();
     void showTypeIDs(bool show);
+    void closeWindows(const plLocation& loc);
 
     void treeClose();
     void treeEdit();
