@@ -889,12 +889,24 @@ void PrpShopMain::performSaveAs()
                     : pageItem->filename();
     QString selFormat;
     switch (fResMgr.getVer()) {
-    case PlasmaVer::pvPrime: selFormat = s_formats[0];
-    case PlasmaVer::pvPots:  selFormat = s_formats[1];
-    case PlasmaVer::pvMoul:  selFormat = s_formats[2];
-    case PlasmaVer::pvEoa:   selFormat = s_formats[3];
-    case PlasmaVer::pvHex:   selFormat = s_formats[4];
-    default:      selFormat = s_formats[1];
+    case PlasmaVer::pvPrime:
+        selFormat = s_formats[0];
+        break;
+    case PlasmaVer::pvPots:
+        selFormat = s_formats[1];
+        break;
+    case PlasmaVer::pvMoul:
+        selFormat = s_formats[2];
+        break;
+    case PlasmaVer::pvEoa:
+        selFormat = s_formats[3];
+        break;
+    case PlasmaVer::pvHex:
+        selFormat = s_formats[4];
+        break;
+    default:
+        selFormat = s_formats[1];
+        break;
     }
     QString filename = QFileDialog::getSaveFileName(this,
                             tr("Save PRP"), saveDir,
