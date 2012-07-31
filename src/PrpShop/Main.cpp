@@ -449,13 +449,14 @@ void PrpShopMain::treeClose()
         return;
 
     // Make sure no windows are open with objects we want to unload...
-    fMdiArea->closeAllSubWindows();
 
     if (item->type() == QPlasmaTreeItem::kTypeAge) {
         QHash<plLocation, QPlasmaTreeItem*>::Iterator it;
         for (it = fLoadedLocations.begin(); it != fLoadedLocations.end(); ) {
             if (~(*it)->page()->getAge() == item->age()) {
-                fResMgr.UnloadPage((*it)->page()->getLocation());
+                const plLocation& loc = (*it)->page()->getLocation();
+                closeWindows(loc);
+                fResMgr.UnloadPage(loc);
                 it = fLoadedLocations.erase(it);
             } else {
                 it++;
@@ -464,6 +465,7 @@ void PrpShopMain::treeClose()
         delete item;
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
         plLocation loc = item->page()->getLocation();
+        closeWindows(loc);
         QPlasmaTreeItem* age = (QPlasmaTreeItem*)item->parent();
         delete item;
         QHash<plLocation, QPlasmaTreeItem*>::Iterator it = fLoadedLocations.find(loc);
@@ -556,6 +558,14 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
         folderItem->setText(0, typeName);
     }
     return folderItem;
+}
+
+void PrpShopMain::closeWindows(const plLocation& loc) {
+    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList(); 
+    for (auto it = windows.begin(); it != windows.end(); it++) {
+        if (((QCreatable*)(*it)->widget())->compareLocation(loc))
+            fMdiArea->removeSubWindow(*it);
+    }
 }
 
 void PrpShopMain::treeImport()
@@ -969,33 +979,34 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
 
 QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 {
-    // See if the page is already loaded -- return that if so
+    // See if the page is already loaded -- if so, then we have reloaded it, and need to rebuild
     QPlasmaTreeItem* parent = NULL;
     QPlasmaTreeItem* item = fLoadedLocations.value(page->getLocation(), NULL);
     if (item != NULL) {
-        item->setFilename(filename);
-        return item;
-    }
-
-    // Find or create the Age folder
-    QString ageName = ~page->getAge();
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
-            parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
-            break;
+        closeWindows(page->getLocation());
+        qDeleteAll(item->takeChildren());
+    } else {
+        // Find or create the Age folder
+        QString ageName = ~page->getAge();
+        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+            if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
+                parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+                break;
+            }
         }
+        if (parent == NULL)
+            parent = new QPlasmaTreeItem(fBrowserTree, ageName);
+
+        // Treat BuiltIn and Textures PRPs specially:
+        if (page->getLocation().getPageNum() == -1)
+            parent->setHasTextures();
+        else if (page->getLocation().getPageNum() == -2)
+            parent->setHasBuiltIn();
+
+        // And now the Page entry
+        item = new QPlasmaTreeItem(parent, page);
+        fLoadedLocations[page->getLocation()] = item;
     }
-    if (parent == NULL)
-        parent = new QPlasmaTreeItem(fBrowserTree, ageName);
-
-    // Treat BuiltIn and Textures PRPs specially:
-    if (page->getLocation().getPageNum() == -1)
-        parent->setHasTextures();
-    else if (page->getLocation().getPageNum() == -2)
-        parent->setHasBuiltIn();
-
-    // And now the Page entry
-    item = new QPlasmaTreeItem(parent, page);
 
     // Populate the type folders and actual objects
     std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
@@ -1009,7 +1020,6 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     }
 
     item->setFilename(filename);
-    fLoadedLocations[page->getLocation()] = item;
     return item;
 }
 

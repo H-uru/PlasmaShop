@@ -104,6 +104,7 @@ protected:
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
     QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
+    void closeWindows(const plLocation& loc);
 
 public slots:
     void newPage();
