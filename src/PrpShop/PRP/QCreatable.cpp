@@ -44,6 +44,17 @@ bool QCreatable::isMatch(plCreatable* pCre, short type)
     return (fCreatable == pCre) && (fForceType == type);
 }
 
+bool QCreatable::compareLocation(const plLocation& loc) {
+    if (fCreatable == NULL)
+        return false;
+
+    hsKeyedObject* obj = hsKeyedObject::Convert(fCreatable, false);
+    if (obj == NULL)
+        return false;
+
+    return obj->getKey()->getLocation() == loc;
+}
+
 void QCreatable::closeEvent(QCloseEvent*)
 {
     saveDamage();
