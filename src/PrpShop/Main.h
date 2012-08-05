@@ -115,6 +115,7 @@ public slots:
     void treeContextMenu(const QPoint& pos);
     void createNewObject();
     void showTypeIDs(bool show);
+    void closeWindows(const plLocation& loc);
 
     void treeClose();
     void treeEdit();

@@ -449,13 +449,14 @@ void PrpShopMain::treeClose()
         return;
 
     // Make sure no windows are open with objects we want to unload...
-    fMdiArea->closeAllSubWindows();
 
     if (item->type() == QPlasmaTreeItem::kTypeAge) {
         QHash<plLocation, QPlasmaTreeItem*>::Iterator it;
         for (it = fLoadedLocations.begin(); it != fLoadedLocations.end(); ) {
             if (~(*it)->page()->getAge() == item->age()) {
-                fResMgr.UnloadPage((*it)->page()->getLocation());
+                const plLocation& loc = (*it)->page()->getLocation();
+                closeWindows(loc);
+                fResMgr.UnloadPage(loc);
                 it = fLoadedLocations.erase(it);
             } else {
                 it++;
@@ -464,6 +465,7 @@ void PrpShopMain::treeClose()
         delete item;
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
         plLocation loc = item->page()->getLocation();
+        closeWindows(loc);
         QPlasmaTreeItem* age = (QPlasmaTreeItem*)item->parent();
         delete item;
         QHash<plLocation, QPlasmaTreeItem*>::Iterator it = fLoadedLocations.find(loc);
@@ -556,6 +558,14 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
         folderItem->setText(0, typeName);
     }
     return folderItem;
+}
+
+void PrpShopMain::closeWindows(const plLocation& loc) {
+    QList<QMdiSubWindow*> windows = fMdiArea->subWindowList(); 
+    for (auto it = windows.begin(); it != windows.end(); it++) {
+        if (((QCreatable*)(*it)->widget())->compareLocation(loc))
+            fMdiArea->removeSubWindow(*it);
+    }
 }
 
 void PrpShopMain::treeImport()
@@ -747,6 +757,12 @@ void PrpShopMain::loadFile(QString filename)
     QDir dir(filename);
     filename = QDir::toNativeSeparators(dir.absolutePath());
 
+    PageUnloadCallback prevCallback = fResMgr.SetPageUnloadFunc([this, &prevCallback](const plLocation& loc) {
+        emit closeWindows(loc);
+        if (prevCallback != NULL)
+            prevCallback(loc);
+    });
+
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
             plAgeInfo* age = fResMgr.ReadAge(~filename, true);
@@ -812,6 +828,8 @@ void PrpShopMain::loadFile(QString filename)
                            QMessageBox::Ok, this);
         msgBox.exec();
     }
+
+    fResMgr.SetPageUnloadFunc(prevCallback);
     fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
@@ -871,12 +889,24 @@ void PrpShopMain::performSaveAs()
                     : pageItem->filename();
     QString selFormat;
     switch (fResMgr.getVer()) {
-    case PlasmaVer::pvPrime: selFormat = s_formats[0];
-    case PlasmaVer::pvPots:  selFormat = s_formats[1];
-    case PlasmaVer::pvMoul:  selFormat = s_formats[2];
-    case PlasmaVer::pvEoa:   selFormat = s_formats[3];
-    case PlasmaVer::pvHex:   selFormat = s_formats[4];
-    default:      selFormat = s_formats[1];
+    case PlasmaVer::pvPrime:
+        selFormat = s_formats[0];
+        break;
+    case PlasmaVer::pvPots:
+        selFormat = s_formats[1];
+        break;
+    case PlasmaVer::pvMoul:
+        selFormat = s_formats[2];
+        break;
+    case PlasmaVer::pvEoa:
+        selFormat = s_formats[3];
+        break;
+    case PlasmaVer::pvHex:
+        selFormat = s_formats[4];
+        break;
+    default:
+        selFormat = s_formats[1];
+        break;
     }
     QString filename = QFileDialog::getSaveFileName(this,
                             tr("Save PRP"), saveDir,
@@ -969,33 +999,33 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
 
 QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 {
-    // See if the page is already loaded -- return that if so
+    // See if the page is already loaded -- if so, then we have reloaded it, and need to rebuild
     QPlasmaTreeItem* parent = NULL;
     QPlasmaTreeItem* item = fLoadedLocations.value(page->getLocation(), NULL);
     if (item != NULL) {
-        item->setFilename(filename);
-        return item;
-    }
-
-    // Find or create the Age folder
-    QString ageName = ~page->getAge();
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
-            parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
-            break;
+        qDeleteAll(item->takeChildren());
+    } else {
+        // Find or create the Age folder
+        QString ageName = ~page->getAge();
+        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+            if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
+                parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+                break;
+            }
         }
+        if (parent == NULL)
+            parent = new QPlasmaTreeItem(fBrowserTree, ageName);
+
+        // Treat BuiltIn and Textures PRPs specially:
+        if (page->getLocation().getPageNum() == -1)
+            parent->setHasTextures();
+        else if (page->getLocation().getPageNum() == -2)
+            parent->setHasBuiltIn();
+
+        // And now the Page entry
+        item = new QPlasmaTreeItem(parent, page);
+        fLoadedLocations[page->getLocation()] = item;
     }
-    if (parent == NULL)
-        parent = new QPlasmaTreeItem(fBrowserTree, ageName);
-
-    // Treat BuiltIn and Textures PRPs specially:
-    if (page->getLocation().getPageNum() == -1)
-        parent->setHasTextures();
-    else if (page->getLocation().getPageNum() == -2)
-        parent->setHasBuiltIn();
-
-    // And now the Page entry
-    item = new QPlasmaTreeItem(parent, page);
 
     // Populate the type folders and actual objects
     std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
@@ -1009,7 +1039,6 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     }
 
     item->setFilename(filename);
-    fLoadedLocations[page->getLocation()] = item;
     return item;
 }
 
