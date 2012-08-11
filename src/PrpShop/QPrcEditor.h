@@ -32,13 +32,14 @@ class QPrcEditor : public QCreatable {
 protected:
     QsciScintilla* fEditor;
     QsciLexerXML* fLexerXML;
+    QAction* fSaveAction;
     bool fDirty;
     bool fLexersInited;
     bool fDoLineNumbers;
 
 public:
     QPrcEditor(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    virtual void saveDamage() { }   // Handled in compilation
 
     virtual QSize sizeHint() const { return QSize(500, 400); }
 
@@ -60,11 +61,19 @@ public slots:
     virtual void performUndo() { fEditor->undo(); }
     virtual void performRedo() { fEditor->redo(); }
 
+    void compilePrc();
+
 signals:
     void statusChanged();
 
 private slots:
     void adjustLineNumbers();
+    void onDirty();
+    void onClean();
+
+protected:
+    virtual void closeEvent(QCloseEvent* event);
+    void loadPrcData();
 };
 
 #endif

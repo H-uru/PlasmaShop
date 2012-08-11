@@ -40,7 +40,7 @@
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
 
-#define PRPSHOP_VERSION "Build 152"
+#define PRPSHOP_VERSION "Build 210"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance() { return sInstance; }
