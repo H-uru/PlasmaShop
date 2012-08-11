@@ -275,11 +275,6 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
 
     default:
         if ((type & 0x1000) == 0) {
-            QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),
-                            parent->tr("No editor is currently available for %1")
-                                      .arg(pqGetFriendlyClassName(type)),
-                            QMessageBox::Ok, parent);
-            msgBox.exec();
             return new QPrcEditor(pCre, parent);
         } else {
             QMessageBox msgBox(QMessageBox::Information, parent->tr("Oops"),

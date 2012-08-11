@@ -15,9 +15,15 @@
  */
 
 #include "QPrcEditor.h"
-#include <QGridLayout>
+#include <QToolBar>
+#include <QAction>
+#include <QVBoxLayout>
 #include <QSettings>
+#include <QMessageBox>
+#include <QCloseEvent>
+#include <qticonloader.h>
 #include "../QPlasma.h"
+#include "Main.h"
 
 #define MARGIN_LINES 0
 #define MARGIN_FOLDERS 1
@@ -32,9 +38,16 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTHTRACKING, 1);
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTH, 1000);
 
-    QGridLayout* layout = new QGridLayout(this);
+    QToolBar* tbar = new QToolBar(this);
+    tbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    fSaveAction = tbar->addAction(qStdIcon("document-save"),
+            tr("Compile and &Save"), this, SLOT(compilePrc()));
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(fEditor, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(tbar);
+    layout->addWidget(fEditor);
     setLayout(layout);
 
     // Initialize the editor settings, fonts, etc
@@ -43,8 +56,14 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
     connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
     connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(onDirty()));
+    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(onClean()));
 
-    // Load the creatable
+    loadPrcData();
+}
+
+void QPrcEditor::loadPrcData()
+{
     hsRAMStream* S = new hsRAMStream();
     pfPrcHelper* prc = new pfPrcHelper(S);
     fCreatable->prcWrite(prc);
@@ -58,13 +77,7 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     delete[] buf;
 
     fEditor->setText(data);
-    fEditor->setReadOnly(true);
     fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
-}
-
-void QPrcEditor::saveDamage()
-{
-    //TODO
 }
 
 void QPrcEditor::updateSettings()
@@ -131,4 +144,55 @@ void QPrcEditor::adjustLineNumbers()
 {
     if (fDoLineNumbers)
         fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
+}
+
+void QPrcEditor::onDirty()
+{
+    fDirty = true;
+    fSaveAction->setEnabled(true);
+}
+
+void QPrcEditor::onClean()
+{
+    fDirty = false;
+    fSaveAction->setEnabled(false);
+}
+
+void QPrcEditor::compilePrc()
+{
+    pfPrcParser parser;
+    hsRAMStream S;
+    QByteArray data = fEditor->text().toUtf8();
+    S.write(data.size(), data.data());
+    S.rewind();
+
+    try {
+        parser.read(&S);
+        fCreatable->prcParse(parser.getRoot(), PrpShopMain::ResManager());
+    } catch (hsException& e) {
+        // TODO: Get file and line from PRC source where the exception occurred
+        QMessageBox::critical(this, tr("Compile Error"),
+                QString("Error: %1").arg(e.what()));
+        return;
+    }
+
+    // If we succeeded, replace the editor contents with the compiled source
+    loadPrcData();
+}
+
+void QPrcEditor::closeEvent(QCloseEvent* event)
+{
+    if (fDirty) {
+        QMessageBox::StandardButton confirm =
+                QMessageBox::question(this, tr("Confirmation"),
+                        tr("Are you sure you want to close this PRC object without saving?"),
+                        QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        if (confirm == QMessageBox::Save) {
+            compilePrc();
+            if (fDirty)
+                event->ignore();
+        } else if (confirm == QMessageBox::Cancel) {
+            event->ignore();
+        }
+    }
 }
