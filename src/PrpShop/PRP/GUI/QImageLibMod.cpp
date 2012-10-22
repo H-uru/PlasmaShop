@@ -29,7 +29,7 @@ QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
     fSynchObjLink->setForceType(kSynchedObject);
 
     fImages = new QKeyList(mod->getKey(), this);
-    for (size_t i=0; i<mod->getImages().getSize(); i++)
+    for (size_t i=0; i<mod->getImages().size(); i++)
         fImages->addKey(mod->getImages()[i]);
 
     QGridLayout* layout = new QGridLayout(this);

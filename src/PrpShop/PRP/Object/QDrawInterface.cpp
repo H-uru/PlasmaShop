@@ -70,8 +70,8 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
         plDrawableSpans* dspans = plDrawableSpans::Convert(mgr->getObject(fKeys[idx]));
         plDISpanIndex dis = dspans->getDIIndex(fDrawKeys[idx]);
 
-        hsTArray<plKey> mats = dspans->getMaterials();
-        for (size_t i = 0; i < dis.fIndices.getSize(); i++) {
+        std::vector<plKey> mats = dspans->getMaterials();
+        for (size_t i = 0; i < dis.fIndices.size(); i++) {
             plIcicle* ice = dspans->getIcicle(dis.fIndices[i]);
             hsKeyedObject* mat = mgr->getObject(mats[ice->getMaterialIdx()]);
             PrpShopMain::Instance()->editCreatable(mat);
@@ -148,7 +148,7 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
         fDrawKeys->addKey(intf->getDrawable(i), intf->getDrawableKey(i));
 
     fRegions = new QKeyList(intf->getKey(), childTab);
-    for (size_t i=0; i<intf->getRegions().getSize(); i++)
+    for (size_t i=0; i<intf->getRegions().size(); i++)
         fRegions->addKey(intf->getRegions()[i]);
 
     childTab->addTab(fDrawKeys, tr("Drawables"));

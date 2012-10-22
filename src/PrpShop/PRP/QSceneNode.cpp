@@ -28,9 +28,9 @@ QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
     QTabWidget* tab = new QTabWidget(this);
     fSceneKeys = new QKeyList(node->getKey(), tab);
     fPoolKeys = new QKeyList(node->getKey(), tab);
-    for (size_t i=0; i<node->getSceneObjects().getSize(); i++)
+    for (size_t i=0; i<node->getSceneObjects().size(); i++)
         fSceneKeys->addKey(node->getSceneObjects()[i]);
-    for (size_t i=0; i<node->getPoolObjects().getSize(); i++)
+    for (size_t i=0; i<node->getPoolObjects().size(); i++)
         fPoolKeys->addKey(node->getPoolObjects()[i]);
     tab->addTab(fSceneKeys, tr("Scene Objects"));
     tab->addTab(fPoolKeys, tr("Pool Objects"));
@@ -50,8 +50,8 @@ void QSceneNode::saveDamage()
     node->getPoolObjects().clear();
     QList<plKey> sokeys = fSceneKeys->keys();
     while (!sokeys.isEmpty())
-        node->getSceneObjects().append(sokeys.takeFirst());
+        node->getSceneObjects().push_back(sokeys.takeFirst());
     QList<plKey> pokeys = fPoolKeys->keys();
     while (!pokeys.isEmpty())
-        node->getPoolObjects().append(pokeys.takeFirst());
+        node->getPoolObjects().push_back(pokeys.takeFirst());
 }

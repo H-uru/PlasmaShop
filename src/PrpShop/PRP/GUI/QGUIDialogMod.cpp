@@ -56,7 +56,7 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
     fVersion->setValue(dlg->getVersion());
 
     fControls = new QKeyList(dlg->getKey(), this);
-    for (size_t i=0; i<dlg->getControls().getSize(); i++)
+    for (size_t i=0; i<dlg->getControls().size(); i++)
         fControls->addKey(dlg->getControls()[i]);
 
     fRenderMod = new QCreatableLink(this);

@@ -32,13 +32,13 @@ QGUIDynDisplayCtrl::QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent)
 
     QTabWidget* keyTabs = new QTabWidget(this);
     fTextMaps = new QKeyList(ctrl->getKey(), keyTabs);
-    for (size_t i=0; i<ctrl->getTextMaps().getSize(); i++)
+    for (size_t i=0; i<ctrl->getTextMaps().size(); i++)
         fTextMaps->addKey(ctrl->getTextMaps()[i]);
     fLayers = new QKeyList(ctrl->getKey(), keyTabs);
-    for (size_t i=0; i<ctrl->getLayers().getSize(); i++)
+    for (size_t i=0; i<ctrl->getLayers().size(); i++)
         fLayers->addKey(ctrl->getLayers()[i]);
     fMaterials = new QKeyList(ctrl->getKey(), keyTabs);
-    for (size_t i=0; i<ctrl->getMaterials().getSize(); i++)
+    for (size_t i=0; i<ctrl->getMaterials().size(); i++)
         fMaterials->addKey(ctrl->getMaterials()[i]);
     keyTabs->addTab(fTextMaps, tr("Text Maps"));
     keyTabs->addTab(fLayers, tr("Layers"));

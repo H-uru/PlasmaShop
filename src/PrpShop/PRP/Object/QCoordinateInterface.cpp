@@ -68,7 +68,7 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     xformTab->addTab(fWorldToLocal, tr("World to Local"));
 
     fChildren = new QKeyList(intf->getKey(), this);
-    for (size_t i=0; i<intf->getChildren().getSize(); i++)
+    for (size_t i=0; i<intf->getChildren().size(); i++)
         fChildren->addKey(intf->getChildren()[i]);
 
     QGridLayout* layout = new QGridLayout(this);

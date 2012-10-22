@@ -199,7 +199,7 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     fCallbackList->headerItem()->setText(0, tr("Idx"));
     fCallbackList->headerItem()->setText(1, tr("Type"));
     fCallbackList->setContextMenuPolicy(Qt::CustomContextMenu);
-    for (size_t i=0; i<obj->getCallbacks().getSize(); i++) {
+    for (size_t i=0; i<obj->getCallbacks().size(); i++) {
         plEventCallbackMsg* msg = obj->getCallbacks()[i];
         QTreeWidgetItem* item = new QTreeWidgetItem(fCallbackList,
             QStringList() << QString("%1").arg(i) << pqGetFriendlyClassName(msg->ClassIndex()));
@@ -207,7 +207,7 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     }
 
     fStopPoints = new QDoubleListWidget(listTabs);
-    for (size_t i=0; i<obj->getStopPoints().getSize(); i++)
+    for (size_t i=0; i<obj->getStopPoints().size(); i++)
         fStopPoints->addValue(obj->getStopPoints()[i]);
 
     listTabs->addTab(fCallbackList, tr("Callbacks"));
@@ -261,9 +261,8 @@ void QAnimTimeConvert::saveDamage()
     obj->setCurrentAnimTime(fCurrentAnimTime->value());
     obj->setLastEvalWorldTime(fLastEvalWorldTime->value());
     QList<double> stops = fStopPoints->values();
-    hsTArray<float> plstops;
-    plstops.setSize(stops.size());
-    for (size_t i=0; i<plstops.getSize(); i++)
+    std::vector<float> plstops(stops.size());
+    for (size_t i=0; i<plstops.size(); i++)
         plstops[i] = stops[i];
     obj->setStopPoints(plstops);
 }
@@ -282,7 +281,7 @@ void QAnimTimeConvert::callbackContextMenu(const QPoint& pos)
     QAction* sel = menu.exec(fCallbackList->viewport()->mapToGlobal(pos));
     if (sel == addObjItem) {
         plEventCallbackMsg* msg = new plEventCallbackMsg();
-        int id = obj->getCallbacks().getSize();
+        int id = obj->getCallbacks().size();
         QTreeWidgetItem* item = new QTreeWidgetItem(fCallbackList,
             QStringList() << QString("%1").arg(id) << pqGetFriendlyClassName(msg->ClassIndex()));
         item->setIcon(0, pqGetTypeIcon(msg->ClassIndex()));

@@ -25,7 +25,7 @@ QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
     plMsgForwarder* obj = plMsgForwarder::Convert(fCreatable);
 
     fForwardKeys = new QKeyList(obj->getKey(), this);
-    for (size_t i=0; i<obj->getForwardKeys().getSize(); i++)
+    for (size_t i=0; i<obj->getForwardKeys().size(); i++)
         fForwardKeys->addKey(obj->getForwardKeys()[i]);
 
     QGridLayout* layout = new QGridLayout(this);

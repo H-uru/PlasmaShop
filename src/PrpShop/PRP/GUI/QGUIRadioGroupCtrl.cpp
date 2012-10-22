@@ -41,7 +41,7 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
 
     fControls = new QKeyList(ctrl->getKey(), this);
     fDefaultValue = new QComboBox(this);
-    for (size_t i=0; i<ctrl->getControls().getSize(); i++) {
+    for (size_t i=0; i<ctrl->getControls().size(); i++) {
         fControls->addKey(ctrl->getControls()[i]);
         fDefaultValue->addItem(pqGetTypeIcon(ctrl->getControls()[i]->getType()),
                                ~ctrl->getControls()[i]->getName());

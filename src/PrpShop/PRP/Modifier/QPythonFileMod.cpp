@@ -149,11 +149,11 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
     fFileName = new QLineEdit(~mod->getFilename(), this);
 
     fReceivers = new QKeyList(mod->getKey(), this);
-    for (size_t i=0; i<mod->getReceivers().getSize(); i++)
+    for (size_t i=0; i<mod->getReceivers().size(); i++)
         fReceivers->addKey(mod->getReceivers()[i]);
 
     fParams = new QPythonParamList(this);
-    for (size_t i=0; i<mod->getParameters().getSize(); i++)
+    for (size_t i=0; i<mod->getParameters().size(); i++)
         fParams->addParam(mod->getParameters()[i]);
 
     QGridLayout* layout = new QGridLayout(this);

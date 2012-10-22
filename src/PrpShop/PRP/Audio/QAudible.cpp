@@ -38,7 +38,7 @@ QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
     plWinAudible* obj = plWinAudible::Convert(fCreatable);
 
     fSoundKeys = new QKeyList(obj->getKey(), this);
-    for (size_t i=0; i<obj->getSounds().getSize(); i++)
+    for (size_t i=0; i<obj->getSounds().size(); i++)
         fSoundKeys->addKey(obj->getSounds()[i]);
 
     fSceneNode = new QCreatableLink(this);

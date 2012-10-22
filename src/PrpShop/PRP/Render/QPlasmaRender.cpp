@@ -272,7 +272,7 @@ void QPlasmaRender::center(plKey obj, bool world)
             if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
                 continue;
 
-            for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
+            for (size_t idx = 0; idx < di.fIndices.size(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
                 hsBounds3Ext bounds = ice->getLocalBounds();
 
@@ -335,10 +335,10 @@ void QPlasmaRender::build(NavigationMode navMode, DrawMode drawMode)
             plDISpanIndex di = span->getDIIndex(draw->getDrawableKey(j));
             if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
                 continue;
-            for (size_t idx=0; idx<di.fIndices.getSize(); idx++) {
+            for (size_t idx=0; idx<di.fIndices.size(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
                 hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
-                for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
+                for (size_t lay = 0; lay < mat->getLayers().size(); lay++) {
                     if (fLayers.find(mat->getLayers()[lay]) == fLayers.end()) {
                         fLayers[mat->getLayers()[lay]] = LayerInfo(fTexCount, 0);
                         fTexCount++;
@@ -596,10 +596,10 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
         if ((di.fFlags & plDISpanIndex::kMatrixOnly) != 0)
             continue;
 
-        for (size_t idx = 0; idx < di.fIndices.getSize(); idx++) {
+        for (size_t idx = 0; idx < di.fIndices.size(); idx++) {
             plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
-            hsTArray<plGBufferVertex> verts = span->getVerts(ice);
-            hsTArray<unsigned short> indices = span->getIndices(ice);
+            std::vector<plGBufferVertex> verts = span->getVerts(ice);
+            std::vector<unsigned short> indices = span->getIndices(ice);
 
             hsMatrix44 xform;
             if (fNavMode == kNavScene || fNavMode == kNavModelInScene) {
@@ -610,7 +610,7 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
             }
 
             hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
-            for (size_t lay = 0; lay < mat->getLayers().getSize(); lay++) {
+            for (size_t lay = 0; lay < mat->getLayers().size(); lay++) {
             //size_t lay = 0 ; {
                 plLayerInterface* layer = plLayerInterface::Convert(mat->getLayers()[lay]->getObj());
 
@@ -675,7 +675,7 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
 
                 if ((mode & kDrawModeMask) == kDrawPoints) {
                     glBegin(GL_POINTS);
-                    for (size_t j = 0; j < verts.getSize(); j++) {
+                    for (size_t j = 0; j < verts.size(); j++) {
                         hsColor32 color(verts[j].fColor);
                         glColor4ub(color.r, color.g, color.b, color.a);
 
@@ -689,7 +689,7 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
                     glEnd();
                 } else if ((mode & kDrawModeMask) == kDrawWire) {
                     glBegin(GL_LINES);
-                    for (size_t j = 0; j < indices.getSize(); j+=3) {
+                    for (size_t j = 0; j < indices.size(); j+=3) {
                         hsColor32 color[3] = { verts[indices[j+0]].fColor,
                                                verts[indices[j+1]].fColor,
                                                verts[indices[j+2]].fColor };
@@ -722,7 +722,7 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
                     glEnd();
                 } else if ((mode & kDrawModeMask) == kDrawFlat) {
                     glBegin(GL_TRIANGLES);
-                    for (size_t j = 0; j < indices.getSize(); j++) {
+                    for (size_t j = 0; j < indices.size(); j++) {
                         hsColor32 color(verts[indices[j]].fColor);
                         glColor4ub(color.r, color.g, color.b, color.a);
 
@@ -736,7 +736,7 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
                     glEnd();
                 } else if ((mode & kDrawModeMask) == kDrawTextured) {
                     glBegin(GL_TRIANGLES);
-                    for (size_t j = 0; j < indices.getSize(); j++) {
+                    for (size_t j = 0; j < indices.size(); j++) {
                         hsColor32 color(verts[indices[j]].fColor);
 
                         size_t uvwSrc = layer->getUVWSrc() & 0xFFFF;

@@ -31,7 +31,7 @@ QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
     fAnimName = new QLineEdit(this);
     fAnimName->setText(~ctrl->getAnimName());
     fAnimationKeys = new QKeyList(ctrl->getKey(), this);
-    for (size_t i=0; i<ctrl->getAnimKeys().getSize(); i++)
+    for (size_t i=0; i<ctrl->getAnimKeys().size(); i++)
         fAnimationKeys->addKey(ctrl->getAnimKeys()[i]);
 
     fValue = new QCheckBox(tr("Checked"), this);

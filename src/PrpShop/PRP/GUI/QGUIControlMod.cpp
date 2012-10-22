@@ -207,7 +207,7 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     guiProcLayout->addWidget(fProcCommandLabel, 2, 0);
     guiProcLayout->addWidget(fProcCommand, 2, 1, 1, 2);
     fSoundIndices = new QIntListWidget(-0x80000000, 0x7FFFFFFF, xTabs);
-    for (size_t i=0; i<ctrl->getSoundIndices().getSize(); i++)
+    for (size_t i=0; i<ctrl->getSoundIndices().size(); i++)
         fSoundIndices->addValue(ctrl->getSoundIndices()[i]);
     xTabs->addTab(guiProcTab, tr("Proc Handler"));
     xTabs->addTab(fSoundIndices, tr("Sound Indices"));
@@ -268,9 +268,10 @@ void QGUIControlMod::saveDamage()
         ctrl->setHandler(new pfGUICloseDlgProc());
     }
 
-    hsTArray<int> indices;
+    std::vector<int> indices;
+    indices.reserve(fSoundIndices->values().size());
     foreach (int idx, fSoundIndices->values())
-        indices.append(idx);
+        indices.push_back(idx);
     ctrl->setSoundIndices(indices);
 }
 

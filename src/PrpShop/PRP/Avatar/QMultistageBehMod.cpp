@@ -163,7 +163,7 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
     fStages->headerItem()->setText(0, tr("Idx"));
     fStages->headerItem()->setText(1, tr("Type"));
     fStages->setContextMenuPolicy(Qt::CustomContextMenu);
-    for (size_t i=0; i<obj->getStages().getSize(); i++) {
+    for (size_t i=0; i<obj->getStages().size(); i++) {
         plAnimStage* stage = obj->getStages()[i];
         QTreeWidgetItem* item = new QTreeWidgetItem(fStages,
             QStringList() << QString("%1").arg(i) << pqGetFriendlyClassName(stage->ClassIndex()));
@@ -171,7 +171,7 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
     }
 
     fReceivers = new QKeyList(obj->getKey(), listTabs);
-    for (size_t i=0; i<obj->getReceivers().getSize(); i++)
+    for (size_t i=0; i<obj->getReceivers().size(); i++)
         fReceivers->addKey(obj->getReceivers()[i]);
 
     listTabs->addTab(fStages, tr("Animation Stages"));
@@ -220,7 +220,7 @@ void QMultistageBehMod::stageContextMenu(const QPoint& pos)
     QAction* sel = menu.exec(fStages->viewport()->mapToGlobal(pos));
     if (sel == addObjItem) {
         plAnimStage* stage = new plAnimStage();
-        int id = obj->getStages().getSize();
+        int id = obj->getStages().size();
         QTreeWidgetItem* item = new QTreeWidgetItem(fStages,
             QStringList() << QString("%1").arg(id) << pqGetFriendlyClassName(stage->ClassIndex()));
         item->setIcon(0, pqGetTypeIcon(stage->ClassIndex()));

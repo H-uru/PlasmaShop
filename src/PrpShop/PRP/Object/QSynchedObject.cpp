@@ -62,9 +62,9 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     sdlTab->addTab(fExcludeList, tr("SDL Excludes"));
     sdlTab->addTab(fVolatileList, tr("SDL Volatiles"));
 
-    for (size_t i=0; i<obj->getExcludes().getSize(); i++)
+    for (size_t i=0; i<obj->getExcludes().size(); i++)
         fExcludeList->addString(~obj->getExcludes()[i]);
-    for (size_t i=0; i<obj->getVolatiles().getSize(); i++)
+    for (size_t i=0; i<obj->getVolatiles().size(); i++)
         fVolatileList->addString(~obj->getVolatiles()[i]);
 
     QGridLayout* layout = new QGridLayout(this);
