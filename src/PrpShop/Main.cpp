@@ -85,6 +85,8 @@ PrpShopMain::PrpShopMain()
 
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
+    fActions[kFileSaveAs]->setEnabled(false); //Enable if a page is selected
+    fActions[kFileSaveAs]->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
     fActions[kWindowClose]->setShortcut(Qt::CTRL + Qt::Key_W);
     fActions[kToolsProperties]->setCheckable(true);
@@ -373,6 +375,7 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
     saveProps((QPlasmaTreeItem*)previous);
 
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)current;
+    fActions[kFileSaveAs]->setEnabled(false);
     if (item == NULL) {
         setPropertyPage(kPropsNone);
     } else if (item->type() == QPlasmaTreeItem::kTypeAge) {
@@ -390,6 +393,7 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fLocationFlags[kLocItinerant]->setChecked(item->page()->getLocation().getFlags() & plLocation::kItinerant);
         fLocationFlags[kLocReserved]->setChecked(item->page()->getLocation().getFlags() & plLocation::kReserved);
         fLocationFlags[kLocBuiltIn]->setChecked(item->page()->getLocation().getFlags() & plLocation::kBuiltIn);
+        fActions[kFileSaveAs]->setEnabled(true);
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         setPropertyPage(kPropsKO);
         fObjName->setText(~item->obj()->getKey()->getName());
