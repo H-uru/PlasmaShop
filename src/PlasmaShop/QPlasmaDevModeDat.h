@@ -19,8 +19,10 @@
 
 #include "QPlasmaDocument.h"
 #include <Stream/hsStream.h>
+#include <QCheckBox>
 #include <QLabel>
 #include <QLineEdit>
+#include <QSlider>
 
 class QPlasmaDevModeDat : public QPlasmaDocument {
     Q_OBJECT
@@ -32,23 +34,25 @@ public:
 
 private:
     enum {
-        //DeviceRecord
+        //DeviceRecord LineEdits
         kDevMRecordVersion, kDevMFlags, kDevMDeviceType,
         kDevMDriverDesc, kDevMDriverName, kDevMDriverVersion,
         kDevMDeviceDesc, kDevMCaps, kDevMLayersAtOnce,
-        kDevMMemoryBytes, kDevMNumModes, kDevMZBiasRating,
+        kDevMMemoryBytes, kDevMZBiasRating,
         kDevMLODBiasRating, kDevMFogExpApproxStart,
         kDevMFogExp2ApproxStart, kDevMFogEndBias,
-        kNumDevRecordEntries
+        kNumDevRecordLineEdits
     };
     enum {
-        //DeviceMode
+        //DeviceMode LineEdits
         kDevMWidth, kDevMHeight, kDevMDepth,
-        kDevMCanRenderToCubics, kNumDevModeEntries
+        kNumDevModeLineEdits
     };
-    QLineEdit* fRecordEntries[kNumDevRecordEntries];
-    QLineEdit* fModeEntries[kNumDevModeEntries];
-    QLineEdit* fTexQualityEntry;
+    QLineEdit* fRecordLineEdits[kNumDevRecordLineEdits];
+    QLineEdit* fModeLineEdits[kNumDevModeLineEdits];
+    QCheckBox* fModeCheckBoxWindowed;
+    QLabel* fModeLabelCanRenderToCubics;
+    QSlider* fSliderTextureQuality;
 
     bool loadDeviceModeData(hsStream* S);
 };

@@ -26,13 +26,13 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
               : QPlasmaDocument(kDocDevMode, parent)
 {
     //DeviceRecord Group
-    QGroupBox* grpRecord = new QGroupBox(tr("Device Record"), this);
+    QGroupBox* grpRecord = new QGroupBox(tr("Device Record (Read Only)"), this);
     QGridLayout* layRecord = new QGridLayout(grpRecord);
-    layRecord->setVerticalSpacing(0);
+    layRecord->setVerticalSpacing(4);
     layRecord->setHorizontalSpacing(8);
-    for (size_t i = 0; i < kNumDevRecordEntries; i++) {
-        fRecordEntries[i] = new QLineEdit(grpRecord);
-        fRecordEntries[i]->setReadOnly(true);
+    for (size_t i = 0; i < kNumDevRecordLineEdits; i++) {
+        fRecordLineEdits[i] = new QLineEdit(grpRecord);
+        fRecordLineEdits[i]->setReadOnly(true);
     }
     layRecord->addWidget(new QLabel(tr("Record Version:"), grpRecord), 0, 0);
     layRecord->addWidget(new QLabel(tr("Flags:"), grpRecord), 1, 0);
@@ -44,56 +44,61 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layRecord->addWidget(new QLabel(tr("Caps:"), grpRecord), 7, 0);
     layRecord->addWidget(new QLabel(tr("Layers At Once:"), grpRecord), 8, 0);
     layRecord->addWidget(new QLabel(tr("Memory Bytes:"), grpRecord), 9, 0);
-    layRecord->addWidget(new QLabel(tr("Num Modes:"), grpRecord), 10, 0);
-    layRecord->addWidget(new QLabel(tr("ZBiasRating:"), grpRecord), 11, 0);
-    layRecord->addWidget(new QLabel(tr("LODBiasRating:"), grpRecord), 12, 0);
-    layRecord->addWidget(new QLabel(tr("FogExpApproxStart:"), grpRecord), 13, 0);
-    layRecord->addWidget(new QLabel(tr("FogExp2ApproxStart:"), grpRecord), 14, 0);
-    layRecord->addWidget(new QLabel(tr("FogEndBias:"), grpRecord), 15, 0);
-    layRecord->addWidget(fRecordEntries[kDevMRecordVersion], 0, 1);
-    layRecord->addWidget(fRecordEntries[kDevMFlags], 1, 1);
-    layRecord->addWidget(fRecordEntries[kDevMDeviceType], 2, 1);
-    layRecord->addWidget(fRecordEntries[kDevMDriverDesc], 3, 1);
-    layRecord->addWidget(fRecordEntries[kDevMDriverName], 4, 1);
-    layRecord->addWidget(fRecordEntries[kDevMDriverVersion], 5, 1);
-    layRecord->addWidget(fRecordEntries[kDevMDeviceDesc], 6, 1);
-    layRecord->addWidget(fRecordEntries[kDevMCaps], 7, 1);
-    layRecord->addWidget(fRecordEntries[kDevMLayersAtOnce], 8, 1);
-    layRecord->addWidget(fRecordEntries[kDevMMemoryBytes], 9, 1);
-    layRecord->addWidget(fRecordEntries[kDevMNumModes], 10, 1);
-    layRecord->addWidget(fRecordEntries[kDevMZBiasRating], 11, 1);
-    layRecord->addWidget(fRecordEntries[kDevMLODBiasRating], 12, 1);
-    layRecord->addWidget(fRecordEntries[kDevMFogExpApproxStart], 13, 1);
-    layRecord->addWidget(fRecordEntries[kDevMFogExp2ApproxStart], 14, 1);
-    layRecord->addWidget(fRecordEntries[kDevMFogEndBias], 15, 1);
+    layRecord->addWidget(new QLabel(tr("ZBiasRating:"), grpRecord), 10, 0);
+    layRecord->addWidget(new QLabel(tr("LODBiasRating:"), grpRecord), 11, 0);
+    layRecord->addWidget(new QLabel(tr("FogExpApproxStart:"), grpRecord), 12, 0);
+    layRecord->addWidget(new QLabel(tr("FogExp2ApproxStart:"), grpRecord), 13, 0);
+    layRecord->addWidget(new QLabel(tr("FogEndBias:"), grpRecord), 14, 0);
+    layRecord->addWidget(fRecordLineEdits[kDevMRecordVersion], 0, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMFlags], 1, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMDeviceType], 2, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMDriverDesc], 3, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMDriverName], 4, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMDriverVersion], 5, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMDeviceDesc], 6, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMCaps], 7, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMLayersAtOnce], 8, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMMemoryBytes], 9, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMZBiasRating], 10, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMLODBiasRating], 11, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMFogExpApproxStart], 12, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMFogExp2ApproxStart], 13, 1);
+    layRecord->addWidget(fRecordLineEdits[kDevMFogEndBias], 14, 1);
 
     //DeviceMode Group
     QGroupBox* grpMode = new QGroupBox(tr("Device Mode"), this);
     QGridLayout* layMode = new QGridLayout(grpMode);
-    layMode->setVerticalSpacing(0);
+    layMode->setVerticalSpacing(4);
     layMode->setHorizontalSpacing(8);
-    for (size_t i = 0; i < kNumDevModeEntries; i++) {
-        fModeEntries[i] = new QLineEdit(grpMode);
-        fModeEntries[i]->setReadOnly(true);
-    }
+    for (size_t i = 0; i < kNumDevModeLineEdits; i++)
+        fModeLineEdits[i] = new QLineEdit(grpMode);
+    fModeCheckBoxWindowed = new QCheckBox(grpMode);
+    fModeLabelCanRenderToCubics = new QLabel(grpMode);
     layMode->addWidget(new QLabel(tr("Width:"), grpMode), 0, 0);
     layMode->addWidget(new QLabel(tr("Height:"), grpMode), 1, 0);
     layMode->addWidget(new QLabel(tr("Depth:"), grpMode), 2, 0);
-    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 3, 0);
-    layMode->addWidget(fModeEntries[kDevMWidth], 0, 1);
-    layMode->addWidget(fModeEntries[kDevMHeight], 1, 1);
-    layMode->addWidget(fModeEntries[kDevMDepth], 2, 1);
-    layMode->addWidget(fModeEntries[kDevMCanRenderToCubics], 3, 1);
+    layMode->addWidget(new QLabel(tr("Window Mode:"), grpMode), 3, 0);
+    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 4, 0);
+    layMode->addWidget(fModeLineEdits[kDevMWidth], 0, 1);
+    layMode->addWidget(fModeLineEdits[kDevMHeight], 1, 1);
+    layMode->addWidget(fModeLineEdits[kDevMDepth], 2, 1);
+    layMode->addWidget(fModeCheckBoxWindowed, 3, 1);
+    layMode->addWidget(fModeLabelCanRenderToCubics, 4, 1);
+    connect(fModeCheckBoxWindowed, SIGNAL(toggled(bool)), fModeLineEdits[kDevMDepth], SLOT(setDisabled(bool)));
 
     //TextureQuality Group
     QGroupBox* grpTexQuality = new QGroupBox(tr("Texture Quality"), this);
     QGridLayout* layTexQuality = new QGridLayout(grpTexQuality);
-    layTexQuality->setVerticalSpacing(0);
     layTexQuality->setHorizontalSpacing(8);
-    fTexQualityEntry = new QLineEdit(grpTexQuality);
-    fTexQualityEntry->setReadOnly(true);
+    fSliderTextureQuality = new QSlider(Qt::Horizontal, grpTexQuality);
+    fSliderTextureQuality->setMinimum(0);
+    fSliderTextureQuality->setMaximum(100);
+    QLabel* textureQualityValueLabel = new QLabel(grpTexQuality);
     layTexQuality->addWidget(new QLabel(tr("Quality:"), grpTexQuality), 0, 0);
-    layTexQuality->addWidget(fTexQualityEntry, 0, 1);
+    layTexQuality->addWidget(fSliderTextureQuality, 0, 1);
+    layTexQuality->addWidget(textureQualityValueLabel, 0, 2);
+    connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), textureQualityValueLabel,
+            SLOT(setNum(int)));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -122,32 +127,31 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             loadRec.read(S);
             loadMode.read(S);
 
-            fModeEntries[kDevMWidth]->setText(QString().setNum(loadMode.getWidth()));
-            fModeEntries[kDevMHeight]->setText(QString().setNum(loadMode.getHeight()));
-            fModeEntries[kDevMDepth]->setText(QString().setNum(loadMode.getDepth()));
-            fModeEntries[kDevMCanRenderToCubics]->setText(QString().setNum(loadMode.getCanRenderToCubics()));
+            fModeLineEdits[kDevMWidth]->setText(QString().setNum(loadMode.getWidth()));
+            fModeLineEdits[kDevMHeight]->setText(QString().setNum(loadMode.getHeight()));
+            fModeLineEdits[kDevMDepth]->setText(QString().setNum(loadMode.getDepth()));
+            fModeLabelCanRenderToCubics->setText(loadMode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
 
-            fRecordEntries[kDevMRecordVersion]->setText(QString().setNum(loadRec.getVersion()));
-            fRecordEntries[kDevMFlags]->setText(QString().setNum(loadRec.getFlags()));
-            fRecordEntries[kDevMDeviceType]->setText(QString().setNum(loadRec.getDeviceType()));
-            fRecordEntries[kDevMDriverDesc]->setText(loadRec.getDriverDesc().cstr());
-            fRecordEntries[kDevMDriverName]->setText(loadRec.getDriverName().cstr());
-            fRecordEntries[kDevMDriverVersion]->setText(loadRec.getDriverVersion().cstr());
-            fRecordEntries[kDevMDeviceDesc]->setText(loadRec.getDeviceDesc().cstr());
-            fRecordEntries[kDevMCaps]->setText("### TODO ###");
-            fRecordEntries[kDevMLayersAtOnce]->setText(QString().setNum(loadRec.getLayersAtOnce()));
+            fRecordLineEdits[kDevMRecordVersion]->setText(QString().setNum(loadRec.getVersion()));
+            fRecordLineEdits[kDevMFlags]->setText(QString().setNum(loadRec.getFlags()));
+            fRecordLineEdits[kDevMDeviceType]->setText(QString().setNum(loadRec.getDeviceType()));
+            fRecordLineEdits[kDevMDriverDesc]->setText(loadRec.getDriverDesc().cstr());
+            fRecordLineEdits[kDevMDriverName]->setText(loadRec.getDriverName().cstr());
+            fRecordLineEdits[kDevMDriverVersion]->setText(loadRec.getDriverVersion().cstr());
+            fRecordLineEdits[kDevMDeviceDesc]->setText(loadRec.getDeviceDesc().cstr());
+            fRecordLineEdits[kDevMCaps]->setText("### TODO ###");
+            fRecordLineEdits[kDevMLayersAtOnce]->setText(QString().setNum(loadRec.getLayersAtOnce()));
             QString recordMemBytes = QString().setNum(loadRec.getMemoryBytes());
             QString recordMemBytesMB = QString().setNum(loadRec.getMemoryBytes() / 1024 / 1024);
-            fRecordEntries[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
-            fRecordEntries[kDevMNumModes]->setText(QString().setNum(loadRec.getNumModes()));
-            fRecordEntries[kDevMZBiasRating]->setText(QString().setNum(loadRec.getZBiasRating()));
-            fRecordEntries[kDevMLODBiasRating]->setText(QString().setNum(loadRec.getLODBIasRating()));
-            fRecordEntries[kDevMFogExpApproxStart]->setText(QString().setNum(loadRec.getFogExpApproxStart()));
-            fRecordEntries[kDevMFogExp2ApproxStart]->setText(QString().setNum(loadRec.getFogExp2ApproxStart()));
-            fRecordEntries[kDevMFogEndBias]->setText(QString().setNum(loadRec.getFogEndBias()));
+            fRecordLineEdits[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
+            fRecordLineEdits[kDevMZBiasRating]->setText(QString().setNum(loadRec.getZBiasRating()));
+            fRecordLineEdits[kDevMLODBiasRating]->setText(QString().setNum(loadRec.getLODBIasRating()));
+            fRecordLineEdits[kDevMFogExpApproxStart]->setText(QString().setNum(loadRec.getFogExpApproxStart()));
+            fRecordLineEdits[kDevMFogExp2ApproxStart]->setText(QString().setNum(loadRec.getFogExp2ApproxStart()));
+            fRecordLineEdits[kDevMFogEndBias]->setText(QString().setNum(loadRec.getFogEndBias()));
 
             uint16_t textureQuality = S->readShort();
-            fTexQualityEntry->setText(QString().setNum(textureQuality));
+            fSliderTextureQuality->setValue(textureQuality);
         } catch (std::exception &e) {
             plDebug::Error("Error reading dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
             return false;
