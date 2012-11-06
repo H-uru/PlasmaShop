@@ -30,9 +30,9 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     QGridLayout* layRecord = new QGridLayout(grpRecord);
     layRecord->setVerticalSpacing(4);
     layRecord->setHorizontalSpacing(8);
-    for (size_t i = 0; i < kNumDevRecordLineEdits; i++) {
-        fRecordLineEdits[i] = new QLineEdit(grpRecord);
-        fRecordLineEdits[i]->setReadOnly(true);
+    for (size_t i = 0; i < kNumDevRecordLabels; i++) {
+        fRecordLabels[i] = new QLabel(grpRecord);
+        fRecordLabels[i]->setTextInteractionFlags(Qt::TextSelectableByMouse);
     }
     layRecord->addWidget(new QLabel(tr("Record Version:"), grpRecord), 0, 0);
     layRecord->addWidget(new QLabel(tr("Flags:"), grpRecord), 1, 0);
@@ -49,21 +49,21 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layRecord->addWidget(new QLabel(tr("FogExpApproxStart:"), grpRecord), 12, 0);
     layRecord->addWidget(new QLabel(tr("FogExp2ApproxStart:"), grpRecord), 13, 0);
     layRecord->addWidget(new QLabel(tr("FogEndBias:"), grpRecord), 14, 0);
-    layRecord->addWidget(fRecordLineEdits[kDevMRecordVersion], 0, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMFlags], 1, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMDeviceType], 2, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMDriverDesc], 3, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMDriverName], 4, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMDriverVersion], 5, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMDeviceDesc], 6, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMCaps], 7, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMLayersAtOnce], 8, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMMemoryBytes], 9, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMZBiasRating], 10, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMLODBiasRating], 11, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMFogExpApproxStart], 12, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMFogExp2ApproxStart], 13, 1);
-    layRecord->addWidget(fRecordLineEdits[kDevMFogEndBias], 14, 1);
+    layRecord->addWidget(fRecordLabels[kDevMRecordVersion], 0, 1);
+    layRecord->addWidget(fRecordLabels[kDevMFlags], 1, 1);
+    layRecord->addWidget(fRecordLabels[kDevMDeviceType], 2, 1);
+    layRecord->addWidget(fRecordLabels[kDevMDriverDesc], 3, 1);
+    layRecord->addWidget(fRecordLabels[kDevMDriverName], 4, 1);
+    layRecord->addWidget(fRecordLabels[kDevMDriverVersion], 5, 1);
+    layRecord->addWidget(fRecordLabels[kDevMDeviceDesc], 6, 1);
+    layRecord->addWidget(fRecordLabels[kDevMCaps], 7, 1);
+    layRecord->addWidget(fRecordLabels[kDevMLayersAtOnce], 8, 1);
+    layRecord->addWidget(fRecordLabels[kDevMMemoryBytes], 9, 1);
+    layRecord->addWidget(fRecordLabels[kDevMZBiasRating], 10, 1);
+    layRecord->addWidget(fRecordLabels[kDevMLODBiasRating], 11, 1);
+    layRecord->addWidget(fRecordLabels[kDevMFogExpApproxStart], 12, 1);
+    layRecord->addWidget(fRecordLabels[kDevMFogExp2ApproxStart], 13, 1);
+    layRecord->addWidget(fRecordLabels[kDevMFogEndBias], 14, 1);
 
     //DeviceMode Group
     QGroupBox* grpMode = new QGroupBox(tr("Device Mode"), this);
@@ -77,7 +77,7 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layMode->addWidget(new QLabel(tr("Width:"), grpMode), 0, 0);
     layMode->addWidget(new QLabel(tr("Height:"), grpMode), 1, 0);
     layMode->addWidget(new QLabel(tr("Depth:"), grpMode), 2, 0);
-    layMode->addWidget(new QLabel(tr("Window Mode:"), grpMode), 3, 0);
+    layMode->addWidget(new QLabel(tr("Windowed:"), grpMode), 3, 0);
     layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 4, 0);
     layMode->addWidget(fModeLineEdits[kDevMWidth], 0, 1);
     layMode->addWidget(fModeLineEdits[kDevMHeight], 1, 1);
@@ -132,23 +132,23 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             fModeLineEdits[kDevMDepth]->setText(QString().setNum(loadMode.getDepth()));
             fModeLabelCanRenderToCubics->setText(loadMode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
 
-            fRecordLineEdits[kDevMRecordVersion]->setText(QString().setNum(loadRec.getVersion()));
-            fRecordLineEdits[kDevMFlags]->setText(QString().setNum(loadRec.getFlags()));
-            fRecordLineEdits[kDevMDeviceType]->setText(QString().setNum(loadRec.getDeviceType()));
-            fRecordLineEdits[kDevMDriverDesc]->setText(loadRec.getDriverDesc().cstr());
-            fRecordLineEdits[kDevMDriverName]->setText(loadRec.getDriverName().cstr());
-            fRecordLineEdits[kDevMDriverVersion]->setText(loadRec.getDriverVersion().cstr());
-            fRecordLineEdits[kDevMDeviceDesc]->setText(loadRec.getDeviceDesc().cstr());
-            fRecordLineEdits[kDevMCaps]->setText("### TODO ###");
-            fRecordLineEdits[kDevMLayersAtOnce]->setText(QString().setNum(loadRec.getLayersAtOnce()));
+            fRecordLabels[kDevMRecordVersion]->setText(QString().setNum(loadRec.getVersion()));
+            fRecordLabels[kDevMFlags]->setText(getFlagName(loadRec.getFlags()));
+            fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(loadRec.getDeviceType()));
+            fRecordLabels[kDevMDriverDesc]->setText(loadRec.getDriverDesc().cstr());
+            fRecordLabels[kDevMDriverName]->setText(loadRec.getDriverName().cstr());
+            fRecordLabels[kDevMDriverVersion]->setText(loadRec.getDriverVersion().cstr());
+            fRecordLabels[kDevMDeviceDesc]->setText(loadRec.getDeviceDesc().cstr());
+            fRecordLabels[kDevMCaps]->setText("### TODO ###");
+            fRecordLabels[kDevMLayersAtOnce]->setText(QString().setNum(loadRec.getLayersAtOnce()));
             QString recordMemBytes = QString().setNum(loadRec.getMemoryBytes());
             QString recordMemBytesMB = QString().setNum(loadRec.getMemoryBytes() / 1024 / 1024);
-            fRecordLineEdits[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
-            fRecordLineEdits[kDevMZBiasRating]->setText(QString().setNum(loadRec.getZBiasRating()));
-            fRecordLineEdits[kDevMLODBiasRating]->setText(QString().setNum(loadRec.getLODBIasRating()));
-            fRecordLineEdits[kDevMFogExpApproxStart]->setText(QString().setNum(loadRec.getFogExpApproxStart()));
-            fRecordLineEdits[kDevMFogExp2ApproxStart]->setText(QString().setNum(loadRec.getFogExp2ApproxStart()));
-            fRecordLineEdits[kDevMFogEndBias]->setText(QString().setNum(loadRec.getFogEndBias()));
+            fRecordLabels[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
+            fRecordLabels[kDevMZBiasRating]->setText(QString().setNum(loadRec.getZBiasRating()));
+            fRecordLabels[kDevMLODBiasRating]->setText(QString().setNum(loadRec.getLODBIasRating()));
+            fRecordLabels[kDevMFogExpApproxStart]->setText(QString().setNum(loadRec.getFogExpApproxStart()));
+            fRecordLabels[kDevMFogExp2ApproxStart]->setText(QString().setNum(loadRec.getFogExp2ApproxStart()));
+            fRecordLabels[kDevMFogEndBias]->setText(QString().setNum(loadRec.getFogEndBias()));
 
             uint16_t textureQuality = S->readShort();
             fSliderTextureQuality->setValue(textureQuality);
@@ -158,4 +158,34 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
         }
     }
     return true;
+}
+
+QString QPlasmaDevModeDat::getFlagName(uint32_t flag)
+{
+    switch(flag) {
+    case hsG3DDeviceRecord::kNone:
+        return "None";
+    case hsG3DDeviceRecord::kDiscarded:
+        return "Discarded";
+    case hsG3DDeviceRecord::kInvalid:
+        return "Invalid";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+QString QPlasmaDevModeDat::getDeviceTypeName(uint32_t type)
+{
+    switch(type) {
+    case hsG3DDeviceRecord::kGlide:
+        return "Glide";
+    case hsG3DDeviceRecord::kDirect3D:
+        return "Direct3D";
+    case hsG3DDeviceRecord::kOpenGL:
+        return "OpenGL";
+    case hsG3DDeviceRecord::kDirect3D_TnL:
+        return "Direct3D_TnL";
+    default:
+        return "UNKNOWN";
+    }
 }

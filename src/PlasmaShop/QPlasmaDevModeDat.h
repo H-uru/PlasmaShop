@@ -34,27 +34,29 @@ public:
 
 private:
     enum {
-        //DeviceRecord LineEdits
+        //DeviceRecord Labels
         kDevMRecordVersion, kDevMFlags, kDevMDeviceType,
         kDevMDriverDesc, kDevMDriverName, kDevMDriverVersion,
         kDevMDeviceDesc, kDevMCaps, kDevMLayersAtOnce,
         kDevMMemoryBytes, kDevMZBiasRating,
         kDevMLODBiasRating, kDevMFogExpApproxStart,
         kDevMFogExp2ApproxStart, kDevMFogEndBias,
-        kNumDevRecordLineEdits
+        kNumDevRecordLabels
     };
     enum {
         //DeviceMode LineEdits
         kDevMWidth, kDevMHeight, kDevMDepth,
         kNumDevModeLineEdits
     };
-    QLineEdit* fRecordLineEdits[kNumDevRecordLineEdits];
+    QLabel* fRecordLabels[kNumDevRecordLabels];
     QLineEdit* fModeLineEdits[kNumDevModeLineEdits];
     QCheckBox* fModeCheckBoxWindowed;
     QLabel* fModeLabelCanRenderToCubics;
     QSlider* fSliderTextureQuality;
 
     bool loadDeviceModeData(hsStream* S);
+    QString getFlagName(uint32_t flag);
+    QString getDeviceTypeName(uint32_t type);
 };
 
 #endif
