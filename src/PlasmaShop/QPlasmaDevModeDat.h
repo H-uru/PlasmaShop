@@ -33,22 +33,33 @@ public:
     virtual bool loadFile(QString filename);
 
 private:
-    enum {
-        //DeviceRecord Labels
+    enum { //DeviceRecord Labels
         kDevMRecordVersion, kDevMFlags, kDevMDeviceType,
         kDevMDriverDesc, kDevMDriverName, kDevMDriverVersion,
-        kDevMDeviceDesc, kDevMCaps, kDevMLayersAtOnce,
-        kDevMMemoryBytes, kDevMZBiasRating,
-        kDevMLODBiasRating, kDevMFogExpApproxStart,
+        kDevMDeviceDesc, kDevMLayersAtOnce, kDevMMemoryBytes,
+        kDevMZBiasRating, kDevMLODBiasRating, kDevMFogExpApproxStart,
         kDevMFogExp2ApproxStart, kDevMFogEndBias,
         kNumDevRecordLabels
     };
-    enum {
-        //DeviceMode LineEdits
+    enum { //DeviceMode LineEdits
         kDevMWidth, kDevMHeight, kDevMDepth,
         kNumDevModeLineEdits
     };
+    enum { //Capabilities, Name Strings in getCapName()
+        kCapsNone, kCapsNoWindow, kCapsMipmap,
+        kCapsPerspective, kCapsHardware, kCapsWBuffer,
+        kCapsCompressTextures, kCapsHWTransform, kCapsDither,
+        kCapsFogLinear, kCapsFogExp, kCapsFogExp2, kCapsFogRange,
+        kCapsLODWatch, kCapsUNUSED, kCapsDoesSmallTextures,
+        kCapsPixelFog, kCapsBadYonStuff, kCapsNoKindaSmallTexs,
+        kCapsCubicTextures, kCapsCubicMipmap, kCapsZBias,
+        kCapsPixelShader, kCapsNoAA, kCapsDoubleFlush,
+        kCapsSingleFlush, kCapsCantShadow, kCapsMaxUVWSrc2,
+        kCapsCantProj, kCapsLimitedProj, kCapsShareDepth,
+        kCapsBadManaged, kCapsNoAniso, kNumCaps
+    };
     QLabel* fRecordLabels[kNumDevRecordLabels];
+    QCheckBox* fCapsCheckBoxes[kNumCaps];
     QLineEdit* fModeLineEdits[kNumDevModeLineEdits];
     QCheckBox* fModeCheckBoxWindowed;
     QLabel* fModeLabelCanRenderToCubics;
@@ -57,6 +68,7 @@ private:
     bool loadDeviceModeData(hsStream* S);
     QString getFlagName(uint32_t flag);
     QString getDeviceTypeName(uint32_t type);
+    QString getCapName(size_t cap);
 };
 
 #endif
