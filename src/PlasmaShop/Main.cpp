@@ -106,6 +106,7 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextFindNext]->setShortcut(Qt::Key_F3);
     fActions[kTextReplace]->setShortcut(Qt::CTRL + Qt::Key_R);
 
+    fActions[kFileShowBrowser]->setCheckable(true);
     fActions[kTextStxNone]->setCheckable(true);
     fActions[kTextStxPython]->setCheckable(true);
     fActions[kTextStxSDL]->setCheckable(true);
@@ -240,6 +241,8 @@ PlasmaShopMain::PlasmaShopMain()
     if (settings.contains("DialogDir"))
         fDialogDir = settings.value("DialogDir").toString();
 
+    fActions[kFileShowBrowser]->setChecked(fBrowserDock->isVisible());
+
     // Signals
     connect(fActions[kFileNew], SIGNAL(triggered()), this, SLOT(onNewFile()));
     connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(onOpenFile()));
@@ -247,7 +250,7 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(onSaveAs()));
     connect(fActions[kFileRevert], SIGNAL(triggered()), this, SLOT(onRevert()));
     connect(fActions[kFileOptions], SIGNAL(triggered()), this, SLOT(onOptions()));
-    connect(fActions[kFileShowBrowser], SIGNAL(triggered()), fBrowserDock, SLOT(show()));
+    connect(fActions[kFileShowBrowser], SIGNAL(triggered(bool)), fBrowserDock, SLOT(setVisible(bool)));
     connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
 
     connect(fActions[kEditCut], SIGNAL(triggered()), this, SLOT(onCut()));
@@ -285,6 +288,7 @@ PlasmaShopMain::PlasmaShopMain()
             this, SLOT(onBrowserItemActivated(QTreeWidgetItem*, int)));
     connect(fEditorPane, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseTab(int)));
     connect(fEditorPane, SIGNAL(currentChanged(int)), this, SLOT(onChangeTab(int)));
+    connect(fBrowserDock, SIGNAL(visibilityChanged(bool)), fActions[kFileShowBrowser], SLOT(setChecked(bool)));
 
     // Set up menus, etc
     onChangeTab(-1);
