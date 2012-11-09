@@ -19,7 +19,9 @@
 
 #include "QPlasmaDocument.h"
 #include <Stream/hsStream.h>
+#include <Util/hs3DDevice.h>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QSlider>
@@ -31,6 +33,7 @@ public:
     QPlasmaDevModeDat(QWidget* parent);
 
     virtual bool loadFile(QString filename);
+    virtual bool saveTo(QString filename);
 
 private:
     enum { //DeviceRecord Labels
@@ -40,10 +43,6 @@ private:
         kDevMZBiasRating, kDevMLODBiasRating, kDevMFogExpApproxStart,
         kDevMFogExp2ApproxStart, kDevMFogEndBias,
         kNumDevRecordLabels
-    };
-    enum { //DeviceMode LineEdits
-        kDevMWidth, kDevMHeight, kDevMDepth,
-        kNumDevModeLineEdits
     };
     enum { //Capabilities, Name Strings in getCapName()
         kCapsNone, kCapsNoWindow, kCapsMipmap,
@@ -60,12 +59,16 @@ private:
     };
     QLabel* fRecordLabels[kNumDevRecordLabels];
     QCheckBox* fCapsCheckBoxes[kNumCaps];
-    QLineEdit* fModeLineEdits[kNumDevModeLineEdits];
+    QLineEdit* fModeLineEditWidth, *fModeLineEditHeight;
+    QComboBox* fModeComboBoxDepth;
     QCheckBox* fModeCheckBoxWindowed;
     QLabel* fModeLabelCanRenderToCubics;
     QSlider* fSliderTextureQuality;
+    hsG3DDeviceRecord fRecord;
+    hsG3DDeviceMode fMode;
 
     bool loadDeviceModeData(hsStream* S);
+    bool saveDeviceModeData(hsStream* S);
     QString getFlagName(uint32_t flag);
     QString getDeviceTypeName(uint32_t type);
     QString getCapName(size_t cap);

@@ -16,7 +16,6 @@
 
 #include "QPlasmaDevModeDat.h"
 #include <Debug/plDebug.h>
-#include <Util/hs3DDevice.h>
 #include <QGridLayout>
 #include <QGroupBox>
 #include "../QPlasma.h"
@@ -62,20 +61,24 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     //DeviceMode Group
     QGroupBox* grpMode = new QGroupBox(tr("Device Mode"), this);
     QGridLayout* layMode = new QGridLayout(grpMode);
-    for (size_t i = 0; i < kNumDevModeLineEdits; i++) {
-        fModeLineEdits[i] = new QLineEdit(grpMode);
-        layMode->addWidget(fModeLineEdits[i], i, 1);
-    }
+    fModeLineEditWidth = new QLineEdit(grpMode);
+    fModeLineEditHeight = new QLineEdit(grpMode);
+    fModeComboBoxDepth = new QComboBox(grpMode);
+    fModeComboBoxDepth->addItem("Low (16 bit)");
+    fModeComboBoxDepth->addItem("High (32 bit)");
     fModeCheckBoxWindowed = new QCheckBox(grpMode);
     fModeLabelCanRenderToCubics = new QLabel(grpMode);
-    layMode->addWidget(new QLabel(tr("Width:"), grpMode), kDevMWidth, 0);
-    layMode->addWidget(new QLabel(tr("Height:"), grpMode), kDevMHeight, 0);
-    layMode->addWidget(new QLabel(tr("Depth:"), grpMode), kDevMDepth, 0);
-    layMode->addWidget(new QLabel(tr("Windowed:"), grpMode), kNumDevModeLineEdits, 0);
-    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), kNumDevModeLineEdits + 1, 0);
-    layMode->addWidget(fModeCheckBoxWindowed, kNumDevModeLineEdits, 1);
-    layMode->addWidget(fModeLabelCanRenderToCubics, kNumDevModeLineEdits + 1, 1);
-    connect(fModeCheckBoxWindowed, SIGNAL(toggled(bool)), fModeLineEdits[kDevMDepth], SLOT(setDisabled(bool)));
+    layMode->addWidget(new QLabel(tr("Width:"), grpMode), 0, 0);
+    layMode->addWidget(new QLabel(tr("Height:"), grpMode), 1, 0);
+    layMode->addWidget(new QLabel(tr("Depth:"), grpMode), 2, 0);
+    layMode->addWidget(new QLabel(tr("Windowed:"), grpMode), 3, 0);
+    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 4, 0);
+    layMode->addWidget(fModeLineEditWidth, 0, 1);
+    layMode->addWidget(fModeLineEditHeight, 1, 1);
+    layMode->addWidget(fModeComboBoxDepth, 2, 1);
+    layMode->addWidget(fModeCheckBoxWindowed, 3, 1);
+    layMode->addWidget(fModeLabelCanRenderToCubics, 4, 1);
+    connect(fModeCheckBoxWindowed, SIGNAL(toggled(bool)), fModeComboBoxDepth, SLOT(setDisabled(bool)));
 
     //TextureQuality Group
     QGroupBox* grpTexQuality = new QGroupBox(tr("Texture Quality"), this);
@@ -108,47 +111,88 @@ bool QPlasmaDevModeDat::loadFile(QString filename)
     return QPlasmaDocument::loadFile(filename);
 }
 
+bool QPlasmaDevModeDat::saveTo(QString filename)
+{
+    hsFileStream S(PlasmaVer::pvUnknown);
+    S.open(filename.toUtf8().data(), fmCreate);
+    if(!saveDeviceModeData(&S))
+        return false;
+    return QPlasmaDocument::saveTo(filename);
+}
+
 bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
 {
     if (S != NULL) {
         try {
-            hsG3DDeviceRecord loadRec;
-            hsG3DDeviceMode loadMode;
-            loadRec.read(S);
-            loadMode.read(S);
+            //Read Stream
+            fRecord.read(S);
+            fMode.read(S);
+            uint16_t textureQuality = S->readShort();
 
-            fModeLineEdits[kDevMWidth]->setText(QString().setNum(loadMode.getWidth()));
-            fModeLineEdits[kDevMHeight]->setText(QString().setNum(loadMode.getHeight()));
-            fModeLineEdits[kDevMDepth]->setText(QString().setNum(loadMode.getDepth()));
-            fModeLabelCanRenderToCubics->setText(loadMode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
-
-            fRecordLabels[kDevMRecordVersion]->setText(QString().setNum(loadRec.getVersion()));
-            fRecordLabels[kDevMFlags]->setText(getFlagName(loadRec.getFlags()));
-            fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(loadRec.getDeviceType()));
-            fRecordLabels[kDevMDriverDesc]->setText(loadRec.getDriverDesc().cstr());
-            fRecordLabels[kDevMDriverName]->setText(loadRec.getDriverName().cstr());
-            fRecordLabels[kDevMDriverVersion]->setText(loadRec.getDriverVersion().cstr());
-            fRecordLabels[kDevMDeviceDesc]->setText(loadRec.getDeviceDesc().cstr());
-            fRecordLabels[kDevMLayersAtOnce]->setText(QString().setNum(loadRec.getLayersAtOnce()));
-            QString recordMemBytes = QString().setNum(loadRec.getMemoryBytes());
-            QString recordMemBytesMB = QString().setNum(loadRec.getMemoryBytes() / 1024 / 1024);
+            //Fill Record Group
+            fRecordLabels[kDevMRecordVersion]->setText(QString().setNum(fRecord.getVersion()));
+            fRecordLabels[kDevMFlags]->setText(getFlagName(fRecord.getFlags()));
+            fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(fRecord.getDeviceType()));
+            fRecordLabels[kDevMDriverDesc]->setText(fRecord.getDriverDesc().cstr());
+            fRecordLabels[kDevMDriverName]->setText(fRecord.getDriverName().cstr());
+            fRecordLabels[kDevMDriverVersion]->setText(fRecord.getDriverVersion().cstr());
+            fRecordLabels[kDevMDeviceDesc]->setText(fRecord.getDeviceDesc().cstr());
+            fRecordLabels[kDevMLayersAtOnce]->setText(QString().setNum(fRecord.getLayersAtOnce()));
+            QString recordMemBytes = QString().setNum(fRecord.getMemoryBytes());
+            QString recordMemBytesMB = QString().setNum(fRecord.getMemoryBytes() / 1024 / 1024);
             fRecordLabels[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
-            fRecordLabels[kDevMZBiasRating]->setText(QString().setNum(loadRec.getZBiasRating()));
-            fRecordLabels[kDevMLODBiasRating]->setText(QString().setNum(loadRec.getLODBIasRating()));
-            fRecordLabels[kDevMFogExpApproxStart]->setText(QString().setNum(loadRec.getFogExpApproxStart()));
-            fRecordLabels[kDevMFogExp2ApproxStart]->setText(QString().setNum(loadRec.getFogExp2ApproxStart()));
-            fRecordLabels[kDevMFogEndBias]->setText(QString().setNum(loadRec.getFogEndBias()));
+            fRecordLabels[kDevMZBiasRating]->setText(QString().setNum(fRecord.getZBiasRating()));
+            fRecordLabels[kDevMLODBiasRating]->setText(QString().setNum(fRecord.getLODBIasRating()));
+            fRecordLabels[kDevMFogExpApproxStart]->setText(QString().setNum(fRecord.getFogExpApproxStart()));
+            fRecordLabels[kDevMFogExp2ApproxStart]->setText(QString().setNum(fRecord.getFogExp2ApproxStart()));
+            fRecordLabels[kDevMFogEndBias]->setText(QString().setNum(fRecord.getFogEndBias()));
 
-            hsBitVector caps = loadRec.getCaps();
+            hsBitVector caps = fRecord.getCaps();
             for(size_t i = 0; i < kNumCaps; i++)
                 fCapsCheckBoxes[i]->setChecked(caps.get(i));
 
-            uint16_t textureQuality = S->readShort();
+            //Fill Mode Group
+            fModeLineEditWidth->setText(QString().setNum(fMode.getWidth()));
+            fModeLineEditHeight->setText(QString().setNum(fMode.getHeight()));
+            fModeComboBoxDepth->setCurrentIndex(fMode.getDepth() == 32 ? 1 : 0);
+            if(fMode.getDepth() == 0)
+                fModeCheckBoxWindowed->setChecked(true);
+            fModeLabelCanRenderToCubics->setText(fMode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
+
+            //Get Texture Quality
             fSliderTextureQuality->setValue(textureQuality);
+
+            //When to mark the file as dirty?
+            connect(fModeLineEditWidth, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
+            connect(fModeLineEditHeight, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
+            connect(fModeComboBoxDepth, SIGNAL(currentIndexChanged(int)), this, SLOT(makeDirty()));
+            connect(fModeCheckBoxWindowed, SIGNAL(stateChanged(int)), this, SLOT(makeDirty()));
+            connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
         } catch (std::exception &e) {
             plDebug::Error("Error reading dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
             return false;
         }
+    }
+    return true;
+}
+
+bool QPlasmaDevModeDat::saveDeviceModeData(hsStream* S)
+{
+    try {
+        //Fetch possible changes
+        fMode.setWidth(fModeLineEditWidth->text().toUInt());
+        fMode.setHeight(fModeLineEditHeight->text().toUInt());
+        if(fModeCheckBoxWindowed->isChecked())
+            fMode.setDepth(0);
+        else
+            fMode.setDepth(fModeComboBoxDepth->currentIndex() == 1 ? 32 : 16);
+        //Write to stream
+        fRecord.write(S);
+        fMode.write(S);
+        S->writeShort(fSliderTextureQuality->value());
+    } catch (std::exception &e) {
+        plDebug::Error("Error writing dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
+        return false;
     }
     return true;
 }
