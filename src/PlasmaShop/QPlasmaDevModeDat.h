@@ -58,14 +58,15 @@ private:
         kCapsBadManaged, kCapsNoAniso, kNumCaps
     };
     QLabel* fRecordLabels[kNumDevRecordLabels];
+    QSlider* fRecordSliderAASetting, *fRecordSliderMaxAniso;
     QCheckBox* fCapsCheckBoxes[kNumCaps];
+    QLabel* fModeLabelFlags;
     QLineEdit* fModeLineEditWidth, *fModeLineEditHeight;
     QComboBox* fModeComboBoxDepth;
     QCheckBox* fModeCheckBoxWindowed;
     QLabel* fModeLabelCanRenderToCubics;
     QSlider* fSliderTextureQuality;
-    hsG3DDeviceRecord fRecord;
-    hsG3DDeviceMode fMode;
+    hsG3DDeviceModeRecord fModeRecord;
 
     bool loadDeviceModeData(hsStream* S);
     bool saveDeviceModeData(hsStream* S);

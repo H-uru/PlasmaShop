@@ -97,9 +97,10 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
         return new QPlasmaSumFile(parent);
     case kDocPackage:
         return new QPlasmaPakFile(parent);
-    case kDocFont:
     case kDocDevMode:
         return new QPlasmaDevModeDat(parent);
+    case kDocFont:
+        // TODO: Implement
     default:
         return NULL;
     }

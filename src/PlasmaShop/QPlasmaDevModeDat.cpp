@@ -25,13 +25,21 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
               : QPlasmaDocument(kDocDevMode, parent)
 {
     //DeviceRecord Group
-    QGroupBox* grpRecord = new QGroupBox(tr("Device Record (Read Only)"), this);
+    QGroupBox* grpRecord = new QGroupBox(tr("Device Record"), this);
     QGridLayout* layRecord = new QGridLayout(grpRecord);
     for (size_t i = 0; i < kNumDevRecordLabels; i++) {
         fRecordLabels[i] = new QLabel(grpRecord);
         fRecordLabels[i]->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        layRecord->addWidget(fRecordLabels[i], i, 1);
+        layRecord->addWidget(fRecordLabels[i], i, 1, 1, 2);
     }
+    fRecordSliderAASetting = new QSlider(Qt::Horizontal, grpRecord);
+    fRecordSliderAASetting->setRange(0, 3);
+    fRecordSliderAASetting->setPageStep(1);
+    fRecordSliderMaxAniso = new QSlider(Qt::Horizontal, grpRecord);
+    fRecordSliderMaxAniso->setRange(0, 16);
+    fRecordSliderMaxAniso->setPageStep(2);
+    QLabel* AASettingLabel = new QLabel("0", grpRecord);
+    QLabel* MaxAnisoLabel = new QLabel("0", grpRecord);
     layRecord->addWidget(new QLabel(tr("Record Version:"), grpRecord), kDevMRecordVersion, 0);
     layRecord->addWidget(new QLabel(tr("Flags:"), grpRecord), kDevMFlags, 0);
     layRecord->addWidget(new QLabel(tr("Device Type:"), grpRecord), kDevMDeviceType, 0);
@@ -46,21 +54,30 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layRecord->addWidget(new QLabel(tr("FogExpApproxStart:"), grpRecord), kDevMFogExpApproxStart, 0);
     layRecord->addWidget(new QLabel(tr("FogExp2ApproxStart:"), grpRecord), kDevMFogExp2ApproxStart, 0);
     layRecord->addWidget(new QLabel(tr("FogEndBias:"), grpRecord), kDevMFogEndBias, 0);
+    layRecord->addWidget(new QLabel(tr("AASetting:"), grpRecord), kNumDevRecordLabels, 0);
+    layRecord->addWidget(new QLabel(tr("MaxAnisotropicSamples:"), grpRecord), kNumDevRecordLabels + 1, 0);
+    layRecord->addWidget(fRecordSliderAASetting, kNumDevRecordLabels, 1);
+    layRecord->addWidget(fRecordSliderMaxAniso, kNumDevRecordLabels + 1, 1);
+    layRecord->addWidget(AASettingLabel, kNumDevRecordLabels, 2);
+    layRecord->addWidget(MaxAnisoLabel, kNumDevRecordLabels + 1, 2);
+    connect(fRecordSliderAASetting, SIGNAL(valueChanged(int)), AASettingLabel, SLOT(setNum(int)));
+    connect(fRecordSliderMaxAniso, SIGNAL(valueChanged(int)), MaxAnisoLabel, SLOT(setNum(int)));
 
     //Capabilities SubGroup
     QGroupBox* grpCaps = new QGroupBox(tr("Capabilities"), grpRecord);
     QGridLayout* layCaps = new QGridLayout(grpCaps);
-    for(size_t i = 0; i < kNumCaps; i++) {
+    for (size_t i = 0; i < kNumCaps; i++) {
         fCapsCheckBoxes[i] = new QCheckBox(getCapName(i), grpCaps);
         fCapsCheckBoxes[i]->setEnabled(false);
         //Add 6 Boxes per row, i.e. Row is i DIV 6 and Column i MOD 6
         layCaps->addWidget(fCapsCheckBoxes[i], (int) i / 6, i % 6);
     }
-    layRecord->addWidget(grpCaps, kNumDevRecordLabels, 0, 1, 2);
+    layRecord->addWidget(grpCaps, kNumDevRecordLabels + 2, 0, 1, 3);
 
     //DeviceMode Group
     QGroupBox* grpMode = new QGroupBox(tr("Device Mode"), this);
     QGridLayout* layMode = new QGridLayout(grpMode);
+    fModeLabelFlags = new QLabel(grpMode);
     fModeLineEditWidth = new QLineEdit(grpMode);
     fModeLineEditHeight = new QLineEdit(grpMode);
     fModeComboBoxDepth = new QComboBox(grpMode);
@@ -68,30 +85,30 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     fModeComboBoxDepth->addItem("High (32 bit)");
     fModeCheckBoxWindowed = new QCheckBox(grpMode);
     fModeLabelCanRenderToCubics = new QLabel(grpMode);
-    layMode->addWidget(new QLabel(tr("Width:"), grpMode), 0, 0);
-    layMode->addWidget(new QLabel(tr("Height:"), grpMode), 1, 0);
-    layMode->addWidget(new QLabel(tr("Depth:"), grpMode), 2, 0);
-    layMode->addWidget(new QLabel(tr("Windowed:"), grpMode), 3, 0);
-    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 4, 0);
-    layMode->addWidget(fModeLineEditWidth, 0, 1);
-    layMode->addWidget(fModeLineEditHeight, 1, 1);
-    layMode->addWidget(fModeComboBoxDepth, 2, 1);
-    layMode->addWidget(fModeCheckBoxWindowed, 3, 1);
-    layMode->addWidget(fModeLabelCanRenderToCubics, 4, 1);
+    layMode->addWidget(new QLabel(tr("Flags:"), grpMode), 0, 0);
+    layMode->addWidget(new QLabel(tr("Width:"), grpMode), 1, 0);
+    layMode->addWidget(new QLabel(tr("Height:"), grpMode), 2, 0);
+    layMode->addWidget(new QLabel(tr("Depth:"), grpMode), 3, 0);
+    layMode->addWidget(new QLabel(tr("Windowed:"), grpMode), 4, 0);
+    layMode->addWidget(new QLabel(tr("Can Render To Cubics:"), grpMode), 5, 0);
+    layMode->addWidget(fModeLabelFlags, 0, 1);
+    layMode->addWidget(fModeLineEditWidth, 1, 1);
+    layMode->addWidget(fModeLineEditHeight, 2, 1);
+    layMode->addWidget(fModeComboBoxDepth, 3, 1);
+    layMode->addWidget(fModeCheckBoxWindowed, 4, 1);
+    layMode->addWidget(fModeLabelCanRenderToCubics, 5, 1);
     connect(fModeCheckBoxWindowed, SIGNAL(toggled(bool)), fModeComboBoxDepth, SLOT(setDisabled(bool)));
 
     //TextureQuality Group
     QGroupBox* grpTexQuality = new QGroupBox(tr("Texture Quality"), this);
     QGridLayout* layTexQuality = new QGridLayout(grpTexQuality);
     fSliderTextureQuality = new QSlider(Qt::Horizontal, grpTexQuality);
-    fSliderTextureQuality->setMinimum(0);
-    fSliderTextureQuality->setMaximum(100);
+    fSliderTextureQuality->setRange(0, 100);
     QLabel* textureQualityValueLabel = new QLabel(grpTexQuality);
     layTexQuality->addWidget(new QLabel(tr("Quality:"), grpTexQuality), 0, 0);
     layTexQuality->addWidget(fSliderTextureQuality, 0, 1);
     layTexQuality->addWidget(textureQualityValueLabel, 0, 2);
-    connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), textureQualityValueLabel,
-            SLOT(setNum(int)));
+    connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), textureQualityValueLabel, SLOT(setNum(int)));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -103,8 +120,8 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
 
 bool QPlasmaDevModeDat::loadFile(QString filename)
 {
-    hsFileStream S(PlasmaVer::pvUnknown);
-    if(!S.open(filename.toUtf8().data(), fmRead))
+    hsFileStream S;
+    if (!S.open(filename.toUtf8().data(), fmRead))
         return false;
     if (!loadDeviceModeData(&S))
         return false;
@@ -113,9 +130,9 @@ bool QPlasmaDevModeDat::loadFile(QString filename)
 
 bool QPlasmaDevModeDat::saveTo(QString filename)
 {
-    hsFileStream S(PlasmaVer::pvUnknown);
+    hsFileStream S;
     S.open(filename.toUtf8().data(), fmCreate);
-    if(!saveDeviceModeData(&S))
+    if (!saveDeviceModeData(&S))
         return false;
     return QPlasmaDocument::saveTo(filename);
 }
@@ -125,44 +142,49 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
     if (S != NULL) {
         try {
             //Read Stream
-            fRecord.read(S);
-            fMode.read(S);
-            uint16_t textureQuality = S->readShort();
+            fModeRecord.read(S);
+            hsG3DDeviceRecord record = fModeRecord.getRecord();
+            hsG3DDeviceMode mode = fModeRecord.getMode();
 
             //Fill Record Group
-            fRecordLabels[kDevMRecordVersion]->setText(QString().setNum(fRecord.getVersion()));
-            fRecordLabels[kDevMFlags]->setText(getFlagName(fRecord.getFlags()));
-            fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(fRecord.getDeviceType()));
-            fRecordLabels[kDevMDriverDesc]->setText(fRecord.getDriverDesc().cstr());
-            fRecordLabels[kDevMDriverName]->setText(fRecord.getDriverName().cstr());
-            fRecordLabels[kDevMDriverVersion]->setText(fRecord.getDriverVersion().cstr());
-            fRecordLabels[kDevMDeviceDesc]->setText(fRecord.getDeviceDesc().cstr());
-            fRecordLabels[kDevMLayersAtOnce]->setText(QString().setNum(fRecord.getLayersAtOnce()));
-            QString recordMemBytes = QString().setNum(fRecord.getMemoryBytes());
-            QString recordMemBytesMB = QString().setNum(fRecord.getMemoryBytes() / 1024 / 1024);
+            fRecordLabels[kDevMRecordVersion]->setText(QString::number(record.getVersion()));
+            fRecordLabels[kDevMFlags]->setText(getFlagName(record.getFlags()));
+            fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(record.getDeviceType()));
+            fRecordLabels[kDevMDriverDesc]->setText(record.getDriverDesc().cstr());
+            fRecordLabels[kDevMDriverName]->setText(record.getDriverName().cstr());
+            fRecordLabels[kDevMDriverVersion]->setText(record.getDriverVersion().cstr());
+            fRecordLabels[kDevMDeviceDesc]->setText(record.getDeviceDesc().cstr());
+            fRecordLabels[kDevMLayersAtOnce]->setText(QString::number(record.getLayersAtOnce()));
+            QString recordMemBytes = QString::number(record.getMemoryBytes());
+            QString recordMemBytesMB = QString::number(record.getMemoryBytes() / 1024 / 1024);
             fRecordLabels[kDevMMemoryBytes]->setText(recordMemBytes + " (" + recordMemBytesMB + " MB)");
-            fRecordLabels[kDevMZBiasRating]->setText(QString().setNum(fRecord.getZBiasRating()));
-            fRecordLabels[kDevMLODBiasRating]->setText(QString().setNum(fRecord.getLODBIasRating()));
-            fRecordLabels[kDevMFogExpApproxStart]->setText(QString().setNum(fRecord.getFogExpApproxStart()));
-            fRecordLabels[kDevMFogExp2ApproxStart]->setText(QString().setNum(fRecord.getFogExp2ApproxStart()));
-            fRecordLabels[kDevMFogEndBias]->setText(QString().setNum(fRecord.getFogEndBias()));
+            fRecordLabels[kDevMZBiasRating]->setText(QString::number(record.getZBiasRating()));
+            fRecordLabels[kDevMLODBiasRating]->setText(QString::number(record.getLODBiasRating()));
+            fRecordLabels[kDevMFogExpApproxStart]->setText(QString::number(record.getFogExpApproxStart()));
+            fRecordLabels[kDevMFogExp2ApproxStart]->setText(QString::number(record.getFogExp2ApproxStart()));
+            fRecordLabels[kDevMFogEndBias]->setText(QString::number(record.getFogEndBias()));
+            fRecordSliderAASetting->setValue(record.getAASetting());
+            fRecordSliderMaxAniso->setValue(record.getMaxAnisotropicSamples());
 
-            hsBitVector caps = fRecord.getCaps();
-            for(size_t i = 0; i < kNumCaps; i++)
+            hsBitVector caps = record.getCaps();
+            for (size_t i = 0; i < kNumCaps; i++)
                 fCapsCheckBoxes[i]->setChecked(caps.get(i));
 
             //Fill Mode Group
-            fModeLineEditWidth->setText(QString().setNum(fMode.getWidth()));
-            fModeLineEditHeight->setText(QString().setNum(fMode.getHeight()));
-            fModeComboBoxDepth->setCurrentIndex(fMode.getDepth() == 32 ? 1 : 0);
-            if(fMode.getDepth() == 0)
+            fModeLabelFlags->setText(getFlagName(mode.getFlags()));
+            fModeLineEditWidth->setText(QString::number(mode.getWidth()));
+            fModeLineEditHeight->setText(QString::number(mode.getHeight()));
+            fModeComboBoxDepth->setCurrentIndex(mode.getDepth() == 32 ? 1 : 0);
+            if (mode.getDepth() == 0)
                 fModeCheckBoxWindowed->setChecked(true);
-            fModeLabelCanRenderToCubics->setText(fMode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
+            fModeLabelCanRenderToCubics->setText(mode.getCanRenderToCubics() ? tr("Yes") : tr("No"));
 
             //Get Texture Quality
-            fSliderTextureQuality->setValue(textureQuality);
+            fSliderTextureQuality->setValue(fModeRecord.getTextureQuality());
 
             //When to mark the file as dirty?
+            connect(fRecordSliderAASetting, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
+            connect(fRecordSliderMaxAniso, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
             connect(fModeLineEditWidth, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
             connect(fModeLineEditHeight, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
             connect(fModeComboBoxDepth, SIGNAL(currentIndexChanged(int)), this, SLOT(makeDirty()));
@@ -180,16 +202,17 @@ bool QPlasmaDevModeDat::saveDeviceModeData(hsStream* S)
 {
     try {
         //Fetch possible changes
-        fMode.setWidth(fModeLineEditWidth->text().toUInt());
-        fMode.setHeight(fModeLineEditHeight->text().toUInt());
-        if(fModeCheckBoxWindowed->isChecked())
-            fMode.setDepth(0);
+        fModeRecord.getRecord().setAASetting(fRecordSliderAASetting->value());
+        fModeRecord.getRecord().setMaxAnisotropicSamples(fRecordSliderMaxAniso->value());
+        fModeRecord.getMode().setWidth(fModeLineEditWidth->text().toUInt());
+        fModeRecord.getMode().setHeight(fModeLineEditHeight->text().toUInt());
+        if (fModeCheckBoxWindowed->isChecked())
+            fModeRecord.getMode().setDepth(0);
         else
-            fMode.setDepth(fModeComboBoxDepth->currentIndex() == 1 ? 32 : 16);
+            fModeRecord.getMode().setDepth(fModeComboBoxDepth->currentIndex() == 1 ? 32 : 16);
+        fModeRecord.setTextureQuality(fSliderTextureQuality->value());
         //Write to stream
-        fRecord.write(S);
-        fMode.write(S);
-        S->writeShort(fSliderTextureQuality->value());
+        fModeRecord.write(S);
     } catch (std::exception &e) {
         plDebug::Error("Error writing dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
         return false;
@@ -199,16 +222,16 @@ bool QPlasmaDevModeDat::saveDeviceModeData(hsStream* S)
 
 QString QPlasmaDevModeDat::getFlagName(uint32_t flag)
 {
-    switch(flag) {
-    case hsG3DDeviceRecord::kNone:
+    if (flag == hsG3DDeviceRecord::kNone)
         return "None";
-    case hsG3DDeviceRecord::kDiscarded:
-        return "Discarded";
-    case hsG3DDeviceRecord::kInvalid:
-        return "Invalid";
-    default:
-        return "UNKNOWN";
-    }
+    QString flagName;
+    if (flag & hsG3DDeviceRecord::kDiscarded)
+        flagName += flagName.isEmpty() ? "Discarded" : " | Discarded";
+    if (flag & hsG3DDeviceRecord::kInvalid)
+        flagName += flagName.isEmpty() ? "Invalid" : " | Invalid";
+    if (flagName.isEmpty())
+        flagName = "UNKNOWN: 0x" + QString::number(flag, 16).toUpper();
+    return flagName;
 }
 
 QString QPlasmaDevModeDat::getDeviceTypeName(uint32_t type)
