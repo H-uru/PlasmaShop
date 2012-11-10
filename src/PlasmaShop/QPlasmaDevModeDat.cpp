@@ -18,6 +18,7 @@
 #include <Debug/plDebug.h>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QScrollArea>
 #include "../QPlasma.h"
 
 /* QPlasmaDevModeDat */
@@ -111,11 +112,22 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), textureQualityValueLabel, SLOT(setNum(int)));
 
     QGridLayout* layout = new QGridLayout(this);
-    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setContentsMargins(4, 4, 4, 4);
     layout->addWidget(grpRecord, 0, 0);
     layout->addWidget(grpMode, 1, 0);
     layout->addWidget(grpTexQuality, 2, 0);
-    setLayout(layout);
+
+    //Make everything scrollable
+    QWidget* everything = new QWidget(this);
+    everything->setLayout(layout);
+    QScrollArea* scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(everything);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    scrollArea->setWidgetResizable(true);
+    QGridLayout* scrollLayout = new QGridLayout(this);
+    scrollLayout->setContentsMargins(4, 4, 4, 4);
+    scrollLayout->addWidget(scrollArea);
+    setLayout(scrollLayout);
 }
 
 bool QPlasmaDevModeDat::loadFile(QString filename)
