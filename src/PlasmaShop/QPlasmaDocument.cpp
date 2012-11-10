@@ -14,6 +14,7 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "QPlasmaDevModeDat.h"
 #include "QPlasmaDocument.h"
 #include "QPlasmaTextDoc.h"
 #include "QPlasmaSumFile.h"
@@ -96,8 +97,9 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
         return new QPlasmaSumFile(parent);
     case kDocPackage:
         return new QPlasmaPakFile(parent);
-    case kDocFont:
     case kDocDevMode:
+        return new QPlasmaDevModeDat(parent);
+    case kDocFont:
         // TODO: Implement
     default:
         return NULL;

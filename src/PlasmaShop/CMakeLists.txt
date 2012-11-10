@@ -4,6 +4,7 @@ set(PlasmaShop_MOC_Headers
     GameBrowser.h
     GameScanner.h
     NewFile.h
+    QPlasmaDevModeDat.h
     QPlasmaDocument.h
     QPlasmaTextDoc.h
     QPlasmaSumFile.h
@@ -16,6 +17,7 @@ set(PlasmaShop_Sources
     GameBrowser.cpp
     GameScanner.cpp
     NewFile.cpp
+    QPlasmaDevModeDat.cpp
     QPlasmaDocument.cpp
     QPlasmaTextDoc.cpp
     QPlasmaSumFile.cpp
