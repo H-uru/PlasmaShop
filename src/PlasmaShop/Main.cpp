@@ -16,7 +16,7 @@
 
 #include <QApplication>
 #include <QSettings>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QFileDialog>
@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QDropEvent>
 #include <QUrl>
+#include <QMimeData>
 #include <qticonloader.h>
 #include <Debug/plDebug.h>
 
@@ -1391,7 +1392,7 @@ void PlasmaShopMain::onDocClean()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PlasmaShop.log
-    QString logpath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PlasmaShop.log";

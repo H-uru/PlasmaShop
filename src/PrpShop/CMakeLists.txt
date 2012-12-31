@@ -139,13 +139,14 @@ if(WIN32)
     set(PrpShop_Sources ${PrpShop_Sources} res/PrpShop.rc)
 endif()
 
-find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui QtSvg QtOpenGL QtMain)
-include(${QT_USE_FILE})
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
 
 # generate rules for building source files from the resources
-qt4_add_resources(PrpShop_RCC images.qrc)
+qt5_add_resources(PrpShop_RCC images.qrc)
 # generate rules for building source files that moc generates
-qt4_wrap_cpp(PrpShop_MOC ${PrpShop_MOC_Headers})
+qt5_wrap_cpp(PrpShop_MOC ${PrpShop_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
@@ -159,7 +160,8 @@ set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_MOC} ${PrpShop_RCC})
-target_link_libraries(PrpShop ${QT_LIBRARIES} ${QT_QTOPENGL_LIB_DEPENDENCIES}
+qt5_use_modules(PrpShop Core Widgets OpenGL)
+target_link_libraries(PrpShop ${Qt5Core_QTMAIN_LIBRARIES} ${QT_QTOPENGL_LIB_DEPENDENCIES}
                       qscintilla2-ps3 HSPlasma)
 
 if(APPLE)

@@ -260,7 +260,7 @@ void OptionsDialog::onSetFont()
 
 
 /* Path getter magic */
-#include <QDesktopServices>
+#include <QStandardPaths>
 #ifdef Q_OS_WIN
     // For SHGetFolderPath
     #include <shlobj.h>
@@ -293,11 +293,11 @@ QString GetAppDataPath()
     return QString::fromUtf16((const ushort*)path);
 #else
     // Just return the user's home dir
-    return QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 #endif
 }
 
 QString GetDocumentsPath()
 {
-    return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 }

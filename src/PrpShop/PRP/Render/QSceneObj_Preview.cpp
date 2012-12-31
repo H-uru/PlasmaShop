@@ -17,6 +17,7 @@
 #include "QSceneObj_Preview.h"
 
 #include <PRP/Object/plSceneObject.h>
+#include <QToolBar>
 #include <QGridLayout>
 
 QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)

@@ -251,7 +251,7 @@ static QString LoadData(hsStream* S, QPlasmaTextDoc::EncodingMode mode)
     QString data;
     switch (mode) {
     case QPlasmaTextDoc::kTypeAnsi:
-        data = QString::fromAscii((const char*)buf, dataSize);
+        data = QString::fromLatin1((const char*)buf, dataSize);
         break;
     case QPlasmaTextDoc::kTypeUTF8:
         data = QString::fromUtf8((const char*)buf, dataSize);
@@ -274,7 +274,7 @@ static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
     switch (mode) {
     case QPlasmaTextDoc::kTypeAnsi:
         {
-            QByteArray buf = data.toAscii();
+            QByteArray buf = data.toLatin1();
             S->write(buf.size(), buf.data());
         }
         break;

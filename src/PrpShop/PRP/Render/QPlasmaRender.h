@@ -99,7 +99,7 @@ protected:
     virtual void resizeGL(int width, int height);
     virtual void paintGL();
 
-    QPointF pixelPosToViewPos(const QPointF& p);
+    QPointF pixelPosToViewPos(const QPoint& p);
     virtual void mouseMoveEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void mouseReleaseEvent(QMouseEvent* evt);

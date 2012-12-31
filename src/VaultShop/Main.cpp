@@ -16,7 +16,7 @@
 
 #include <QApplication>
 #include <QSettings>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
@@ -554,9 +554,9 @@ void VaultShopMain::openNode()
     }
 
     bool ok;
-    int nodeId = QInputDialog::getInteger(this, tr("Node ID"),
-                                          tr("Enter the ID of the Node to subscribe to"),
-                                          0, 0, 0x7FFFFFFF, 1, &ok);
+    int nodeId = QInputDialog::getInt(this, tr("Node ID"),
+                                      tr("Enter the ID of the Node to subscribe to"),
+                                      0, 0, 0x7FFFFFFF, 1, &ok);
     if (ok)
         subscribe(nodeId);
 }
@@ -673,9 +673,9 @@ void VaultShopMain::linkNode()
     }
 
     bool ok;
-    int nodeId = QInputDialog::getInteger(this, tr("Node ID"),
-                                          tr("Enter the ID of the Node to link"),
-                                          0, 0, 0x7FFFFFFF, 1, &ok);
+    int nodeId = QInputDialog::getInt(this, tr("Node ID"),
+                                      tr("Enter the ID of the Node to link"),
+                                      0, 0, 0x7FFFFFFF, 1, &ok);
     if (!ok)
         return;
     plVaultNode node = vault->fVault->getNode(nodeId);
@@ -764,7 +764,7 @@ void VaultShopMain::renameVault()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to VaultShop.log
-    QString logpath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/VaultShop.log";

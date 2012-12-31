@@ -37,7 +37,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 void multMatrix(const QMatrix4x4& m)
 {
     static GLfloat mat[16];
-    const qreal *data = m.constData();
+    const float *data = m.constData();
     for (int index = 0; index < 16; ++index)
         mat[index] = data[index];
     glMultMatrixf(mat);
@@ -190,11 +190,11 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
         }
 
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            fTrackball.move(pixelPosToViewPos(evt->posF()));
+            fTrackball.move(pixelPosToViewPos(evt->pos()));
         }
     } else if (evt->buttons() & Qt::RightButton) {
         if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
-            QPointF delta = evt->posF() - fMouseFrom;
+            QPointF delta = evt->pos() - fMouseFrom;
             float sign = delta.y() > 0 ? 1 : -1;
             fModelDist = fStartDist + sign * sqrt(delta.x() * delta.x() + delta.y() * delta.y()) / 16.0f;
             if (fModelDist < 0.0f)
@@ -217,10 +217,10 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
     updateGL();
 }
 
-QPointF QPlasmaRender::pixelPosToViewPos(const QPointF& p)
+QPointF QPlasmaRender::pixelPosToViewPos(const QPoint& p)
 {
-    return QPointF(2.0 * float(p.x()) / width() - 1.0,
-                   1.0 - 2.0 * float(p.y()) / height());
+    return QPointF(2.0f * static_cast<float>(p.x()) / width() - 1.0f,
+                   1.0f - 2.0f * static_cast<float>(p.y()) / height());
 }
 
 
@@ -232,7 +232,7 @@ void QPlasmaRender::mousePressEvent(QMouseEvent* evt)
         if (evt->button() & Qt::RightButton)
             fStartDist = fModelDist;
         else if (evt->button() & Qt::LeftButton)
-            fTrackball.push(pixelPosToViewPos(evt->posF()));
+            fTrackball.push(pixelPosToViewPos(evt->pos()));
     }
 }
 
@@ -240,7 +240,7 @@ void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
 {
     if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         if (evt->button() & Qt::LeftButton)
-            fTrackball.release(pixelPosToViewPos(evt->posF()));
+            fTrackball.release(pixelPosToViewPos(evt->pos()));
     }
 }
 
