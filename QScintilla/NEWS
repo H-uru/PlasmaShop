@@ -1,3 +1,92 @@
+v2.7 8th December 2012
+  - Based on Scintilla v3.23.
+  - Added support for Qt v5-rc1.
+  - Added HashQuotedString, InactiveHashQuotedString, PreProcessorComment,
+    InactivePreProcessorComment, setHighlightHashQuotedStrings() and
+    highlightHashQuotedStrings() to QsciLexerCpp.
+  - Added Variable, setHSSLanguage(), HSSLanguage(), setLessLanguage(),
+    LessLanguage(), setSCCSLanguage() and SCCSLanguage() to QsciLexerCSS.
+  - Added setOverwriteMode() and overwriteMode() to QsciScintilla.
+  - Added wordAtLineIndex() to QsciScintilla.
+  - Added findFirstInSelection() to QsciScintilla.
+  - Added CallTipsPosition, callTipsPosition() and setCallTipsPosition() to
+    QsciScintilla.
+  - Added WrapFlagInMargin to QsciScintilla::WrapVisualFlag.
+  - Added SquigglePixmapIndicator to QsciScintilla::IndicatorStyle.
+  - The weight of a font (rather than whether it is just bold or not) is now
+    respected.
+  - Added SCLEX_AVS, SCLEX_COFFEESCRIPT, SCLEX_ECL, SCLEX_OSCRIPT,
+    SCLEX_TCMD and SCLEX_VISUALPROLOG to QsciScintillaBase.
+  - Added SC_CASEINSENSITIVEBEHAVIOUR_IGNORECASE and
+    SC_CASEINSENSITIVEBEHAVIOUR_RESPECTCASE to QsciScintillaBase.
+  - Added SC_FONT_SIZE_MULTIPLIER to QsciScintillaBase.
+  - Added SC_WEIGHT_NORMAL, SC_WEIGHT_SEMIBOLD and SC_WEIGHT_BOLD to
+    QsciScintillaBase.
+  - Added SC_WRAPVISUALFLAG_MARGIN to QsciScintillaBase.
+  - Added INDIC_SQUIGGLEPIXMAP to QsciScintillaBase.
+  - Added SCI_AUTOCSETCASEINSENSITIVEBEHAVIOUR,
+    SCI_AUTOCGETCASEINSENSITIVEBEHAVIOUR, SCI_CALLTIPSETPOSITION,
+    SCI_COUNTCHARACTERS, SCI_CREATELOADER, SCI_DELETERANGE,
+    SCI_FINDINDICATORFLASH, SCI_FINDINDICATORHIDE, SCI_FINDINDICATORSHOW,
+    SCI_GETALLLINESVISIBLE, SCI_GETGAPPOSITION, SCI_GETPUNCTUATIONCHARS,
+    SCI_GETRANGEPOINTER, SCI_GETSELECTIONEMPTY, SCI_GETTECHNOLOGY,
+    SCI_GETWHITESPACECHARS, SCI_GETWORDCHARS, SCI_RGBAIMAGESETSCALE,
+    SCI_SETPUNCTUATIONCHARS, SCI_SETTECHNOLOGY, SCI_STYLESETSIZEFRACTIONAL,
+    SCI_STYLEGETSIZEFRACTIONAL, SCI_STYLESETWEIGHT and SCI_STYLEGETWEIGHT to
+    QsciScintillaBase.
+  - Removed SCI_GETUSEPALETTE and SCI_SETUSEPALETTE from QsciScintillaBase.
+  - Bug fixes.
+
+v2.6.2 20th June 2012
+  - Added support for Qt v5-alpha.
+  - QsciLexer::wordCharacters() is now part of the public API.
+  - Bug fixes.
+
+v2.6.1 10th February 2012
+  - Support SCI_NAMESPACE to enable all internal Scintilla classes to be put
+    into the Scintilla namespace.
+  - APIs now allow for spaces between the end of a word and the opening
+    parenthesis.
+  - Building against Qt v3 is fixed.
+
+v2.6 11th November 2011
+  - Based on Scintilla v2.29.
+  - Added Command, command() and execute() to QsciCommand.
+  - Added boundTo() and find() to QsciCommandSet.
+  - Added createStandardContextMenu() to QsciScintilla.
+  - Added StraightBoxIndicator, DashesIndicator, DotsIndicator,
+    SquiggleLowIndicator and DotBoxIndicator to QsciScintilla::IndicatorStyle.
+  - Added markerDefine() to QsciScintilla.
+  - Added MoNone, MoSublineSelect, marginOptions() and setMarginOptions() to
+    QsciScintilla.
+  - Added registerImage() to QsciScintilla.
+  - Added setIndicatorOutlineColor() to QsciScintilla.
+  - Added setMatchedBraceIndicator(), resetMatchedBraceIndicator(),
+    setUnmatchedBraceIndicator() and resetUnmatchedBraceIndicator() to
+    QsciScintilla.
+  - Added highlightTripleQuotedStrings() and setHighlightTripleQuotedStrings()
+    to QsciLexerCpp.
+  - Added Label to QsciLexerLua.
+  - Added DoubleQuotedStringVar, Translation, RegexVar, SubstitutionVar,
+    BackticksVar, DoubleQuotedHereDocumentVar, BacktickHereDocumentVar,
+    QuotedStringQQVar, QuotedStringQXVar, QuotedStringQRVar, setFoldAtElse()
+    and foldAtElse() to QsciLexerPerl.
+  - Added highlightSubidentifiers() and setHighlightSubidentifiers() to
+    QsciLexerPython.
+  - Added INDIC_STRAIGHTBOX, INDIC_DASH, INDIC_DOTS, INDIC_SQUIGGLELOW and
+    INDIC_DOTBOX to QsciScintillaBase.
+  - Added SC_MARGINOPTION_NONE and SC_MARGINOPTION_SUBLINESELECT to
+    QsciScintillaBase.
+  - Added SC_MARK_RGBAIMAGE to QsciScintillaBase.
+  - Added SCI_BRACEBADLIGHTINDICATOR, SCI_BRACEHIGHLIGHTINDICATOR,
+    SCI_GETIDENTIFIER, SCI_GETMARGINOPTIONS, SCI_INDICGETOUTLINEALPHA,
+    SCI_INDICSETOUTLINEALPHA, SCI_MARKERDEFINERGBAIMAGE,
+    SCI_MARKERENABLEHIGHLIGHT, SCI_MARKERSETBACKSELECTED,
+    SCI_MOVESELECTEDLINESDOWN, SCI_MOVESELECTEDLINESUP, SCI_REGISTERRGBAIMAGE,
+    SCI_RGBAIMAGESETHEIGHT, SCI_RGBAIMAGESETWIDTH, SCI_SCROLLTOEND,
+    SCI_SCROLLTOSTART, SCI_SETEMPTYSELECTION, SCI_SETIDENTIFIER and
+    SCI_SETMARGINOPTIONS to QsciScintillaBase.
+
 v2.5.1 17th April 2011
   - Added QsciLexerMatlab and QsciLexerOctave.
 

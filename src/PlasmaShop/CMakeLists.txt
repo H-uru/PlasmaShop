@@ -102,7 +102,7 @@ qt4_add_resources(PlasmaShop_RCC images.qrc)
 qt4_wrap_cpp(PlasmaShop_MOC ${PlasmaShop_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4")
+include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${pycdc_SOURCE_DIR}")
 include_directories("${HSPlasma_INCLUDE_DIRS}")
 

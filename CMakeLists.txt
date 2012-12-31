@@ -6,7 +6,7 @@ find_package(HSPlasma REQUIRED)
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 endif()
-add_subdirectory(QScintilla/Qt4)
+add_subdirectory(QScintilla/Qt4Qt5)
 
 if(WIN32)
     add_definitions(-DPLAT_FONT="Courier New")

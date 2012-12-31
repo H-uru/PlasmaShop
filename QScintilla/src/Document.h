@@ -2,7 +2,7 @@
 /** @file Document.h
  ** Text document that handles notifications, DBCS, styling, words and end of line.
  **/
-// Copyright 1998-2003 by Neil Hodgson <neilh@scintilla.org>
+// Copyright 1998-2011 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
 #ifndef DOCUMENT_H
@@ -115,6 +115,46 @@ struct StyledText {
 	}
 };
 
+class HighlightDelimiter {
+public:
+	HighlightDelimiter() : isEnabled(false) {
+		Clear();
+	}
+
+	void Clear() {
+		beginFoldBlock = -1;
+		endFoldBlock = -1;
+		firstChangeableLineBefore = -1;
+		firstChangeableLineAfter = -1;
+	}
+
+	bool NeedsDrawing(int line) {
+		return isEnabled && (line <= firstChangeableLineBefore || line >= firstChangeableLineAfter);
+	}
+
+	bool IsFoldBlockHighlighted(int line) {
+		return isEnabled && beginFoldBlock != -1 && beginFoldBlock <= line && line <= endFoldBlock;
+	}
+
+	bool IsHeadOfFoldBlock(int line) {
+		return beginFoldBlock == line && line < endFoldBlock;
+	}
+
+	bool IsBodyOfFoldBlock(int line) {
+		return beginFoldBlock != -1 && beginFoldBlock < line && line < endFoldBlock;
+	}
+
+	bool IsTailOfFoldBlock(int line) {
+		return beginFoldBlock != -1 && beginFoldBlock < line && line == endFoldBlock;
+	}
+
+	int beginFoldBlock;	// Begin of current fold block
+	int endFoldBlock;	// End of current fold block
+	int firstChangeableLineBefore;	// First line that triggers repaint before starting line that determined current fold block
+	int firstChangeableLineAfter;	// First line that triggers repaint after starting line that determined current fold block
+	bool isEnabled;
+};
+
 class CaseFolder {
 public:
 	virtual ~CaseFolder() {
@@ -153,7 +193,7 @@ public:
 
 /**
  */
-class Document : PerLine, public IDocument {
+class Document : PerLine, public IDocument, public ILoader {
 
 public:
 	/** Used to pair watcher pointer with user data. */
@@ -172,6 +212,7 @@ private:
 	int refCount;
 	CellBuffer cb;
 	CharClassify charClass;
+	CaseFolder *pcf;
 	char stylingMask;
 	int endStyled;
 	int styleClock;
@@ -212,9 +253,10 @@ public:
 	virtual ~Document();
 
 	int AddRef();
-	int Release();
+	int SCI_METHOD Release();
 
 	virtual void Init();
+	bool SetDBCSCodePage(int dbcsCodePage_);
 	virtual void InsertLine(int line);
 	virtual void RemoveLine(int line);
 
@@ -234,12 +276,15 @@ public:
 	bool NextCharacter(int &pos, int moveDir);	// Returns true if pos changed
 	int SCI_METHOD CodePage() const;
 	bool SCI_METHOD IsDBCSLeadByte(char ch) const;
+	int SafeSegment(const char *text, int length, int lengthSegment);
 
 	// Gateways to modifying document
 	void ModifiedAt(int pos);
 	void CheckReadOnly();
 	bool DeleteChars(int pos, int len);
 	bool InsertString(int position, const char *s, int insertLength);
+	int SCI_METHOD AddData(char *data, int length);
+	void * SCI_METHOD ConvertToDocument();
 	int Undo();
 	int Redo();
 	bool CanUndo() { return cb.CanUndo(); }
@@ -255,14 +300,17 @@ public:
 	void SetSavePoint();
 	bool IsSavePoint() { return cb.IsSavePoint(); }
 	const char * SCI_METHOD BufferPointer() { return cb.BufferPointer(); }
+	const char *RangePointer(int position, int rangeLength) { return cb.RangePointer(position, rangeLength); }
+	int GapPosition() const { return cb.GapPosition(); }
 
 	int SCI_METHOD GetLineIndentation(int line);
 	void SetLineIndentation(int line, int indent);
 	int GetLineIndentPosition(int line) const;
 	int GetColumn(int position);
+	int CountCharacters(int startPos, int endPos);
 	int FindColumn(int line, int column);
 	void Indent(bool forwards, int lineBottom, int lineTop);
-	static char *TransformLineEnds(int *pLenOut, const char *s, size_t len, int eolMode);
+	static char *TransformLineEnds(int *pLenOut, const char *s, size_t len, int eolModeWanted);
 	void ConvertLineEnds(int eolModeSet);
 	void SetReadOnly(bool set) { cb.SetReadOnly(set); }
 	bool IsReadOnly() { return cb.IsReadOnly(); }
@@ -282,6 +330,7 @@ public:
 		cb.GetStyleRange(buffer, position, lengthRetrieve);
 	}
 	int GetMark(int line);
+	int MarkerNext(int lineStart, int mask) const;
 	int AddMark(int line, int markerNum);
 	void AddMarkSet(int line, int valueSet);
 	void DeleteMark(int line, int markerNum);
@@ -297,8 +346,9 @@ public:
 	int SCI_METHOD SetLevel(int line, int level);
 	int SCI_METHOD GetLevel(int line) const;
 	void ClearLevels();
-	int GetLastChild(int lineParent, int level=-1);
+	int GetLastChild(int lineParent, int level=-1, int lastLine=-1);
 	int GetFoldParent(int line);
+	void GetHighlightDelimiters(HighlightDelimiter &hDelimiter, int line, int lastLine);
 
 	void Indent(bool forwards);
 	int ExtendWordSelect(int pos, int delta, bool onlyWordCharacters=false);
@@ -306,10 +356,11 @@ public:
 	int NextWordEnd(int pos, int delta);
 	int SCI_METHOD Length() const { return cb.Length(); }
 	void Allocate(int newSize) { cb.Allocate(newSize); }
-	size_t ExtractChar(int pos, char *bytes);
 	bool MatchesWordOptions(bool word, bool wordStart, int pos, int length);
+	bool HasCaseFolder(void) const;
+	void SetCaseFolder(CaseFolder *pcf_);
 	long FindText(int minPos, int maxPos, const char *search, bool caseSensitive, bool word,
-		bool wordStart, bool regExp, int flags, int *length, CaseFolder *pcf);
+		bool wordStart, bool regExp, int flags, int *length);
 	const char *SubstituteByPosition(const char *text, int *length);
 	int LinesTotal() const;
 
@@ -317,6 +368,7 @@ public:
 
 	void SetDefaultCharClasses(bool includeWordClass);
 	void SetCharClasses(const unsigned char *chars, CharClassify::cc newCharClass);
+	int GetCharsOfClass(CharClassify::cc charClass, unsigned char *buffer);
 	void SetStylingBits(int bits);
 	void SCI_METHOD StartStyling(int position, char mask);
 	bool SCI_METHOD SetStyleFor(int length, char style);

@@ -12,8 +12,8 @@
 #include <stdio.h>
 
 #ifdef _MSC_VER
-// Visual C++ doesn't like unreachable code or long decorated names in its own headers.
-#pragma warning(disable: 4018 4100 4245 4511 4512 4663 4702 4786)
+// Visual C++ doesn't like unreachable code in its own headers.
+#pragma warning(disable: 4018 4100 4245 4511 4512 4663 4702)
 #endif
 
 #include <string>
@@ -61,9 +61,10 @@ void PropSetSimple::Set(const char *keyVal) {
 		endVal++;
 	const char *eqAt = strchr(keyVal, '=');
 	if (eqAt) {
-		Set(keyVal, eqAt + 1, eqAt-keyVal, endVal - eqAt - 1);
+		Set(keyVal, eqAt + 1, static_cast<int>(eqAt-keyVal), 
+			static_cast<int>(endVal - eqAt - 1));
 	} else if (*keyVal) {	// No '=' so assume '=1'
-		Set(keyVal, "1", endVal-keyVal, 1);
+		Set(keyVal, "1", static_cast<int>(endVal-keyVal), 1);
 	}
 }
 
@@ -150,7 +151,7 @@ char *PropSetSimple::Expanded(const char *key) const {
 
 int PropSetSimple::GetExpanded(const char *key, char *result) const {
 	char *val = Expanded(key);
-	const int n = strlen(val);
+	const int n = static_cast<int>(strlen(val));
 	if (result) {
 		strcpy(result, val);
 	}

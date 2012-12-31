@@ -21,7 +21,7 @@ using namespace Scintilla;
 #endif
 
 // Find the first run at a position
-int RunStyles::RunFromPosition(int position) {
+int RunStyles::RunFromPosition(int position) const {
 	int run = starts->PartitionFromPosition(position);
 	// Go to first element with this position
 	while ((run > 0) && (position == starts->PositionFromPartition(run-1))) {
@@ -147,6 +147,8 @@ bool RunStyles::FillRange(int &position, int value, int &fillLength) {
 		runEnd = RunFromPosition(end);
 		RemoveRunIfSameAsPrevious(runEnd);
 		RemoveRunIfSameAsPrevious(runStart);
+		runEnd = RunFromPosition(end);
+		RemoveRunIfEmpty(runEnd);
 		return true;
 	} else {
 		return false;
@@ -203,6 +205,7 @@ void RunStyles::DeleteRange(int position, int deleteLength) {
 	if (runStart == runEnd) {
 		// Deleting from inside one run
 		starts->InsertText(runStart, -deleteLength);
+		RemoveRunIfEmpty(runStart);
 	} else {
 		runStart = SplitRun(position);
 		runEnd = SplitRun(end);
@@ -216,3 +219,33 @@ void RunStyles::DeleteRange(int position, int deleteLength) {
 	}
 }
 
+int RunStyles::Runs() const {
+	return starts->Partitions();
+}
+
+bool RunStyles::AllSame() const {
+	for (int run = 1; run < starts->Partitions(); run++) {
+		if (styles->ValueAt(run) != styles->ValueAt(run - 1))
+			return false;
+	}
+	return true;
+}
+
+bool RunStyles::AllSameAs(int value) const {
+	return AllSame() && (styles->ValueAt(0) == value);
+}
+
+int RunStyles::Find(int value, int start) const {
+	if (start < Length()) {
+		int run = start ? RunFromPosition(start) : 0;
+		if (styles->ValueAt(run) == value)
+			return start;
+		run++;
+		while (run < starts->Partitions()) {
+			if (styles->ValueAt(run) == value)
+				return starts->PositionFromPartition(run);
+			run++;
+		}
+	}
+	return -1;
+}

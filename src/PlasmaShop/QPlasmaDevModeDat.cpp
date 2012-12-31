@@ -122,7 +122,7 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     everything->setLayout(layout);
     QScrollArea* scrollArea = new QScrollArea(this);
     scrollArea->setWidget(everything);
-    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setWidgetResizable(true);
     QGridLayout* scrollLayout = new QGridLayout(this);
     scrollLayout->setContentsMargins(4, 4, 4, 4);

@@ -148,7 +148,7 @@ qt4_add_resources(PrpShop_RCC images.qrc)
 qt4_wrap_cpp(PrpShop_MOC ${PrpShop_MOC_Headers})
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4")
+include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${PROJECT_SOURCE_DIR}/src/PrpShop")
 include_directories("${HSPlasma_INCLUDE_DIRS}")
 

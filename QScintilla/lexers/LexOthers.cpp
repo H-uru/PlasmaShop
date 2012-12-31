@@ -417,7 +417,7 @@ static void FoldHexDoc(unsigned int startPos, int length, int, WordList *[], Acc
 	styler.SetLevel(lineCurrent, lev | flagsNext & ~SC_FOLDLEVELNUMBERMASK);
 }
 
-static const char * const emptyWordListDesc[] = {
+static const char *const emptyWordListDesc[] = {
 	0
 };
 
