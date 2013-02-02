@@ -333,7 +333,8 @@ void PlasmaShopMain::loadFile(QString filename)
         dtype = kDocText;
     } else if (ext == "p2f") {
         dtype = kDocFont;
-    } else if (ext == "pfp" || ext == "pak" || fnameNoPath == "cursors.dat") {
+    } else if (ext == "pfp" || ext == "pak" || fnameNoPath == "cursors.dat" ||
+               fnameNoPath == "resource.dat") {
         dtype = kDocPackage;
     } else if (ext == "sum") {
         dtype = kDocManifest;

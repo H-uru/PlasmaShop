@@ -198,7 +198,8 @@ void GameScanner::recursiveScan(QStringList path, QDir root)
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
             item->setText(0, f);
             item->setData(0, Qt::UserRole, root.absoluteFilePath(f));
-        } else if (ftest == "cursors.dat" || ftest.endsWith(".tga")) {
+        } else if (ftest == "cursors.dat" || ftest.endsWith(".tga") ||
+                   ftest == "resource.dat") {
             QTreeWidgetItem* fold = ensurePath(fImagesItem, datbPath, "<IMGFOLD>");
             QTreeWidgetItem* item = new QTreeWidgetItem(fold);
             item->setIcon(0, QPlasmaDocument::GetDocIcon(f));
