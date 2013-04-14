@@ -36,11 +36,15 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
 void multMatrix(const QMatrix4x4& m)
 {
-    static GLfloat mat[16];
-    const float *data = m.constData();
+#if QT_VERSION >= 0x050000
+    glMultMatrixf(static_cast<const GLfloat *>(m.constData()));
+#else
+    GLfloat mat[16];
+    const qreal *data = m.constData();
     for (int index = 0; index < 16; ++index)
         mat[index] = data[index];
     glMultMatrixf(mat);
+#endif
 }
 
 void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {

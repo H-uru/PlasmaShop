@@ -31,6 +31,12 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFontDialog>
+#include "../QPlasma.h"
+
+#ifdef Q_OS_WIN
+    // For SHGetFolderPath
+    #include <shlobj.h>
+#endif
 
 OptionsDialog::OptionsDialog(QWidget* parent)
              : QDialog(parent)
@@ -260,12 +266,6 @@ void OptionsDialog::onSetFont()
 
 
 /* Path getter magic */
-#include <QStandardPaths>
-#ifdef Q_OS_WIN
-    // For SHGetFolderPath
-    #include <shlobj.h>
-#endif
-
 QString s_binBasePath;
 
 QString GetPSBinPath(QString filename)
@@ -293,11 +293,11 @@ QString GetAppDataPath()
     return QString::fromUtf16((const ushort*)path);
 #else
     // Just return the user's home dir
-    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    return QStandardPaths_HomeLocation();
 #endif
 }
 
 QString GetDocumentsPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    return QStandardPaths_DocumentsLocation();
 }

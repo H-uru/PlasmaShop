@@ -16,7 +16,6 @@
 
 #include <QApplication>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
@@ -1134,7 +1133,7 @@ void PrpShopMain::showTypeIDs(bool show)
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PrpShop.log
-    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString logpath = QStandardPaths_DataLocation();
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PrpShop.log";

@@ -46,21 +46,28 @@ endif()
 #    set(VaultShop_Sources ${VaultShop_Sources} res/VaultShop.rc)
 #endif()
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+if(PS_USE_QT5)
+    find_package(Qt5Widgets REQUIRED)
+endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(VaultShop_RCC images.qrc)
+qtx_add_resources(VaultShop_RCC images.qrc)
 # generate rules for building source files that moc generates
-qt5_wrap_cpp(VaultShop_MOC ${VaultShop_MOC_Headers})
+qtx_wrap_cpp(VaultShop_MOC "${VaultShop_MOC_Headers}")
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${HSPlasma_INCLUDE_DIRS}")
 
 add_executable(VaultShop WIN32 MACOSX_BUNDLE
                ${VaultShop_Sources} ${VaultShop_MOC} ${VaultShop_RCC})
-qt5_use_modules(VaultShop Core Widgets)
-target_link_libraries(VaultShop ${Qt5Core_QTMAIN_LIBRARIES} HSPlasma)
+if(PS_USE_QT5)
+    qt5_use_modules(VaultShop Core Widgets)
+    target_link_libraries(VaultShop ${Qt5Core_QTMAIN_LIBRARIES})
+elseif(PS_USE_QT4)
+    target_link_libraries(VaultShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
+                                    ${QT_QTGUI_LIBRARY})
+endif()
+target_link_libraries(VaultShop HSPlasma)
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

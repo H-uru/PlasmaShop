@@ -82,10 +82,11 @@ set(QScintilla_Sources
     ../src/XPM.cpp
 )
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)
-qt5_wrap_cpp(QScintilla_MOC ${QScintilla_MOC_Headers})
+if(PS_USE_QT5)
+    find_package(Qt5Widgets REQUIRED)
+    find_package(Qt5PrintSupport REQUIRED)
+endif()
+qtx_wrap_cpp(QScintilla_MOC "${QScintilla_MOC_Headers}")
 
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/include")
@@ -95,4 +96,8 @@ include_directories("${PROJECT_SOURCE_DIR}/QScintilla/src")
 add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)
 
 add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_MOC})
-qt5_use_modules(qscintilla2-ps3 Core Widgets PrintSupport)
+if(PS_USE_QT5)
+    qt5_use_modules(qscintilla2-ps3 Core Widgets PrintSupport)
+elseif(PS_USE_QT4)
+    target_link_libraries(qscintilla2-ps3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+endif()

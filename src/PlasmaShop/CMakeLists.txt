@@ -94,13 +94,14 @@ if(WIN32)
     set(PlasmaShop_Sources ${PlasmaShop_Sources} res/PlasmaShop.rc)
 endif()
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+if(PS_USE_QT5)
+    find_package(Qt5Widgets REQUIRED)
+endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(PlasmaShop_RCC images.qrc)
+qtx_add_resources(PlasmaShop_RCC images.qrc)
 # generate rules for building source files that moc generates
-qt5_wrap_cpp(PlasmaShop_MOC ${PlasmaShop_MOC_Headers})
+qtx_wrap_cpp(PlasmaShop_MOC "${PlasmaShop_MOC_Headers}")
 
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
@@ -110,8 +111,14 @@ include_directories("${HSPlasma_INCLUDE_DIRS}")
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_Sources} ${pycdc_Sources} ${pycdc_GeneratedSources}
                ${PlasmaShop_MOC} ${PlasmaShop_RCC})
-qt5_use_modules(PlasmaShop Core Widgets)
-target_link_libraries(PlasmaShop ${Qt5Core_QTMAIN_LIBRARIES} qscintilla2-ps3 HSPlasma)
+if(PS_USE_QT5)
+    qt5_use_modules(PlasmaShop Core Widgets)
+    target_link_libraries(PlasmaShop ${Qt5Core_QTMAIN_LIBRARIES})
+elseif(PS_USE_QT4)
+    target_link_libraries(PlasmaShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
+                                     ${QT_QTGUI_LIBRARY})
+endif()
+target_link_libraries(PlasmaShop qscintilla2-ps3 HSPlasma)
 
 if(WIN32)
     target_link_libraries(PlasmaShop shell32)

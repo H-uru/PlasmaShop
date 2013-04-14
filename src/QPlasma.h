@@ -21,6 +21,31 @@
 #include <Util/plString.h>
 #include <PRP/KeyedObject/plLocation.h>
 
+// APIs between Qt4 and Qt5 are incompatible for getting these paths
+#if QT_VERSION >= 0x050000
+    #include <QStandardPaths>
+
+    inline QString QStandardPaths_DataLocation()
+    { return QStandardPaths::writableLocation(QStandardPaths::DataLocation); }
+
+    inline QString QStandardPaths_HomeLocation()
+    { return QStandardPaths::writableLocation(QStandardPaths::HomeLocation); }
+
+    inline QString QStandardPaths_DocumentsLocation()
+    { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation); }
+#else
+    #include <QDesktopServices>
+
+    inline QString QStandardPaths_DataLocation()
+    { return QDesktopServices::storageLocation(QDesktopServices::DataLocation); }
+
+    inline QString QStandardPaths_HomeLocation()
+    { return QDesktopServices::storageLocation(QDesktopServices::HomeLocation); }
+
+    inline QString QStandardPaths_DocumentsLocation()
+    { return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation); }
+#endif
+
 // Shorthand Plasma-Qt string conversion
 inline QString operator~(const plString& str)
 { return QString::fromUtf8(str.cstr()); }
