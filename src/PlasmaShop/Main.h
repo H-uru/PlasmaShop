@@ -28,7 +28,7 @@
 #include "GameBrowser.h"
 #include "GameScanner.h"
 
-#define PLASMASHOP_VERSION "3.0 Beta (build 210)"
+#define PLASMASHOP_VERSION "3.0 Beta (build 229)"
 
 class PlasmaShopMain : public QMainWindow {
     Q_OBJECT

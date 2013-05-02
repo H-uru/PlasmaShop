@@ -496,7 +496,7 @@ void PlasmaShopMain::onNewFile()
     QPlasmaTextDoc::EncodingMode encoding = QPlasmaTextDoc::kTypeAnsi;
 
     QPlasmaDocument::EncryptionMode encrypt = QPlasmaDocument::kEncNone;
-    int gameType = fGames.isEmpty() ? GameInfo::kGameNone : fGames[fCurrentGame].fGameType;
+    int gameType = fGames.isEmpty() ? GameInfo::kGameNone : fGames[fCurrentGame-1].fGameType;
     if (gameType == GameInfo::kGameUru || gameType == GameInfo::kGameUruLive ||
         gameType == GameInfo::kGameMQO) {
         encrypt = QPlasmaDocument::kEncXtea;
