@@ -45,9 +45,9 @@
 
 // [Zrax] Set this up to load internal icons on Mac and Windows, but use
 // QtIconLoader on Unix-based OSes
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
 #  define qStdIcon(name) QIcon(":/res/win/" name ".png")
-#elif defined(Q_WS_MAC)
+#elif defined(Q_OS_MAC)
 #  define qStdIcon(name) QIcon(":/res/mac/" name ".png")
 #else
 
