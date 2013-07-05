@@ -23,6 +23,7 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QProgressDialog>
 #include <QDialogButtonBox>
 #include <QMdiSubWindow>
 #include <QDropEvent>
@@ -766,6 +767,22 @@ void PrpShopMain::loadFile(QString filename)
         if (prevCallback != NULL)
             prevCallback(loc);
     });
+
+    QProgressDialog progress("Please Wait...", QString(), 0, 0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setAutoClose(false);
+    plPageInfo* lastPage = 0;
+    fResMgr.SetProgressFunc([&progress, &lastPage](plPageInfo *page, size_t curObj, size_t maxObjs) {
+        if (page != lastPage) {
+            progress.setLabelText(QString("Loading %1...")
+                    .arg(page ? ~page->getPage() : "<Unknown Page>"));
+            progress.setMaximum(maxObjs);
+            lastPage = page;
+        }
+        progress.setValue(curObj);
+    });
+    progress.show();
+    qApp->processEvents();
 
     if (filename.endsWith(".age", Qt::CaseInsensitive)) {
         try {
