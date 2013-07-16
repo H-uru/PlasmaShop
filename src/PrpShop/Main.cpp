@@ -26,6 +26,7 @@
 #include <QProgressDialog>
 #include <QDialogButtonBox>
 #include <QMdiSubWindow>
+#include <QTextEdit>
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
@@ -41,7 +42,7 @@
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
 
-#define PRPSHOP_VERSION "Build 210"
+#define PRPSHOP_VERSION "Build 233"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance() { return sInstance; }
@@ -78,6 +79,7 @@ PrpShopMain::PrpShopMain()
     fActions[kTreeClose] = new QAction(tr("&Close"), this);
     fActions[kTreeEdit] = new QAction(tr("&Edit"), this);
     fActions[kTreeEditPRC] = new QAction(tr("Edit P&RC"), this);
+    fActions[kTreeEditHex] = new QAction(tr("View He&x"), this);
     fActions[kTreeViewTargets] = new QAction(tr("Show &Targets"), this);
     fActions[kTreePreview] = new QAction(tr("&Preview"), this);
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
@@ -196,6 +198,7 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeClose], SIGNAL(triggered()), this, SLOT(treeClose()));
     connect(fActions[kTreeEdit], SIGNAL(triggered()), this, SLOT(treeEdit()));
     connect(fActions[kTreeEditPRC], SIGNAL(triggered()), this, SLOT(treeEditPRC()));
+    connect(fActions[kTreeEditHex], SIGNAL(triggered()), this, SLOT(treeEditHex()));
     connect(fActions[kTreeViewTargets], SIGNAL(triggered()), this, SLOT(treeShowTargets()));
     connect(fActions[kTreePreview], SIGNAL(triggered()), this, SLOT(treePreview()));
     connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
@@ -432,6 +435,7 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         menu.addAction(fActions[kTreeEdit]);
         menu.addAction(fActions[kTreeEditPRC]);
+        menu.addAction(fActions[kTreeEditHex]);
         menu.addAction(fActions[kTreePreview]);
         menu.addAction(fActions[kTreeViewTargets]);
         menu.addSeparator();
@@ -495,6 +499,46 @@ void PrpShopMain::treeEditPRC()
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPRC_Type | item->obj()->ClassIndex());
+}
+
+void PrpShopMain::treeEditHex()
+{
+    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    if (item == NULL || item->obj() == NULL)
+        return;
+
+    QTextEdit* editor = new QTextEdit;
+    editor->setAttribute(Qt::WA_DeleteOnClose);
+    editor->setWindowTitle(QString("[%1] %2")
+                           .arg(item->obj()->ClassIndex(), 4, 16, QChar('0'))
+                           .arg(~item->obj()->getKey()->getName()));
+    editor->setWordWrapMode(QTextOption::NoWrap);
+    editor->setFont(QFont("Courier New", 10));
+    editor->setReadOnly(true);
+    editor->show();
+
+    uint32_t offset = item->obj()->getKey()->getFileOff();
+    uint32_t size = item->obj()->getKey()->getObjSize();
+
+    QPlasmaTreeItem *parent = (QPlasmaTreeItem*)item->parent()->parent();
+    QFile fn(parent->filename());
+    fn.open(QIODevice::ReadOnly);
+    fn.seek(offset);
+    QByteArray data = fn.read(size);
+    fn.close();
+
+    QString hex = "          0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F  ";
+    for (int i = 0; i < data.size(); ++i) {
+        if (i % 16 == 0)
+            hex += QString("\n%1 ").arg(i, 8, 16, QChar('0'));
+        if (i % 8 == 0)
+            hex += " ";
+        hex += QString("%1 ").arg((uint8_t)data[i], 2, 16, QChar('0'));
+    }
+
+    if (!hex.endsWith('\n'))
+        hex.append('\n');
+    editor->setText(hex);
 }
 
 void PrpShopMain::treePreview()

@@ -33,6 +33,8 @@ endif()
 
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
+    # Fix <windows.h> doing stupid stuff to QDateTime's header
+    add_definitions("/DNOMINMAX")
 endif()
 add_subdirectory(QScintilla/Qt4Qt5)
 
