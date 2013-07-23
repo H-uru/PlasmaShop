@@ -42,8 +42,6 @@
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
 
-#define PRPSHOP_VERSION "Build 233"
-
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance() { return sInstance; }
 plResManager* PrpShopMain::ResManager() { return &sInstance->fResMgr; }
@@ -56,7 +54,7 @@ PrpShopMain::PrpShopMain()
     sInstance = this;
 
     // Basic Form Settings
-    setWindowTitle("PrpShop " PRPSHOP_VERSION);
+    setWindowTitle("PrpShop " PLASMASHOP_VERSION);
     setWindowIcon(QIcon(":/res/PrpShop.svg"));
     setDockOptions(QMainWindow::AnimatedDocks);
 
