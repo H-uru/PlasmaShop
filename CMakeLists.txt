@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 2.6)
 
 find_package(HSPlasma REQUIRED)
 
-find_package(Qt5Core)
+option(PlasmaShop_FORCE_QT4 "Force Qt4 build even if Qt5 can be found" OFF)
+if(NOT PlasmaShop_FORCE_QT4)
+    find_package(Qt5Core)
+endif()
+
 if(Qt5Core_FOUND)
     set(PS_USE_QT5 TRUE)
     macro(QTX_WRAP_CPP dest files)
