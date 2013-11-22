@@ -52,6 +52,20 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS "${WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 endif()
 
+# Get the version number from git
+set(PlasmaShop_VERSION "3.0-untracked")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+    find_program(GIT_EXECUTABLE NAMES git git.cmd)
+    mark_as_advanced(GIT_EXECUTABLE)
+    if(GIT_EXECUTABLE)
+        execute_process(COMMAND ${GIT_EXECUTABLE} describe --dirty
+                        OUTPUT_VARIABLE PlasmaShop_VERSION
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    endif()
+endif()
+add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
+
 add_subdirectory(src/PlasmaShop)
 add_subdirectory(src/PrpShop)
 add_subdirectory(src/VaultShop)

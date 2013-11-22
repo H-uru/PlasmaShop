@@ -101,7 +101,7 @@ void VaultShopMain::SaveInfo::save()
 VaultShopMain::VaultShopMain()
 {
     // Basic Form Settings
-    setWindowTitle("VaultShop 1.1");
+    setWindowTitle("VaultShop " PLASMASHOP_VERSION);
     //setWindowIcon(QIcon(":/res/VaultShop.png"));
 
     // Set up actions
