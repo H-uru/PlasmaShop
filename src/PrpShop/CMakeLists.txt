@@ -168,8 +168,8 @@ elseif(PS_USE_QT4)
     target_link_libraries(PrpShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
                                   ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY})
 endif()
-target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES}
-                              qscintilla2-ps3 HSPlasma)
+target_link_libraries(PrpShop qscintilla2-ps3 HSPlasma)
+target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

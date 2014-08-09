@@ -30,13 +30,24 @@ Source: PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
 Source: PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
 Source: PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
-Source: QtCore4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: QtGui4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: QtOpenGL4.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
-Source: QtSvg4.dll; DestDir: {app}; Flags: ignoreversion; Components: VaultShop PrpShop PlasmaShop
-Source: zlib1.dll; DestDir: {app}; Flags: ignoreversion
-Source: imageformats\qjpeg4.dll; DestDir: {app}\imageformats; Flags: ignoreversion
-Source: imageformats\qsvg4.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5PrintSupport.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
+Source: icudt52.dll; DestDir: {app}; Flags: ignoreversion
+Source: icuin52.dll; DestDir: {app}; Flags: ignoreversion
+Source: icuuc52.dll; DestDir: {app}; Flags: ignoreversion
+Source: jpeg8.dll; DestDir: {app}; Flags: ignoreversion
+Source: zlib.dll; DestDir: {app}; Flags: ignoreversion
+Source: iconengines\qsvgicon.dll; DestDir: {app}\iconengines; Flags: ignoreversion
+Source: imageformats\qico.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qjpeg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qsvg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qtiff.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qwbmp.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: platforms\qminimal.dll; DestDir: {app}\platforms; Flags: ignoreversion
+Source: platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
 
 [Run]
