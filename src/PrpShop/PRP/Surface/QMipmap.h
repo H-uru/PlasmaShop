@@ -36,8 +36,14 @@ public:
     virtual ~QTextureBox();
     void setTexture(plMipmap* tex, int level = 0);
 
+public slots:
+    void saveAs();
+
 protected:
     virtual void paintEvent(QPaintEvent*);
+
+signals:
+    void textureChanged(bool success);
 };
 
 class QMipmap_Preview : public QCreatable {
