@@ -162,8 +162,7 @@ set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_MOC} ${PrpShop_RCC})
 if(PS_USE_QT5)
-    qt5_use_modules(PrpShop Core Widgets OpenGL)
-    target_link_libraries(PrpShop ${Qt5Core_QTMAIN_LIBRARIES})
+    target_link_libraries(PrpShop Qt5::Widgets Qt5::OpenGL)
 elseif(PS_USE_QT4)
     target_link_libraries(PrpShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
                                   ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY})

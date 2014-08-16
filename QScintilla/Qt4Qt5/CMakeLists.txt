@@ -97,7 +97,7 @@ add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)
 
 add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_MOC})
 if(PS_USE_QT5)
-    qt5_use_modules(qscintilla2-ps3 Core Widgets PrintSupport)
+    target_link_libraries(qscintilla2-ps3 Qt5::Widgets Qt5::PrintSupport)
 elseif(PS_USE_QT4)
     target_link_libraries(qscintilla2-ps3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 endif()

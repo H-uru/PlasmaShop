@@ -1,5 +1,5 @@
 project(PlasmaShop)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11.2)
 
 find_package(HSPlasma REQUIRED)
 
