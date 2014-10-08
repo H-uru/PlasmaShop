@@ -37,6 +37,7 @@ set(PrpShop_MOC_Headers
     PRP/Light/QShadowMaster.h
     PRP/Message/QMsgForwarder.h
     PRP/Modifier/QInterfaceInfoModifier.h
+    PRP/Modifier/QMaintainersMarkerModifier.h
     PRP/Modifier/QOneShotMod.h
     PRP/Modifier/QPythonFileMod.h
     PRP/Modifier/QSpawnModifier.h
@@ -103,6 +104,7 @@ set(PrpShop_Sources
     PRP/Light/QShadowMaster.cpp
     PRP/Message/QMsgForwarder.cpp
     PRP/Modifier/QInterfaceInfoModifier.cpp
+    PRP/Modifier/QMaintainersMarkerModifier.cpp
     PRP/Modifier/QOneShotMod.cpp
     PRP/Modifier/QPythonFileMod.cpp
     PRP/Modifier/QSpawnModifier.cpp
