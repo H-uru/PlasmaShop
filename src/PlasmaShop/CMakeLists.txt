@@ -112,8 +112,7 @@ add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_Sources} ${pycdc_Sources} ${pycdc_GeneratedSources}
                ${PlasmaShop_MOC} ${PlasmaShop_RCC})
 if(PS_USE_QT5)
-    qt5_use_modules(PlasmaShop Core Widgets)
-    target_link_libraries(PlasmaShop ${Qt5Core_QTMAIN_LIBRARIES})
+    target_link_libraries(PlasmaShop Qt5::Widgets)
 elseif(PS_USE_QT4)
     target_link_libraries(PlasmaShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
                                      ${QT_QTGUI_LIBRARY})

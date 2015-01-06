@@ -28,6 +28,24 @@
 #include "../QLinkLabel.h"
 #include "../../QPlasmaUtils.h"
 
+/* Helpers */
+static QString getExportDir()
+{
+    QSettings settings("PlasmaShop", "PrpShop");
+    QString exportDir = settings.value("ExportDir").toString();
+    if (exportDir.isEmpty())
+        exportDir = settings.value("DialogDir").toString();
+    return exportDir;
+}
+
+static void setExportDir(const QString& filename)
+{
+    QDir dir = QDir(filename);
+    dir.cdUp();
+    QSettings settings("PlasmaShop", "PrpShop");
+    settings.setValue("ExportDir", dir.absolutePath());
+}
+
 /* QTextureBox */
 QTextureBox::QTextureBox(QWidget* parent)
            : QWidget(parent), fImage(NULL), fImageData(NULL)
@@ -48,6 +66,7 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
         fImage = NULL;
         fImageData = NULL;
         update();
+        emit textureChanged(false);
         return;
     }
 
@@ -57,6 +76,7 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
         fImage = NULL;
         fImageData = NULL;
         update();
+        emit textureChanged(false);
         return;
     }
 
@@ -80,6 +100,19 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
                         tex->getLevelHeight(level), QImage::Format_ARGB32);
     resize(tex->getLevelWidth(level), tex->getLevelHeight(level));
     update();
+    emit textureChanged(true);
+}
+
+void QTextureBox::saveAs()
+{
+    if (!fImage)
+        return;
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save As..."),
+        getExportDir(), "Images (*.bmp *.jpg *.png *.tiff)");
+    if (filename.isEmpty())
+        return;
+    fImage->save(filename);
+    setExportDir(filename);
 }
 
 void QTextureBox::paintEvent(QPaintEvent* evt)
@@ -102,7 +135,6 @@ QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
 
     QScrollArea* scroll = new QScrollArea(this);
     fTexture = new QTextureBox(scroll);
-    fTexture->setTexture(tex);
     scroll->setWidget(fTexture);
 
     QWidget* levelWidget = new QWidget(this);
@@ -118,6 +150,11 @@ QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
     levelLayout->addWidget(new QLabel(tr("Level:"), levelWidget), 0, 0);
     levelLayout->addWidget(levelSel, 0, 1);
     levelSel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    QLinkLabel* saveAsLink = new QLinkLabel(tr("Save As..."), levelWidget);
+    levelLayout->addWidget(saveAsLink, 1, 0, 1, 2);
+    connect(fTexture, SIGNAL(textureChanged(bool)), saveAsLink, SLOT(setEnabled(bool)));
+    connect(saveAsLink, SIGNAL(activated()), fTexture, SLOT(saveAs()));
+    fTexture->setTexture(tex);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -422,14 +459,9 @@ static bool getJAlphaSurface(const plDDSurface& dds, plMipmap* tex)
 
 void QMipmap::onExportDDS()
 {
-    QSettings settings("PlasmaShop", "PrpShop");
-    QString exportDir = settings.value("ExportDir").toString();
-    if (exportDir.isEmpty())
-        exportDir = settings.value("DialogDir").toString();
-
     plMipmap* tex = plMipmap::Convert(fCreatable);
     QString filename = (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
-    filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), exportDir + "/" + filename,
+    filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), getExportDir() + "/" + filename,
                                             "DDS Files (*.dds)");
     if (filename.isEmpty())
         return;
@@ -451,17 +483,12 @@ void QMipmap::onExportDDS()
     }
     S.close();
 
-    QDir dir = QDir(filename);
-    dir.cdUp();
-    settings.setValue("ExportDir", dir.absolutePath());
+    setExportDir(filename);
 }
 
 void QMipmap::onExportJPEG()
 {
-    QSettings settings("PlasmaShop", "PrpShop");
-    QString exportDir = settings.value("ExportDir").toString();
-    if (exportDir.isEmpty())
-        exportDir = settings.value("DialogDir").toString();
+    QString exportDir = getExportDir();
 
     plMipmap* tex = plMipmap::Convert(fCreatable);
     exportDir.append("/" + (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
@@ -503,20 +530,13 @@ void QMipmap::onExportJPEG()
         makeJAlphaSurface(tex, &S);
     S.close();
 
-    QDir dir = QDir(filename);
-    dir.cdUp();
-    settings.setValue("ExportDir", dir.absolutePath());
+    setExportDir(filename);
 }
 
 void QMipmap::onImportDDS()
 {
-    QSettings settings("PlasmaShop", "PrpShop");
-    QString exportDir = settings.value("ExportDir").toString();
-    if (exportDir.isEmpty())
-        exportDir = settings.value("DialogDir").toString();
-
     plMipmap* tex = plMipmap::Convert(fCreatable);
-    QString filename = QFileDialog::getOpenFileName(this, tr("Import DDS"), exportDir,
+    QString filename = QFileDialog::getOpenFileName(this, tr("Import DDS"), getExportDir(),
                                                     "DDS Files (*.dds)");
     if (filename.isEmpty())
         return;
@@ -540,17 +560,12 @@ void QMipmap::onImportDDS()
     }
     S.close();
 
-    QDir dir = QDir(filename);
-    dir.cdUp();
-    settings.setValue("ExportDir", dir.absolutePath());
+    setExportDir(filename);
 }
 
 void QMipmap::onImportJPEG()
 {
-    QSettings settings("PlasmaShop", "PrpShop");
-    QString exportDir = settings.value("ExportDir").toString();
-    if (exportDir.isEmpty())
-        exportDir = settings.value("DialogDir").toString();
+    QString exportDir = getExportDir();
 
     plMipmap* tex = plMipmap::Convert(fCreatable);
     QString filename = QFileDialog::getOpenFileName(this, tr("Import JPEG"), exportDir,
@@ -621,7 +636,5 @@ void QMipmap::onImportJPEG()
     if (valid)
         tex->CopyFrom(&newTex);
 
-    QDir dir = QDir(filename);
-    dir.cdUp();
-    settings.setValue("ExportDir", dir.absolutePath());
+    setExportDir(filename);
 }
