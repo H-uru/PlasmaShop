@@ -91,6 +91,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Light/QShadowMaster.h"
 #include "PRP/Message/QMsgForwarder.h"
 #include "PRP/Modifier/QInterfaceInfoModifier.h"
+#include "PRP/Modifier/QMaintainersMarkerModifier.h"
 #include "PRP/Modifier/QOneShotMod.h"
 #include "PRP/Modifier/QPythonFileMod.h"
 #include "PRP/Modifier/QSpawnModifier.h"
@@ -210,6 +211,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceT
         return new QLayerMovie(pCre, parent);
     case kLayerSDLAnimation:
         return new QLayerSDLAnimation(pCre, parent);
+    case kMaintainersMarkerModifier:
+        return new QMaintainersMarkerModifier(pCre, parent);
     case kMipmap:
         return new QMipmap(pCre, parent);
     case kMsgForwarder:
