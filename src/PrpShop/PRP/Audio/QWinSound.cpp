@@ -505,8 +505,16 @@ QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
     fSoundLink->setForceType(kSound);
 
     fChannel = new QComboBox(this);
-    fChannel->addItems(QStringList() << "Left" << "Right");
-    fChannel->setCurrentIndex(obj->getChannel());
+    fChannel->addItem("Left", plWin32Sound::kLeftChannel);
+    fChannel->addItem("Right", plWin32Sound::kRightChannel);
+    int channelIdx = fChannel->findData(obj->getChannel());
+    if (channelIdx < 0) {
+        fChannel->addItem(QString("Unknown Value: %1").arg(obj->getChannel()),
+                          obj->getChannel());
+        fChannel->setCurrentIndex(fChannel->count() - 1);
+    } else {
+        fChannel->setCurrentIndex(channelIdx);
+    }
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -518,5 +526,5 @@ QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
 void QWin32Sound::saveDamage()
 {
     plWin32Sound* obj = plWin32Sound::Convert(fCreatable);
-    obj->setChannel(fChannel->currentIndex());
+    obj->setChannel(fChannel->itemData(fChannel->currentIndex()).toUInt());
 }
