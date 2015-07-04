@@ -15,6 +15,7 @@ set(QScintilla_MOC_Headers
     ./QsciPS3/qscilexerxml.h
     ./QsciPS3/qscimacro.h
     SciClasses.h
+    ScintillaQt.h
 )
 
 set(QScintilla_Sources
@@ -40,7 +41,9 @@ set(QScintilla_Sources
     qscistyle.cpp
     qscistyledtext.cpp
     SciClasses.cpp
+    InputMethod.cpp
     ListBoxQt.cpp
+    MacPasteboardMime.cpp
     PlatQt.cpp
     ScintillaQt.cpp
     ../lexers/LexCPP.cpp
@@ -49,6 +52,7 @@ set(QScintilla_Sources
     ../lexers/LexPython.cpp
     ../lexers/LexSDL.cpp
     ../lexlib/Accessor.cpp
+    ../lexlib/CharacterCategory.cpp
     ../lexlib/CharacterSet.cpp
     ../lexlib/LexerBase.cpp
     ../lexlib/LexerModule.cpp
@@ -59,17 +63,22 @@ set(QScintilla_Sources
     ../lexlib/WordList.cpp
     ../src/AutoComplete.cpp
     ../src/CallTip.cpp
+    ../src/CaseConvert.cpp
+    ../src/CaseFolder.cpp
     ../src/Catalogue.cpp
     ../src/CellBuffer.cpp
     ../src/CharClassify.cpp
     ../src/ContractionState.cpp
     ../src/Decoration.cpp
     ../src/Document.cpp
+    ../src/EditModel.cpp
     ../src/Editor.cpp
+    ../src/EditView.cpp
     ../src/ExternalLexer.cpp
     ../src/Indicator.cpp
     ../src/KeyMap.cpp
     ../src/LineMarker.cpp
+    ../src/MarginView.cpp
     ../src/PerLine.cpp
     ../src/PositionCache.cpp
     ../src/RESearch.cpp
@@ -85,6 +94,9 @@ set(QScintilla_Sources
 if(PS_USE_QT5)
     find_package(Qt5Widgets REQUIRED)
     find_package(Qt5PrintSupport REQUIRED)
+    if(APPLE)
+        find_package(Qt5MacExtras REQUIRED)
+    endif()
 endif()
 qtx_wrap_cpp(QScintilla_MOC "${QScintilla_MOC_Headers}")
 
@@ -93,11 +105,14 @@ include_directories("${PROJECT_SOURCE_DIR}/QScintilla/include")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/lexlib")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/src")
 
-add_definitions(-DQSCINTILLA_MAKE_DLL -DQT -DSCI_LEXER)
+add_definitions(-DQT -DSCINTILLA_QT -DSCI_LEXER)
 
 add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_MOC})
 if(PS_USE_QT5)
     target_link_libraries(qscintilla2-ps3 Qt5::Widgets Qt5::PrintSupport)
+    if(APPLE)
+        target_link_libraries(qscintilla2-ps3 Qt5::MacExtras)
+    endif()
 elseif(PS_USE_QT4)
     target_link_libraries(qscintilla2-ps3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 endif()

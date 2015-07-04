@@ -1,5 +1,5 @@
 // Scintilla source code edit control
-/** @file KeyWords.cxx
+/** @file Catalogue.cxx
  ** Colourise for particular languages.
  **/
 // Copyright 1998-2002 by Neil Hodgson <neilh@scintilla.org>
@@ -7,10 +7,10 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include <vector>
 
@@ -60,11 +60,6 @@ void Catalogue::AddLexerModule(LexerModule *plm) {
 	lexerCatalogue.push_back(plm);
 }
 
-// Alternative historical name for Scintilla_LinkLexers
-int wxForceScintillaLexers(void) {
-	return Scintilla_LinkLexers();
-}
-
 // To add or remove a lexer, add or remove its file and run LexGen.py.
 
 // Force a reference to all of the Scintilla lexers so that the linker will
@@ -79,9 +74,9 @@ int Scintilla_LinkLexers() {
 // Shorten the code that declares a lexer and ensures it is linked in by calling a method.
 #define LINK_LEXER(lexer) extern LexerModule lexer; Catalogue::AddLexerModule(&lexer);
 
+	LINK_LEXER(lmHTML);
 	LINK_LEXER(lmNull);
 	LINK_LEXER(lmProps);
-	LINK_LEXER(lmHTML);
 	LINK_LEXER(lmPython);
 	LINK_LEXER(lmXML);
 

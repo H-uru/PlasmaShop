@@ -1,23 +1,18 @@
 // This defines the interface to the QsciLexer class.
 //
-// Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2015 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
-// This file may be used under the terms of the GNU General Public
-// License versions 2.0 or 3.0 as published by the Free Software
-// Foundation and appearing in the files LICENSE.GPL2 and LICENSE.GPL3
-// included in the packaging of this file.  Alternatively you may (at
-// your option) use any later version of the GNU General Public
-// License if such license has been publicly approved by Riverbank
-// Computing Limited (or its successors, if any) and the KDE Free Qt
-// Foundation. In addition, as a special exception, Riverbank gives you
-// certain additional rights. These rights are described in the Riverbank
-// GPL Exception version 1.1, which can be found in the file
-// GPL_EXCEPTION.txt in this package.
+// This file may be used under the terms of the GNU General Public License
+// version 3.0 as published by the Free Software Foundation and appearing in
+// the file LICENSE included in the packaging of this file.  Please review the
+// following information to ensure the GNU General Public License version 3.0
+// requirements will be met: http://www.gnu.org/copyleft/gpl.html.
 // 
-// If you are unsure which license is appropriate for your use, please
-// contact the sales department at sales@riverbankcomputing.com.
+// If you do not wish to use this file under the terms of the GPL version 3.0
+// then you may purchase a commercial license.  For more information contact
+// info@riverbankcomputing.com.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -30,11 +25,11 @@
 extern "C++" {
 #endif
 
-#include <qcolor.h>
-#include <qfont.h>
-#include <qmap.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <QColor>
+#include <QFont>
+#include <QMap>
+#include <QObject>
+#include <QString>
 
 #include <QsciPS3/qsciglobal.h>
 
@@ -172,8 +167,9 @@ public:
     //! most lexers.
     virtual int defaultStyle() const;
 
-    //! Returns the descriptive name for style number \a style.  If the
-    //! style is invalid for this language then an empty QString is returned.
+    //! Returns the descriptive name for style number \a style.  For a valid
+    //! style number for this language a non-empty QString must be returned.
+    //! If the style number is invalid then an empty QString must be returned.
     //! This is intended to be used in user preference dialogs.
     virtual QString description(int style) const = 0;
 

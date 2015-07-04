@@ -1,23 +1,18 @@
 // This module implements the QsciCommandSet class.
 //
-// Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2015 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
-// This file may be used under the terms of the GNU General Public
-// License versions 2.0 or 3.0 as published by the Free Software
-// Foundation and appearing in the files LICENSE.GPL2 and LICENSE.GPL3
-// included in the packaging of this file.  Alternatively you may (at
-// your option) use any later version of the GNU General Public
-// License if such license has been publicly approved by Riverbank
-// Computing Limited (or its successors, if any) and the KDE Free Qt
-// Foundation. In addition, as a special exception, Riverbank gives you
-// certain additional rights. These rights are described in the Riverbank
-// GPL Exception version 1.1, which can be found in the file
-// GPL_EXCEPTION.txt in this package.
+// This file may be used under the terms of the GNU General Public License
+// version 3.0 as published by the Free Software Foundation and appearing in
+// the file LICENSE included in the packaging of this file.  Please review the
+// following information to ensure the GNU General Public License version 3.0
+// requirements will be met: http://www.gnu.org/copyleft/gpl.html.
 // 
-// If you are unsure which license is appropriate for your use, please
-// contact the sales department at sales@riverbankcomputing.com.
+// If you do not wish to use this file under the terms of the GPL version 3.0
+// then you may purchase a commercial license.  For more information contact
+// info@riverbankcomputing.com.
 // 
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -25,7 +20,7 @@
 
 #include "QsciPS3/qscicommandset.h"
 
-#include <qsettings.h>
+#include <QSettings>
 
 #include "QsciPS3/qscicommand.h"
 #include "QsciPS3/qsciscintilla.h"
@@ -35,7 +30,7 @@
 // Starting with QScintilla v2.7 the standard OS/X keyboard shortcuts are used
 // where possible.  In order to restore the behaviour of earlier versions then
 // #define DONT_USE_OSX_KEYS here or add it to the qmake project (.pro) file.
-#if defined(Q_WS_MAC) && !defined(DONT_USE_OSX_KEYS)
+#if defined(Q_OS_MAC) && !defined(DONT_USE_OSX_KEYS)
 #define USING_OSX_KEYS
 #else
 #undef  USING_OSX_KEYS
