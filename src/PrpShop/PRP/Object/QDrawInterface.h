@@ -20,6 +20,7 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Object/plDrawInterface.h>
+#include <PRP/Geometry/plIcicle.h>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QComboBox>
