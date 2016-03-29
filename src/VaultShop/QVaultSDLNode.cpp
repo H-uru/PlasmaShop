@@ -204,7 +204,7 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
 
     hsRAMStream S;
     S.copyFrom(blob.getData(), blob.getSize());
-    plString name;
+    ST::string name;
     int version;
     plStateDataRecord::ReadStreamHeader(&S, name, version, NULL);
     return ~name;
@@ -274,8 +274,8 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
     rec->setDescriptor(desc);
     rec->read(&S, fResMgr);
     if (S.size() != S.pos()) {
-        plDebug::Debug("[%s] SDL size-read difference: %d",
-                       fSDLName.cstr(), S.size() - S.pos());
+        plDebug::Debug("[{}] SDL size-read difference: {}",
+                       fSDLName, S.size() - S.pos());
     }
     setRecord(rec, true);
 }
@@ -752,7 +752,7 @@ plVaultNode QVaultSDLNode::saveNode()
     try {
         sdl->setSDLData(fSDLEditor->saveBlob());
     } catch (hsException& ex) {
-        plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+        plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("Error saving SDL data"),
                            QMessageBox::Ok, this);
@@ -773,7 +773,7 @@ void QVaultSDLNode::IRefreshNode()
     try {
         fSDLEditor->loadBlob(sdl->getSDLData());
     } catch (hsException& ex) {
-        plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+        plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("Error loading SDL data"),
                            QMessageBox::Ok, this);

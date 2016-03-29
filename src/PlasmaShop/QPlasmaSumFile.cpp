@@ -214,7 +214,7 @@ bool QPlasmaSumFile::loadSumData(hsStream* S)
         try {
             fSumData.read(S);
         } catch (std::exception &e) {
-            plDebug::Error("Error reading SUM file %s: %s", fFilename.toUtf8().data(), e.what());
+            plDebug::Error("Error reading SUM file {}: {}", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -238,7 +238,7 @@ bool QPlasmaSumFile::saveSumData(hsStream* S)
     try {
         fSumData.write(S);
     } catch (std::exception &e) {
-        plDebug::Error("Error writing SUM file %s: %s", fFilename.toUtf8().data(), e.what());
+        plDebug::Error("Error writing SUM file {}: {}", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;
@@ -339,7 +339,7 @@ void QPlasmaSumFile::onUpdate()
     if (!dir.isEmpty()) {
         std::vector<SumData::Entry>::iterator iter;
         for (iter = fSumData.fEntries.begin(); iter != fSumData.fEntries.end(); ++iter) {
-            QString path = iter->fPath.cstr();
+            QString path = ~iter->fPath;
             path.replace('\\', QDir::separator()).replace('/', QDir::separator());
             path = dir + QDir::separator() + QFileInfo(path).fileName();
             if (QFileInfo(path).exists())

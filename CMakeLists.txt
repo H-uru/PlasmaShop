@@ -2,6 +2,7 @@ project(PlasmaShop)
 cmake_minimum_required(VERSION 2.8.11.2)
 
 find_package(HSPlasma REQUIRED)
+find_package(string_theory REQUIRED)
 
 option(PlasmaShop_FORCE_QT4 "Force Qt4 build even if Qt5 can be found" OFF)
 if(NOT PlasmaShop_FORCE_QT4)
@@ -70,6 +71,8 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
     endif()
 endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
+
+include_directories(${STRING_THEORY_INCLUDE_DIRS})
 
 add_subdirectory(src/PlasmaShop)
 add_subdirectory(src/PrpShop)

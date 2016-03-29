@@ -113,7 +113,7 @@ void QGUIDialogMod::saveDamage()
 
     dlg->setFlag(pfGUIDialogMod::kModal, fModFlagModal->isChecked());
     fColorScheme->saveColorScheme(&dlg->getColorScheme());
-    dlg->setName(~fName->text());
+    dlg->setName(fName->text().toUtf8().constData());
     dlg->setTagID(fTagID->value());
     dlg->setVersion(fVersion->value());
 

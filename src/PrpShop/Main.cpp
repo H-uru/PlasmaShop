@@ -816,8 +816,8 @@ void PrpShopMain::loadFile(QString filename)
                 if (QFile::exists(prp)) {
                     loadPage(fResMgr.FindPage(age->getPageLoc(i, fResMgr.getVer())), prp);
                 } else {
-                    plDebug::Warning("Could not find page %s referenced from %s",
-                                     age->getPageFilename(i, fResMgr.getVer()).cstr(),
+                    plDebug::Warning("Could not find page {} referenced from {}",
+                                     age->getPageFilename(i, fResMgr.getVer()),
                                      filename.toUtf8().data());
                 }
             }
@@ -1179,7 +1179,7 @@ int main(int argc, char* argv[])
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PrpShop.log";
-    plDebug::InitFile(plDebug::kDLAll, ~logpath);
+    plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
     PrpShopMain mainWnd;

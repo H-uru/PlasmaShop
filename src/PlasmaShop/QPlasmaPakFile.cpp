@@ -115,7 +115,7 @@ void PlasmaPackage::write(hsStream* S)
         uint32_t off_accum = S->pos();
         for (size_t i=0; i<fEntries.size(); i++) {
             // SafeString header + offset
-            off_accum += 6 + fEntries[i].fName.len();
+            off_accum += 6 + fEntries[i].fName.size();
         }
         for (size_t i=0; i<fEntries.size(); i++) {
             fEntries[i].fOffset = off_accum;
@@ -138,7 +138,7 @@ void PlasmaPackage::write(hsStream* S)
 
         for (size_t i=0; i<fEntries.size(); i++) {
             if (fType == kCursorsDat) {
-                S->writeInt(fEntries[i].fName.len());
+                S->writeInt(fEntries[i].fName.size());
                 S->writeStr(fEntries[i].fName);
                 S->writeInt(fEntries[i].fData.getSize());
                 S->write(fEntries[i].fData.getSize(), fEntries[i].fData.getData());
@@ -361,7 +361,7 @@ bool QPlasmaPakFile::loadPakData(hsStream* S)
         try {
             fPackage.read(S);
         } catch (std::exception &e) {
-            plDebug::Error("Error reading Package file %s: %s", fFilename.toUtf8().data(), e.what());
+            plDebug::Error("Error reading Package file {}: {}", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -381,7 +381,7 @@ bool QPlasmaPakFile::savePakData(hsStream* S)
     try {
         fPackage.write(S);
     } catch (std::exception &e) {
-        plDebug::Error("Error writing package file %s: %s", fFilename.toUtf8().data(), e.what());
+        plDebug::Error("Error writing package file {}: {}", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;

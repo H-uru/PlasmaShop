@@ -26,7 +26,7 @@
 
 struct SumData {
     struct Entry {
-        plString fPath;
+        ST::string fPath;
         plMD5Hash fHash;
         time_t fTimestamp;
         unsigned int fUnknown;

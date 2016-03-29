@@ -485,7 +485,7 @@ QString GetNodeDisplay(const plVaultNode& node)
 QString GetFolderName(const plVaultNode& node)
 {
     plVaultFolderNode* folder = node.upcastToFolderNode();
-    if (!folder->getFolderName().empty())
+    if (!folder->getFolderName().is_empty())
         return ~folder->getFolderName();
 
     switch (folder->getFolderType()) {

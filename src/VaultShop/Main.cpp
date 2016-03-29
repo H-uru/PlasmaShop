@@ -59,7 +59,7 @@ VaultShopMain::VaultInfo::VaultInfo(QString filename)
              : fVaultFile(filename), fRootItem(NULL)
 {
     fVault = new plVaultStore();
-    fVault->ImportFile(~filename);
+    fVault->ImportFile(filename.toUtf8().constData());
 }
 
 VaultShopMain::VaultInfo::~VaultInfo()
@@ -70,7 +70,7 @@ VaultShopMain::VaultInfo::~VaultInfo()
 
 void VaultShopMain::VaultInfo::save()
 {
-    fVault->ExportFile(~fVaultFile);
+    fVault->ExportFile(fVaultFile.toUtf8().constData());
 }
 
 
@@ -80,7 +80,7 @@ VaultShopMain::SaveInfo::SaveInfo(QString filename)
 {
     fSave = new plNetGameServerState();
     hsFileStream FS(PlasmaVer::pvPots);
-    FS.open(fSaveFile.toUtf8(), fmRead);
+    FS.open(~fSaveFile, fmRead);
     fSave->read(&FS);
 }
 
@@ -92,7 +92,7 @@ VaultShopMain::SaveInfo::~SaveInfo()
 void VaultShopMain::SaveInfo::save()
 {
     hsFileStream FS(PlasmaVer::pvPots);
-    FS.open(fSaveFile.toUtf8(), fmCreate);
+    FS.open(~fSaveFile, fmCreate);
     fSave->write(&FS);
 }
 
@@ -415,7 +415,7 @@ void VaultShopMain::loadGame(QString path)
                                     tr("Error loading vault %1: %2")
                                     .arg(*it).arg(ex.what()),
                                     QMessageBox::Ok, this);
-                plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+                plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
                 msgBox.exec();
             }
         }
@@ -436,7 +436,7 @@ void VaultShopMain::loadGame(QString path)
                                     tr("Error parsing %1: %2")
                                     .arg(*it).arg(ex.what()),
                                     QMessageBox::Ok, this);
-                plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+                plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
                 msgBox.exec();
             }
         }
@@ -767,7 +767,7 @@ int main(int argc, char* argv[])
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/VaultShop.log";
-    plDebug::InitFile(plDebug::kDLAll, ~logpath);
+    plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
     VaultShopMain mainWnd;

@@ -460,7 +460,7 @@ void QPlasmaRender::compileTexture(plKey lay, size_t id)
     }
 
     if (!layTex.Exists() || !layTex.isLoaded()) {
-        plDebug::Warning("Layer %s not loaded", layTex.toString().cstr());
+        plDebug::Warning("Layer {} not loaded", layTex.toString());
         fLayers[lay].fTexNameId = 0;
         return;
     }
@@ -489,8 +489,8 @@ void QPlasmaRender::compileTexture(plKey lay, size_t id)
         if (!buildMipmap(envMap->getFace(5), fTexList[id], GL_TEXTURE_CUBE_MAP_NEGATIVE_Z))
             fLayers[lay].fTexNameId = 0;
     } else if (layTex.Exists()) {
-        plDebug::Debug("Got unrecognized texture type for %s",
-                       layTex.toString().cstr());
+        plDebug::Debug("Got unrecognized texture type for {}",
+                       layTex.toString());
     }
 }
 

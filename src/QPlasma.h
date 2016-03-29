@@ -18,7 +18,7 @@
 #define _QPLASMA_H
 
 #include <QString>
-#include <Util/plString.h>
+#include <string_theory/string>
 #include <PRP/KeyedObject/plLocation.h>
 
 // Use consistent APIs and macros between Qt4 and Qt5
@@ -55,11 +55,14 @@
 #endif
 
 // Shorthand Plasma-Qt string conversion
-inline QString operator~(const plString& str)
-{ return QString::fromUtf8(str.cstr()); }
+inline QString operator~(const ST::string& str)
+{ return QString::fromUtf8(str.c_str()); }
 
-inline plString operator~(const QString& str)
-{ return plString(str.toUtf8().constData()); }
+inline ST::string operator~(const QString& str)
+{
+    QByteArray utf8 = str.toUtf8();
+    return ST::string::from_utf8(utf8.constData(), utf8.size(), ST::assume_valid);
+}
 
 // qHash functions for QHashMaps
 inline unsigned int qHash(const plLocation& loc)

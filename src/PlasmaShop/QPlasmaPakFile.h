@@ -68,7 +68,7 @@ struct PlasmaPackage {
     };
 
     struct FileEntry {
-        plString fName;
+        ST::string fName;
         uint32_t fOffset;
         FileBlob fData;
         plFont fFontData;
