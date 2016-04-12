@@ -40,23 +40,30 @@ QCreatableLink::QCreatableLink(QWidget* parent, bool canEdit)
         layout->addWidget(fEditLabel);
     }
 
-    setCreatable(NULL);
+    fCreatable = NULL;
+    fObjLabel->setEnabled(false);
 }
 
-void QCreatableLink::setCreatable(plCreatable* pCre)
+void QCreatableLink::setCreatable(plCreatable* pCre, const QString& text)
 {
     fCreatable = pCre;
     fObjLabel->setEnabled(fCreatable != NULL);
+    if (!text.isEmpty())
+        setText(text);
 }
 
-void QCreatableLink::setKey(plKey key)
+void QCreatableLink::setKey(plKey key, bool updateText)
 {
     if (key.Exists()) {
         fCreatable = key.isLoaded() ? key->getObj() : NULL;
         fObjLabel->setEnabled(true);
+        if (updateText)
+            setText(st2qstr(key->getName()));
     } else {
         fCreatable = NULL;
         fObjLabel->setEnabled(false);
+        if (updateText)
+            setText("(None)");
     }
 }
 

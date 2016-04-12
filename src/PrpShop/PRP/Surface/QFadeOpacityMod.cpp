@@ -28,8 +28,7 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
     plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(mod);
+    fSynchObjLink->setCreatable(mod, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);

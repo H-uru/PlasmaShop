@@ -27,8 +27,7 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
     plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fReceivers = new QKeyList(obj->getKey(), this);
@@ -37,15 +36,9 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
 
     fRemoteMod = new QCreatableLink(this);
     fRemoteMod->setKey(obj->getRemoteMod());
-    fRemoteMod->setText(obj->getRemoteMod().Exists()
-                        ? ~obj->getRemoteMod()->getName()
-                        : "(None)");
 
     fProxy = new QCreatableLink(this);
     fProxy->setKey(obj->getProxy());
-    fProxy->setText(obj->getProxy().Exists()
-                      ? ~obj->getProxy()->getName()
-                      : "(None)");
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -85,7 +78,6 @@ void QDetectorModifier::setRemoteMod()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setRemoteMod(dlg.selection());
         fRemoteMod->setKey(obj->getRemoteMod());
-        fRemoteMod->setText(~obj->getRemoteMod()->getName());
     }
 }
 
@@ -100,7 +92,6 @@ void QDetectorModifier::setProxy()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setProxy(dlg.selection());
         fProxy->setKey(obj->getProxy());
-        fProxy->setText(~obj->getProxy()->getName());
     }
 }
 
@@ -108,14 +99,12 @@ void QDetectorModifier::unsetRemoteMod()
 {
     plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     obj->setRemoteMod(plKey());
-    fRemoteMod->setCreatable(NULL);
-    fRemoteMod->setText("(None)");
+    fRemoteMod->setCreatable(NULL, "(None)");
 }
 
 void QDetectorModifier::unsetProxy()
 {
     plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
     obj->setProxy(plKey());
-    fProxy->setCreatable(NULL);
-    fProxy->setText("(None)");
+    fProxy->setCreatable(NULL, "(None)");
 }

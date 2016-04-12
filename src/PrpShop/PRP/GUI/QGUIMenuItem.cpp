@@ -26,8 +26,7 @@ QGUIMenuItem::QGUIMenuItem(plCreatable* pCre, QWidget* parent)
     pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
 
     fButtonModLink = new QCreatableLink(this, false);
-    fButtonModLink->setText(tr("GUI Button Common Properties"));
-    fButtonModLink->setCreatable(ctrl);
+    fButtonModLink->setCreatable(ctrl, tr("GUI Button Common Properties"));
     fButtonModLink->setForceType(kGUIButtonMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);

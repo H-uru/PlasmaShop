@@ -80,7 +80,7 @@ VaultShopMain::SaveInfo::SaveInfo(QString filename)
 {
     fSave = new plNetGameServerState();
     hsFileStream FS(PlasmaVer::pvPots);
-    FS.open(~fSaveFile, fmRead);
+    FS.open(qstr2st(fSaveFile), fmRead);
     fSave->read(&FS);
 }
 
@@ -92,7 +92,7 @@ VaultShopMain::SaveInfo::~SaveInfo()
 void VaultShopMain::SaveInfo::save()
 {
     hsFileStream FS(PlasmaVer::pvPots);
-    FS.open(~fSaveFile, fmCreate);
+    FS.open(qstr2st(fSaveFile), fmCreate);
     fSave->write(&FS);
 }
 
@@ -430,7 +430,7 @@ void VaultShopMain::loadGame(QString path)
             QString sdlPath = path + "/SDL/" + *it;
             try {
                 if (QFile::exists(sdlPath))
-                    fSDLMgr.ReadDescriptors(~sdlPath);
+                    fSDLMgr.ReadDescriptors(qstr2st(sdlPath));
             } catch (hsException ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error parsing %1: %2")

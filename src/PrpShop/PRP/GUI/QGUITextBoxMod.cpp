@@ -45,8 +45,7 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
     pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -62,9 +61,9 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
 
     fText = new QSmallTextEdit(this);
-    fText->setPlainText(~ctrl->getText());
+    fText->setPlainText(st2qstr(ctrl->getText()));
     fLocalizationPath = new QLineEdit(this);
-    fLocalizationPath->setText(~ctrl->getLocalizationPath());
+    fLocalizationPath->setText(st2qstr(ctrl->getLocalizationPath()));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -83,6 +82,6 @@ void QGUITextBoxMod::saveDamage()
     for (size_t i=0; i<kModFlagCount; i++)
         ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
-    ctrl->setText(~fText->toPlainText());
-    ctrl->setLocalizationPath(~fLocalizationPath->text());
+    ctrl->setText(qstr2st(fText->toPlainText()));
+    ctrl->setLocalizationPath(qstr2st(fLocalizationPath->text()));
 }

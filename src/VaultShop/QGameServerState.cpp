@@ -43,7 +43,7 @@ void QGameServerState::loadSav(plNetGameServerState* state)
     int selId = 0;
     for (size_t i=0; i<fState->numRecords(); i++) {
         fObjectSel->addItem(QIcon(":img/sceneobj.png"),
-                            ~fState->getObject(i).getName());
+                            st2qstr(fState->getObject(i).getName()));
 
         // If this is the AgeSDLHook, select it by default
         if (fState->getObject(i).getName() == "AgeSDLHook")

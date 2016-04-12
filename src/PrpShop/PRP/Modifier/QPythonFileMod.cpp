@@ -46,13 +46,13 @@ static QStringList makeParamItem(const plPythonParameter& param)
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle)
-        row << ~param.fStrValue;
+        row << st2qstr(param.fStrValue);
     else if (param.fValueType == plPythonParameter::kNone)
-        row << "(Null)";
+        row << "(None)";
     else if (param.fObjKey.Exists())
-        row << ~param.fObjKey->getName();
+        row << st2qstr(param.fObjKey->getName());
     else
-        row << "(Null)";
+        row << "(None)";
     return row;
 }
 
@@ -142,11 +142,10 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
     plPythonFileMod* mod = plPythonFileMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(mod);
+    fSynchObjLink->setCreatable(mod, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
-    fFileName = new QLineEdit(~mod->getFilename(), this);
+    fFileName = new QLineEdit(st2qstr(mod->getFilename()), this);
 
     fReceivers = new QKeyList(mod->getKey(), this);
     for (size_t i=0; i<mod->getReceivers().size(); i++)
@@ -172,7 +171,7 @@ QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
 void QPythonFileMod::saveDamage()
 {
     plPythonFileMod* mod = plPythonFileMod::Convert(fCreatable);
-    mod->setFilename(~fFileName->text());
+    mod->setFilename(qstr2st(fFileName->text()));
 
     mod->clearReceivers();
     QList<plKey> recs = fReceivers->keys();
@@ -255,15 +254,15 @@ void QPythonParamDialog::init(const plPythonParameter& param)
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle) {
-        fStringValue->setText(~param.fStrValue);
+        fStringValue->setText(st2qstr(param.fStrValue));
     } else if (param.fValueType == plPythonParameter::kNone) {
         // Do nothing
     } else {
         fKey = param.fObjKey;
         if (fKey.Exists())
-            fKeyValue->setText(~fKey->getName());
+            fKeyValue->setText(st2qstr(fKey->getName()));
         else
-            fKeyValue->setText("(Null)");
+            fKeyValue->setText("(None)");
     }
 }
 
@@ -283,7 +282,7 @@ plPythonParameter QPythonParamDialog::parameter() const
              param.fValueType == plPythonParameter::kAnimationName ||
              param.fValueType == plPythonParameter::kGlobalSDLVar ||
              param.fValueType == plPythonParameter::kSubtitle) {
-        param.fStrValue = ~fStringValue->text();
+        param.fStrValue = qstr2st(fStringValue->text());
     } else if (param.fValueType == plPythonParameter::kNone) {
         // Do nothing
     } else {
@@ -298,7 +297,7 @@ void QPythonParamDialog::selectKey()
     dlg.init(PrpShopMain::ResManager(), fKey);
     if (dlg.exec() == QDialog::Accepted) {
         fKey = dlg.selection();
-        fKeyValue->setText(~fKey->getName());
+        fKeyValue->setText(st2qstr(fKey->getName()));
     }
 }
 

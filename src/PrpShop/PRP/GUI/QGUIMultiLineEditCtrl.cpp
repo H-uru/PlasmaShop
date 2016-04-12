@@ -27,15 +27,11 @@ QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)
     pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     fScrollCtrl = new QCreatableLink(this);
     fScrollCtrl->setKey(ctrl->getScrollCtrl());
-    fScrollCtrl->setText(ctrl->getScrollCtrl().Exists()
-                           ? ~ctrl->getScrollCtrl()->getName()
-                           : "(None)");
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -58,7 +54,6 @@ void QGUIMultiLineEditCtrl::setScrollCtrl()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setScrollCtrl(dlg.selection());
         fScrollCtrl->setKey(ctrl->getScrollCtrl());
-        fScrollCtrl->setText(~ctrl->getScrollCtrl()->getName());
     }
 }
 
@@ -66,6 +61,5 @@ void QGUIMultiLineEditCtrl::unsetScrollCtrl()
 {
     pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
     ctrl->setScrollCtrl(plKey());
-    fScrollCtrl->setCreatable(NULL);
-    fScrollCtrl->setText("(None)");
+    fScrollCtrl->setCreatable(NULL, "(None)");
 }

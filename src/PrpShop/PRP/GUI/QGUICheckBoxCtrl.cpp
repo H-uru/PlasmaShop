@@ -24,12 +24,11 @@ QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
     pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     fAnimName = new QLineEdit(this);
-    fAnimName->setText(~ctrl->getAnimName());
+    fAnimName->setText(st2qstr(ctrl->getAnimName()));
     fAnimationKeys = new QKeyList(ctrl->getKey(), this);
     for (size_t i=0; i<ctrl->getAnimKeys().size(); i++)
         fAnimationKeys->addKey(ctrl->getAnimKeys()[i]);
@@ -52,7 +51,7 @@ void QGUICheckBoxCtrl::saveDamage()
 {
     pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
 
-    ctrl->setAnimName(~fAnimName->text());
+    ctrl->setAnimName(qstr2st(fAnimName->text()));
     ctrl->clearAnimKeys();
     QList<plKey> animKeys = fAnimationKeys->keys();
     while (!animKeys.isEmpty())

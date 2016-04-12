@@ -26,8 +26,7 @@ QGUIDraggableMod::QGUIDraggableMod(plCreatable* pCre, QWidget* parent)
     pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);

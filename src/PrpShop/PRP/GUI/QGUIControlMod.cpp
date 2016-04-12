@@ -86,7 +86,7 @@ void QGUIColorScheme::setColorScheme(pfGUIColorScheme* scheme)
         fSelForeColor->setColor(scheme->getSelForeColor());
         fSelBackColor->setColor(scheme->getSelBackColor());
         fTransparent->setChecked(scheme->getTransparent() != 0);
-        fFontFace->setText(~scheme->getFontFace());
+        fFontFace->setText(st2qstr(scheme->getFontFace()));
         fFontSize->setValue(scheme->getFontSize());
         fFontFlags[kCBBold]->setChecked((scheme->getFontFlags() & pfGUIColorScheme::kFontBold) != 0);
         fFontFlags[kCBItalic]->setChecked((scheme->getFontFlags() & pfGUIColorScheme::kFontItalic) != 0);
@@ -101,7 +101,7 @@ void QGUIColorScheme::saveColorScheme(pfGUIColorScheme* scheme)
     scheme->setSelForeColor(fSelForeColor->color());
     scheme->setSelBackColor(fSelBackColor->color());
     scheme->setTransparent(fTransparent->isChecked() ? 1 : 0);
-    scheme->setFontFace(~fFontFace->text());
+    scheme->setFontFace(qstr2st(fFontFace->text()));
     scheme->setFontSize(fFontSize->value());
     scheme->setFontFlags((fFontFlags[kCBBold]->isChecked() ? pfGUIColorScheme::kFontBold : 0)
                        | (fFontFlags[kCBItalic]->isChecked() ? pfGUIColorScheme::kFontItalic : 0)
@@ -116,8 +116,7 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(ctrl);
+    fSynchObjLink->setCreatable(ctrl, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -155,27 +154,15 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
 
     fDynTextMap = new QCreatableLink(this);
     fDynTextMap->setKey(ctrl->getDynTextMap());
-    fDynTextMap->setText(ctrl->getDynTextMap().Exists()
-                           ? ~ctrl->getDynTextMap()->getName()
-                           : "(None)");
 
     fDynTextLayer = new QCreatableLink(this);
     fDynTextLayer->setKey(ctrl->getDynTextLayer());
-    fDynTextLayer->setText(ctrl->getDynTextLayer().Exists()
-                           ? ~ctrl->getDynTextLayer()->getName()
-                           : "(None)");
 
     fProxy = new QCreatableLink(this);
     fProxy->setKey(ctrl->getProxy());
-    fProxy->setText(ctrl->getProxy().Exists()
-                    ? ~ctrl->getProxy()->getName()
-                    : "(None)");
 
     fSkin = new QCreatableLink(this);
     fSkin->setKey(ctrl->getSkin());
-    fSkin->setText(ctrl->getSkin().Exists()
-                   ? ~ctrl->getSkin()->getName()
-                   : "(None)");
 
     QTabWidget* xTabs = new QTabWidget(this);
     QWidget* guiProcTab = new QWidget(xTabs);
@@ -194,7 +181,7 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     if (ctrl->getHandler() != NULL) {
         fProcType->setCurrentIndex(ctrl->getHandler()->getType());
         if (ctrl->getHandler()->getType() == pfGUICtrlProcWriteableObject::kConsoleCmd)
-            fProcCommand->setText(~((pfGUIConsoleCmdProc*)ctrl->getHandler())->getCommand());
+            fProcCommand->setText(st2qstr(((pfGUIConsoleCmdProc*)ctrl->getHandler())->getCommand()));
     }
     setProcType(fProcType->currentIndex());
     QGridLayout* guiProcLayout = new QGridLayout(guiProcTab);
@@ -260,7 +247,7 @@ void QGUIControlMod::saveDamage()
         ctrl->setHandler(NULL);
     } else if (fProcType->currentIndex() == pfGUICtrlProcWriteableObject::kConsoleCmd) {
         pfGUIConsoleCmdProc* proc = new pfGUIConsoleCmdProc();
-        proc->setCommand(~fProcCommand->text());
+        proc->setCommand(qstr2st(fProcCommand->text()));
         ctrl->setHandler(proc);
     } else if (fProcType->currentIndex() == pfGUICtrlProcWriteableObject::kPythonScript) {
         ctrl->setHandler(new pfGUIPythonScriptProc());
@@ -286,7 +273,6 @@ void QGUIControlMod::setDynTextMap()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setDynTextMap(dlg.selection());
         fDynTextMap->setKey(ctrl->getDynTextMap());
-        fDynTextMap->setText(~ctrl->getDynTextMap()->getName());
     }
 }
 
@@ -301,7 +287,6 @@ void QGUIControlMod::setDynTextLayer()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setDynTextLayer(dlg.selection());
         fDynTextLayer->setKey(ctrl->getDynTextLayer());
-        fDynTextLayer->setText(~ctrl->getDynTextLayer()->getName());
     }
 }
 
@@ -316,7 +301,6 @@ void QGUIControlMod::setProxy()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setProxy(dlg.selection());
         fProxy->setKey(ctrl->getProxy());
-        fProxy->setText(~ctrl->getProxy()->getName());
     }
 }
 
@@ -331,7 +315,6 @@ void QGUIControlMod::setSkin()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setSkin(dlg.selection());
         fSkin->setKey(ctrl->getSkin());
-        fSkin->setText(~ctrl->getSkin()->getName());
     }
 }
 
@@ -339,32 +322,28 @@ void QGUIControlMod::unsetDynTextMap()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setDynTextMap(plKey());
-    fDynTextMap->setCreatable(NULL);
-    fDynTextMap->setText("(None)");
+    fDynTextMap->setCreatable(NULL, "(None)");
 }
 
 void QGUIControlMod::unsetDynTextLayer()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setDynTextLayer(plKey());
-    fDynTextLayer->setCreatable(NULL);
-    fDynTextLayer->setText("(None)");
+    fDynTextLayer->setCreatable(NULL, "(None)");
 }
 
 void QGUIControlMod::unsetProxy()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setProxy(plKey());
-    fProxy->setCreatable(NULL);
-    fProxy->setText("(None)");
+    fProxy->setCreatable(NULL, "(None)");
 }
 
 void QGUIControlMod::unsetSkin()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
     ctrl->setSkin(plKey());
-    fSkin->setCreatable(NULL);
-    fSkin->setText("(None)");
+    fSkin->setCreatable(NULL, "(None)");
 }
 
 void QGUIControlMod::setProcType(int typeIdx)

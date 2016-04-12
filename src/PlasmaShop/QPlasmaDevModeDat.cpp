@@ -162,10 +162,10 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             fRecordLabels[kDevMRecordVersion]->setText(QString::number(record.getVersion()));
             fRecordLabels[kDevMFlags]->setText(getFlagName(record.getFlags()));
             fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(record.getDeviceType()));
-            fRecordLabels[kDevMDriverDesc]->setText(~record.getDriverDesc());
-            fRecordLabels[kDevMDriverName]->setText(~record.getDriverName());
-            fRecordLabels[kDevMDriverVersion]->setText(~record.getDriverVersion());
-            fRecordLabels[kDevMDeviceDesc]->setText(~record.getDeviceDesc());
+            fRecordLabels[kDevMDriverDesc]->setText(st2qstr(record.getDriverDesc()));
+            fRecordLabels[kDevMDriverName]->setText(st2qstr(record.getDriverName()));
+            fRecordLabels[kDevMDriverVersion]->setText(st2qstr(record.getDriverVersion()));
+            fRecordLabels[kDevMDeviceDesc]->setText(st2qstr(record.getDeviceDesc()));
             fRecordLabels[kDevMLayersAtOnce]->setText(QString::number(record.getLayersAtOnce()));
             QString recordMemBytes = QString::number(record.getMemoryBytes());
             QString recordMemBytesMB = QString::number(record.getMemoryBytes() / 1024 / 1024);

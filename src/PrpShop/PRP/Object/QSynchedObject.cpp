@@ -63,9 +63,9 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     sdlTab->addTab(fVolatileList, tr("SDL Volatiles"));
 
     for (size_t i=0; i<obj->getExcludes().size(); i++)
-        fExcludeList->addString(~obj->getExcludes()[i]);
+        fExcludeList->addString(st2qstr(obj->getExcludes()[i]));
     for (size_t i=0; i<obj->getVolatiles().size(); i++)
-        fVolatileList->addString(~obj->getVolatiles()[i]);
+        fVolatileList->addString(st2qstr(obj->getVolatiles()[i]));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -91,7 +91,7 @@ void QSynchedObject::saveDamage()
     QStringList volatiles = fVolatileList->strings();
     QStringList::Iterator it;
     for (it = excludes.begin(); it != excludes.end(); it++)
-        obj->setExclude(~(*it));
+        obj->setExclude(qstr2st(*it));
     for (it = volatiles.begin(); it != volatiles.end(); it++)
-        obj->setVolatile(~(*it));
+        obj->setVolatile(qstr2st(*it));
 }

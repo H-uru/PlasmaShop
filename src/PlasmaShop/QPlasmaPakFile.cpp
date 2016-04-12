@@ -155,15 +155,15 @@ void PlasmaPackage::addFrom(QString filename)
     FileEntry add;
 
     hsFileStream S;
-    S.open(~QDir::toNativeSeparators(filename), fmRead);
+    S.open(qstr2st(QDir::toNativeSeparators(filename)), fmRead);
 
     if (fType == kFontsPfp) {
         add.fFontData.readP2F(&S);
     } else {
         if (fType == kPythonPak) // TODO: compile py to pyc
-            add.fName = ~finfo.fileName().replace(".pyc", ".py");
+            add.fName = qstr2st(finfo.fileName()).replace(".pyc", ".py");
         else
-            add.fName = ~finfo.fileName();
+            add.fName = qstr2st(finfo.fileName());
 
         uint8_t* data = new uint8_t[S.size()];
         S.read(S.size(), data);
@@ -220,10 +220,10 @@ void PlasmaPackage::writeToFile(const FileEntry& ent, QString filename)
 QString PlasmaPackage::displayName(const FileEntry& ent) const
 {
     if (fType == kFontsPfp) {
-        return QString("%1-%2.p2f").arg(~ent.fFontData.getName())
-                                   .arg(ent.fFontData.getSize());
+        return st2qstr(ST::format("{}-{}.p2f", ent.fFontData.getName(),
+                                  ent.fFontData.getSize()));
     } else {
-        return ~ent.fName;
+        return st2qstr(ent.fName);
     }
 }
 

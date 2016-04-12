@@ -42,8 +42,8 @@ QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
         fSoundKeys->addKey(obj->getSounds()[i]);
 
     fSceneNode = new QCreatableLink(this);
+    fSceneNode->setKey(obj->getSceneNode(), false);
     fSceneNode->setText(tr("Scene Node"));
-    fSceneNode->setKey(obj->getSceneNode());
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -76,7 +76,7 @@ void QWinAudible::setSceneNode()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kSceneNode);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setSceneNode(dlg.selection());
-        fSceneNode->setKey(obj->getSceneNode());
+        fSceneNode->setKey(obj->getSceneNode(), false);
     }
 }
 

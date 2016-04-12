@@ -29,17 +29,16 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
+    fOwnerLink->setKey(intf->getOwner(), false);
     fOwnerLink->setText(tr("Owner Object"));
-    fOwnerLink->setKey(intf->getOwner());
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(intf);
+    fSynchObjLink->setCreatable(intf, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fParentLink = new QCreatableLink(this, false);
+    fParentLink->setKey(intf->getParent(), false);
     fParentLink->setText(tr("Parent Interface"));
-    fParentLink->setKey(intf->getParent());
 
     QGroupBox* grpProps = new QGroupBox(tr("Coordinate Interface Properties"), this);
     QGridLayout* layProps = new QGridLayout(grpProps);
@@ -115,7 +114,7 @@ void QCoordinateInterface::setOwner()
         dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
     if (dlg.exec() == QDialog::Accepted) {
         intf->setOwner(dlg.selection());
-        fOwnerLink->setKey(intf->getOwner());
+        fOwnerLink->setKey(intf->getOwner(), false);
     }
 }
 

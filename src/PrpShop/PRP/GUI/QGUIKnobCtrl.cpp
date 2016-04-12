@@ -26,8 +26,7 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
     pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -59,7 +58,7 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
     fStep->setValue(ctrl->getStep());
 
     fAnimName = new QLineEdit(this);
-    fAnimName->setText(~ctrl->getAnimName());
+    fAnimName->setText(st2qstr(ctrl->getAnimName()));
     fAnimationKeys = new QKeyList(ctrl->getKey(), this);
     for (size_t i=0; i<ctrl->getAnimationKeys().size(); i++)
         fAnimationKeys->addKey(ctrl->getAnimationKeys()[i]);
@@ -114,7 +113,7 @@ void QGUIKnobCtrl::saveDamage()
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());
 
-    ctrl->setAnimName(~fAnimName->text());
+    ctrl->setAnimName(qstr2st(fAnimName->text()));
     ctrl->clearAnimationKeys();
     QList<plKey> animKeys = fAnimationKeys->keys();
     while (!animKeys.isEmpty())

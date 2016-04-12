@@ -26,7 +26,7 @@ QPlasmaTreeItem::QPlasmaTreeItem()
 QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
     : QTreeWidgetItem(kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getName());
+    setText(0, st2qstr(obj->getName()));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
@@ -41,7 +41,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
 QPlasmaTreeItem::QPlasmaTreeItem(plPageInfo* page)
     : QTreeWidgetItem(kTypePage), fPage(page)
 {
-    setText(0, ~page->getPage());
+    setText(0, st2qstr(page->getPage()));
     setIcon(0, QIcon(":/img/page.png"));
 }
 
@@ -54,7 +54,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
     : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getName());
+    setText(0, st2qstr(obj->getName()));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
@@ -69,7 +69,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page)
     : QTreeWidgetItem(parent, kTypePage), fPage(page)
 {
-    setText(0, ~page->getPage());
+    setText(0, st2qstr(page->getPage()));
     setIcon(0, QIcon(":/img/page.png"));
 }
 
@@ -82,7 +82,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
     : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, ~obj->getName());
+    setText(0, st2qstr(obj->getName()));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
@@ -97,6 +97,6 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
     : QTreeWidgetItem(parent, kTypePage), fPage(page)
 {
-    setText(0, ~page->getPage());
+    setText(0, st2qstr(page->getPage()));
     setIcon(0, QIcon(":/img/page.png"));
 }

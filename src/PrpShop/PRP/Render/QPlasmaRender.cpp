@@ -426,7 +426,7 @@ bool QPlasmaRender::buildMipmap(plMipmap* map, GLuint id, GLuint target) {
         } catch (hsException& e) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                tr("Error decompressing %1: %2")
-                               .arg(~map->getKey()->getName()).arg(e.what()),
+                               .arg(st2qstr(map->getKey()->getName())).arg(e.what()),
                                QMessageBox::Ok, this);
             msgBox.exec();
             delete[] imgbuf;

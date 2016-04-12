@@ -29,12 +29,11 @@ QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
     plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
+    fOwnerLink->setKey(obj->getOwner(), false);
     fOwnerLink->setText(tr("Owner Object"));
-    fOwnerLink->setKey(obj->getOwner());
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
@@ -111,7 +110,7 @@ void QShadowMaster::setOwner()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kSceneObject);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setOwner(dlg.selection());
-        fOwnerLink->setKey(obj->getOwner());
+        fOwnerLink->setKey(obj->getOwner(), false);
     }
 }
 

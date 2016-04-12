@@ -55,7 +55,7 @@ plVaultNode QVaultTextNode::saveNode()
     if (text == NULL)
         return plVaultNode();
 
-    text->setNoteTitle(~fNoteTitle->text());
+    text->setNoteTitle(qstr2st(fNoteTitle->text()));
     text->setNoteType(fNoteType->currentIndex());
 
     QByteArray contents = fNoteContents->toPlainText().toUtf8();
@@ -72,7 +72,7 @@ void QVaultTextNode::IRefreshNode()
     if (text == NULL)
         return;
 
-    fNoteTitle->setText(~text->getNoteTitle());
+    fNoteTitle->setText(st2qstr(text->getNoteTitle()));
     fNoteType->setCurrentIndex(text->getNoteType());
 
     plVaultBlob blob = text->getNoteContents();

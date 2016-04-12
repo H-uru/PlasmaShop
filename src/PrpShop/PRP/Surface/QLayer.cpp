@@ -30,33 +30,20 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     plLayer* lay = plLayer::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(lay);
+    fSynchObjLink->setCreatable(lay, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fBaseLayer = new QCreatableLink(this);
     fBaseLayer->setKey(lay->getUnderLay());
-    fBaseLayer->setText(lay->getUnderLay().Exists()
-                        ? ~lay->getUnderLay()->getName()
-                        : "(None)");
 
     fTexture = new QCreatableLink(this);
     fTexture->setKey(lay->getTexture());
-    fTexture->setText(lay->getTexture().Exists()
-                      ? ~lay->getTexture()->getName()
-                      : "(None)");
 
     fVShader = new QCreatableLink(this);
     fVShader->setKey(lay->getVertexShader());
-    fVShader->setText(lay->getVertexShader().Exists()
-                      ? ~lay->getVertexShader()->getName()
-                      : "(None)");
 
     fPShader = new QCreatableLink(this);
     fPShader->setKey(lay->getPixelShader());
-    fPShader->setText(lay->getPixelShader().Exists()
-                      ? ~lay->getPixelShader()->getName()
-                      : "(None)");
 
     QTabWidget* flagTab = new QTabWidget(this);
     QWidget* blendWidget = new QWidget(flagTab);
@@ -501,7 +488,6 @@ void QLayer::setBaseLayer()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setUnderLay(dlg.selection());
         fBaseLayer->setKey(lay->getUnderLay());
-        fBaseLayer->setText(~lay->getUnderLay()->getName());
     }
 }
 
@@ -516,7 +502,6 @@ void QLayer::setTexture()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setTexture(dlg.selection());
         fTexture->setKey(lay->getTexture());
-        fTexture->setText(~lay->getTexture()->getName());
     }
 }
 
@@ -531,7 +516,6 @@ void QLayer::setVShader()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setVertexShader(dlg.selection());
         fVShader->setKey(lay->getVertexShader());
-        fVShader->setText(~lay->getVertexShader()->getName());
     }
 }
 
@@ -546,7 +530,6 @@ void QLayer::setPShader()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setPixelShader(dlg.selection());
         fPShader->setKey(lay->getPixelShader());
-        fPShader->setText(~lay->getPixelShader()->getName());
     }
 }
 
@@ -554,30 +537,26 @@ void QLayer::unsetBaseLayer()
 {
     plLayer* lay = plLayer::Convert(fCreatable);
     lay->setUnderLay(plKey());
-    fBaseLayer->setCreatable(NULL);
-    fBaseLayer->setText("(None)");
+    fBaseLayer->setCreatable(NULL, "(None)");
 }
 
 void QLayer::unsetTexture()
 {
     plLayer* lay = plLayer::Convert(fCreatable);
     lay->setTexture(plKey());
-    fTexture->setCreatable(NULL);
-    fTexture->setText("(None)");
+    fTexture->setCreatable(NULL, "(None)");
 }
 
 void QLayer::unsetVShader()
 {
     plLayer* lay = plLayer::Convert(fCreatable);
     lay->setVertexShader(plKey());
-    fVShader->setCreatable(NULL);
-    fVShader->setText("(None)");
+    fVShader->setCreatable(NULL, "(None)");
 }
 
 void QLayer::unsetPShader()
 {
     plLayer* lay = plLayer::Convert(fCreatable);
     lay->setPixelShader(plKey());
-    fPShader->setCreatable(NULL);
-    fPShader->setText("(None)");
+    fPShader->setCreatable(NULL, "(None)");
 }

@@ -467,7 +467,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         if (!S.open(filename.toUtf8().data(), fmRead)) return false;
         fEditor->clear();
         while (!S.eof())
-            fEditor->append(~S.readLine() + "\n");
+            fEditor->append(st2qstr(S.readLine() + "\n"));
         fEditor->setReadOnly(true);
     } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(PlasmaVer::pvUnknown);

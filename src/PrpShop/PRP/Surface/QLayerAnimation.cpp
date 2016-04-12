@@ -30,15 +30,11 @@ QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
     plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(lay);
+    fSynchObjLink->setCreatable(lay, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fBaseLayer = new QCreatableLink(this);
     fBaseLayer->setKey(lay->getUnderLay());
-    fBaseLayer->setText(lay->getUnderLay().Exists()
-                        ? ~lay->getUnderLay()->getName()
-                        : "(None)");
 
     QGroupBox* controllerGroup = new QGroupBox(tr("Animation Controllers"), this);
     QGridLayout* controllerLayout = new QGridLayout(controllerGroup);
@@ -65,8 +61,7 @@ QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
     fTransform->setCreatable(lay->getTransformCtl());
 
     fAnimTimeConvert = new QCreatableLink(this, false);
-    fAnimTimeConvert->setText(tr("Animation Time Properties"));
-    fAnimTimeConvert->setCreatable(&lay->getTimeConvert());
+    fAnimTimeConvert->setCreatable(&lay->getTimeConvert(), tr("Animation Time Properties"));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -103,7 +98,6 @@ void QLayerAnimation::setBaseLayer()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setUnderLay(dlg.selection());
         fBaseLayer->setKey(lay->getUnderLay());
-        fBaseLayer->setText(~lay->getUnderLay()->getName());
     }
 }
 
@@ -111,8 +105,7 @@ void QLayerAnimation::unsetBaseLayer()
 {
     plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
     lay->setUnderLay(plKey());
-    fBaseLayer->setCreatable(NULL);
-    fBaseLayer->setText("(None)");
+    fBaseLayer->setCreatable(NULL, "(None)");
 }
 
 void QLayerAnimation::newPreshade(short type)

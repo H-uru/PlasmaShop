@@ -70,7 +70,7 @@ QAnimStage::QAnimStage(plCreatable* pCre, QWidget* parent)
     fRegressType->setCurrentIndex(obj->getRegressType());
 
     fAnimName = new QLineEdit(this);
-    fAnimName->setText(~obj->getAnimName());
+    fAnimName->setText(st2qstr(obj->getAnimName()));
 
     fLoops = new QIntEdit(this);
     fLoops->setValue(obj->getLoops());
@@ -122,7 +122,7 @@ void QAnimStage::saveDamage()
     obj->setBackType((plAnimStage::PlayType)fBackType->currentIndex());
     obj->setAdvanceType((plAnimStage::AdvanceType)fAdvanceType->currentIndex());
     obj->setRegressType((plAnimStage::AdvanceType)fRegressType->currentIndex());
-    obj->setAnimName(~fAnimName->text());
+    obj->setAnimName(qstr2st(fAnimName->text()));
     obj->setLoops(fLoops->value());
     obj->setAdvanceTo(fDoAdvance->isChecked(), fAdvanceTo->value());
     obj->setRegressTo(fDoRegress->isChecked(), fRegressTo->value());
@@ -136,8 +136,7 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
     plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);

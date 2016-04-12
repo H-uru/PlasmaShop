@@ -71,11 +71,11 @@ plVaultNode QVaultAgeInfoNode::saveNode()
 
     age->setAgeID(fAgeID->value());
     age->setAgeCzarID(fAgeCzarID->value());
-    age->setAgeFilename(~fAgeFilename->text());
-    age->setAgeInstanceName(~fAgeInstanceName->text());
-    age->setAgeUserDefinedName(~fAgeUserDefinedName->text());
-    age->setAgeDescription(~fAgeDescription->text());
-    age->setAgeInstanceGuid(plServerGuid::FromString(~fAgeInstanceGuid->text()));
+    age->setAgeFilename(qstr2st(fAgeFilename->text()));
+    age->setAgeInstanceName(qstr2st(fAgeInstanceName->text()));
+    age->setAgeUserDefinedName(qstr2st(fAgeUserDefinedName->text()));
+    age->setAgeDescription(qstr2st(fAgeDescription->text()));
+    age->setAgeInstanceGuid(plServerGuid::FromString(qstr2st(fAgeInstanceGuid->text())));
     return fNode;
 }
 
@@ -87,11 +87,11 @@ void QVaultAgeInfoNode::IRefreshNode()
 
     fAgeID->setValue(age->getAgeID());
     fAgeCzarID->setValue(age->getAgeCzarID());
-    fAgeFilename->setText(~age->getAgeFilename());
-    fAgeInstanceName->setText(~age->getAgeInstanceName());
-    fAgeUserDefinedName->setText(~age->getAgeUserDefinedName());
-    fAgeDescription->setText(~age->getAgeDescription());
-    fAgeInstanceGuid->setText(~age->getAgeInstanceGuid().toString());
+    fAgeFilename->setText(st2qstr(age->getAgeFilename()));
+    fAgeInstanceName->setText(st2qstr(age->getAgeInstanceName()));
+    fAgeUserDefinedName->setText(st2qstr(age->getAgeUserDefinedName()));
+    fAgeDescription->setText(st2qstr(age->getAgeDescription()));
+    fAgeInstanceGuid->setText(st2qstr(age->getAgeInstanceGuid().toString()));
 }
 
 void QVaultAgeInfoNode::subscribeAge()

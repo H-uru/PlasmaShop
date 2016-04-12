@@ -65,15 +65,15 @@ void SumData::addFrom(QString filename)
         finfo.suffix() == "pfp" || finfo.suffix() == "p2f" || finfo.suffix() == "dat" ||
         finfo.suffix() == "sub" || finfo.suffix() == "loc" || finfo.suffix() == "csv" ||
         finfo.suffix() == "node")
-        sum.fPath = ~QString("dat\\%1").arg(finfo.fileName());
+        sum.fPath = ST::format("dat\\{}", finfo.fileName());
     else if (finfo.suffix() == "ogg")
-        sum.fPath = ~QString("sfx\\%1").arg(finfo.fileName());
+        sum.fPath = ST::format("sfx\\{}", finfo.fileName());
     else if (finfo.suffix() == "pak")
-        sum.fPath = ~QString("Python\\%1").arg(finfo.fileName());
+        sum.fPath = ST::format("Python\\{}", finfo.fileName());
     else if (finfo.suffix() == "sdl")
-        sum.fPath = ~QString("SDL\\%1").arg(finfo.fileName());
+        sum.fPath = ST::format("SDL\\{}", finfo.fileName());
     else
-        sum.fPath = ~finfo.fileName();
+        sum.fPath = qstr2st(finfo.fileName());
 
     // Calculate updated MD5 hash
     QFile file(filename);
@@ -88,7 +88,7 @@ void SumData::addFrom(QString filename)
     std::vector<Entry>::iterator iter;
     bool updated = false;
     for (iter = fEntries.begin(); iter != fEntries.end(); ++iter) {
-        QString path = ~iter->fPath;
+        QString path = st2qstr(iter->fPath);
         path.replace('\\', QDir::separator()).replace('/', QDir::separator());
         if (QFileInfo(path).fileName() == finfo.fileName()) {
             iter->fHash = sum.fHash;
@@ -148,9 +148,10 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
 
 bool QPlasmaSumFile::loadFile(QString filename)
 {
-    if (plEncryptedStream::IsFileEncrypted(~filename)) {
+    ST::string st_filename = qstr2st(filename);
+    if (plEncryptedStream::IsFileEncrypted(st_filename)) {
         plEncryptedStream S(PlasmaVer::pvPrime);
-        S.open(~filename, fmRead, plEncryptedStream::kEncAuto);
+        S.open(st_filename, fmRead, plEncryptedStream::kEncAuto);
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
                 return false;
@@ -222,11 +223,11 @@ bool QPlasmaSumFile::loadSumData(hsStream* S)
     ++s_editLock;
     for (size_t i=0; i<fSumData.fEntries.size(); i++) {
         QTreeWidgetItem* ent = new QTreeWidgetItem(fFileList);
-        ent->setText(0, ~fSumData.fEntries[i].fPath);
+        ent->setText(0, st2qstr(fSumData.fEntries[i].fPath));
         ent->setText(1, QDateTime::fromTime_t(fSumData.fEntries[i].fTimestamp)
                                   .toString(Qt::SystemLocaleShortDate));
-        ent->setText(2, ~fSumData.fEntries[i].fHash.toHex());
-        ent->setIcon(0, QPlasmaDocument::GetDocIcon(~fSumData.fEntries[i].fPath));
+        ent->setText(2, st2qstr(fSumData.fEntries[i].fHash.toHex()));
+        ent->setIcon(0, QPlasmaDocument::GetDocIcon(st2qstr(fSumData.fEntries[i].fPath)));
         ent->setFlags(ent->flags() | Qt::ItemIsEditable);
     }
     --s_editLock;
@@ -274,9 +275,9 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
     int idx = fFileList->indexOfTopLevelItem(item);
     switch (column) {
     case 0:
-        if (fSumData.fEntries[idx].fPath != ~item->text(0)) {
-            fSumData.fEntries[idx].fPath = ~item->text(0);
-            item->setIcon(0, QPlasmaDocument::GetDocIcon(~fSumData.fEntries[idx].fPath));
+        if (fSumData.fEntries[idx].fPath != qstr2st(item->text(0))) {
+            fSumData.fEntries[idx].fPath = qstr2st(item->text(0));
+            item->setIcon(0, QPlasmaDocument::GetDocIcon(st2qstr(fSumData.fEntries[idx].fPath)));
             makeDirty();
         }
         break;
@@ -301,7 +302,7 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
             if (h.length() != 32) {
                 QMessageBox::critical(this, tr("Error"), tr("Invalid MD5 hash"),
                                       QMessageBox::Ok);
-                item->setText(2, ~fSumData.fEntries[idx].fHash.toHex());
+                item->setText(2, st2qstr(fSumData.fEntries[idx].fHash.toHex()));
                 break;
             }
             quint32 newhash[4];
@@ -313,7 +314,7 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
             if (!ok) {
                 QMessageBox::critical(this, tr("Error"), tr("Invalid MD5 hash"),
                                       QMessageBox::Ok);
-                item->setText(2, ~fSumData.fEntries[idx].fHash.toHex());
+                item->setText(2, st2qstr(fSumData.fEntries[idx].fHash.toHex()));
                 break;
             }
             memcpy(fSumData.fEntries[idx].fHash.fHash, newhash, 32);
@@ -339,7 +340,7 @@ void QPlasmaSumFile::onUpdate()
     if (!dir.isEmpty()) {
         std::vector<SumData::Entry>::iterator iter;
         for (iter = fSumData.fEntries.begin(); iter != fSumData.fEntries.end(); ++iter) {
-            QString path = ~iter->fPath;
+            QString path = st2qstr(iter->fPath);
             path.replace('\\', QDir::separator()).replace('/', QDir::separator());
             path = dir + QDir::separator() + QFileInfo(path).fileName();
             if (QFileInfo(path).exists())

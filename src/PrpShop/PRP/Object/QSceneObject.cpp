@@ -29,25 +29,24 @@ QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
     plSceneObject* obj = plSceneObject::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpInterfaces = new QGroupBox(tr("Core Interfaces"), this);
     QGridLayout* layInterfaces = new QGridLayout(grpInterfaces);
     layInterfaces->setVerticalSpacing(2);
     fDrawIntfLink = new QCreatableLink(grpInterfaces);
+    fDrawIntfLink->setKey(obj->getDrawInterface(), false);
     fDrawIntfLink->setText(pqGetFriendlyClassName(kDrawInterface));
-    fDrawIntfLink->setKey(obj->getDrawInterface());
     fSimIntfLink = new QCreatableLink(grpInterfaces);
+    fSimIntfLink->setKey(obj->getSimInterface(), false);
     fSimIntfLink->setText(pqGetFriendlyClassName(kSimulationInterface));
-    fSimIntfLink->setKey(obj->getSimInterface());
     fCoordIntfLink = new QCreatableLink(grpInterfaces);
+    fCoordIntfLink->setKey(obj->getCoordInterface(), false);
     fCoordIntfLink->setText(pqGetFriendlyClassName(kCoordinateInterface));
-    fCoordIntfLink->setKey(obj->getCoordInterface());
     fAudioIntfLink = new QCreatableLink(grpInterfaces);
+    fAudioIntfLink->setKey(obj->getAudioInterface(), false);
     fAudioIntfLink->setText(pqGetFriendlyClassName(kAudioInterface));
-    fAudioIntfLink->setKey(obj->getAudioInterface());
     layInterfaces->addWidget(fDrawIntfLink, 0, 0);
     layInterfaces->addWidget(fSimIntfLink, 1, 0);
     layInterfaces->addWidget(fCoordIntfLink, 2, 0);
@@ -106,7 +105,7 @@ void QSceneObject::setDraw()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kDrawInterface);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setDrawInterface(dlg.selection());
-        fDrawIntfLink->setKey(obj->getDrawInterface());
+        fDrawIntfLink->setKey(obj->getDrawInterface(), false);
     }
 }
 
@@ -120,7 +119,7 @@ void QSceneObject::setSim()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kSimulationInterface);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setSimInterface(dlg.selection());
-        fSimIntfLink->setKey(obj->getSimInterface());
+        fSimIntfLink->setKey(obj->getSimInterface(), false);
     }
 }
 
@@ -134,7 +133,7 @@ void QSceneObject::setCoord()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kCoordinateInterface);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setCoordInterface(dlg.selection());
-        fCoordIntfLink->setKey(obj->getCoordInterface());
+        fCoordIntfLink->setKey(obj->getCoordInterface(), false);
     }
 }
 
@@ -148,7 +147,7 @@ void QSceneObject::setAudio()
         dlg.init(PrpShopMain::ResManager(), obj->getKey()->getLocation(), kAudioInterface);
     if (dlg.exec() == QDialog::Accepted) {
         obj->setAudioInterface(dlg.selection());
-        fAudioIntfLink->setKey(obj->getAudioInterface());
+        fAudioIntfLink->setKey(obj->getAudioInterface(), false);
     }
 }
 

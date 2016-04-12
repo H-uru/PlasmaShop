@@ -26,8 +26,7 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
     pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -59,7 +58,7 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
     fStep->setValue(ctrl->getStep());
 
     fAnimName = new QLineEdit(this);
-    fAnimName->setText(~ctrl->getAnimName());
+    fAnimName->setText(st2qstr(ctrl->getAnimName()));
     fAnimationKeys = new QKeyList(ctrl->getKey(), this);
     for (size_t i=0; i<ctrl->getAnimKeys().size(); i++)
         fAnimationKeys->addKey(ctrl->getAnimKeys()[i]);
@@ -90,7 +89,7 @@ void QGUIProgressCtrl::saveDamage()
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());
 
-    ctrl->setAnimName(~fAnimName->text());
+    ctrl->setAnimName(qstr2st(fAnimName->text()));
     ctrl->clearAnimKeys();
     QList<plKey> animKeys = fAnimationKeys->keys();
     while (!animKeys.isEmpty())
