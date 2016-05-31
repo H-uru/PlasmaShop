@@ -30,6 +30,9 @@ enum {
     kPreview_Type = 0x1000,
     kPRC_Type = 0x2000,
     kTargets_Type = 0x4000,
+    kRESERVED_Type = 0x8000,    // 0x8000 is reserved for null keyed objects
+    kHex_Type = 0x10000,
+    kRealType_Mask = 0x8FFF,
 
     kPreviewSceneNode = kPreview_Type | kSceneNode,
     kPreviewSceneObject = kPreview_Type | kSceneObject,
@@ -38,8 +41,8 @@ enum {
     kPreviewCoordinateInterface = kPreview_Type | kCoordinateInterface,
 };
 
-QIcon pqGetTypeIcon(short);
-QString pqGetFriendlyClassName(short);
+QIcon pqGetTypeIcon(int);
+QString pqGetFriendlyClassName(int);
 
 std::vector<short> pqGetValidKOTypes();
 bool pqCanPreviewType(plCreatable* pCre);

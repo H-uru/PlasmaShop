@@ -3,8 +3,10 @@ set(PrpShop_MOC_Headers
     ../QColorEdit.h
     ../QLinkLabel.h
     ../QNumerics.h
+    ../QHexWidget.h
     QKeyDialog.h
     QPrcEditor.h
+    QHexViewer.h
     QTargetList.h
     PRP/QCreatable.h
     PRP/QKeyList.h
@@ -68,10 +70,12 @@ set(PrpShop_Sources
     ../QColorEdit.cpp
     ../QLinkLabel.cpp
     ../QNumerics.cpp
+    ../QHexWidget.cpp
     QKeyDialog.cpp
     QPlasmaUtils.cpp
     QPlasmaTreeItem.cpp
     QPrcEditor.cpp
+    QHexViewer.cpp
     QTargetList.cpp
     PRP/QCreatable.cpp
     PRP/QKeyList.cpp

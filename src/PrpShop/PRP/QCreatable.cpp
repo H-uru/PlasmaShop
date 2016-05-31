@@ -20,7 +20,7 @@
 #include <QMessageBox>
 #include "../QPlasmaUtils.h"
 
-QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
+QCreatable::QCreatable(plCreatable* pCre, int type, QWidget* parent)
           : QWidget(parent), fCreatable(pCre), fForceType(type)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -36,11 +36,12 @@ QCreatable::QCreatable(plCreatable* pCre, short type, QWidget* parent)
     }
 }
 
-bool QCreatable::isMatch(plCreatable* pCre, short type)
+bool QCreatable::isMatch(plCreatable* pCre, int type)
 {
     if (fCreatable == NULL)
         return false;
-    if (type == -1) type = pCre->ClassIndex();
+    if (type == -1)
+        type = pCre->ClassIndex();
     return (fCreatable == pCre) && (fForceType == type);
 }
 
@@ -63,6 +64,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 
 /***** Creatable Forms -- think QFactory ;) *****/
 #include "QPrcEditor.h"
+#include "QHexViewer.h"
 #include "QTargetList.h"
 #include "PRP/QSceneNode.h"
 #include "PRP/Animation/QAnimTimeConvert.h"
@@ -115,15 +117,18 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QMipmap.h"
 #include "PRP/Render/QSceneObj_Preview.h"
 
-QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, short forceType)
+QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceType)
 {
-    short type = (forceType == -1) ? pCre->ClassIndex() : forceType;
+    int type = (forceType == -1) ? pCre->ClassIndex() : forceType;
 
     if ((type & kPRC_Type) != 0)
         return new QPrcEditor(pCre, parent);
 
     if ((type & kTargets_Type) != 0)
         return new QTargetList(pCre, parent);
+
+    if ((type & kHex_Type) != 0)
+        return new QHexViewer(pCre, parent);
 
     switch (type) {
     // Keyed Object types

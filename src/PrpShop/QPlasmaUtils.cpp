@@ -28,7 +28,7 @@ enum {
     kIcoGUIRadioGroup, kIcoGUIKnob, kIcoSynch, kNumIcons
 };
 
-QIcon pqGetTypeIcon(short classType)
+QIcon pqGetTypeIcon(int classType)
 {
     static QIcon s_icons[kNumIcons] = {
         QIcon(":/img/sceneobj.png"), QIcon(":/img/scenenode.png"),
@@ -45,7 +45,7 @@ QIcon pqGetTypeIcon(short classType)
         QIcon(":/img/gui_knob.png"), QIcon(":/img/synch.png"),
     };
 
-    switch (classType & ~0x3000) {
+    switch (classType & kRealType_Mask) {
     case kSceneNode:
         return s_icons[kIcoSceneNode];
     case kSceneObject:
@@ -125,7 +125,7 @@ QIcon pqGetTypeIcon(short classType)
     }
 }
 
-QString pqGetFriendlyClassName(short classType)
+QString pqGetFriendlyClassName(int classType)
 {
     static QString S_INVALID = "(INVALID)";
     static QString s_names[TYPESPACE_MAX] = {
@@ -561,7 +561,7 @@ QString pqGetFriendlyClassName(short classType)
         S_INVALID, S_INVALID, S_INVALID, S_INVALID, S_INVALID
     };
 
-    classType &= ~0x7000;
+    classType &= kRealType_Mask;
     if ((unsigned short)classType == 0x8000)
         return "(NULL)";
     if (classType >= 0 && classType < TYPESPACE_MAX) {

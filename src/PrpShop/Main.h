@@ -32,6 +32,8 @@
 #include "QPlasmaTreeItem.h"
 #include "QPlasmaUtils.h"
 
+class QCreatable;
+
 class PrpShopMain : public QMainWindow {
     Q_OBJECT
 
@@ -95,7 +97,7 @@ public:
     void loadFile(QString filename);
     void saveFile(plPageInfo* page, QString filename);
     void saveProps(QPlasmaTreeItem* item);
-    void editCreatable(plCreatable* pCre, short forceType = -1);
+    QCreatable* editCreatable(plCreatable* pCre, int forceType = -1);
 
 protected:
     virtual void closeEvent(QCloseEvent* evt);

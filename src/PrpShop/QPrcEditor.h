@@ -21,9 +21,6 @@
 
 #include <QsciPS3/qsciscintilla.h>
 #include <QsciPS3/qscilexerxml.h>
-#include <ResManager/plResManager.h>
-#include <Stream/hsRAMStream.h>
-#include <PRP/KeyedObject/hsKeyedObject.h>
 #include "QPlasmaUtils.h"
 
 class QPrcEditor : public QCreatable {

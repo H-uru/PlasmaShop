@@ -21,7 +21,7 @@
 #include <Util/plString.h>
 #include <PRP/KeyedObject/plLocation.h>
 
-// APIs between Qt4 and Qt5 are incompatible for getting these paths
+// Use consistent APIs and macros between Qt4 and Qt5
 #if QT_VERSION >= 0x050000
     #include <QStandardPaths>
 
@@ -44,6 +44,14 @@
 
     inline QString QStandardPaths_DocumentsLocation()
     { return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation); }
+#endif
+
+#ifndef Q_NULLPTR
+#   define Q_NULLPTR 0
+#endif
+
+#ifndef Q_DECL_OVERRIDE
+#   define Q_DECL_OVERRIDE
 #endif
 
 // Shorthand Plasma-Qt string conversion

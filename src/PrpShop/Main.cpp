@@ -41,6 +41,7 @@
 #include "QKeyDialog.h"
 #include "PRP/QCreatable.h"
 #include "QPrcEditor.h"
+#include "QHexViewer.h"
 
 PrpShopMain* PrpShopMain::sInstance = NULL;
 PrpShopMain* PrpShopMain::Instance() { return sInstance; }
@@ -504,39 +505,16 @@ void PrpShopMain::treeEditHex()
     QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
+    QCreatable *creWin = editCreatable(item->obj(), kHex_Type | item->obj()->ClassIndex());
+    if (creWin) {
+        QHexViewer *hexWin = qobject_cast<QHexViewer *>(creWin);
+        Q_ASSERT(hexWin);
 
-    QTextEdit* editor = new QTextEdit;
-    editor->setAttribute(Qt::WA_DeleteOnClose);
-    editor->setWindowTitle(QString("[%1] %2")
-                           .arg(item->obj()->ClassIndex(), 4, 16, QChar('0'))
-                           .arg(~item->obj()->getKey()->getName()));
-    editor->setWordWrapMode(QTextOption::NoWrap);
-    editor->setFont(QFont("Courier New", 10));
-    editor->setReadOnly(true);
-    editor->show();
-
-    uint32_t offset = item->obj()->getKey()->getFileOff();
-    uint32_t size = item->obj()->getKey()->getObjSize();
-
-    QPlasmaTreeItem *parent = (QPlasmaTreeItem*)item->parent()->parent();
-    QFile fn(parent->filename());
-    fn.open(QIODevice::ReadOnly);
-    fn.seek(offset);
-    QByteArray data = fn.read(size);
-    fn.close();
-
-    QString hex = "          0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F  ";
-    for (int i = 0; i < data.size(); ++i) {
-        if (i % 16 == 0)
-            hex += QString("\n%1 ").arg(i, 8, 16, QChar('0'));
-        if (i % 8 == 0)
-            hex += " ";
-        hex += QString("%1 ").arg((uint8_t)data[i], 2, 16, QChar('0'));
+        QPlasmaTreeItem* parent = (QPlasmaTreeItem*)item->parent()->parent();
+        uint32_t offset = item->obj()->getKey()->getFileOff();
+        uint32_t size = item->obj()->getKey()->getObjSize();
+        hexWin->loadObject(parent->filename(), offset, size);
     }
-
-    if (!hex.endsWith('\n'))
-        hex.append('\n');
-    editor->setText(hex);
 }
 
 void PrpShopMain::treePreview()
@@ -610,7 +588,8 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
 void PrpShopMain::closeWindows(const plLocation& loc) {
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList(); 
     for (auto it = windows.begin(); it != windows.end(); it++) {
-        if (((QCreatable*)(*it)->widget())->compareLocation(loc))
+        QCreatable* creWin = qobject_cast<QCreatable*>((*it)->widget());
+        if (creWin && creWin->compareLocation(loc))
             fMdiArea->removeSubWindow(*it);
     }
 }
@@ -686,32 +665,33 @@ void PrpShopMain::treeExport()
     }
 }
 
-void PrpShopMain::editCreatable(plCreatable* pCre, short forceType)
+QCreatable* PrpShopMain::editCreatable(plCreatable* pCre, int forceType)
 {
-    if (pCre == NULL) {
-        QMessageBox msgBox(QMessageBox::Critical, tr("NULL Object"),
-                           tr("The requested object is not currently loaded"),
-                           QMessageBox::Ok, this);
-        msgBox.exec();
-        return;
+    if (pCre == Q_NULLPTR) {
+        QMessageBox::critical(this, tr("NULL Object"),
+                tr("The requested object is not currently loaded"));
+        return Q_NULLPTR;
     }
 
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::Iterator it;
     for (it = windows.begin(); it != windows.end(); it++) {
-        if (((QCreatable*)(*it)->widget())->isMatch(pCre, forceType)) {
+        QCreatable* creWin = qobject_cast<QCreatable*>((*it)->widget());
+        if (creWin && creWin->isMatch(pCre, forceType)) {
             fMdiArea->setActiveSubWindow(*it);
-            break;
+            return creWin;
         }
     }
     if (it == windows.end()) {
         QCreatable* win = pqMakeCreatableForm(pCre, this, forceType);
-        if (win != NULL) {
+        if (win != Q_NULLPTR) {
             QMdiSubWindow* subWin = fMdiArea->addSubWindow(win);
             subWin->setWindowIcon(win->windowIcon());
             subWin->show();
+            return win;
         }
     }
+    return Q_NULLPTR;
 }
 
 void PrpShopMain::newPage()
@@ -805,7 +785,7 @@ void PrpShopMain::loadFile(QString filename)
     filename = QDir::toNativeSeparators(dir.absolutePath());
 
     PageUnloadCallback prevCallback = fResMgr.SetPageUnloadFunc([this, &prevCallback](const plLocation& loc) {
-        emit closeWindows(loc);
+        closeWindows(loc);
         if (prevCallback != NULL)
             prevCallback(loc);
     });
@@ -1003,8 +983,11 @@ void PrpShopMain::saveFile(plPageInfo* page, QString filename)
     saveProps((QPlasmaTreeItem*)fBrowserTree->currentItem());
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::ConstIterator it;
-    for (it = windows.constBegin(); it != windows.constEnd(); it++)
-        ((QCreatable*)(*it)->widget())->saveDamage();
+    for (it = windows.constBegin(); it != windows.constEnd(); it++) {
+        QCreatable* creWin = qobject_cast<QCreatable*>((*it)->widget());
+        if (creWin)
+            creWin->saveDamage();
+    }
     fResMgr.WritePage(~filename, page);
 }
 

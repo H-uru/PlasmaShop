@@ -14,30 +14,39 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QCREATABLE_H
-#define _QCREATABLE_H
+#ifndef _QHEXVIEWER_H
+#define _QHEXVIEWER_H
 
-#include <QWidget>
-#include <ResManager/plResManager.h>
-#include "../QPlasmaUtils.h"
+#include "PRP/QCreatable.h"
 
-class QCreatable : public QWidget {
+class QHexWidget;
+class QLabel;
+class QCheckBox;
+class QStatusBar;
+
+class QHexViewer : public QCreatable {
     Q_OBJECT
 
 protected:
-    plCreatable* fCreatable;
-    int fForceType;
+    QHexWidget* fViewer;
+    QLabel* fI32Val;
+    QLabel* fI16Val;
+    QLabel* fI8Val;
+    QLabel* fFloatVal;
+    QLabel* fDoubleVal;
+    QLabel* fStringVal;
+    QCheckBox* fSigned;
+    QStatusBar* fStatusBar;
 
 public:
-    QCreatable(plCreatable* pCre, int type, QWidget* parent = NULL);
-    bool isMatch(plCreatable* pCre, int type);
-    bool compareLocation(const plLocation& loc);
-    virtual void saveDamage() = 0;
+    QHexViewer(plCreatable* pCre, QWidget* parent = Q_NULLPTR);
+    void saveDamage() Q_DECL_OVERRIDE { }   // Read-only viewer
 
-protected:
-    virtual void closeEvent(QCloseEvent* evt);
+    void loadObject(const QString& filename, uint32_t offset, uint32_t size);
+
+private slots:
+    void cursorChanged(int address);
+    void signedChanged(bool);
 };
-
-QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceType = -1);
 
 #endif
