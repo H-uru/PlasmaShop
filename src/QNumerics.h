@@ -31,7 +31,7 @@ public:
     double value() const { return text().toDouble(); }
 
 public slots:
-    void setValue(double value) { setText(QString("%1").arg(value)); }
+    void setValue(double value) { setText(QString::number(value)); }
 };
 
 class QIntEdit : public QLineEdit {
@@ -46,7 +46,7 @@ public:
     int value() const { return text().toInt(); }
 
 public slots:
-    void setValue(int value) { setText(QString("%1").arg(value)); }
+    void setValue(int value) { setText(QString::number(value)); }
 };
 
 #endif

@@ -29,14 +29,14 @@ protected:
     bool fInClick;
 
 public:
-    QColorBox(QWidget* parent = NULL);
+    QColorBox(QWidget* parent = Q_NULLPTR);
     void setColor(QColor col);
     QColor color() const { return fColor; }
 
 protected:
-    virtual void mousePressEvent(QMouseEvent*);
-    virtual void mouseReleaseEvent(QMouseEvent*);
-    virtual void paintEvent(QPaintEvent*);
+    void mousePressEvent(QMouseEvent*) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent*) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
 
 signals:
     void activated();
@@ -51,7 +51,7 @@ protected:
     hsColorRGBA fColor;
 
 public:
-    QColorEdit(bool doAlpha, QWidget* parent = NULL);
+    QColorEdit(bool doAlpha, QWidget* parent = Q_NULLPTR);
     void setColor(hsColorRGBA color);
     hsColorRGBA color() const { return fColor; }
 

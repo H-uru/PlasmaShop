@@ -16,6 +16,7 @@
 
 #include "QPrcEditor.h"
 #include <QToolBar>
+#include <QStatusBar>
 #include <QAction>
 #include <QVBoxLayout>
 #include <QSettings>
@@ -46,11 +47,15 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     fSaveAction = tbar->addAction(qStdIcon("document-save"),
             tr("Compile and &Save"), this, SLOT(compilePrc()));
 
+    fStatusBar = new QStatusBar(this);
+    fStatusBar->setSizeGripEnabled(true);
+
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(tbar);
     layout->addWidget(fEditor);
+    layout->addWidget(fStatusBar);
     setLayout(layout);
 
     // Initialize the editor settings, fonts, etc
@@ -62,7 +67,25 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(onDirty()));
     connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(onClean()));
 
+    connect(fEditor, SIGNAL(cursorPositionChanged(int, int)),
+            this, SLOT(showCursorPosition(int, int)),
+            // MUST be Queued to make any UI updates, since the signal is
+            // emitted from an update() call stack
+            Qt::QueuedConnection);
+
     loadPrcData();
+}
+
+QSize QPrcEditor::sizeHint() const
+{
+    QSettings settings("PlasmaShop", "PlasmaShop");
+    QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
+                   settings.value("SciFontSize", 10).toInt(),
+                   settings.value("SciFontWeight", QFont::Normal).toInt(),
+                   settings.value("SciFontItalic", false).toBool());
+
+    QFontMetrics fm(textFont);
+    return QSize(fm.width(QChar('_')) * 82, fm.height() * 25 + 50);
 }
 
 void QPrcEditor::loadPrcData()
@@ -147,6 +170,12 @@ void QPrcEditor::adjustLineNumbers()
 {
     if (fDoLineNumbers)
         fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
+}
+
+void QPrcEditor::showCursorPosition(int line, int column)
+{
+    fStatusBar->showMessage(tr("Line: %1    Column: %2")
+                            .arg(line + 1).arg(column + 1));
 }
 
 void QPrcEditor::onDirty()

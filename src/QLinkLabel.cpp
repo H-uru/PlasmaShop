@@ -38,7 +38,8 @@ void QLinkLabel::mousePressEvent(QMouseEvent* evt)
 
 void QLinkLabel::mouseReleaseEvent(QMouseEvent* evt)
 {
-    if (!fInClick) return;
+    if (!fInClick)
+        return;
     fInClick = false;
 
     if (evt->button() == Qt::LeftButton && rect().contains(evt->pos()))

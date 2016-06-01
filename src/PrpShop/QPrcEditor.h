@@ -23,6 +23,8 @@
 #include <QsciPS3/qscilexerxml.h>
 #include "QPlasmaUtils.h"
 
+class QStatusBar;
+
 class QPrcEditor : public QCreatable {
     Q_OBJECT
 
@@ -30,6 +32,7 @@ protected:
     QsciScintilla* fEditor;
     QsciLexerXML* fLexerXML;
     QAction* fSaveAction;
+    QStatusBar *fStatusBar;
     bool fDirty;
     bool fLexersInited;
     bool fDoLineNumbers;
@@ -38,7 +41,7 @@ public:
     QPrcEditor(plCreatable* pCre, QWidget* parent = NULL);
     virtual void saveDamage() { }   // Handled in compilation
 
-    virtual QSize sizeHint() const { return QSize(500, 400); }
+    QSize sizeHint() const Q_DECL_OVERRIDE;
 
     virtual bool canCut() const { return fEditor->hasSelectedText(); }
     virtual bool canCopy() const { return fEditor->hasSelectedText(); }
@@ -65,6 +68,7 @@ signals:
 
 private slots:
     void adjustLineNumbers();
+    void showCursorPosition(int line, int column);
     void onDirty();
     void onClean();
 

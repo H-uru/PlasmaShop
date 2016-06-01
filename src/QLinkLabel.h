@@ -28,13 +28,13 @@ protected:
 public:
     QLinkLabel(QWidget* parent = 0)
         : QLabel(parent), fInClick(false) { init(); }
-    QLinkLabel(const QString& text, QWidget* parent = 0)
+    QLinkLabel(const QString& text, QWidget* parent = Q_NULLPTR)
         : QLabel(text, parent), fInClick(false) { init(); }
 
 protected:
     void init();
-    virtual void mousePressEvent(QMouseEvent* evt);
-    virtual void mouseReleaseEvent(QMouseEvent* evt);
+    void mousePressEvent(QMouseEvent* evt) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent* evt) Q_DECL_OVERRIDE;
 
 signals:
     void activated();
