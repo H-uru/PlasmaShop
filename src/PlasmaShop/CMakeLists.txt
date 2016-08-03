@@ -26,6 +26,7 @@ set(PlasmaShop_Sources
 
 # include pycdc sources
 set(pycdc_SOURCE_DIR ${PROJECT_SOURCE_DIR}/pycdc)
+set(pycdc_BINARY_DIR ${PROJECT_BINARY_DIR}/pycdc)
 set(pycdc_Sources
     ${pycdc_SOURCE_DIR}/ASTNode.cpp
     ${pycdc_SOURCE_DIR}/ASTree.cpp
@@ -57,31 +58,39 @@ set(pycdc_Maps
     ${pycdc_SOURCE_DIR}/bytes/python_31.map
     ${pycdc_SOURCE_DIR}/bytes/python_32.map
     ${pycdc_SOURCE_DIR}/bytes/python_33.map
+    ${pycdc_SOURCE_DIR}/bytes/python_34.map
+    ${pycdc_SOURCE_DIR}/bytes/python_35.map
 )
 set(pycdc_GeneratedSources
-    ${pycdc_SOURCE_DIR}/bytes/python_10.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_11.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_13.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_14.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_15.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_16.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_20.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_21.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_22.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_23.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_24.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_25.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_26.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_27.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_30.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_31.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_32.cpp
-    ${pycdc_SOURCE_DIR}/bytes/python_33.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_10.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_11.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_13.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_14.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_15.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_16.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_20.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_21.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_22.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_23.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_24.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_25.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_26.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_27.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_30.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_31.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_32.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_33.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_34.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_35.cpp
 )
-# run "make" in the pycdc folder to generate the source code
+# run "comp_map.py" in the pycdc folder to generate the source code
+add_custom_target(create-bytes-source-dir ALL
+                  COMMAND ${CMAKE_COMMAND} -E make_directory ${pycdc_BINARY_DIR}/bytes)
 add_custom_command(OUTPUT ${pycdc_GeneratedSources}
-                   COMMAND ./comp_map.py
+                   COMMAND ${pycdc_SOURCE_DIR}/bytes/comp_map.py
+                           ${pycdc_SOURCE_DIR}/bytes ${pycdc_BINARY_DIR}/bytes
                    DEPENDS ${pycdc_Maps} ${pycdc_SOURCE_DIR}/bytes/comp_map.py
+                           create-bytes-source-dir
                    WORKING_DIRECTORY ${pycdc_SOURCE_DIR}/bytes)
 
 if(NOT WIN32 AND NOT APPLE)
