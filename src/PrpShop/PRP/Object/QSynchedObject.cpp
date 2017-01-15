@@ -47,14 +47,14 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fCBFlags[kCbExcludePersistentState], 2, 1);
     layFlags->addWidget(fCBFlags[kCbAllStateIsVolatile], 3, 0);
     layFlags->addWidget(fCBFlags[kCbExcludeAllPersistentState], 3, 1);
-    fCBFlags[kCbDontDirty]->setChecked((obj->getSyncFlags() & plSynchedObject::kDontDirty) != 0);
-    fCBFlags[kCbSendReliably]->setChecked((obj->getSyncFlags() & plSynchedObject::kSendReliably) != 0);
-    fCBFlags[kCbHasConstantNetGroup]->setChecked((obj->getSyncFlags() & plSynchedObject::kHasConstantNetGroup) != 0);
-    fCBFlags[kCbDontSynchGameMessages]->setChecked((obj->getSyncFlags() & plSynchedObject::kDontSynchGameMessages) != 0);
-    fCBFlags[kCbExcludePersistentState]->setChecked((obj->getSyncFlags() & plSynchedObject::kExcludePersistentState) != 0);
-    fCBFlags[kCbExcludeAllPersistentState]->setChecked((obj->getSyncFlags() & plSynchedObject::kExcludeAllPersistentState) != 0);
-    fCBFlags[kCbHasVolatileState]->setChecked((obj->getSyncFlags() & plSynchedObject::kHasVolatileState) != 0);
-    fCBFlags[kCbAllStateIsVolatile]->setChecked((obj->getSyncFlags() & plSynchedObject::kAllStateIsVolatile) != 0);
+    fCBFlags[kCbDontDirty]->setChecked((obj->getSynchFlags() & plSynchedObject::kDontDirty) != 0);
+    fCBFlags[kCbSendReliably]->setChecked((obj->getSynchFlags() & plSynchedObject::kSendReliably) != 0);
+    fCBFlags[kCbHasConstantNetGroup]->setChecked((obj->getSynchFlags() & plSynchedObject::kHasConstantNetGroup) != 0);
+    fCBFlags[kCbDontSynchGameMessages]->setChecked((obj->getSynchFlags() & plSynchedObject::kDontSynchGameMessages) != 0);
+    fCBFlags[kCbExcludePersistentState]->setChecked((obj->getSynchFlags() & plSynchedObject::kExcludePersistentState) != 0);
+    fCBFlags[kCbExcludeAllPersistentState]->setChecked((obj->getSynchFlags() & plSynchedObject::kExcludeAllPersistentState) != 0);
+    fCBFlags[kCbHasVolatileState]->setChecked((obj->getSynchFlags() & plSynchedObject::kHasVolatileState) != 0);
+    fCBFlags[kCbAllStateIsVolatile]->setChecked((obj->getSynchFlags() & plSynchedObject::kAllStateIsVolatile) != 0);
 
     QTabWidget* sdlTab = new QTabWidget(this);
     fExcludeList = new QStringListWidget(sdlTab);
@@ -77,14 +77,14 @@ void QSynchedObject::saveDamage()
 {
     plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
 
-    obj->setSyncFlags((fCBFlags[kCbDontDirty]->isChecked() ? plSynchedObject::kDontDirty : 0)
-                    | (fCBFlags[kCbSendReliably]->isChecked() ? plSynchedObject::kSendReliably : 0)
-                    | (fCBFlags[kCbHasConstantNetGroup]->isChecked() ? plSynchedObject::kHasConstantNetGroup : 0)
-                    | (fCBFlags[kCbDontSynchGameMessages]->isChecked() ? plSynchedObject::kDontSynchGameMessages : 0)
-                    | (fCBFlags[kCbExcludePersistentState]->isChecked() ? plSynchedObject::kExcludePersistentState : 0)
-                    | (fCBFlags[kCbExcludeAllPersistentState]->isChecked() ? plSynchedObject::kExcludeAllPersistentState : 0)
-                    | (fCBFlags[kCbHasVolatileState]->isChecked() ? plSynchedObject::kHasVolatileState : 0)
-                    | (fCBFlags[kCbAllStateIsVolatile]->isChecked() ? plSynchedObject::kAllStateIsVolatile : 0));
+    obj->setSynchFlags((fCBFlags[kCbDontDirty]->isChecked() ? plSynchedObject::kDontDirty : 0)
+                     | (fCBFlags[kCbSendReliably]->isChecked() ? plSynchedObject::kSendReliably : 0)
+                     | (fCBFlags[kCbHasConstantNetGroup]->isChecked() ? plSynchedObject::kHasConstantNetGroup : 0)
+                     | (fCBFlags[kCbDontSynchGameMessages]->isChecked() ? plSynchedObject::kDontSynchGameMessages : 0)
+                     | (fCBFlags[kCbExcludePersistentState]->isChecked() ? plSynchedObject::kExcludePersistentState : 0)
+                     | (fCBFlags[kCbExcludeAllPersistentState]->isChecked() ? plSynchedObject::kExcludeAllPersistentState : 0)
+                     | (fCBFlags[kCbHasVolatileState]->isChecked() ? plSynchedObject::kHasVolatileState : 0)
+                     | (fCBFlags[kCbAllStateIsVolatile]->isChecked() ? plSynchedObject::kAllStateIsVolatile : 0));
     obj->clearExcludes();
     obj->clearVolatiles();
     QStringList excludes = fExcludeList->strings();
