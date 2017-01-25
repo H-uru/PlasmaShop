@@ -175,8 +175,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     plSound* obj = plSound::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fTime = new QFloatEdit(this);
@@ -208,7 +207,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     fFadedVolume->setValue(obj->getFadedVolume());
     fPriority->setValue(obj->getPriority());
     fPlaying->setChecked(obj->isPlaying());
-    fSubtitleId->setText(~obj->getSubtitleId());
+    fSubtitleId->setText(st2qstr(obj->getSubtitleId()));
 
     QGroupBox* grpProperties = new QGroupBox(tr("Properties"), this);
     QGridLayout* layProperties = new QGridLayout(grpProperties);
@@ -307,15 +306,12 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layFadeOut->addWidget(fFadeOutParams.fFadeSoftVol, 6, 0, 1, 2);
 
     fSoftRegion = new QCreatableLink(this);
-    fSoftRegion->setText(obj->getSoftRegion().Exists() ? ~obj->getSoftRegion()->getName() : "(Null)");
     fSoftRegion->setKey(obj->getSoftRegion());
 
     fDataBuffer = new QCreatableLink(this);
-    fDataBuffer->setText(obj->getDataBuffer().Exists() ? ~obj->getDataBuffer()->getName() : "(Null)");
     fDataBuffer->setKey(obj->getDataBuffer());
 
     fSoftOcclusionRegion = new QCreatableLink(this);
-    fSoftOcclusionRegion->setText(obj->getSoftOcclusionRegion().Exists() ? ~obj->getSoftOcclusionRegion()->getName() : "(Null)");
     fSoftOcclusionRegion->setKey(obj->getSoftOcclusionRegion());
 
     QWidget* eaxWidget = new QWidget(this);
@@ -389,7 +385,7 @@ void QWinSound::saveDamage()
     obj->setFadedVolume(fFadedVolume->value());
     obj->setPriority(fPriority->value());
     obj->setPlaying(fPlaying->isChecked());
-    obj->setSubtitleId(~fSubtitleId->text());
+    obj->setSubtitleId(qstr2st(fSubtitleId->text()));
     obj->setProperties((fProperties[kPropIs3DSound]->isChecked() ? plSound::kPropIs3DSound : 0)
                      | (fProperties[kPropDisableLOD]->isChecked() ? plSound::kPropDisableLOD : 0)
                      | (fProperties[kPropLooping]->isChecked() ? plSound::kPropLooping : 0)
@@ -426,7 +422,6 @@ void QWinSound::setSoftRegion()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setSoftRegion(dlg.selection());
         fSoftRegion->setKey(obj->getSoftRegion());
-        fSoftRegion->setText(~obj->getSoftRegion()->getName());
     }
 }
 
@@ -441,7 +436,6 @@ void QWinSound::setDataBuffer()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setDataBuffer(dlg.selection());
         fDataBuffer->setKey(obj->getDataBuffer());
-        fDataBuffer->setText(~obj->getDataBuffer()->getName());
     }
 }
 
@@ -456,7 +450,6 @@ void QWinSound::setSoftOcclusionRegion()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setSoftOcclusionRegion(dlg.selection());
         fSoftOcclusionRegion->setKey(obj->getSoftOcclusionRegion());
-        fSoftOcclusionRegion->setText(~obj->getSoftOcclusionRegion()->getName());
     }
 }
 
@@ -464,31 +457,28 @@ void QWinSound::unsetSoftRegion()
 {
     plSound* obj = plSound::Convert(fCreatable);
     obj->setSoftRegion(plKey());
-    fSoftRegion->setCreatable(NULL);
-    fSoftRegion->setText("(Null)");
+    fSoftRegion->setCreatable(NULL, "(None)");
 }
 
 void QWinSound::unsetDataBuffer()
 {
     plSound* obj = plSound::Convert(fCreatable);
     obj->setDataBuffer(plKey());
-    fDataBuffer->setCreatable(NULL);
-    fDataBuffer->setText("(Null)");
+    fDataBuffer->setCreatable(NULL, "(None)");
 }
 
 void QWinSound::unsetSoftOcclusionRegion()
 {
     plSound* obj = plSound::Convert(fCreatable);
     obj->setSoftOcclusionRegion(plKey());
-    fSoftOcclusionRegion->setCreatable(NULL);
-    fSoftOcclusionRegion->setText("(Null)");
+    fSoftOcclusionRegion->setCreatable(NULL, "(None)");
 }
 
 void QWinSound::editEaxSettings()
 {
     QEaxSourceSettings* eaxDlg = new QEaxSourceSettings(&(plSound::Convert(fCreatable))->getEAXSettings());
     eaxDlg->setWindowTitle(tr("EAX Settings: %1")
-                           .arg(~(plSound::Convert(fCreatable))->getKey()->getName()));
+                           .arg(st2qstr(plSound::Convert(fCreatable)->getKey()->getName())));
     eaxDlg->show();
 }
 
@@ -500,8 +490,7 @@ QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
     plWin32Sound* obj = plWin32Sound::Convert(fCreatable);
 
     fSoundLink = new QCreatableLink(this, false);
-    fSoundLink->setText(tr("Sound Properties"));
-    fSoundLink->setCreatable(obj);
+    fSoundLink->setCreatable(obj, tr("Sound Properties"));
     fSoundLink->setForceType(kSound);
 
     fChannel = new QComboBox(this);

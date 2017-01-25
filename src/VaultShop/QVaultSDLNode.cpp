@@ -58,7 +58,7 @@ public:
         while ((child = takeChild(0)) != NULL)
             delete child;
 
-        setText(0, ~fVariable->getDescriptor()->getName());
+        setText(0, st2qstr(fVariable->getDescriptor()->getName()));
         setText(1, QSDLEditor::GetVarDisplay(var));
         if (fVariable->getDescriptor()->getType() == plVarDescriptor::kStateDescriptor) {
             if (fVariable->getCount() > 1) {
@@ -101,10 +101,10 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
             result += ((plSimpleStateVariable*)var)->Bool(i) ? "True" : "False";
             break;
         case plVarDescriptor::kString:
-            result += ~((plSimpleStateVariable*)var)->String(i);
+            result += st2qstr(((plSimpleStateVariable*)var)->String(i));
             break;
         case plVarDescriptor::kKey:
-            result += ~((plSimpleStateVariable*)var)->Uoid(i).toString();
+            result += st2qstr(((plSimpleStateVariable*)var)->Uoid(i).toString());
             break;
         case plVarDescriptor::kDouble:
             result += QString("%1").arg(((plSimpleStateVariable*)var)->Double(i));
@@ -187,7 +187,7 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
             }
             break;
         case plVarDescriptor::kStateDescriptor:
-            result = QString("(SDL Record: %1)").arg(~var->getDescriptor()->getStateDescType());
+            result = QString("(SDL Record: %1)").arg(st2qstr(var->getDescriptor()->getStateDescType()));
             break;
         default:
             result += "(incomplete)";
@@ -204,10 +204,10 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
 
     hsRAMStream S;
     S.copyFrom(blob.getData(), blob.getSize());
-    plString name;
+    ST::string name;
     int version;
     plStateDataRecord::ReadStreamHeader(&S, name, version, NULL);
-    return ~name;
+    return st2qstr(name);
 }
 
 QSDLEditor::QSDLEditor(QWidget* parent)
@@ -265,7 +265,7 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
     if (desc == NULL) {
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("No SDL Descriptor for %1 (version %2)")
-                           .arg(~fSDLName).arg(fSDLVersion),
+                           .arg(st2qstr(fSDLName)).arg(fSDLVersion),
                            QMessageBox::Ok, this);
         msgBox.exec();
         return;
@@ -274,8 +274,8 @@ void QSDLEditor::loadBlob(plVaultBlob blob)
     rec->setDescriptor(desc);
     rec->read(&S, fResMgr);
     if (S.size() != S.pos()) {
-        plDebug::Debug("[%s] SDL size-read difference: %d",
-                       fSDLName.cstr(), S.size() - S.pos());
+        plDebug::Debug("[{}] SDL size-read difference: {}",
+                       fSDLName, S.size() - S.pos());
     }
     setRecord(rec, true);
 }
@@ -333,7 +333,7 @@ void QSDLEditor::setupVarEditorCommon(plStateVariable* var)
     fEditorWhich->setRange(0, var->getCount() - 1);
     fEditorLayout->addWidget(new QLabel(
         QString("%1[%2]:")
-        .arg(~var->getDescriptor()->getName())
+        .arg(st2qstr(var->getDescriptor()->getName()))
         .arg(var->getCount()), fEditorPanel), 0, 0);
     fEditorLayout->addWidget(fEditorWhich, 0, 1, 1, 4);
 
@@ -367,7 +367,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
         fStringEdit->setText(QString("%1").arg(((plSimpleStateVariable*)var)->Float(which)));
         break;
     case plVarDescriptor::kString:
-        fStringEdit->setText(~((plSimpleStateVariable*)var)->String(which));
+        fStringEdit->setText(st2qstr(((plSimpleStateVariable*)var)->String(which)));
         break;
     case plVarDescriptor::kKey:
         {
@@ -375,7 +375,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
             fLocationEdit[0]->setValue(key.getLocation().getSeqPrefix());
             fLocationEdit[1]->setValue(key.getLocation().getPageNum());
             fComboEdit->setCurrentIndex(key.getType());
-            fStringEdit->setText(~key.getName());
+            fStringEdit->setText(st2qstr(key.getName()));
         }
         break;
     case plVarDescriptor::kRGB8:
@@ -463,7 +463,7 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
         ((plSimpleStateVariable*)var)->Float(which) = fStringEdit->text().toDouble(NULL);
         break;
     case plVarDescriptor::kString:
-        ((plSimpleStateVariable*)var)->String(which) = ~fStringEdit->text();
+        ((plSimpleStateVariable*)var)->String(which) = qstr2st(fStringEdit->text());
         break;
     case plVarDescriptor::kKey:
         {
@@ -473,7 +473,7 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
             loc.setPageNum(fLocationEdit[1]->value());
             key.setLocation(loc);
             key.setType(fComboEdit->currentIndex());
-            key.setName(~fStringEdit->text());
+            key.setName(qstr2st(fStringEdit->text()));
             ((plSimpleStateVariable*)var)->Uoid(which) = key;
         }
         break;
@@ -752,7 +752,7 @@ plVaultNode QVaultSDLNode::saveNode()
     try {
         sdl->setSDLData(fSDLEditor->saveBlob());
     } catch (hsException& ex) {
-        plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+        plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("Error saving SDL data"),
                            QMessageBox::Ok, this);
@@ -773,7 +773,7 @@ void QVaultSDLNode::IRefreshNode()
     try {
         fSDLEditor->loadBlob(sdl->getSDLData());
     } catch (hsException& ex) {
-        plDebug::Error("%s:%d: %s", ex.File(), ex.Line(), ex.what());
+        plDebug::Error("{}:{}: {}", ex.File(), ex.Line(), ex.what());
         QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                            tr("Error loading SDL data"),
                            QMessageBox::Ok, this);

@@ -44,7 +44,7 @@ QSize QPopupMenuItemList::sizeHint() const
 
 void QPopupMenuItemList::addItem(const pfGUIPopUpMenu::pfMenuItem& item)
 {
-    new QTreeWidgetItem(this, QStringList() << ~item.fName
+    new QTreeWidgetItem(this, QStringList() << st2qstr(item.fName)
                               << (item.fSubMenu.Exists() ? tr("Yes") : tr("No")));
 }
 
@@ -100,8 +100,7 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
 
     fDialogModLink = new QCreatableLink(this, false);
-    fDialogModLink->setText(tr("GUI Dialog Common Properties"));
-    fDialogModLink->setCreatable(ctrl);
+    fDialogModLink->setCreatable(ctrl, tr("GUI Dialog Common Properties"));
     fDialogModLink->setForceType(kGUIDialogMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -131,21 +130,12 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
 
     fSkin = new QCreatableLink(this);
     fSkin->setKey(ctrl->getSkin());
-    fSkin->setText(ctrl->getSkin().Exists()
-                   ? ~ctrl->getSkin()->getName()
-                   : "(None)");
 
     fOriginContext = new QCreatableLink(this);
     fOriginContext->setKey(ctrl->getOriginContext());
-    fOriginContext->setText(ctrl->getOriginContext().Exists()
-                            ? ~ctrl->getOriginContext()->getName()
-                            : "(None)");
 
     fOriginAnchor = new QCreatableLink(this);
     fOriginAnchor->setKey(ctrl->getOriginAnchor());
-    fOriginAnchor->setText(ctrl->getOriginAnchor().Exists()
-                           ? ~ctrl->getOriginAnchor()->getName()
-                           : "(None)");
 
     fMenuItems = new QPopupMenuItemList(this);
     for (size_t i=0; i<ctrl->getNumItems(); i++)
@@ -202,7 +192,6 @@ void QGUIPopUpMenu::setSkin()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setSkin(dlg.selection());
         fSkin->setKey(ctrl->getSkin());
-        fSkin->setText(~ctrl->getSkin()->getName());
     }
 }
 
@@ -217,7 +206,6 @@ void QGUIPopUpMenu::setOriginContext()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setOriginContext(dlg.selection());
         fOriginContext->setKey(ctrl->getOriginContext());
-        fOriginContext->setText(~ctrl->getOriginContext()->getName());
     }
 }
 
@@ -232,7 +220,6 @@ void QGUIPopUpMenu::setOriginAnchor()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setOriginAnchor(dlg.selection());
         fOriginAnchor->setKey(ctrl->getOriginAnchor());
-        fOriginAnchor->setText(~ctrl->getOriginAnchor()->getName());
     }
 }
 
@@ -240,24 +227,21 @@ void QGUIPopUpMenu::unsetSkin()
 {
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setSkin(plKey());
-    fSkin->setCreatable(NULL);
-    fSkin->setText("(None)");
+    fSkin->setCreatable(NULL, "(None)");
 }
 
 void QGUIPopUpMenu::unsetOriginContext()
 {
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setOriginContext(plKey());
-    fOriginContext->setCreatable(NULL);
-    fOriginContext->setText("(None)");
+    fOriginContext->setCreatable(NULL, "(None)");
 }
 
 void QGUIPopUpMenu::unsetOriginAnchor()
 {
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     ctrl->setOriginAnchor(plKey());
-    fOriginAnchor->setCreatable(NULL);
-    fOriginAnchor->setText("(None)");
+    fOriginAnchor->setCreatable(NULL, "(None)");
 }
 
 void QGUIPopUpMenu::addMenuItem()
@@ -330,11 +314,11 @@ void QPopUpMenuItemDialog::init(pfGUIPopUpMenu::pfMenuItem* item, int idx)
 {
     fItem = item;
     if (fItem->fHandler != NULL && fItem->fHandler->getType() == pfGUICtrlProcWriteableObject::kConsoleCmd)
-        fProcCommand->setText(~((pfGUIConsoleCmdProc*)fItem->fHandler)->getCommand());
+        fProcCommand->setText(st2qstr(((pfGUIConsoleCmdProc*)fItem->fHandler)->getCommand()));
     fItemIdx = idx;
-    fName->setText(~fItem->fName);
+    fName->setText(st2qstr(fItem->fName));
     fProcType->setCurrentIndex(fItem->fHandler == NULL ? 0 : fItem->fHandler->getType());
-    fSubMenuKey->setText(fItem->fSubMenu.Exists() ? ~fItem->fSubMenu->getName() : tr("(Null)"));
+    fSubMenuKey->setText(fItem->fSubMenu.Exists() ? st2qstr(fItem->fSubMenu->getName()) : tr("(Null)"));
     fYOffsetToNext->setValue(fItem->fYOffsetToNext);
 }
 
@@ -357,7 +341,7 @@ void QPopUpMenuItemDialog::setProcType(int typeIdx)
         break;
     case pfGUICtrlProcWriteableObject::kConsoleCmd:
         fItem->fHandler = new pfGUIConsoleCmdProc();
-        ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(~fProcCommand->text());
+        ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(qstr2st(fProcCommand->text()));
         break;
     case pfGUICtrlProcWriteableObject::kPythonScript:
         fItem->fHandler = new pfGUIPythonScriptProc();
@@ -377,12 +361,12 @@ void QPopUpMenuItemDialog::selectKey()
     dlg.init(PrpShopMain::ResManager(), fItem->fSubMenu);
     if (dlg.exec() == QDialog::Accepted) {
         fItem->fSubMenu = dlg.selection();
-        fSubMenuKey->setText(~fItem->fSubMenu->getName());
+        fSubMenuKey->setText(st2qstr(fItem->fSubMenu->getName()));
     } else {
         fItem->fSubMenu = plKey();
         fSubMenuKey->setText(tr("(Null)"));
     }
-    emit updateItem(fItemIdx, ~fItem->fName, fItem->fSubMenu.Exists());
+    emit updateItem(fItemIdx, st2qstr(fItem->fName), fItem->fSubMenu.Exists());
 }
 
 void QPopUpMenuItemDialog::nameChanged(QString name)
@@ -390,8 +374,8 @@ void QPopUpMenuItemDialog::nameChanged(QString name)
     if (fItem == NULL)
         return;
 
-    fItem->fName = ~name;
-    emit updateItem(fItemIdx, ~fItem->fName, fItem->fSubMenu.Exists());
+    fItem->fName = qstr2st(name);
+    emit updateItem(fItemIdx, name, fItem->fSubMenu.Exists());
 }
 
 void QPopUpMenuItemDialog::cmdChanged(QString cmd)
@@ -400,7 +384,7 @@ void QPopUpMenuItemDialog::cmdChanged(QString cmd)
         || fItem->fHandler->getType() != pfGUICtrlProcWriteableObject::kConsoleCmd)
         return;
 
-    ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(~cmd);
+    ((pfGUIConsoleCmdProc*)fItem->fHandler)->setCommand(qstr2st(cmd));
 }
 
 void QPopUpMenuItemDialog::offsetChanged(QString)

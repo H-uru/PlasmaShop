@@ -39,7 +39,7 @@ QDrawableList::QDrawableList(plKey container, QWidget* parent)
 void QDrawableList::addKey(plKey key, int dkey)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(this,
-        QStringList() << QString("%1").arg(dkey) << ~key->getName());
+        QStringList() << QString("%1").arg(dkey) << st2qstr(key->getName()));
     item->setIcon(1, pqGetTypeIcon(key->getType()));
     fKeys << key;
     fDrawKeys << dkey;
@@ -114,7 +114,7 @@ void QFindDrawKeyDialog::init(plResManager* mgr, const plLocation& loc)
     fKeyBox->clear();
     fKeys = fResMgr->getKeys(fLocation, kDrawableSpans);
     for (size_t i=0; i<fKeys.size(); i++)
-        fKeyBox->addItem(~fKeys[i]->getName());
+        fKeyBox->addItem(st2qstr(fKeys[i]->getName()));
     fDrawKey->setValue(0);
 }
 
@@ -126,12 +126,11 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
     plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
+    fOwnerLink->setKey(intf->getOwner(), false);
     fOwnerLink->setText(tr("Owner Object"));
-    fOwnerLink->setKey(intf->getOwner());
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(intf);
+    fSynchObjLink->setCreatable(intf, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
@@ -194,7 +193,7 @@ void QDrawInterface::setOwner()
         dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
     if (dlg.exec() == QDialog::Accepted) {
         intf->setOwner(dlg.selection());
-        fOwnerLink->setKey(intf->getOwner());
+        fOwnerLink->setKey(intf->getOwner(), false);
     }
 }
 

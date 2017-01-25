@@ -117,7 +117,7 @@ plVaultNode QVaultImageNode::saveNode()
     if (img == NULL)
         return plVaultNode();
 
-    img->setImageTitle(~fImgTitle->text());
+    img->setImageTitle(qstr2st(fImgTitle->text()));
     img->setImageType(fImgType->currentIndex());
 
     //plVaultBlob blob;
@@ -133,7 +133,7 @@ void QVaultImageNode::IRefreshNode()
     if (img == NULL)
         return;
 
-    fImgTitle->setText(~img->getImageTitle());
+    fImgTitle->setText(st2qstr(img->getImageTitle()));
     fImgType->setCurrentIndex(img->getImageType());
 
     plVaultBlob blob = img->getImageData();

@@ -26,12 +26,11 @@ QLayerMovie::QLayerMovie(plCreatable* pCre, QWidget* parent)
     plLayerMovie* lay = plLayerMovie::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
-    fLayerAnimLink->setText(tr("Layer Animation Properties"));
-    fLayerAnimLink->setCreatable(lay);
+    fLayerAnimLink->setCreatable(lay, tr("Layer Animation Properties"));
     fLayerAnimLink->setForceType(kLayerAnimation);
 
     fMovieName = new QLineEdit(this);
-    fMovieName->setText(~lay->getMovieName());
+    fMovieName->setText(st2qstr(lay->getMovieName()));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -43,5 +42,5 @@ QLayerMovie::QLayerMovie(plCreatable* pCre, QWidget* parent)
 void QLayerMovie::saveDamage()
 {
     plLayerMovie* lay = plLayerMovie::Convert(fCreatable);
-    lay->setMovieName(~fMovieName->text());
+    lay->setMovieName(qstr2st(fMovieName->text()));
 }

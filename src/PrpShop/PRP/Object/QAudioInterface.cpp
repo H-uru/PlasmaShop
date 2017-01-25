@@ -28,12 +28,11 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
+    fOwnerLink->setKey(intf->getOwner(), false);
     fOwnerLink->setText(tr("Owner Object"));
-    fOwnerLink->setKey(intf->getOwner());
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(intf);
+    fSynchObjLink->setCreatable(intf, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
@@ -44,7 +43,6 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     fDisabled->setChecked(intf->getProperty(plAudioInterface::kDisable));
 
     fAudibleLink = new QCreatableLink(this);
-    fAudibleLink->setText(intf->getAudible().Exists() ? ~intf->getAudible()->getName() : "(Null)");
     fAudibleLink->setKey(intf->getAudible());
 
     QGridLayout* layout = new QGridLayout(this);
@@ -77,7 +75,7 @@ void QAudioInterface::setOwner()
         dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
     if (dlg.exec() == QDialog::Accepted) {
         intf->setOwner(dlg.selection());
-        fOwnerLink->setKey(intf->getOwner());
+        fOwnerLink->setKey(intf->getOwner(), false);
     }
 }
 
@@ -99,7 +97,6 @@ void QAudioInterface::setAudible()
     if (dlg.exec() == QDialog::Accepted) {
         intf->setAudible(dlg.selection());
         fAudibleLink->setKey(intf->getAudible());
-        fAudibleLink->setText(~intf->getAudible()->getName());
     }
 }
 
@@ -107,6 +104,5 @@ void QAudioInterface::unsetAudible()
 {
     plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
     intf->setAudible(plKey());
-    fAudibleLink->setCreatable(NULL);
-    fAudibleLink->setText("(Null)");
+    fAudibleLink->setCreatable(NULL, "(None)");
 }

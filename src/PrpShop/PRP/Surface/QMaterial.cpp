@@ -27,8 +27,7 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
     hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(mat);
+    fSynchObjLink->setCreatable(mat, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpCompFlags = new QGroupBox(tr("Composition Flags"), this);

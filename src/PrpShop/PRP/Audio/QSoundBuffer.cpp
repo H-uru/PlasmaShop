@@ -85,7 +85,7 @@ QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
     fAvgBytesPerSec->setValue(obj->getHeader().getAvgBytesPerSec());
 
     fFilename = new QLineEdit(this);
-    fFilename->setText(~obj->getFileName());
+    fFilename->setText(st2qstr(obj->getFileName()));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -110,5 +110,5 @@ void QSoundBuffer::saveDamage()
     obj->getHeader().setBitsPerSample(fBitRate->value());
     obj->getHeader().setNumSamplesPerSec(fSampleRate->value());
     obj->getHeader().setAvgBytesPerSec(fAvgBytesPerSec->value());
-    obj->setFileName(~fFilename->text());
+    obj->setFileName(qstr2st(fFilename->text()));
 }

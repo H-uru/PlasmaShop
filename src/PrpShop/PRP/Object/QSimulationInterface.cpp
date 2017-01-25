@@ -28,12 +28,11 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
     plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
 
     fOwnerLink = new QCreatableLink(this);
+    fOwnerLink->setKey(intf->getOwner(), false);
     fOwnerLink->setText(tr("Owner Object"));
-    fOwnerLink->setKey(intf->getOwner());
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(intf);
+    fSynchObjLink->setCreatable(intf, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpProps = new QGroupBox(tr("Properties"), this);
@@ -71,7 +70,6 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
         fCBProperties[i]->setChecked(intf->getProperty(i));
 
     fPhysicalLink = new QCreatableLink(this);
-    fPhysicalLink->setText(intf->getPhysical().Exists() ? ~intf->getPhysical()->getName() : "(Null)");
     fPhysicalLink->setKey(intf->getPhysical());
 
     QGridLayout* layout = new QGridLayout(this);
@@ -105,7 +103,7 @@ void QSimulationInterface::setOwner()
         dlg.init(PrpShopMain::ResManager(), intf->getKey()->getLocation(), kSceneObject);
     if (dlg.exec() == QDialog::Accepted) {
         intf->setOwner(dlg.selection());
-        fOwnerLink->setKey(intf->getOwner());
+        fOwnerLink->setKey(intf->getOwner(), false);
     }
 }
 
@@ -127,7 +125,6 @@ void QSimulationInterface::setPhysical()
     if (dlg.exec() == QDialog::Accepted) {
         intf->setPhysical(dlg.selection());
         fPhysicalLink->setKey(intf->getPhysical());
-        fPhysicalLink->setText(~intf->getPhysical()->getName());
     }
 }
 
@@ -135,6 +132,5 @@ void QSimulationInterface::unsetPhysical()
 {
     plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
     intf->setPhysical(plKey());
-    fPhysicalLink->setCreatable(NULL);
-    fPhysicalLink->setText("(Null)");
+    fPhysicalLink->setCreatable(NULL, "(None)");
 }

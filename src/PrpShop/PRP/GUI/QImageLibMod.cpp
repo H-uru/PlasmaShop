@@ -24,8 +24,7 @@ QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
     plImageLibMod* mod = plImageLibMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(mod);
+    fSynchObjLink->setCreatable(mod, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fImages = new QKeyList(mod->getKey(), this);

@@ -28,8 +28,7 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
     pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QGroupBox* grpFlags = new QGroupBox(tr("Flags"), this);
@@ -62,9 +61,6 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
 
     fScrollCtrl = new QCreatableLink(this);
     fScrollCtrl->setKey(ctrl->getScrollCtrl());
-    fScrollCtrl->setText(ctrl->getScrollCtrl().Exists()
-                           ? ~ctrl->getScrollCtrl()->getName()
-                           : "(None)");
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -96,7 +92,6 @@ void QGUIListBoxMod::setScrollCtrl()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setScrollCtrl(dlg.selection());
         fScrollCtrl->setKey(ctrl->getScrollCtrl());
-        fScrollCtrl->setText(~ctrl->getScrollCtrl()->getName());
     }
 }
 
@@ -104,6 +99,5 @@ void QGUIListBoxMod::unsetScrollCtrl()
 {
     pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
     ctrl->setScrollCtrl(plKey());
-    fScrollCtrl->setCreatable(NULL);
-    fScrollCtrl->setText("(None)");
+    fScrollCtrl->setCreatable(NULL, "(None)");
 }

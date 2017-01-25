@@ -102,8 +102,7 @@ QCubicEnvironmap::QCubicEnvironmap(plCreatable* pCre, QWidget* parent)
     }
 
     fPreviewLink = new QCreatableLink(this, false);
-    fPreviewLink->setText(tr("Preview"));
-    fPreviewLink->setCreatable(tex);
+    fPreviewLink->setCreatable(tex, tr("Preview"));
     fPreviewLink->setForceType(kPreviewCubicEnvironmap);
 
     QGridLayout* layout = new QGridLayout(this);

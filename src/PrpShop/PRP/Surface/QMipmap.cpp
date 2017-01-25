@@ -285,8 +285,7 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
     layProps->addWidget(new QLabel(plBitmap::kSpaceNames[tex->getSpace()], grpProps), 1, 4);
 
     fPreviewLink = new QCreatableLink(this, false);
-    fPreviewLink->setText(tr("Preview"));
-    fPreviewLink->setCreatable(tex);
+    fPreviewLink->setCreatable(tex, tr("Preview"));
     fPreviewLink->setForceType(kPreviewMipmap);
 
     QLinkLabel* xDDSLink = new QLinkLabel(tr("Export DDS..."), this);
@@ -460,14 +459,14 @@ static bool getJAlphaSurface(const plDDSurface& dds, plMipmap* tex)
 void QMipmap::onExportDDS()
 {
     plMipmap* tex = plMipmap::Convert(fCreatable);
-    QString filename = (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
+    QString filename = st2qstr(tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
     filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), getExportDir() + "/" + filename,
                                             "DDS Files (*.dds)");
     if (filename.isEmpty())
         return;
 
     hsFileStream S;
-    if (!S.open(~filename, fmCreate)) {
+    if (!S.open(qstr2st(filename), fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting DDS"),
                               tr("Error: Could not open file %1 for writing").arg(filename),
                               QMessageBox::Ok);
@@ -491,7 +490,7 @@ void QMipmap::onExportJPEG()
     QString exportDir = getExportDir();
 
     plMipmap* tex = plMipmap::Convert(fCreatable);
-    exportDir.append("/" + (~tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
+    exportDir.append("/" + st2qstr(tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
     QString filter = tex->isImageJPEG() ? "JPEG Files (*.jpg)" : "DDS Files (*.dds)";
     QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG Image"),
                                                     exportDir, filter);
@@ -506,7 +505,7 @@ void QMipmap::onExportJPEG()
         return;
 
     hsFileStream S;
-    if (!S.open(~filename, fmCreate)) {
+    if (!S.open(qstr2st(filename), fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
                               tr("Error: Could not open file %1 for writing").arg(filename),
                               QMessageBox::Ok);
@@ -518,7 +517,7 @@ void QMipmap::onExportJPEG()
         makeJColorSurface(tex, &S);
     S.close();
 
-    if (!S.open(~alphaFname, fmCreate)) {
+    if (!S.open(qstr2st(alphaFname), fmCreate)) {
         QMessageBox::critical(this, tr("Error exporting JPEG"),
                               tr("Error: Could not open file %1 for writing").arg(alphaFname),
                               QMessageBox::Ok);
@@ -542,7 +541,7 @@ void QMipmap::onImportDDS()
         return;
 
     hsFileStream S;
-    if (!S.open(~filename, fmRead)) {
+    if (!S.open(qstr2st(filename), fmRead)) {
         QMessageBox::critical(this, tr("Error importing DDS"),
                               tr("Error: Could not open file %1 for reading").arg(filename),
                               QMessageBox::Ok);
@@ -580,7 +579,7 @@ void QMipmap::onImportJPEG()
     plMipmap newTex;
     hsFileStream S;
     bool valid = true;
-    if (!S.open(~filename, fmRead)) {
+    if (!S.open(qstr2st(filename), fmRead)) {
         QMessageBox::critical(this, tr("Error importing JPEG"),
                               tr("Error: Could not open file %1 for reading").arg(filename),
                               QMessageBox::Ok);
@@ -608,7 +607,7 @@ void QMipmap::onImportJPEG()
     }
     S.close();
 
-    if (!S.open(~alphaFname, fmRead)) {
+    if (!S.open(qstr2st(alphaFname), fmRead)) {
         QMessageBox::critical(this, tr("Error importing JPEG"),
                               tr("Error: Could not open file %1 for reading").arg(alphaFname),
                               QMessageBox::Ok);

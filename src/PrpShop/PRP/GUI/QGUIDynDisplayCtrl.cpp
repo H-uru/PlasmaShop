@@ -26,8 +26,7 @@ QGUIDynDisplayCtrl::QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent)
     pfGUIDynDisplayCtrl* ctrl = pfGUIDynDisplayCtrl::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QTabWidget* keyTabs = new QTabWidget(this);

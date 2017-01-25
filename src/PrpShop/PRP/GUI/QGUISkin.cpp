@@ -37,9 +37,6 @@ QGUISkin::QGUISkin(plCreatable* pCre, QWidget* parent)
 
     fTexture = new QCreatableLink(this);
     fTexture->setKey(skin->getTexture());
-    fTexture->setText(skin->getTexture().Exists()
-                     ? ~skin->getTexture()->getName()
-                     : "(None)");
 
     fElements = new QComboBox(this);
     fElements->addItems(QStringList() << tr("Upper-Left Corner") << tr("Top Span")
@@ -122,7 +119,6 @@ void QGUISkin::setTexture()
     if (dlg.exec() == QDialog::Accepted) {
         skin->setTexture(dlg.selection());
         fTexture->setKey(skin->getTexture());
-        fTexture->setText(~skin->getTexture()->getName());
     }
 }
 
@@ -130,8 +126,7 @@ void QGUISkin::unsetTexture()
 {
     pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
     skin->setTexture(plKey());
-    fTexture->setCreatable(NULL);
-    fTexture->setText("(None)");
+    fTexture->setCreatable(NULL, "(None)");
 }
 
 void QGUISkin::setElement(int which)

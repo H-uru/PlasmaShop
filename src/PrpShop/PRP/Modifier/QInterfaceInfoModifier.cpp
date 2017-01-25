@@ -25,8 +25,7 @@ QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* paren
     plInterfaceInfoModifier* obj = plInterfaceInfoModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fIntfKeys = new QKeyList(obj->getKey(), this);

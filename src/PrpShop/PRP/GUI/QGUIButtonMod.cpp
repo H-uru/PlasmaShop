@@ -28,14 +28,13 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
     pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
 
     fControlModLink = new QCreatableLink(this, false);
-    fControlModLink->setText(tr("GUI Control Common Properties"));
-    fControlModLink->setCreatable(ctrl);
+    fControlModLink->setCreatable(ctrl, tr("GUI Control Common Properties"));
     fControlModLink->setForceType(kGUIControlMod);
 
     QTabWidget* animTabs = new QTabWidget(this);
     QWidget* animationGrp = new QWidget(animTabs);
     fAnimName = new QLineEdit(animationGrp);
-    fAnimName->setText(~ctrl->getAnimationName());
+    fAnimName->setText(st2qstr(ctrl->getAnimationName()));
     fAnimationKeys = new QKeyList(ctrl->getKey(), animationGrp);
     for (size_t i=0; i<ctrl->getAnimationKeys().size(); i++)
         fAnimationKeys->addKey(ctrl->getAnimationKeys()[i]);
@@ -46,7 +45,7 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
 
     QWidget* mouseOverAnimGrp = new QWidget(animTabs);
     fMouseOverAnimName = new QLineEdit(mouseOverAnimGrp);
-    fMouseOverAnimName->setText(~ctrl->getMouseOverAnimName());
+    fMouseOverAnimName->setText(st2qstr(ctrl->getMouseOverAnimName()));
     fMouseOverAnimKeys = new QKeyList(ctrl->getKey(), mouseOverAnimGrp);
     for (size_t i=0; i<ctrl->getMouseOverKeys().size(); i++)
         fMouseOverAnimKeys->addKey(ctrl->getMouseOverKeys()[i]);
@@ -64,9 +63,6 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
 
     fDraggable = new QCreatableLink(this);
     fDraggable->setKey(ctrl->getDraggable());
-    fDraggable->setText(ctrl->getDraggable().Exists()
-                        ? ~ctrl->getDraggable()->getName()
-                        : "(None)");
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -88,8 +84,8 @@ void QGUIButtonMod::saveDamage()
 {
     pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
 
-    ctrl->setAnimationName(~fAnimName->text());
-    ctrl->setMouseOverAnimName(~fMouseOverAnimName->text());
+    ctrl->setAnimationName(qstr2st(fAnimName->text()));
+    ctrl->setMouseOverAnimName(qstr2st(fMouseOverAnimName->text()));
 
     ctrl->clearAnimationKeys();
     QList<plKey> animKeys = fAnimationKeys->keys();
@@ -115,7 +111,6 @@ void QGUIButtonMod::setDraggable()
     if (dlg.exec() == QDialog::Accepted) {
         ctrl->setDraggable(dlg.selection());
         fDraggable->setKey(ctrl->getDraggable());
-        fDraggable->setText(~ctrl->getDraggable()->getName());
     }
 }
 
@@ -123,6 +118,5 @@ void QGUIButtonMod::unsetDraggable()
 {
     pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
     ctrl->setDraggable(plKey());
-    fDraggable->setCreatable(NULL);
-    fDraggable->setText("(None)");
+    fDraggable->setCreatable(NULL, "(None)");
 }

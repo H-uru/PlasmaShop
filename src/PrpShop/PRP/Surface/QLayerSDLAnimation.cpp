@@ -26,12 +26,11 @@ QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
     plLayerSDLAnimation* lay = plLayerSDLAnimation::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
-    fLayerAnimLink->setText(tr("Layer Animation Properties"));
-    fLayerAnimLink->setCreatable(lay);
+    fLayerAnimLink->setCreatable(lay, tr("Layer Animation Properties"));
     fLayerAnimLink->setForceType(kLayerAnimation);
 
     fVarName = new QLineEdit(this);
-    fVarName->setText(~lay->getVarName());
+    fVarName->setText(st2qstr(lay->getVarName()));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -43,5 +42,5 @@ QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
 void QLayerSDLAnimation::saveDamage()
 {
     plLayerSDLAnimation* lay = plLayerSDLAnimation::Convert(fCreatable);
-    lay->setVarName(~fVarName->text());
+    lay->setVarName(qstr2st(fVarName->text()));
 }

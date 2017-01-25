@@ -25,8 +25,7 @@ QSpawnModifier::QSpawnModifier(plCreatable* pCre, QWidget* parent)
     plSpawnModifier* obj = plSpawnModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGridLayout* layout = new QGridLayout(this);

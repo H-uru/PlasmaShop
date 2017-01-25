@@ -25,8 +25,7 @@ QMaintainersMarkerModifier::QMaintainersMarkerModifier(plCreatable* pCre, QWidge
     plMaintainersMarkerModifier* obj = plMaintainersMarkerModifier::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     fMarkerCalibration = new QComboBox();

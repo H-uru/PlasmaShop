@@ -162,10 +162,10 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             fRecordLabels[kDevMRecordVersion]->setText(QString::number(record.getVersion()));
             fRecordLabels[kDevMFlags]->setText(getFlagName(record.getFlags()));
             fRecordLabels[kDevMDeviceType]->setText(getDeviceTypeName(record.getDeviceType()));
-            fRecordLabels[kDevMDriverDesc]->setText(record.getDriverDesc().cstr());
-            fRecordLabels[kDevMDriverName]->setText(record.getDriverName().cstr());
-            fRecordLabels[kDevMDriverVersion]->setText(record.getDriverVersion().cstr());
-            fRecordLabels[kDevMDeviceDesc]->setText(record.getDeviceDesc().cstr());
+            fRecordLabels[kDevMDriverDesc]->setText(st2qstr(record.getDriverDesc()));
+            fRecordLabels[kDevMDriverName]->setText(st2qstr(record.getDriverName()));
+            fRecordLabels[kDevMDriverVersion]->setText(st2qstr(record.getDriverVersion()));
+            fRecordLabels[kDevMDeviceDesc]->setText(st2qstr(record.getDeviceDesc()));
             fRecordLabels[kDevMLayersAtOnce]->setText(QString::number(record.getLayersAtOnce()));
             QString recordMemBytes = QString::number(record.getMemoryBytes());
             QString recordMemBytesMB = QString::number(record.getMemoryBytes() / 1024 / 1024);
@@ -203,7 +203,7 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             connect(fModeCheckBoxWindowed, SIGNAL(stateChanged(int)), this, SLOT(makeDirty()));
             connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
         } catch (std::exception &e) {
-            plDebug::Error("Error reading dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
+            plDebug::Error("Error reading dev_mode.dat file {}: {}", fFilename.toUtf8().data(), e.what());
             return false;
         }
     }
@@ -226,7 +226,7 @@ bool QPlasmaDevModeDat::saveDeviceModeData(hsStream* S)
         //Write to stream
         fModeRecord.write(S);
     } catch (std::exception &e) {
-        plDebug::Error("Error writing dev_mode.dat file %s: %s", fFilename.toUtf8().data(), e.what());
+        plDebug::Error("Error writing dev_mode.dat file {}: {}", fFilename.toUtf8().data(), e.what());
         return false;
     }
     return true;

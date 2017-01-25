@@ -27,8 +27,7 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
     plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
 
     fSynchObjLink = new QCreatableLink(this, false);
-    fSynchObjLink->setText(tr("Synch Flags"));
-    fSynchObjLink->setCreatable(obj);
+    fSynchObjLink->setCreatable(obj, tr("Synch Flags"));
     fSynchObjLink->setForceType(kSynchedObject);
 
     QGroupBox* grpFlags = new QGroupBox(tr("OneShot Flags"), this);
@@ -49,7 +48,7 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fNoSeek, 1, 1);
 
     fAnimName = new QLineEdit(this);
-    fAnimName->setText(~obj->getAnimName());
+    fAnimName->setText(st2qstr(obj->getAnimName()));
     fSeekDuration = new QFloatEdit(this);
     fSeekDuration->setValue(obj->getSeekDuration());
 
@@ -72,6 +71,6 @@ void QOneShotMod::saveDamage()
     obj->setSmartSeek(fSmartSeek->isChecked());
     obj->setNoSeek(fNoSeek->isChecked());
 
-    obj->setAnimName(~fAnimName->text());
+    obj->setAnimName(qstr2st(fAnimName->text()));
     obj->setSeekDuration(fSeekDuration->value());
 }

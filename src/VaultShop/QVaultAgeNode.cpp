@@ -43,7 +43,7 @@ plVaultNode QVaultAgeNode::saveNode()
     if (age == NULL)
         return plVaultNode();
 
-    age->setAgeInstanceGuid(plServerGuid::FromString(~fAgeInstanceGuid->text()));
+    age->setAgeInstanceGuid(plServerGuid::FromString(qstr2st(fAgeInstanceGuid->text())));
     return fNode;
 }
 
@@ -53,5 +53,5 @@ void QVaultAgeNode::IRefreshNode()
     if (age == NULL)
         return;
 
-    fAgeInstanceGuid->setText(~age->getAgeInstanceGuid().toString());
+    fAgeInstanceGuid->setText(st2qstr(age->getAgeInstanceGuid().toString()));
 }

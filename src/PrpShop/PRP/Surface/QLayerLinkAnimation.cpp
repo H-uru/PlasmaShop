@@ -28,15 +28,11 @@ QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
     plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
 
     fLayerAnimLink = new QCreatableLink(this, false);
-    fLayerAnimLink->setText(tr("Layer Animation Properties"));
-    fLayerAnimLink->setCreatable(lay);
+    fLayerAnimLink->setCreatable(lay, tr("Layer Animation Properties"));
     fLayerAnimLink->setForceType(kLayerAnimation);
 
     fLinkKey = new QCreatableLink(this);
     fLinkKey->setKey(lay->getLinkKey());
-    fLinkKey->setText(lay->getLinkKey().Exists()
-                      ? ~lay->getLinkKey()->getName()
-                      : "(None)");
     fLeavingAge = new QCheckBox(tr("Leaving Age"));
     fLeavingAge->setChecked(lay->getLeavingAge());
 
@@ -68,7 +64,6 @@ void QLayerLinkAnimation::setLinkKey()
     if (dlg.exec() == QDialog::Accepted) {
         lay->setLinkKey(dlg.selection());
         fLinkKey->setKey(lay->getLinkKey());
-        fLinkKey->setText(~lay->getLinkKey()->getName());
     }
 }
 
@@ -76,6 +71,5 @@ void QLayerLinkAnimation::unsetLinkKey()
 {
     plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
     lay->setLinkKey(plKey());
-    fLinkKey->setCreatable(NULL);
-    fLinkKey->setText("(None)");
+    fLinkKey->setCreatable(NULL, "(None)");
 }

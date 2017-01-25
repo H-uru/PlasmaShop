@@ -28,8 +28,7 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
     plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
 
     fDetectorLink = new QCreatableLink(this, false);
-    fDetectorLink->setText(tr("Detector Properties"));
-    fDetectorLink->setCreatable(obj);
+    fDetectorLink->setCreatable(obj, tr("Detector Properties"));
     fDetectorLink->setForceType(kDetectorModifier);
 
     QGridLayout* layout = new QGridLayout(this);
@@ -68,9 +67,6 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
 
         fSubworld = new QCreatableLink(this);
         fSubworld->setKey(subDet->getSubworld());
-        fSubworld->setText(subDet->getSubworld().Exists()
-                           ? ~subDet->getSubworld()->getName()
-                           : "(None)");
         fBoolParam = new QCheckBox(tr("On Exit"), this);
         fBoolParam->setChecked(subDet->getOnExit());
 
@@ -124,7 +120,6 @@ void QCollisionDetector::setSubworld()
     if (dlg.exec() == QDialog::Accepted) {
         obj->setSubworld(dlg.selection());
         fSubworld->setKey(obj->getSubworld());
-        fSubworld->setText(~obj->getSubworld()->getName());
     }
 }
 
@@ -132,6 +127,5 @@ void QCollisionDetector::unsetSubworld()
 {
     plSubworldRegionDetector* obj = plSubworldRegionDetector::Convert(fCreatable);
     obj->setSubworld(plKey());
-    fSubworld->setCreatable(NULL);
-    fSubworld->setText("(None)");
+    fSubworld->setCreatable(NULL, "(None)");
 }

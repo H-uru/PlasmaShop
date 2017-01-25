@@ -43,7 +43,7 @@ private:
     bool fIOwnRecord;
     plResManager* fResMgr;
     plSDLMgr* fSDLMgr;
-    plString fSDLName;
+    ST::string fSDLName;
     int fSDLVersion;
 
     QTreeWidget* fSDLList;

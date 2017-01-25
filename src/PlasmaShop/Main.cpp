@@ -1395,7 +1395,7 @@ int main(int argc, char* argv[])
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PlasmaShop.log";
-    plDebug::InitFile(plDebug::kDLAll, ~logpath);
+    plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
 
