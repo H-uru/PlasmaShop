@@ -13,11 +13,13 @@ set(PrpShop_MOC_Headers
     PRP/QMatrix44.h
     PRP/QObjLink.h
     PRP/QSceneNode.h
+    PRP/QVector3.h
     PRP/Animation/QAnimTimeConvert.h
     PRP/Audio/QAudible.h
     PRP/Audio/QSoundBuffer.h
     PRP/Audio/QWinSound.h
     PRP/Avatar/QMultistageBehMod.h
+    PRP/Avatar/QAvLadderMod.h
     PRP/GUI/QGUIButtonMod.h
     PRP/GUI/QGUICheckBoxCtrl.h
     PRP/GUI/QGUIClickMapCtrl.h
@@ -82,11 +84,13 @@ set(PrpShop_Sources
     PRP/QMatrix44.cpp
     PRP/QObjLink.cpp
     PRP/QSceneNode.cpp
+    PRP/QVector3.cpp
     PRP/Animation/QAnimTimeConvert.cpp
     PRP/Audio/QAudible.cpp
     PRP/Audio/QSoundBuffer.cpp
     PRP/Audio/QWinSound.cpp
     PRP/Avatar/QMultistageBehMod.cpp
+    PRP/Avatar/QAvLadderMod.cpp
     PRP/GUI/QGUIButtonMod.cpp
     PRP/GUI/QGUICheckBoxCtrl.cpp
     PRP/GUI/QGUIClickMapCtrl.cpp

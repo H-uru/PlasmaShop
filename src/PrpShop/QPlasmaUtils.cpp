@@ -25,7 +25,7 @@ enum {
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
     kIcoGUICheck, kIcoGUIClick, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2,
     kIcoGUIListBox, kIcoGUIProgress, kIcoGUIText, kIcoGUIUpDown,
-    kIcoGUIRadioGroup, kIcoGUIKnob, kIcoSynch, kNumIcons
+    kIcoGUIRadioGroup, kIcoGUIKnob, kIcoSynch, kIcoLadder, kNumIcons
 };
 
 QIcon pqGetTypeIcon(int classType)
@@ -43,6 +43,7 @@ QIcon pqGetTypeIcon(int classType)
         QIcon(":/img/gui_progress.png"), QIcon(":/img/gui_text.png"),
         QIcon(":/img/gui_updown.png"), QIcon(":/img/gui_radiogroup.png"),
         QIcon(":/img/gui_knob.png"), QIcon(":/img/synch.png"),
+        QIcon(":/img/ladder.png"),
     };
 
     switch (classType & kRealType_Mask) {
@@ -62,10 +63,14 @@ QIcon pqGetTypeIcon(int classType)
         return s_icons[kIcoSim];
     case kAudioInterface:
         return s_icons[kIcoSound];
+    case kAvLadderMod:
+        return s_icons[kIcoLadder];
     case kDrawInterface:
         return s_icons[kIcoDraw2];
     case kDrawableSpans:
         return s_icons[kIcoDraw];
+    case kLadderModifier:
+        return s_icons[kIcoLadder];
     case kLayer:
         return s_icons[kIcoLayer];
     case kLayerAnimation:
@@ -578,7 +583,7 @@ std::vector<short> pqGetValidKOTypes()
 {
     // Please keep this sorted alphabetically by friendly class names
     static short s_typeList[] = {
-        k2WayWinAudible, kAudible, kAudibleNull, kAudioInterface,
+        k2WayWinAudible, kAudible, kAudibleNull, kAudioInterface, kAvLadderMod,
         kCollisionDetector, kCoordinateInterface, kCubicEnvironmap,
         kDetectorModifier, kDirectShadowMaster, kDrawInterface, kDynamicTextMap,
         kFadeOpacityMod, kGUIButtonMod, kGUICheckBoxCtrl, kGUIClickMapCtrl,
