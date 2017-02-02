@@ -72,6 +72,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Audio/QSoundBuffer.h"
 #include "PRP/Audio/QWinSound.h"
 #include "PRP/Avatar/QMultistageBehMod.h"
+#include "PRP/Avatar/QAvLadderMod.h"
 #include "PRP/GUI/QGUIButtonMod.h"
 #include "PRP/GUI/QGUICheckBoxCtrl.h"
 #include "PRP/GUI/QGUIClickMapCtrl.h"
@@ -140,6 +141,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QAudible(pCre, parent);
     case kAudioInterface:
         return new QAudioInterface(pCre, parent);
+    case kAvLadderMod:
+        return new QAvLadderMod(pCre, parent);
     case kCollisionDetector:
         return new QCollisionDetector(pCre, parent);
     case kCoordinateInterface:

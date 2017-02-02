@@ -83,4 +83,17 @@ inline unsigned int qHash(const plKey& key)
 }
 */
 
+// Simplified backport of QOverload
+#if (QT_VERSION < QT_VERSION_CHECK(5, 7, 0))
+template <typename... Args>
+struct QOverload
+{
+    template <typename R, typename T>
+    static Q_DECL_CONSTEXPR auto of(R(T::*ptr)(Args...)) Q_DECL_NOTHROW -> decltype(ptr)
+    {
+        return ptr;
+    }
+};
+#endif
+
 #endif
