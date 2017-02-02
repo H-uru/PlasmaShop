@@ -1,7 +1,5 @@
-set(VaultShop_MOC_Headers
+set(VaultShop_Headers
     Main.h
-    ../QColorEdit.h
-    ../QLinkLabel.h
     QGameServerState.h
     QVaultNode.h
     QVaultNodeEdit.h
@@ -19,8 +17,6 @@ set(VaultShop_MOC_Headers
 
 set(VaultShop_Sources
     Main.cpp
-    ../QColorEdit.cpp
-    ../QLinkLabel.cpp
     QGameServerState.cpp
     QVaultNode.cpp
     QVaultNodeEdit.cpp
@@ -36,37 +32,20 @@ set(VaultShop_Sources
     QVaultImageNode.cpp
 )
 
-if(NOT WIN32 AND NOT APPLE)
-    set(VaultShop_Sources "${VaultShop_Sources}"
-        ../3rdParty/qticonloader.cpp
-    )
-endif()
-
 #if(WIN32)
 #    set(VaultShop_Sources ${VaultShop_Sources} res/VaultShop.rc)
 #endif()
 
-if(PS_USE_QT5)
-    find_package(Qt5Widgets REQUIRED)
-endif()
-
 # generate rules for building source files from the resources
-qtx_add_resources(VaultShop_RCC images.qrc)
-# generate rules for building source files that moc generates
-qtx_wrap_cpp(VaultShop_MOC "${VaultShop_MOC_Headers}")
-
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${HSPlasma_INCLUDE_DIRS}")
+qt5_add_resources(VaultShop_RCC images.qrc)
 
 add_executable(VaultShop WIN32 MACOSX_BUNDLE
-               ${VaultShop_Sources} ${VaultShop_MOC} ${VaultShop_RCC})
-if(PS_USE_QT5)
-    target_link_libraries(VaultShop Qt5::Widgets)
-elseif(PS_USE_QT4)
-    target_link_libraries(VaultShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
-                                    ${QT_QTGUI_LIBRARY})
-endif()
+               ${VaultShop_Sources} ${VaultShop_Headers} ${VaultShop_RCC})
+target_link_libraries(VaultShop PSCommon Qt5::Widgets)
 target_link_libraries(VaultShop HSPlasma)
+if(NOT WIN32 AND NOT APPLE)
+    target_link_libraries(VaultShop PSIconLoader)
+endif()
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

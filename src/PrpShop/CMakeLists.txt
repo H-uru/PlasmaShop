@@ -1,9 +1,5 @@
-set(PrpShop_MOC_Headers
+set(PrpShop_Headers
     Main.h
-    ../QColorEdit.h
-    ../QLinkLabel.h
-    ../QNumerics.h
-    ../QHexWidget.h
     QKeyDialog.h
     QPrcEditor.h
     QHexViewer.h
@@ -69,10 +65,6 @@ set(PrpShop_MOC_Headers
 
 set(PrpShop_Sources
     Main.cpp
-    ../QColorEdit.cpp
-    ../QLinkLabel.cpp
-    ../QNumerics.cpp
-    ../QHexWidget.cpp
     QKeyDialog.cpp
     QPlasmaUtils.cpp
     QPlasmaTreeItem.cpp
@@ -139,30 +131,17 @@ set(PrpShop_Sources
     PRP/Render/QTrackball.cpp
 )
 
-if(NOT WIN32 AND NOT APPLE)
-    set(PrpShop_Sources "${PrpShop_Sources}"
-        ../3rdParty/qticonloader.cpp
-    )
-endif()
-
 if(WIN32)
     set(PrpShop_Sources ${PrpShop_Sources} res/PrpShop.rc)
 endif()
 
-if(PS_USE_QT5)
-    find_package(Qt5Widgets REQUIRED)
-    find_package(Qt5OpenGL REQUIRED)
-endif()
+find_package(Qt5OpenGL REQUIRED)
 
 # generate rules for building source files from the resources
-qtx_add_resources(PrpShop_RCC images.qrc)
-# generate rules for building source files that moc generates
-qtx_wrap_cpp(PrpShop_MOC "${PrpShop_MOC_Headers}")
+qt5_add_resources(PrpShop_RCC images.qrc)
 
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${PROJECT_SOURCE_DIR}/src/PrpShop")
-include_directories("${HSPlasma_INCLUDE_DIRS}")
 
 # QtOpenGL dependencies (maybe the Qt OpenGL cmake stuff is broken, but I had
 # to copy this here from Qt4ConfigDependentSettings.cmake)
@@ -170,15 +149,13 @@ find_package(OpenGL)
 set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
-               ${PrpShop_Sources} ${PrpShop_MOC} ${PrpShop_RCC})
-if(PS_USE_QT5)
-    target_link_libraries(PrpShop Qt5::Widgets Qt5::OpenGL)
-elseif(PS_USE_QT4)
-    target_link_libraries(PrpShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
-                                  ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY})
-endif()
+               ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_RCC})
+target_link_libraries(PrpShop PSCommon Qt5::Widgets Qt5::OpenGL)
 target_link_libraries(PrpShop qscintilla2-ps3 HSPlasma)
 target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
+if(NOT WIN32 AND NOT APPLE)
+    target_link_libraries(PrpShop PSIconLoader)
+endif()
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

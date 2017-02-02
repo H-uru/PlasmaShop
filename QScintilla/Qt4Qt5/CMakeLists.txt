@@ -1,4 +1,4 @@
-set(QScintilla_MOC_Headers
+set(QScintilla_Headers
     ./QsciPS3/qsciscintilla.h
     ./QsciPS3/qsciscintillabase.h
     ./QsciPS3/qsciabstractapis.h
@@ -91,14 +91,10 @@ set(QScintilla_Sources
     ../src/XPM.cpp
 )
 
-if(PS_USE_QT5)
-    find_package(Qt5Widgets REQUIRED)
-    find_package(Qt5PrintSupport REQUIRED)
-    if(APPLE)
-        find_package(Qt5MacExtras REQUIRED)
-    endif()
+find_package(Qt5PrintSupport REQUIRED)
+if(APPLE)
+    find_package(Qt5MacExtras REQUIRED)
 endif()
-qtx_wrap_cpp(QScintilla_MOC "${QScintilla_MOC_Headers}")
 
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/include")
@@ -107,12 +103,8 @@ include_directories("${PROJECT_SOURCE_DIR}/QScintilla/src")
 
 add_definitions(-DQT -DSCINTILLA_QT -DSCI_LEXER)
 
-add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_MOC})
-if(PS_USE_QT5)
-    target_link_libraries(qscintilla2-ps3 Qt5::Widgets Qt5::PrintSupport)
-    if(APPLE)
-        target_link_libraries(qscintilla2-ps3 Qt5::MacExtras)
-    endif()
-elseif(PS_USE_QT4)
-    target_link_libraries(qscintilla2-ps3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+add_library(qscintilla2-ps3 STATIC ${QScintilla_Sources} ${QScintilla_Headers})
+target_link_libraries(qscintilla2-ps3 Qt5::Widgets Qt5::PrintSupport)
+if(APPLE)
+    target_link_libraries(qscintilla2-ps3 Qt5::MacExtras)
 endif()
