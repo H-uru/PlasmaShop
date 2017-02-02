@@ -47,7 +47,6 @@ if(WIN32)
     add_definitions(-DPLAT_FONT="Courier New")
 else()
     add_definitions(-DPLAT_FONT="Monospace")
-    add_definitions(-DDATA_PATH="/usr/local/share/PlasmaShop")
 endif()
 
 # do this after QScintilla - it generates tons of warnings

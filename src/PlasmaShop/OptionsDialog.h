@@ -63,7 +63,6 @@ private slots:
 
 // Magic for getting special paths
 QString GetPSBinPath(QString filename);
-QString GetPSDataPath(QString filename);
 QString GetAppDataPath();
 QString GetDocumentsPath();
 

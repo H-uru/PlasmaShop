@@ -273,17 +273,6 @@ QString GetPSBinPath(QString filename)
     return QDir(s_binBasePath).absoluteFilePath(filename);
 }
 
-QString GetPSDataPath(QString filename)
-{
-#ifdef Q_OS_WIN
-    // Windows stores everything in Program Files
-    return QDir(s_binBasePath).absoluteFilePath(filename);
-#else
-    // POSIX stores data in a separate location
-    return QDir(DATA_PATH).absoluteFilePath(filename);
-#endif
-}
-
 QString GetAppDataPath()
 {
 #ifdef Q_OS_WIN
