@@ -19,7 +19,7 @@
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QMenu>
-#include "../Main.h"
+#include "Main.h"
 
 /* QCreatableLink */
 QCreatableLink::QCreatableLink(QWidget* parent, bool canEdit)

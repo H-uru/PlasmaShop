@@ -17,13 +17,13 @@
 #ifndef _QGUIRADIOGROUPCTRL_H
 #define _QGUIRADIOGROUPCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <QCheckBox>
 #include <QComboBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIRadioGroupCtrl : public QCreatable {
     Q_OBJECT

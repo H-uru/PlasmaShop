@@ -17,8 +17,8 @@
 #include "QGUIMultiLineEditCtrl.h"
 
 #include <QGridLayout>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 /* QGUIMultiLineEditCtrl */
 QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)

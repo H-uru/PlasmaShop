@@ -17,10 +17,10 @@
 #ifndef _QGUIMULTILINEEDITCTRL_H
 #define _QGUIMULTILINEEDITCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIMultiLineEditCtrl : public QCreatable {
     Q_OBJECT

@@ -17,8 +17,8 @@
 #include "QGUIUpDownPairMod.h"
 
 #include <QGridLayout>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 /* QGUIUpDownPairMod */
 QGUIUpDownPairMod::QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent)

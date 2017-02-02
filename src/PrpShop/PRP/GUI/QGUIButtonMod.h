@@ -17,12 +17,12 @@
 #ifndef _QGUIBUTTONMOD_H
 #define _QGUIBUTTONMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIButtonMod.h>
 #include <QComboBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIButtonMod : public QCreatable {
     Q_OBJECT

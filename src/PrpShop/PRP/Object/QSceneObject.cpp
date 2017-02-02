@@ -19,9 +19,9 @@
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QGridLayout>
-#include "../../QPlasmaUtils.h"
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QPlasmaUtils.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
             : QCreatable(pCre, kSceneObject, parent)

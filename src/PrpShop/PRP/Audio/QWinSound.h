@@ -17,12 +17,12 @@
 #ifndef _QWINSOUND_H
 #define _QWINSOUND_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Audio/plEAXEffects.h>
 #include <QComboBox>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QEaxSourceSettings : public QWidget {
     Q_OBJECT

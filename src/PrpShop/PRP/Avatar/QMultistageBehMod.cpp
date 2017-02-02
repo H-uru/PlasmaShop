@@ -21,7 +21,7 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QMenu>
-#include "../../Main.h"
+#include "Main.h"
 
 /* QAnimStage */
 static QString s_PlayTypes[] = { "None", "Key", "Auto" };

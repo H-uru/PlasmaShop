@@ -17,12 +17,12 @@
 #ifndef _QGUICHECKBOXCTRL_H
 #define _QGUICHECKBOXCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUICheckBoxCtrl.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUICheckBoxCtrl : public QCreatable {
     Q_OBJECT

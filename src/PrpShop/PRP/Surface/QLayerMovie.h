@@ -17,11 +17,11 @@
 #ifndef _QLAYERMOVIE_H
 #define _QLAYERMOVIE_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Surface/plLayerMovie.h>
 #include <QLineEdit>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QLayerMovie : public QCreatable {
     Q_OBJECT

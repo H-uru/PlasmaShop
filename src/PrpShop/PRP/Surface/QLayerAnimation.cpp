@@ -21,8 +21,8 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <ResManager/plFactory.h>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
                : QCreatable(pCre, kLayerAnimation, parent)

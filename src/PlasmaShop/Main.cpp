@@ -30,7 +30,7 @@
 #include <Debug/plDebug.h>
 
 #include "Main.h"
-#include "../QPlasma.h"
+#include "QPlasma.h"
 #include "OptionsDialog.h"
 #include "QPlasmaTextDoc.h"
 #include "QPlasmaPakFile.h"

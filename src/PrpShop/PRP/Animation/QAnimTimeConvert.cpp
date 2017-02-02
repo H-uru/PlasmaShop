@@ -21,7 +21,7 @@
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QMenu>
-#include "../../Main.h"
+#include "Main.h"
 #include <ResManager/plFactory.h>
 
 /* QATCCurveLink */

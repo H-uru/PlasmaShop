@@ -18,7 +18,7 @@
 #define _QOBJLINK_H
 
 #include <PRP/KeyedObject/hsKeyedObject.h>
-#include "../../QLinkLabel.h"
+#include "QLinkLabel.h"
 
 class QCreatableLink : public QWidget {
     Q_OBJECT

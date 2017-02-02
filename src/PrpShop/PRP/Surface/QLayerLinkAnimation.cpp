@@ -18,9 +18,9 @@
 
 #include <QLabel>
 #include <QGridLayout>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
-#include "../../../QPlasma.h"
+#include "Main.h"
+#include "QKeyDialog.h"
+#include "QPlasma.h"
 
 QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
                    : QCreatable(pCre, kLayerLinkAnimation, parent)

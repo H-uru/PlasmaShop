@@ -19,7 +19,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QGridLayout>
-#include "../../QPlasmaUtils.h"
+#include "QPlasmaUtils.h"
 
 /* QDynamicTextMap */
 QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)

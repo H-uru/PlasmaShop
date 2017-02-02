@@ -17,13 +17,13 @@
 #ifndef _QANIMTIMECONVERT_H
 #define _QANIMTIMECONVERT_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Animation/plAnimTimeConvert.h>
 #include <QLineEdit>
 #include <QCheckBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QATCCurveLink : public QCreatableLink {
     Q_OBJECT

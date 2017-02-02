@@ -17,14 +17,14 @@
 #ifndef _QGUIPOPUPMENU_H
 #define _QGUIPOPUPMENU_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIPopUpMenu.h>
 #include <QCheckBox>
 #include <QTreeWidget>
 #include <QComboBox>
 #include <QDialog>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QPopupMenuItemList : public QTreeWidget {
     Q_OBJECT

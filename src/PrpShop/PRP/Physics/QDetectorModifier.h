@@ -17,11 +17,11 @@
 #ifndef _QDETECTORMODIFIER_H
 #define _QDETECTORMODIFIER_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Physics/plDetectorModifier.h>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QDetectorModifier : public QCreatable {
     Q_OBJECT

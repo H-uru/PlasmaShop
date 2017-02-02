@@ -25,8 +25,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <Util/plDDSurface.h>
-#include "../QLinkLabel.h"
-#include "../../QPlasmaUtils.h"
+#include "QLinkLabel.h"
+#include "QPlasmaUtils.h"
 
 /* Helpers */
 static QString getExportDir()

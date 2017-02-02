@@ -19,7 +19,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QScrollArea>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 /* QPlasmaDevModeDat */
 QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)

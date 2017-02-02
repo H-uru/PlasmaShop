@@ -17,12 +17,12 @@
 #ifndef _QONESHOTMOD_H
 #define _QONESHOTMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Modifier/plOneShotMod.h>
 #include <QLineEdit>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QOneShotMod : public QCreatable {
     Q_OBJECT

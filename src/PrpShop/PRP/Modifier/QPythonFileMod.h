@@ -17,15 +17,15 @@
 #ifndef _QPYTHONFILEMOD_H
 #define _QPYTHONFILEMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Modifier/plPythonFileMod.h>
 #include <QDialog>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QPythonParamList : public QTreeWidget {
     Q_OBJECT

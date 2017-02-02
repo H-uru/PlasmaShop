@@ -17,8 +17,8 @@
 #ifndef _QFADEOPACITYMOD_H
 #define _QFADEOPACITYMOD_H
 
-#include "../QCreatable.h"
-#include "../QObjLink.h"
+#include "PRP/QCreatable.h"
+#include "PRP/QObjLink.h"
 #include <QImage>
 #include <QCheckBox>
 #include <QSpinBox>

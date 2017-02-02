@@ -17,10 +17,10 @@
 #ifndef _QGUIUPDOWNPAIRMOD_H
 #define _QGUIUPDOWNPAIRMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIUpDownPairMod : public QCreatable {
     Q_OBJECT

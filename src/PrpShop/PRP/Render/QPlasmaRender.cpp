@@ -30,7 +30,7 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <cmath>
-#include "../../QPlasmaUtils.h"
+#include "QPlasmaUtils.h"
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 

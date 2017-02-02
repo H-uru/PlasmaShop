@@ -72,6 +72,7 @@ endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 include_directories(${STRING_THEORY_INCLUDE_DIRS})
+include_directories("${PROJECT_SOURCE_DIR}/src")
 
 add_subdirectory(src/PlasmaShop)
 add_subdirectory(src/PrpShop)

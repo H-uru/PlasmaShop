@@ -19,7 +19,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QGridLayout>
-#include "../../QPlasmaUtils.h"
+#include "QPlasmaUtils.h"
 
 /* QCubicEnvironmap */
 QCubicEnvironmap::QCubicEnvironmap(plCreatable* pCre, QWidget* parent)

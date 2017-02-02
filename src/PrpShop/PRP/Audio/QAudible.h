@@ -17,9 +17,9 @@
 #ifndef _QAUDIBLE_H
 #define _QAUDIBLE_H
 
-#include "../QCreatable.h"
-#include "../QKeyList.h"
-#include "../QObjLink.h"
+#include "PRP/QCreatable.h"
+#include "PRP/QKeyList.h"
+#include "PRP/QObjLink.h"
 
 class QAudible : public QCreatable {
     Q_OBJECT

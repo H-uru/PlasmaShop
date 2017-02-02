@@ -19,7 +19,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QGridLayout>
-#include "../../../QPlasma.h"
+#include "QPlasma.h"
 
 QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
            : QCreatable(pCre, kOneShotMod, parent)

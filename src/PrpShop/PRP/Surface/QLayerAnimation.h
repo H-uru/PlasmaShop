@@ -17,12 +17,12 @@
 #ifndef _QLAYERANIMATION_H
 #define _QLAYERANIMATION_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Surface/plLayerAnimation.h>
-#include "../QObjLink.h"
-#include "../QColorEdit.h"
-#include "../QMatrix44.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QMatrix44.h"
+#include "QColorEdit.h"
 
 class QLayerAnimation : public QCreatable {
     Q_OBJECT

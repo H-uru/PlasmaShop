@@ -19,9 +19,9 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QInputDialog>
-#include "../QPlasmaUtils.h"
-#include "../QKeyDialog.h"
-#include "../Main.h"
+#include "QPlasmaUtils.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 /* QKeyList */
 QKeyList::QKeyList(plKey container, QWidget* parent)

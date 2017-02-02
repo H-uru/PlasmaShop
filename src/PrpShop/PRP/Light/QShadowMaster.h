@@ -17,11 +17,11 @@
 #ifndef _QSHADOWMASTER_H
 #define _QSHADOWMASTER_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Light/plShadowMaster.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QShadowMaster : public QCreatable {
     Q_OBJECT

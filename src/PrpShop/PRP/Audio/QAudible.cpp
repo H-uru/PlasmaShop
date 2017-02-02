@@ -18,8 +18,8 @@
 
 #include <QGridLayout>
 #include <PRP/Audio/plAudible.h>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 /* QAudible */
 QAudible::QAudible(plCreatable* pCre, QWidget* parent)

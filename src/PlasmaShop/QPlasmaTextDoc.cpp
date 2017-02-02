@@ -21,7 +21,7 @@
 #include <qticonloader.h>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 #define MARGIN_LINES 0
 #define MARGIN_FOLDERS 1

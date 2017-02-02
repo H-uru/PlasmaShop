@@ -17,8 +17,8 @@
 #ifndef _QSPAWNMODIFIER_H
 #define _QSPAWNMODIFIER_H
 
-#include "../QCreatable.h"
-#include "../QObjLink.h"
+#include "PRP/QCreatable.h"
+#include "PRP/QObjLink.h"
 
 class QSpawnModifier : public QCreatable {
     Q_OBJECT

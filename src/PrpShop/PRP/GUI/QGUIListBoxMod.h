@@ -17,11 +17,11 @@
 #ifndef _QGUILISTBOXMOD_H
 #define _QGUILISTBOXMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIListBoxMod.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIListBoxMod : public QCreatable {
     Q_OBJECT

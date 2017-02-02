@@ -17,11 +17,11 @@
 #ifndef _QSCENEOBJECT_H
 #define _QSCENEOBJECT_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plSceneObject.h>
-#include "../QKeyList.h"
-#include "../QObjLink.h"
+#include "PRP/QKeyList.h"
+#include "PRP/QObjLink.h"
 
 class QSceneObject : public QCreatable {
     Q_OBJECT

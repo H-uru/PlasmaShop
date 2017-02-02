@@ -24,7 +24,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <qticonloader.h>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 #include <ASTree.h>
 #include <data.h>

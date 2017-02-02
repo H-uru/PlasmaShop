@@ -17,15 +17,15 @@
 #ifndef _QLAYER_H
 #define _QLAYER_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Surface/plLayer.h>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QLineEdit>
-#include "../QObjLink.h"
-#include "../QColorEdit.h"
-#include "../QMatrix44.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QMatrix44.h"
+#include "QColorEdit.h"
 
 class QLayer : public QCreatable {
     Q_OBJECT

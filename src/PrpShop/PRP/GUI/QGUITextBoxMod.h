@@ -17,12 +17,12 @@
 #ifndef _QGUITEXTBOXMOD_H
 #define _QGUITEXTBOXMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUITextBoxMod.h>
 #include <QCheckBox>
 #include <QTextEdit>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUITextBoxMod : public QCreatable {
     Q_OBJECT

@@ -21,8 +21,8 @@
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QSpacerItem>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QLayer::QLayer(plCreatable* pCre, QWidget* parent)
       : QCreatable(pCre, kLayer, parent)

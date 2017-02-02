@@ -17,11 +17,11 @@
 #ifndef _QAUDIOINTERFACE_H
 #define _QAUDIOINTERFACE_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plAudioInterface.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QAudioInterface : public QCreatable {
     Q_OBJECT

@@ -17,11 +17,11 @@
 #ifndef _QSYNCHEDOBJECT_H
 #define _QSYNCHEDOBJECT_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plCoordinateInterface.h>
 #include <QCheckBox>
-#include "../QKeyList.h"
+#include "PRP/QKeyList.h"
 
 class QSynchedObject : public QCreatable {
     Q_OBJECT

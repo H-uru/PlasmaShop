@@ -17,10 +17,10 @@
 #ifndef _QMSGFORWARDER_H
 #define _QMSGFORWARDER_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Message/plMsgForwarder.h>
-#include "../QKeyList.h"
+#include "PRP/QKeyList.h"
 
 class QMsgForwarder : public QCreatable {
     Q_OBJECT

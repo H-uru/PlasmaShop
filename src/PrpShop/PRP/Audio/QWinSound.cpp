@@ -20,8 +20,8 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <PRP/Audio/plWin32StaticSound.h>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 /* QEaxSourceSettings */
 QEaxSourceSettings::QEaxSourceSettings(plEAXSourceSettings* eax, QWidget* parent)

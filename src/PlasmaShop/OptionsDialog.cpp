@@ -31,7 +31,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFontDialog>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 #ifdef Q_OS_WIN
     // For SHGetFolderPath
