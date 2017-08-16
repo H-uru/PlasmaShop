@@ -152,7 +152,7 @@ void QPlasmaRender::initializeGL()
     for (it = fLayers.begin(); it != fLayers.end(); it++)
         compileTexture((*it).first, (*it).second.fTexNameId);
 
-    buildNewMode((DrawMode)fDrawMode);
+    buildNewMode(fDrawMode);
 }
 
 void QPlasmaRender::resizeGL(int width, int height)
@@ -181,7 +181,7 @@ void QPlasmaRender::paintGL()
     }
 
     for (auto it = fObjects.begin(); it != fObjects.end(); it++)
-        glCallList(it->second.getList((DrawMode)fDrawMode));
+        glCallList(it->second.getList(fDrawMode));
 }
 
 void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
@@ -358,8 +358,8 @@ void QPlasmaRender::build(NavigationMode navMode, DrawMode drawMode)
 void QPlasmaRender::rebuild()
 {
     for (auto it = fObjects.begin(); it != fObjects.end(); it++) {
-        glNewList(it->second.getList((DrawMode)fDrawMode), GL_COMPILE);
-        compileObject(it->first, (DrawMode)fDrawMode);
+        glNewList(it->second.getList(fDrawMode), GL_COMPILE);
+        compileObject(it->first, fDrawMode);
         glEndList();
     }
 }
@@ -382,8 +382,8 @@ void QPlasmaRender::rebuildObject(plKey obj)
 {
     auto found = fObjects.find(obj);
     if (found != fObjects.end()) {
-        glNewList(found->second.getList((DrawMode)fDrawMode), GL_COMPILE);
-        compileObject(found->first, (DrawMode)fDrawMode);
+        glNewList(found->second.getList(fDrawMode), GL_COMPILE);
+        compileObject(found->first, fDrawMode);
         glEndList();
     }
 }
