@@ -224,6 +224,8 @@ void QHexWidget::keyPressEvent(QKeyEvent* event)
 void QHexWidget::scrollContentsBy(int, int dy)
 {
     fViewportAddress -= (dy * BYTES_PER_LINE);
+    if (fViewportAddress < 0)
+        fViewportAddress = 0;
     viewport()->update();
 }
 
