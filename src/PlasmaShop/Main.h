@@ -96,6 +96,7 @@ private slots:
     void onSaveAs();
     void onRevert();
     void onOptions();
+    void onShowAbout();
 
     void onCut();
     void onCopy();

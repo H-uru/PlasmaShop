@@ -23,6 +23,8 @@
 #include <QCloseEvent>
 #include <QProcess>
 #include <QLabel>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
@@ -282,6 +284,8 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kGenEncXtea], SIGNAL(triggered()), this, SLOT(onGenEncXtea()));
     connect(fActions[kGenEncAes], SIGNAL(triggered()), this, SLOT(onGenEncAes()));
     connect(fActions[kGenEncDroid], SIGNAL(triggered()), this, SLOT(onGenEncDroid()));
+
+    connect(fActions[kHelpAbout], SIGNAL(triggered()), this, SLOT(onShowAbout()));
 
     connect(fGameSelector, SIGNAL(activated(int)), this, SLOT(onSelectGame(int)));
     connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
@@ -814,6 +818,54 @@ void PlasmaShopMain::onOptions()
             doc->updateSettings();
         }
     }
+}
+
+void PlasmaShopMain::onShowAbout()
+{
+    QDialog aboutDialog(this);
+    aboutDialog.setWindowTitle(tr("About PlasmaShop"));
+    aboutDialog.setWindowIcon(windowIcon());
+    aboutDialog.setModal(true);
+    QLabel* aboutText = new QLabel(&aboutDialog);
+    aboutText->setText(tr(
+        "PlasmaShop 3.0 BETA<br />"
+        "<br />"
+        "PlasmaShop is a set of tools for viewing and modifying various data<br />"
+        "files for Plasma-based game engines (Uru, Uru Live, Myst 5, etc)<br />"
+        "<br />"
+        "<b>Authors</b><ul>"
+        "<li>Michael Hansen (\"Zrax\")</li>"
+        "<li>\"diafero\"</li>"
+        "<li>Florian Meißner (\"Mystler\")</li>"
+        "<li>Bartek Bok (\"boq\")</li>"
+        "<li>Darryl Pogue</li>"
+        "<li>Joseph Davies (\"Deledrius\")</li>"
+        "<li>Adam Johnson (\"Hoikas\")</li>"
+        "</ul><br />"
+        "For details, visit the <a href=\"https://github.com/H-uru/PlasmaShop\">GitHub "
+        "project page</a>.<br />"
+        "<br />"
+        "PlasmaShop is based on <a href=\"https://github.com/H-uru/libhsplasma\">libhsplasma</a>."
+    ));
+    aboutText->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    aboutText->setOpenExternalLinks(true);
+    QDialogButtonBox* buttons = new QDialogButtonBox(&aboutDialog);
+    buttons->setStandardButtons(QDialogButtonBox::Close);
+    QPushButton* aboutQt = buttons->addButton(tr("About Qt"), QDialogButtonBox::ActionRole);
+    connect(aboutQt, &QAbstractButton::clicked, [this](bool) {
+        QMessageBox::aboutQt(this, tr("About Qt"));
+    });
+    connect(buttons, SIGNAL(accepted()), &aboutDialog, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), &aboutDialog, SLOT(reject()));
+    buttons->button(QDialogButtonBox::Close)->setDefault(true);
+
+    QVBoxLayout* layout = new QVBoxLayout(&aboutDialog);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(10);
+    layout->addWidget(aboutText);
+    layout->addWidget(buttons);
+
+    aboutDialog.exec();
 }
 
 void PlasmaShopMain::onCut()
