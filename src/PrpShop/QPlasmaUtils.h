@@ -21,8 +21,8 @@
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plCreatable.h>
-#include "../QPlasma.h"
-#include "../QNumerics.h"
+#include "QPlasma.h"
+#include "QNumerics.h"
 
 extern bool s_showTypeIDs;
 

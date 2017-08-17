@@ -17,11 +17,11 @@
 #ifndef _QGUIMENUITEM_H
 #define _QGUIMENUITEM_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIButtonMod.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIMenuItem : public QCreatable {
     Q_OBJECT

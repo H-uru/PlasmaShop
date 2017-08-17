@@ -20,8 +20,8 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
              : QCreatable(pCre, pCre->ClassIndex(), parent)

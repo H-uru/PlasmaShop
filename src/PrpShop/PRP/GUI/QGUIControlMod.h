@@ -17,15 +17,15 @@
 #ifndef _QGUICONTROLMOD_H
 #define _QGUICONTROLMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIControlMod.h>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGroupBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
-#include "../QColorEdit.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
+#include "QColorEdit.h"
 
 class QGUIColorScheme : public QWidget {
     Q_OBJECT

@@ -17,11 +17,11 @@
 #ifndef _QGUICLICKMAPCTRL_H
 #define _QGUICLICKMAPCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIMisc.hpp>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIClickMapCtrl : public QCreatable {
     Q_OBJECT

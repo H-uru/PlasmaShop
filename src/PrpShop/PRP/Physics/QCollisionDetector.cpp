@@ -19,8 +19,8 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QGridLayout>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
                   : QCreatable(pCre, pCre->ClassIndex(), parent)

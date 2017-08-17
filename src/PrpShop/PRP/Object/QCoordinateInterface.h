@@ -17,13 +17,13 @@
 #ifndef _QCOORDINATEINTERFACE_H
 #define _QCOORDINATEINTERFACE_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plCoordinateInterface.h>
 #include <QCheckBox>
-#include "../QKeyList.h"
-#include "../QMatrix44.h"
-#include "../QObjLink.h"
+#include "PRP/QKeyList.h"
+#include "PRP/QMatrix44.h"
+#include "PRP/QObjLink.h"
 
 class QCoordinateInterface : public QCreatable {
     Q_OBJECT

@@ -17,15 +17,15 @@
 #ifndef _QDRAWINTERFACE_H
 #define _QDRAWINTERFACE_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plDrawInterface.h>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QDialog>
-#include "../QKeyList.h"
-#include "../QObjLink.h"
+#include "PRP/QKeyList.h"
+#include "PRP/QObjLink.h"
 
 class QDrawableList : public QKeyList {
     Q_OBJECT

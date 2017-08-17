@@ -17,11 +17,11 @@
 #ifndef _QLAYERSDLANIMATION_H
 #define _QLAYERSDLANIMATION_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Surface/plLayerAnimation.h>
 #include <QLineEdit>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QLayerSDLAnimation : public QCreatable {
     Q_OBJECT

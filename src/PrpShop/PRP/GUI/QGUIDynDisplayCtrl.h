@@ -17,11 +17,11 @@
 #ifndef _QGUIDYNDISPLAYCTRL_H
 #define _QGUIDYNDISPLAYCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIDynDisplayCtrl.h>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIDynDisplayCtrl : public QCreatable {
     Q_OBJECT

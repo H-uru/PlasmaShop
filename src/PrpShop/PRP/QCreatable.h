@@ -19,7 +19,7 @@
 
 #include <QWidget>
 #include <ResManager/plResManager.h>
-#include "../QPlasmaUtils.h"
+#include "QPlasmaUtils.h"
 
 class QCreatable : public QWidget {
     Q_OBJECT

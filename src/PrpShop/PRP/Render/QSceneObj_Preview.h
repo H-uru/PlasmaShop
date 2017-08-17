@@ -17,7 +17,7 @@
 #ifndef _QSCENEOBJ_PREVIEW_H
 #define _QSCENEOBJ_PREVIEW_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 #include "QPlasmaRender.h"
 
 class QSceneObj_Preview : public QCreatable {

@@ -1,4 +1,4 @@
-set(PlasmaShop_MOC_Headers
+set(PlasmaShop_Headers
     Main.h
     OptionsDialog.h
     GameBrowser.h
@@ -27,6 +27,18 @@ set(PlasmaShop_Sources
 # include pycdc sources
 set(pycdc_SOURCE_DIR ${PROJECT_SOURCE_DIR}/pycdc)
 set(pycdc_BINARY_DIR ${PROJECT_BINARY_DIR}/pycdc)
+set(pycdc_Headers
+    ${pycdc_SOURCE_DIR}/ASTNode.h
+    ${pycdc_SOURCE_DIR}/ASTree.h
+    ${pycdc_SOURCE_DIR}/bytecode.h
+    ${pycdc_SOURCE_DIR}/data.h
+    ${pycdc_SOURCE_DIR}/pyc_code.h
+    ${pycdc_SOURCE_DIR}/pyc_module.h
+    ${pycdc_SOURCE_DIR}/pyc_numeric.h
+    ${pycdc_SOURCE_DIR}/pyc_object.h
+    ${pycdc_SOURCE_DIR}/pyc_sequence.h
+    ${pycdc_SOURCE_DIR}/pyc_string.h
+)
 set(pycdc_Sources
     ${pycdc_SOURCE_DIR}/ASTNode.cpp
     ${pycdc_SOURCE_DIR}/ASTree.cpp
@@ -93,40 +105,25 @@ add_custom_command(OUTPUT ${pycdc_GeneratedSources}
                            create-bytes-source-dir
                    WORKING_DIRECTORY ${pycdc_SOURCE_DIR}/bytes)
 
-if(NOT WIN32 AND NOT APPLE)
-    set(PlasmaShop_Sources "${PlasmaShop_Sources}"
-        ../3rdParty/qticonloader.cpp
-    )
-endif()
-
 if(WIN32)
     set(PlasmaShop_Sources ${PlasmaShop_Sources} res/PlasmaShop.rc)
 endif()
 
-if(PS_USE_QT5)
-    find_package(Qt5Widgets REQUIRED)
-endif()
-
 # generate rules for building source files from the resources
-qtx_add_resources(PlasmaShop_RCC images.qrc)
-# generate rules for building source files that moc generates
-qtx_wrap_cpp(PlasmaShop_MOC "${PlasmaShop_MOC_Headers}")
+qt5_add_resources(PlasmaShop_RCC images.qrc)
 
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${pycdc_SOURCE_DIR}")
-include_directories("${HSPlasma_INCLUDE_DIRS}")
 
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
-               ${PlasmaShop_Sources} ${pycdc_Sources} ${pycdc_GeneratedSources}
-               ${PlasmaShop_MOC} ${PlasmaShop_RCC})
-if(PS_USE_QT5)
-    target_link_libraries(PlasmaShop Qt5::Widgets)
-elseif(PS_USE_QT4)
-    target_link_libraries(PlasmaShop ${QT_QTMAIN_LIBRARY} ${QT_QTCORE_LIBRARY}
-                                     ${QT_QTGUI_LIBRARY})
-endif()
+               ${PlasmaShop_Headers} ${PlasmaShop_Sources}
+               ${pycdc_Headers} ${pycdc_Sources} ${pycdc_GeneratedSources}
+               ${PlasmaShop_RCC})
+target_link_libraries(PlasmaShop Qt5::Widgets)
 target_link_libraries(PlasmaShop qscintilla2-ps3 HSPlasma)
+if(NOT WIN32 AND NOT APPLE)
+    target_link_libraries(PlasmaShop PSIconLoader)
+endif()
 
 if(WIN32)
     target_link_libraries(PlasmaShop shell32)

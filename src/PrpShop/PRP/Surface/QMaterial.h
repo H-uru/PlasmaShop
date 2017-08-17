@@ -17,12 +17,12 @@
 #ifndef _QMATERIAL_H
 #define _QMATERIAL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Surface/hsGMaterial.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QMaterial : public QCreatable {
     Q_OBJECT

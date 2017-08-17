@@ -17,11 +17,11 @@
 #ifndef _QGUIDRAGGABLEMOD_H
 #define _QGUIDRAGGABLEMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIMisc.hpp>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUIDraggableMod : public QCreatable {
     Q_OBJECT

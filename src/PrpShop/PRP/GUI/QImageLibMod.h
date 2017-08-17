@@ -17,11 +17,11 @@
 #ifndef _QIMAGELIBMOD_H
 #define _QIMAGELIBMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/plImageLibMod.h>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QImageLibMod : public QCreatable {
     Q_OBJECT

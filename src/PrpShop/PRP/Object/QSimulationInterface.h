@@ -17,11 +17,11 @@
 #ifndef _QSIMULATIONINTERFACE_H
 #define _QSIMULATIONINTERFACE_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Object/plSimulationInterface.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QSimulationInterface : public QCreatable {
     Q_OBJECT

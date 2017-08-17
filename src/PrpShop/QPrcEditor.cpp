@@ -26,7 +26,7 @@
 #include <ResManager/plResManager.h>
 #include <Stream/hsRAMStream.h>
 #include <PRP/KeyedObject/hsKeyedObject.h>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 #include "Main.h"
 
 #define MARGIN_LINES 0

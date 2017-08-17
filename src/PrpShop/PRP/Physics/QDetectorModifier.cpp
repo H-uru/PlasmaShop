@@ -18,8 +18,8 @@
 
 #include <QLabel>
 #include <QGridLayout>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
                  : QCreatable(pCre, pCre->ClassIndex(), parent)

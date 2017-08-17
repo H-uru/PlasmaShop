@@ -17,11 +17,11 @@
 #ifndef _QCOLLISIONDETECTOR_H
 #define _QCOLLISIONDETECTOR_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Physics/plCollisionDetector.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QCollisionDetector : public QCreatable {
     Q_OBJECT

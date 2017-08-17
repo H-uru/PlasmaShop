@@ -19,8 +19,8 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QMenu>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 /* QPopupMenuItemList */
 QPopupMenuItemList::QPopupMenuItemList(QWidget* parent)

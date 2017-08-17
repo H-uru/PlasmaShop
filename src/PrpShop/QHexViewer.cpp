@@ -22,7 +22,7 @@
 #include <QStatusBar>
 #include <QFile>
 #include <Stream/hsRAMStream.h>
-#include "../QHexWidget.h"
+#include "QHexWidget.h"
 
 class SelectableLabel : public QLabel
 {

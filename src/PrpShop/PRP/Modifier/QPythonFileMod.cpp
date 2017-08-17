@@ -20,8 +20,8 @@
 #include <QContextMenuEvent>
 #include <QDialogButtonBox>
 #include <QGridLayout>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 static const QString s_PythonParamTypes[] = {
     "(Invalid)", "Integer", "Float", "Boolean", "String", "Scene Object",

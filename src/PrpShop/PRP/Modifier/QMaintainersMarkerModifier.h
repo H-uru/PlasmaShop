@@ -18,8 +18,8 @@
 #define _QMAINTAINERSMARKERMODIFIER_H
 
 #include <QComboBox>
-#include "../QCreatable.h"
-#include "../QObjLink.h"
+#include "PRP/QCreatable.h"
+#include "PRP/QObjLink.h"
 
 class QMaintainersMarkerModifier : public QCreatable {
     Q_OBJECT

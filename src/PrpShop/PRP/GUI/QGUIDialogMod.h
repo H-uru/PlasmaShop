@@ -17,13 +17,13 @@
 #ifndef _QGUIDIALOGMOD_H
 #define _QGUIDIALOGMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIDialogMod.h>
 #include <QCheckBox>
 #include "QGUIControlMod.h"
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIDialogMod : public QCreatable {
     Q_OBJECT

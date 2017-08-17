@@ -17,12 +17,12 @@
 #ifndef _QGUIKNOBCTRL_H
 #define _QGUIKNOBCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIKnobCtrl : public QCreatable {
     Q_OBJECT

@@ -19,7 +19,7 @@
 
 #include <QWidget>
 #include <Math/hsMatrix44.h>
-#include "../../QNumerics.h"
+#include "QNumerics.h"
 
 class QMatrix44 : public QWidget {
     Q_OBJECT

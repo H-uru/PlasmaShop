@@ -26,7 +26,7 @@
 #include <QSettings>
 #include <QCryptographicHash>
 #include <qticonloader.h>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 /* SumData */
 void SumData::read(hsStream* S)

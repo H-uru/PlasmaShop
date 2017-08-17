@@ -18,8 +18,8 @@
 
 #include <QGroupBox>
 #include <QGridLayout>
-#include "../../Main.h"
-#include "../../QKeyDialog.h"
+#include "Main.h"
+#include "QKeyDialog.h"
 
 /* QGUIDialogMod */
 QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)

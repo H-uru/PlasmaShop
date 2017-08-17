@@ -1,40 +1,13 @@
 project(PlasmaShop)
 cmake_minimum_required(VERSION 2.8.11.2)
 
+set(CMAKE_AUTOMOC TRUE)
+
 find_package(HSPlasma REQUIRED)
 find_package(string_theory REQUIRED)
-
-option(PlasmaShop_FORCE_QT4 "Force Qt4 build even if Qt5 can be found" OFF)
-if(NOT PlasmaShop_FORCE_QT4)
-    find_package(Qt5Core)
-endif()
-
-if(Qt5Core_FOUND)
-    set(PS_USE_QT5 TRUE)
-    macro(QTX_WRAP_CPP dest files)
-        qt5_wrap_cpp(${dest} ${files})
-    endmacro()
-    macro(QTX_ADD_RESOURCES dest files)
-        qt5_add_resources(${dest} ${files})
-    endmacro()
-else()
-    ### UGLY:  Qt4's CMake module can only be run once.  Therefore, we must
-    ###        find all required modules now, as subsequent finds won't work.
-    ###        Now I understand better why Qt5 split them up more sanely
-    find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL)
-    if(QT4_FOUND)
-        set(PS_USE_QT4 TRUE)
-        include(${QT_USE_FILE})
-        macro(QTX_WRAP_CPP dest files)
-            qt4_wrap_cpp(${dest} ${files})
-        endmacro()
-        macro(QTX_ADD_RESOURCES dest files)
-            qt4_add_resources(${dest} ${files})
-        endmacro()
-    else()
-        message(FATAL_ERROR "Either Qt4 or Qt5 is required to compile PlasmaShop")
-    endif()
-endif()
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
@@ -47,7 +20,6 @@ if(WIN32)
     add_definitions(-DPLAT_FONT="Courier New")
 else()
     add_definitions(-DPLAT_FONT="Monospace")
-    add_definitions(-DDATA_PATH="/usr/local/share/PlasmaShop")
 endif()
 
 # do this after QScintilla - it generates tons of warnings
@@ -74,9 +46,7 @@ add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 include_directories(${STRING_THEORY_INCLUDE_DIRS})
 
-add_subdirectory(src/PlasmaShop)
-add_subdirectory(src/PrpShop)
-add_subdirectory(src/VaultShop)
+add_subdirectory(src)
 
 if(WIN32)
     add_subdirectory(icons/win32)

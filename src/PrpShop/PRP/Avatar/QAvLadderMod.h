@@ -17,13 +17,13 @@
 #ifndef _QAVLADDERMOD_H
 #define _QAVLADDERMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Avatar/plLadderModifier.h>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QButtonGroup>
-#include "../QVector3.h"
+#include "PRP/QVector3.h"
 
 class QAvLadderMod : public QCreatable {
     Q_OBJECT

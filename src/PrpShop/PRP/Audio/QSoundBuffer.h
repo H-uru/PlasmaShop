@@ -17,7 +17,7 @@
 #ifndef _QSOUNDBUFFER_H
 #define _QSOUNDBUFFER_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <QCheckBox>
 #include <QComboBox>

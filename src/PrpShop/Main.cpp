@@ -36,7 +36,7 @@
 #include <PRP/Surface/plMipmap.h>
 
 #include "Main.h"
-#include "../QPlasma.h"
+#include "QPlasma.h"
 #include "QPlasmaUtils.h"
 #include "QKeyDialog.h"
 #include "PRP/QCreatable.h"

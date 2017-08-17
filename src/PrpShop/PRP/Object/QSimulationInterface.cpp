@@ -19,8 +19,8 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kSimulationInterface, parent)

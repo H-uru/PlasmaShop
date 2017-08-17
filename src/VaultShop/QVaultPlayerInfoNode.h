@@ -20,7 +20,7 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include "QVaultNodeEdit.h"
-#include "../QLinkLabel.h"
+#include "QLinkLabel.h"
 
 class QVaultPlayerInfoNode : public QVaultNodeEdit {
     Q_OBJECT

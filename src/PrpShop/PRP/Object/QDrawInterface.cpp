@@ -22,8 +22,8 @@
 #include <QGridLayout>
 #include <QMenu>
 #include <QDialogButtonBox>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 /* QDrawableList */
 QDrawableList::QDrawableList(plKey container, QWidget* parent)

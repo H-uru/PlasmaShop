@@ -21,7 +21,7 @@
 #include <qticonloader.h>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 #define MARGIN_LINES 0
 #define MARGIN_FOLDERS 1
@@ -471,7 +471,8 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         fEditor->setReadOnly(true);
     } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto)) return false;
+        if (!S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto))
+            return false;
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
                 return false;
@@ -486,7 +487,8 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         fEditor->setText(LoadData(&S, fEncoding));
     } else {
         hsFileStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead)) return false;
+        if (!S.open(filename.toUtf8().data(), fmRead))
+            return false;
         fEncryption = kEncNone;
         fEncoding = DetectEncoding(&S);
         fEditor->setText(LoadData(&S, fEncoding));
@@ -518,7 +520,8 @@ bool QPlasmaTextDoc::saveTo(QString filename)
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }
-        if (!S.open(filename.toUtf8().data(), fmCreate, type)) return false;
+        if (!S.open(filename.toUtf8().data(), fmCreate, type))
+            return false;
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, fEditor->text());
     }

@@ -20,8 +20,8 @@
 #include <QLabel>
 #include <QTabWidget>
 #include <QGridLayout>
-#include "../../QKeyDialog.h"
-#include "../../Main.h"
+#include "QKeyDialog.h"
+#include "Main.h"
 
 QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
                     : QCreatable(pCre, kCoordinateInterface, parent)

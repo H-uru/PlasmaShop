@@ -17,12 +17,12 @@
 #ifndef _QGUIPROGRESSCTRL_H
 #define _QGUIPROGRESSCTRL_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUIProgressCtrl.h>
 #include <QCheckBox>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QGUIProgressCtrl : public QCreatable {
     Q_OBJECT

@@ -20,7 +20,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QTabWidget>
-#include "../../../QPlasma.h"
+#include "QPlasma.h"
 
 QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
               : QCreatable(pCre, kSynchedObject, parent)

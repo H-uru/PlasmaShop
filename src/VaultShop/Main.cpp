@@ -29,7 +29,7 @@
 #include <ResManager/plFactory.h>
 
 #include "Main.h"
-#include "../QPlasma.h"
+#include "QPlasma.h"
 
 static QString HexToStr(const QString& hex)
 {

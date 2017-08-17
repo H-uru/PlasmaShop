@@ -17,11 +17,11 @@
 #ifndef _QGUISKIN_H
 #define _QGUISKIN_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/GUI/pfGUISkin.h>
 #include <QComboBox>
-#include "../QObjLink.h"
+#include "PRP/QObjLink.h"
 
 class QGUISkin : public QCreatable {
     Q_OBJECT

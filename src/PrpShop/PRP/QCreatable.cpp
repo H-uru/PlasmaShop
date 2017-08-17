@@ -18,7 +18,7 @@
 
 #include <PRP/KeyedObject/hsKeyedObject.h>
 #include <QMessageBox>
-#include "../QPlasmaUtils.h"
+#include "QPlasmaUtils.h"
 
 QCreatable::QCreatable(plCreatable* pCre, int type, QWidget* parent)
           : QWidget(parent), fCreatable(pCre), fForceType(type)

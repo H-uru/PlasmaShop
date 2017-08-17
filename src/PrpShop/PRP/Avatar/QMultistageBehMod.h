@@ -17,14 +17,14 @@
 #ifndef _QMULTISTAGEBEHMOD_H
 #define _QMULTISTAGEBEHMOD_H
 
-#include "../QCreatable.h"
+#include "PRP/QCreatable.h"
 
 #include <PRP/Avatar/plMultistageBehMod.h>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
-#include "../QObjLink.h"
-#include "../QKeyList.h"
+#include "PRP/QObjLink.h"
+#include "PRP/QKeyList.h"
 
 class QAnimStage : public QCreatable {
     Q_OBJECT
