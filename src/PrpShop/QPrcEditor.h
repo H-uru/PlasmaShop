@@ -19,8 +19,7 @@
 
 #include "PRP/QCreatable.h"
 
-#include <QsciPS3/qsciscintilla.h>
-#include <QsciPS3/qscilexerxml.h>
+#include "QPlasmaTextEdit.h"
 #include "QPlasmaUtils.h"
 
 class QStatusBar;
@@ -29,8 +28,7 @@ class QPrcEditor : public QCreatable {
     Q_OBJECT
 
 protected:
-    QsciScintilla* fEditor;
-    QsciLexerXML* fLexerXML;
+    QPlasmaTextEdit* fEditor;
     QAction* fSaveAction;
     QStatusBar *fStatusBar;
     bool fDirty;
@@ -38,26 +36,26 @@ protected:
     bool fDoLineNumbers;
 
 public:
-    QPrcEditor(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage() { }   // Handled in compilation
+    explicit QPrcEditor(plCreatable* pCre, QWidget* parent = Q_NULLPTR);
+    void saveDamage() Q_DECL_OVERRIDE { }   // Handled in compilation
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
-    virtual bool canCut() const { return fEditor->hasSelectedText(); }
-    virtual bool canCopy() const { return fEditor->hasSelectedText(); }
-    virtual bool canPaste() const { return fEditor->isPasteAvailable(); }
-    virtual bool canDelete() const { return fEditor->hasSelectedText(); }
+    virtual bool canCut() const { return fEditor->haveSelection(); }
+    virtual bool canCopy() const { return fEditor->haveSelection(); }
+    virtual bool canPaste() const { return fEditor->canPaste(); }
+    virtual bool canDelete() const { return fEditor->haveSelection(); }
     virtual bool canSelectAll() const { return true; }
-    virtual bool canUndo() const { return fEditor->isUndoAvailable(); }
-    virtual bool canRedo() const { return fEditor->isRedoAvailable(); }
+    virtual bool canUndo() const { return fEditor->document()->isUndoAvailable(); }
+    virtual bool canRedo() const { return fEditor->document()->isRedoAvailable(); }
 
 public slots:
     virtual void updateSettings();
     virtual void performCut() { fEditor->cut(); }
     virtual void performCopy() { fEditor->copy(); }
     virtual void performPaste() { fEditor->paste(); }
-    virtual void performDelete() { fEditor->removeSelectedText(); }
-    virtual void performSelectAll() { fEditor->selectAll(true); }
+    virtual void performDelete() { fEditor->textCursor().removeSelectedText(); }
+    virtual void performSelectAll() { fEditor->selectAll(); }
     virtual void performUndo() { fEditor->undo(); }
     virtual void performRedo() { fEditor->redo(); }
 
@@ -67,13 +65,11 @@ signals:
     void statusChanged();
 
 private slots:
-    void adjustLineNumbers();
-    void showCursorPosition(int line, int column);
-    void onDirty();
-    void onClean();
+    void showCursorPosition();
+    void onModificationChanged(bool changed);
 
 protected:
-    virtual void closeEvent(QCloseEvent* event);
+    void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
     void loadPrcData();
 };
 

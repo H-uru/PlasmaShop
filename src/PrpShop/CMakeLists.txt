@@ -140,7 +140,6 @@ find_package(Qt5OpenGL REQUIRED)
 # generate rules for building source files from the resources
 qt5_add_resources(PrpShop_RCC images.qrc)
 
-include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${PROJECT_SOURCE_DIR}/src/PrpShop")
 
 # QtOpenGL dependencies (maybe the Qt OpenGL cmake stuff is broken, but I had
@@ -151,7 +150,7 @@ set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_RCC})
 target_link_libraries(PrpShop PSCommon Qt5::Widgets Qt5::OpenGL)
-target_link_libraries(PrpShop qscintilla2-ps3 HSPlasma)
+target_link_libraries(PrpShop KF5::SyntaxHighlighting HSPlasma)
 target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
 if(NOT WIN32 AND NOT APPLE)
     target_link_libraries(PrpShop PSIconLoader)

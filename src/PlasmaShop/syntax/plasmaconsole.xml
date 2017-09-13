@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Plasma Console" section="Other" license="LGPL"
+          extensions="*.fni" mimetype=""
+          version="1" kateversion="5.0" priority="0"
+          author="Michael Hansen (zrax0111@gmail.com)">
+  <highlighting>
+    <list name="keywords">
+      <item>true</item>
+      <item>false</item>
+    </list>
+
+    <contexts>
+      <context name="Command" attribute="Command" lineEndContext="#stay">
+        <AnyChar attribute="Normal Text" context="Normal" String=" &#9;" />
+        <RegExpr attribute="Command Group" context="#stay" String="[A-Za-z0-9_-]+\." />
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+      </context>
+      <context name="Normal" attribute="Normal Text" lineEndContext="#pop">
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+        <AnyChar attribute="Symbol" context="#stay" String="(),;+-" />
+        <Float attribute="Float" />
+        <Int attribute="Int" />
+        <keyword attribute="Keyword" String="keywords" />
+        <DetectChar attribute="String" context="String" char="&quot;" />
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+      </context>
+
+      <context attribute="String" lineEndContext="#stay" name="String">
+        <HlCStringChar attribute="String Char" context="#stay" />
+        <DetectChar attribute="String" context="#pop" char="&quot;" />
+      </context>
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Command Group" defStyleNum="dsDataType" />
+      <itemData name="Command" defStyleNum="dsFunction" />
+      <itemData name="Normal Text" defStyleNum="dsNormal" />
+      <itemData name="Keyword" defStyleNum="dsKeyword" spellChecking="false" />
+      <itemData name="Comment" defStyleNum="dsComment" />
+      <itemData name="String" defStyleNum="dsString" />
+      <itemData name="String Char" defStyleNum="dsSpecialChar" />
+      <itemData name="Float" defStyleNum="dsFloat" spellChecking="false" />
+      <itemData name="Int" defStyleNum="dsDecVal" spellChecking="false" />
+      <itemData name="Symbol" defStyleNum="dsNormal" spellChecking="false" />
+    </itemDatas>
+  </highlighting>
+
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
+</language>

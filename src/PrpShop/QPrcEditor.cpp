@@ -36,11 +36,7 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
           : QCreatable(pCre, kPRC_Type | pCre->ClassIndex(), parent),
             fLexersInited(false)
 {
-    fEditor = new QsciScintilla(this);
-    fEditor->setUtf8(true);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETENDATLASTLINE, 0);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTHTRACKING, 1);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTH, 1000);
+    fEditor = new QPlasmaTextEdit(this);
 
     QToolBar* tbar = new QToolBar(this);
     tbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -61,17 +57,14 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     // Initialize the editor settings, fonts, etc
     updateSettings();
 
-    connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
-    connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
-    connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(onDirty()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(onClean()));
-
-    connect(fEditor, SIGNAL(cursorPositionChanged(int, int)),
-            this, SLOT(showCursorPosition(int, int)),
-            // MUST be Queued to make any UI updates, since the signal is
-            // emitted from an update() call stack
-            Qt::QueuedConnection);
+    connect(fEditor->document(), &QTextDocument::modificationChanged,
+            this, &QPrcEditor::onModificationChanged);
+    connect(fEditor, &QPlainTextEdit::selectionChanged, this, &QPrcEditor::statusChanged);
+    connect(fEditor, &QPlainTextEdit::textChanged, this, &QPrcEditor::statusChanged);
+    connect(fEditor, &QPlainTextEdit::undoAvailable, [this](bool) { statusChanged(); });
+    connect(fEditor, &QPlainTextEdit::redoAvailable, [this](bool) { statusChanged(); });
+    connect(fEditor, &QPlainTextEdit::cursorPositionChanged,
+            this, &QPrcEditor::showCursorPosition);
 
     loadPrcData();
 }
@@ -102,8 +95,7 @@ void QPrcEditor::loadPrcData()
     QString data = QString::fromUtf8((const char*)buf, dataSize);
     delete[] buf;
 
-    fEditor->setText(data);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
+    fEditor->setPlainText(data);
 }
 
 void QPrcEditor::updateSettings()
@@ -114,87 +106,44 @@ void QPrcEditor::updateSettings()
                    settings.value("SciFontWeight", QFont::Normal).toInt(),
                    settings.value("SciFontItalic", false).toBool());
 
-    fEditor->setLexer(NULL);
-    if (fLexersInited)
-        delete fLexerXML;
-    fLexerXML = new QsciLexerXML(fEditor);
-    fLexersInited = true;
-
-    fLexerXML->setDefaultFont(textFont);
-
-    QFont braceFont = textFont;
-    braceFont.setBold(true);
-    fEditor->setMatchedBraceFont(braceFont);
-    fEditor->setUnmatchedBraceFont(braceFont);
-
-    QPalette pal;
-    fEditor->setMarginsBackgroundColor(pal.color(QPalette::Active, QPalette::Window));
-    fEditor->setMarginsForegroundColor(pal.color(QPalette::Active, QPalette::WindowText));
-    fEditor->setMatchedBraceForegroundColor(QColor(0x00, 0x00, 0xff));
-    fEditor->setUnmatchedBraceForegroundColor(QColor(0xff, 0x00, 0x00));
-    fEditor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    fEditor->setFont(textFont);
+    fEditor->setSyntax("XML");
+    fEditor->setWordWrapMode(QTextOption::NoWrap);
 
     fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
-    fEditor->setIndentationsUseTabs(!settings.value("SciUseSpaces", true).toBool());
     fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
+
+    if (settings.value("SciMargin", true).toBool())
+        fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
+    else
+        fEditor->setShowLineNumbers(false);
+
+    /* TODO if necessary:
     fEditor->setIndentationGuides(settings.value("SciIndentGuides", false).toBool());
-    fEditor->setWhitespaceVisibility(settings.value("SciShowWhitespace", false).toBool()
-                                     ? QsciScintilla::WsVisible : QsciScintilla::WsInvisible);
-    fEditor->setEdgeColor(QColor(0xE0, 0xE0, 0xE0));
-    fEditor->setEdgeMode(settings.value("SciLongLineMark", false).toBool()
-                         ? QsciScintilla::EdgeLine : QsciScintilla::EdgeNone);
-    fEditor->setEdgeColumn(settings.value("SciLongLineSize", 80).toInt());
-
-    // Margin Magic (tm)
-    fEditor->setMarginWidth(MARGIN_LINES, 0);
-    fEditor->setMarginWidth(MARGIN_FOLDERS, 0);
-    if (settings.value("SciMargin", true).toBool()) {
-        fDoLineNumbers = settings.value("SciLineNumberMargin", true).toBool();
-        if (settings.value("SciFoldMargin", true).toBool())
-            fEditor->setFolding(QsciScintilla::BoxedTreeFoldStyle, MARGIN_FOLDERS);
-        fEditor->setMarginLineNumbers(MARGIN_LINES, fDoLineNumbers);
-        adjustLineNumbers();
-        if (!fDoLineNumbers)
-            fEditor->setMarginWidth(MARGIN_LINES, 16);
-    } else {
-        fDoLineNumbers = false;
-        fEditor->setMarginLineNumbers(MARGIN_LINES, false);
-    }
-
-    fEditor->setLexer(fLexerXML);
-    fEditor->setMarginsFont(textFont);
-    adjustLineNumbers();
+    if (settings.value("SciMargin", true).toBool())
+        fEditor->setFoldingEnabled(settings.value("SciFoldMargin", true).toBool());
+    */
 }
 
-void QPrcEditor::adjustLineNumbers()
+void QPrcEditor::showCursorPosition()
 {
-    if (fDoLineNumbers)
-        fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
-}
-
-void QPrcEditor::showCursorPosition(int line, int column)
-{
+    auto cursor = fEditor->textCursor();
     fStatusBar->showMessage(tr("Line: %1    Column: %2")
-                            .arg(line + 1).arg(column + 1));
+                            .arg(cursor.blockNumber() + 1)
+                            .arg(cursor.positionInBlock() + 1));
 }
 
-void QPrcEditor::onDirty()
+void QPrcEditor::onModificationChanged(bool changed)
 {
-    fDirty = true;
-    fSaveAction->setEnabled(true);
-}
-
-void QPrcEditor::onClean()
-{
-    fDirty = false;
-    fSaveAction->setEnabled(false);
+    fDirty = changed;
+    fSaveAction->setEnabled(fDirty);
 }
 
 void QPrcEditor::compilePrc()
 {
     pfPrcParser parser;
     hsRAMStream S;
-    QByteArray data = fEditor->text().toUtf8();
+    QByteArray data = fEditor->toPlainText().toUtf8();
     S.write(data.size(), data.data());
     S.rewind();
 

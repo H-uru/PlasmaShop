@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Hex Isle Level" section="Other" license="LGPL"
+          extensions="*.hex" mimetype=""
+          version="1" kateversion="5.0" priority="0"
+          author="Michael Hansen (zrax0111@gmail.com)">
+  <highlighting>
+    <list name="keywords">
+      <item>target</item>
+      <item>ease</item>
+    </list>
+
+    <contexts>
+      <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <RangeDetect attribute="Section" context="Section" char="[" char1="]"
+                     beginRegion="Section" />
+        <StringDetect attribute="Section" context="Section" String="[End]"
+                      endRegion="Section" />
+        <DetectChar attribute="Assignment" context="Value" char="=" />
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+        <AnyChar attribute="Symbol" context="#stay" String="(),;+-" />
+      </context>
+
+      <context attribute="Section" lineEndContext="#pop" name="Section">
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+      </context>
+
+      <context name="Value" attribute="Value" lineEndContext="#pop">
+        <Float attribute="Float">
+          <StringDetect attribute="Keyword" context="#stay" String="sec"
+                        insensitive="true" />
+        </Float>
+        <Int attribute="Int">
+          <StringDetect attribute="Keyword" context="#stay" String="sec"
+                        insensitive="true" />
+        </Int>
+        <keyword attribute="Keyword" String="keywords" />
+        <DetectChar attribute="String" context="String" char="&quot;" />
+        <RegExpr attribute="Comment" context="#pop" String="#.*$" />
+      </context>
+
+      <context attribute="String" lineEndContext="#stay" name="String">
+        <HlCStringChar attribute="String Char" context="#stay" />
+        <DetectChar attribute="String" context="#pop" char="&quot;" />
+      </context>
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsDataType" />
+      <itemData name="Section" defStyleNum="dsKeyword" />
+      <itemData name="Comment" defStyleNum="dsComment" />
+      <itemData name="Assignment" defStyleNum="dsOthers" />
+      <itemData name="Value" defStyleNum="dsNormal" />
+      <itemData name="String" defStyleNum="dsString" />
+      <itemData name="String Char" defStyleNum="dsSpecialChar" />
+      <itemData name="Float" defStyleNum="dsFloat" spellChecking="false" />
+      <itemData name="Int" defStyleNum="dsDecVal" spellChecking="false" />
+      <itemData name="Symbol" defStyleNum="dsNormal" spellChecking="false" />
+      <itemData name="Keyword" defStyleNum="dsKeyword" spellChecking="false" />
+    </itemDatas>
+  </highlighting>
+
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
+</language>
