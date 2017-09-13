@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="HLSL" section="3D" indenter="cstyle" license="LGPL"
+          extensions="*.fx;*.hlsl" mimetype=""
+          version="1" kateversion="5.0" priority="0"
+          author="Michael Hansen (zrax0111@gmail.com)">
+  <highlighting>
+    <list name="controlflow">
+      <item>break</item>
+      <item>case</item>
+      <item>continue</item>
+      <item>default</item>
+      <item>discard</item>
+      <item>do</item>
+      <item>else</item>
+      <item>for</item>
+      <item>goto</item>
+      <item>if</item>
+      <item>return</item>
+      <item>switch</item>
+      <item>while</item>
+    </list>
+    <list name="keywords">
+      <item>asm</item>
+      <item>asm_fragment</item>
+      <item>cbuffer</item>
+      <item>class</item>
+      <item>compile</item>
+      <item>compile_fragment</item>
+      <item>enum</item>
+      <item>export</item>
+      <item>extern</item>
+      <item>false</item>
+      <item>in</item>
+      <item>inline</item>
+      <item>inout</item>
+      <item>interface</item>
+      <item>out</item>
+      <item>pass</item>
+      <item>sampler</item>
+      <item>struct</item>
+      <item>technique</item>
+      <item>technique10</item>
+      <item>technique11</item>
+      <item>texture</item>
+      <item>true</item>
+      <item>typedef</item>
+      <item>uniform</item>
+      <item>union</item>
+    </list>
+    <list name="types">
+      <item>bool</item>
+      <item>bool1</item>
+      <item>bool2</item>
+      <item>bool3</item>
+      <item>bool4</item>
+      <item>bool1x1</item>
+      <item>bool1x2</item>
+      <item>bool1x3</item>
+      <item>bool1x4</item>
+      <item>bool2x1</item>
+      <item>bool2x2</item>
+      <item>bool2x3</item>
+      <item>bool2x4</item>
+      <item>bool3x1</item>
+      <item>bool3x2</item>
+      <item>bool3x3</item>
+      <item>bool3x4</item>
+      <item>bool4x1</item>
+      <item>bool4x2</item>
+      <item>bool4x3</item>
+      <item>bool4x4</item>
+      <item>centroid</item>
+      <item>column_major</item>
+      <item>const</item>
+      <item>double</item>
+      <item>double1</item>
+      <item>double2</item>
+      <item>double3</item>
+      <item>double4</item>
+      <item>double1x1</item>
+      <item>double1x2</item>
+      <item>double1x3</item>
+      <item>double1x4</item>
+      <item>double2x1</item>
+      <item>double2x2</item>
+      <item>double2x3</item>
+      <item>double2x4</item>
+      <item>double3x1</item>
+      <item>double3x2</item>
+      <item>double3x3</item>
+      <item>double3x4</item>
+      <item>double4x1</item>
+      <item>double4x2</item>
+      <item>double4x3</item>
+      <item>double4x4</item>
+      <item>dword</item>
+      <item>dword1</item>
+      <item>dword2</item>
+      <item>dword3</item>
+      <item>dword4</item>
+      <item>dword1x1</item>
+      <item>dword1x2</item>
+      <item>dword1x3</item>
+      <item>dword1x4</item>
+      <item>dword2x1</item>
+      <item>dword2x2</item>
+      <item>dword2x3</item>
+      <item>dword2x4</item>
+      <item>dword3x1</item>
+      <item>dword3x2</item>
+      <item>dword3x3</item>
+      <item>dword3x4</item>
+      <item>dword4x1</item>
+      <item>dword4x2</item>
+      <item>dword4x3</item>
+      <item>dword4x4</item>
+      <item>half</item>
+      <item>half1</item>
+      <item>half2</item>
+      <item>half3</item>
+      <item>half4</item>
+      <item>half1x1</item>
+      <item>half1x2</item>
+      <item>half1x3</item>
+      <item>half1x4</item>
+      <item>half2x1</item>
+      <item>half2x2</item>
+      <item>half2x3</item>
+      <item>half2x4</item>
+      <item>half3x1</item>
+      <item>half3x2</item>
+      <item>half3x3</item>
+      <item>half3x4</item>
+      <item>half4x1</item>
+      <item>half4x2</item>
+      <item>half4x3</item>
+      <item>half4x4</item>
+      <item>fixed</item>
+      <item>fixed1</item>
+      <item>fixed2</item>
+      <item>fixed3</item>
+      <item>fixed4</item>
+      <item>fixed1x1</item>
+      <item>fixed1x2</item>
+      <item>fixed1x3</item>
+      <item>fixed1x4</item>
+      <item>fixed2x1</item>
+      <item>fixed2x2</item>
+      <item>fixed2x3</item>
+      <item>fixed2x4</item>
+      <item>fixed3x1</item>
+      <item>fixed3x2</item>
+      <item>fixed3x3</item>
+      <item>fixed3x4</item>
+      <item>fixed4x1</item>
+      <item>fixed4x2</item>
+      <item>fixed4x3</item>
+      <item>fixed4x4</item>
+      <item>float</item>
+      <item>float1</item>
+      <item>float2</item>
+      <item>float3</item>
+      <item>float4</item>
+      <item>float1x1</item>
+      <item>float1x2</item>
+      <item>float1x3</item>
+      <item>float1x4</item>
+      <item>float2x1</item>
+      <item>float2x2</item>
+      <item>float2x3</item>
+      <item>float2x4</item>
+      <item>float3x1</item>
+      <item>float3x2</item>
+      <item>float3x3</item>
+      <item>float3x4</item>
+      <item>float4x1</item>
+      <item>float4x2</item>
+      <item>float4x3</item>
+      <item>float4x4</item>
+      <item>groupshared</item>
+      <item>int</item>
+      <item>int1</item>
+      <item>int2</item>
+      <item>int3</item>
+      <item>int4</item>
+      <item>int1x1</item>
+      <item>int1x2</item>
+      <item>int1x3</item>
+      <item>int1x4</item>
+      <item>int2x1</item>
+      <item>int2x2</item>
+      <item>int2x3</item>
+      <item>int2x4</item>
+      <item>int3x1</item>
+      <item>int3x2</item>
+      <item>int3x3</item>
+      <item>int3x4</item>
+      <item>int4x1</item>
+      <item>int4x2</item>
+      <item>int4x3</item>
+      <item>int4x4</item>
+      <item>matrix</item>
+      <item>nointerpolation</item>
+      <item>precise</item>
+      <item>row_major</item>
+      <item>shared</item>
+      <item>snorm</item>
+      <item>static</item>
+      <item>string</item>
+      <item>uint</item>
+      <item>uint1</item>
+      <item>uint2</item>
+      <item>uint3</item>
+      <item>uint4</item>
+      <item>uint1x1</item>
+      <item>uint1x2</item>
+      <item>uint1x3</item>
+      <item>uint1x4</item>
+      <item>uint2x1</item>
+      <item>uint2x2</item>
+      <item>uint2x3</item>
+      <item>uint2x4</item>
+      <item>uint3x1</item>
+      <item>uint3x2</item>
+      <item>uint3x3</item>
+      <item>uint3x4</item>
+      <item>uint4x1</item>
+      <item>uint4x2</item>
+      <item>uint4x3</item>
+      <item>uint4x4</item>
+      <item>unsigned</item>
+      <item>vector</item>
+      <item>void</item>
+      <item>volatile</item>
+    </list>
+    <list name="targets">
+      <item>ps_1_1</item>
+      <item>ps_1_2</item>
+      <item>ps_1_3</item>
+      <item>ps_1_4</item>
+      <item>ps_2_0</item>
+      <item>ps_2_x</item>
+      <item>ps_3_0</item>
+      <item>vs_1_1</item>
+      <item>vs_2_0</item>
+      <item>vs_2_x</item>
+      <item>vs_3_0</item>
+    </list>
+    <list name="builtins">
+      <item>abort</item>
+      <item>abs</item>
+      <item>acos</item>
+      <item>all</item>
+      <item>AllMemoryBarrier</item>
+      <item>AllMemoryBarrierWithGroupSync</item>
+      <item>any</item>
+      <item>asdouble</item>
+      <item>asfloat</item>
+      <item>asin</item>
+      <item>asint</item>
+      <item>asuint</item>
+      <item>atan</item>
+      <item>atan2</item>
+      <item>ceil</item>
+      <item>CheckAccessFullyMapped</item>
+      <item>clamp</item>
+      <item>clip</item>
+      <item>cos</item>
+      <item>cosh</item>
+      <item>countbits</item>
+      <item>cross</item>
+      <item>D3DCOLORtoUBYTE4</item>
+      <item>ddx</item>
+      <item>ddx_coarse</item>
+      <item>ddx_fine</item>
+      <item>degrees</item>
+      <item>determinant</item>
+      <item>DeviceMemoryBarrier</item>
+      <item>DeviceMemoryBarrierWithGroupSync</item>
+      <item>distance</item>
+      <item>dot</item>
+      <item>dst</item>
+      <item>errorf</item>
+      <item>EvaluateAttributeAtCentroid</item>
+      <item>EvaluateAttributeAtSample</item>
+      <item>EvaluateAttributeSnapped</item>
+      <item>exp</item>
+      <item>exp2</item>
+      <item>f16tof32</item>
+      <item>f32tof16</item>
+      <item>faceforward</item>
+      <item>firstbithigh</item>
+      <item>firstbitlow</item>
+      <item>floor</item>
+      <item>fma</item>
+      <item>fmod</item>
+      <item>frac</item>
+      <item>frexp</item>
+      <item>fwidth</item>
+      <item>GetRenderTargetSampleCount</item>
+      <item>GetRenderTargetSamplePosition</item>
+      <item>GroupMemoryBarrier</item>
+      <item>GroupMemoryBarrierWithGroupSync</item>
+      <item>InterlockedAdd</item>
+      <item>InterlockedAnd</item>
+      <item>InterlockedCompareExchange</item>
+      <item>InterlockedCompareStore</item>
+      <item>ImterlockedExchange</item>
+      <item>InterlockedMax</item>
+      <item>InterlockedMin</item>
+      <item>InterlockedOr</item>
+      <item>InterlockedXor</item>
+      <item>isfinite</item>
+      <item>isinf</item>
+      <item>isnan</item>
+      <item>ldexp</item>
+      <item>length</item>
+      <item>lerp</item>
+      <item>lit</item>
+      <item>log</item>
+      <item>log10</item>
+      <item>log2</item>
+      <item>mad</item>
+      <item>max</item>
+      <item>min</item>
+      <item>modf</item>
+      <item>msad4</item>
+      <item>mul</item>
+      <item>noise</item>
+      <item>normalize</item>
+      <item>pow</item>
+      <item>printf</item>
+      <item>Process2DQuadTessFactorsAvg</item>
+      <item>Process2DQuadTessFactorsMax</item>
+      <item>Process2DQuadTessFactorsMin</item>
+      <item>ProcessIsolineTessFactors</item>
+      <item>ProcessQuadTessFactorsAvg</item>
+      <item>ProcessQuadTessFactorsMax</item>
+      <item>ProcessQuadTessFactorsMin</item>
+      <item>ProcessTriTessFactorsAvg</item>
+      <item>ProcessTriTessFactorsMax</item>
+      <item>ProcessTriTessFactorsMin</item>
+      <item>radians</item>
+      <item>rcp</item>
+      <item>reflect</item>
+      <item>refract</item>
+      <item>reversebits</item>
+      <item>round</item>
+      <item>rsqrt</item>
+      <item>saturate</item>
+      <item>sign</item>
+      <item>sin</item>
+      <item>sincos</item>
+      <item>sinh</item>
+      <item>smoothstep</item>
+      <item>sqrt</item>
+      <item>step</item>
+      <item>tan</item>
+      <item>tanh</item>
+      <item>tex1D</item>
+      <item>tex1Dbias</item>
+      <item>tex1Dgrad</item>
+      <item>tex1Dlod</item>
+      <item>tex1Dproj</item>
+      <item>tex2D</item>
+      <item>tex2Dbias</item>
+      <item>tex2Dgrad</item>
+      <item>tex2Dlod</item>
+      <item>tex2Dproj</item>
+      <item>tex3D</item>
+      <item>tex3Dbias</item>
+      <item>tex3Dgrad</item>
+      <item>tex3Dlod</item>
+      <item>tex3Dproj</item>
+      <item>texCUBE</item>
+      <item>texCUBEbias</item>
+      <item>texCUBEgrad</item>
+      <item>texCUBElod</item>
+      <item>texCUBEproj</item>
+      <item>transpose</item>
+      <item>trunc</item>
+    </list>
+
+    <contexts>
+      <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+        <DetectSpaces />
+        <StringDetect attribute="Region Marker" context="Region Marker" String="//BEGIN" beginRegion="Region1" firstNonSpace="true" />
+        <StringDetect attribute="Region Marker" context="Region Marker" String="//END" endRegion="Region1" firstNonSpace="true" />
+        <keyword attribute="Control Flow" context="#stay" String="controlflow" />
+        <keyword attribute="Keyword" context="#stay" String="keywords" />
+        <keyword attribute="Data Type" context="#stay" String="types" />
+        <keyword attribute="Constant" context="#stay" String="constants" />
+        <keyword attribute="Shader Target" context="#stay" String="targets" />
+        <keyword attribute="Builtin Function" context="#stay" String="builtins" />
+        <DetectIdentifier />
+        <DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+        <Float attribute="Float" context="#stay">
+          <AnyChar String="fF" attribute="Float" context="#stay" />
+        </Float>
+        <HlCOct attribute="Octal" context="#stay" />
+        <HlCHex attribute="Hex" context="#stay" />
+        <Int attribute="Decimal" context="#stay">
+          <StringDetect attribute="Decimal" context="#stay" String="ULL" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="LUL" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="LLU" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="UL" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="LU" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="LL" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="U" insensitive="true" />
+          <StringDetect attribute="Decimal" context="#stay" String="L" insensitive="true" />
+        </Int>
+        <HlCChar attribute="Char" context="#stay" />
+        <DetectChar attribute="String" context="String" char="&quot;" />
+        <Detect2Chars attribute="Comment" context="Line Comment" char="/" char1="/" />
+        <Detect2Chars attribute="Comment" context="Block Comment" char="/" char1="*"
+                      beginRegion="Comment" />
+        <AnyChar attribute="Symbol" context="#stay" String=":!%&amp;()+,-/.*&lt;=&gt;?[]|~^&#59;" />
+      </context>
+
+      <context attribute="String" lineEndContext="#pop" name="String">
+        <LineContinue attribute="String" context="#stay" />
+        <HlCStringChar attribute="String Char" context="#stay" />
+        <DetectChar attribute="String" context="#pop" char="&quot;" />
+      </context>
+
+      <context attribute="Region Marker" lineEndContext="#pop" name="Region Marker">
+      </context>
+
+      <context attribute="Comment" lineEndContext="#pop" name="Line Comment">
+        <LineContinue attribute="Comment" context="#stay" />
+      </context>
+      <context attribute="Comment" lineEndContext="#pop" name="Block Comment">
+        <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/"
+                      endRegion="Comment" />
+      </context>
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal" spellChecking="false" />
+      <itemData name="Control Flow" defStyleNum="dsControlFlow" spellChecking="false" />
+      <itemData name="Keyword" defStyleNum="dsKeyword" spellChecking="false" />
+      <itemData name="Data Type" defStyleNum="dsDataType" spellChecking="false" />
+      <itemData name="Shader Target" defStyleNum="dsOthers" spellChecking="false" />
+      <itemData name="Builtin Function" defStyleNum="dsBuiltIn" spellChecking="false" />
+      <itemData name="Decimal" defStyleNum="dsDecVal" spellChecking="false" />
+      <itemData name="Octal" defStyleNum="dsBaseN" spellChecking="false" />
+      <itemData name="Hex" defStyleNum="dsBaseN" spellChecking="false" />
+      <itemData name="Float" defStyleNum="dsFloat" spellChecking="false" />
+      <itemData name="Char" defStyleNum="dsChar" spellChecking="false" />
+      <itemData name="String" defStyleNum="dsString" />
+      <itemData name="String Char" defStyleNum="dsSpecialChar" />
+      <itemData name="Comment" defStyleNum="dsComment" />
+      <itemData name="Symbol" defStyleNum="dsNormal" spellChecking="false" />
+      <itemData name="Region Marker" defStyleNum="dsRegionMarker" spellChecking="false" />
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="//" />
+      <comment name="multiLine" start="/*" end="*/" region="Comment" />
+    </comments>
+    <keywords casesensitive="1" additionalDeliminator="'&quot;" />
+  </general>
+</language>

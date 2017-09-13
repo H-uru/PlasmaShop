@@ -17,20 +17,13 @@
 #ifndef _QPLASMATEXTDOC_H
 #define _QPLASMATEXTDOC_H
 
-#include <QsciPS3/qsciscintilla.h>
-#include <QsciPS3/qscilexerfni.h>
-#include <QsciPS3/qscilexerfx.h>
-#include <QsciPS3/qscilexerhexisle.h>
-#include <QsciPS3/qscilexerproperties.h>
-#include <QsciPS3/qscilexerpython.h>
-#include <QsciPS3/qscilexersdl.h>
-#include <QsciPS3/qscilexerxml.h>
 #include <QDialog>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QLabel>
 #include <QPushButton>
 #include "QPlasmaDocument.h"
+#include "QPlasmaTextEdit.h"
 
 class QPlasmaTextDoc : public QPlasmaDocument {
     Q_OBJECT
@@ -46,18 +39,18 @@ public:
     };
 
 public:
-    QPlasmaTextDoc(QWidget* parent);
+    explicit QPlasmaTextDoc(QWidget* parent);
 
-    virtual bool canCut() const { return fEditor->hasSelectedText(); }
-    virtual bool canCopy() const { return fEditor->hasSelectedText(); }
-    virtual bool canPaste() const { return fEditor->isPasteAvailable(); }
-    virtual bool canDelete() const { return fEditor->hasSelectedText(); }
-    virtual bool canSelectAll() const { return true; }
-    virtual bool canUndo() const { return fEditor->isUndoAvailable(); }
-    virtual bool canRedo() const { return fEditor->isRedoAvailable(); }
+    bool canCut() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
+    bool canCopy() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
+    bool canPaste() const Q_DECL_OVERRIDE { return fEditor->canPaste(); }
+    bool canDelete() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
+    bool canSelectAll() const Q_DECL_OVERRIDE { return true; }
+    bool canUndo() const Q_DECL_OVERRIDE { return fEditor->document()->isUndoAvailable(); }
+    bool canRedo() const Q_DECL_OVERRIDE { return fEditor->document()->isRedoAvailable(); }
 
-    virtual bool loadFile(QString filename);
-    virtual bool saveTo(QString filename);
+    bool loadFile(QString filename) Q_DECL_OVERRIDE;
+    bool saveTo(QString filename) Q_DECL_OVERRIDE;
 
     void setSyntax(SyntaxMode syn);
     void setEncoding(EncodingMode type);
@@ -68,41 +61,28 @@ public:
     SyntaxMode GuessIniType();
 
 public slots:
-    virtual void updateSettings();
-    virtual void performCut() { fEditor->cut(); }
-    virtual void performCopy() { fEditor->copy(); }
-    virtual void performPaste() { fEditor->paste(); }
-    virtual void performDelete() { fEditor->removeSelectedText(); }
-    virtual void performSelectAll() { fEditor->selectAll(true); }
-    virtual void performUndo() { fEditor->undo(); }
-    virtual void performRedo() { fEditor->redo(); }
-    void expandAll() { fEditor->setFoldAll(false); }
-    void collapseAll() { fEditor->setFoldAll(true); }
+    void updateSettings() Q_DECL_OVERRIDE;
+    void performCut() Q_DECL_OVERRIDE { fEditor->cut(); }
+    void performCopy() Q_DECL_OVERRIDE { fEditor->copy(); }
+    void performPaste() Q_DECL_OVERRIDE { fEditor->paste(); }
+    void performDelete() Q_DECL_OVERRIDE { fEditor->textCursor().removeSelectedText(); }
+    void performSelectAll() Q_DECL_OVERRIDE { fEditor->selectAll(); }
+    void performUndo() Q_DECL_OVERRIDE { fEditor->undo(); }
+    void performRedo() Q_DECL_OVERRIDE { fEditor->redo(); }
     void textFind();
-    void textFindNext() { fEditor->findNext(); }
+    void textFindNext() { onFindNext(); }
     void textReplace();
 
-    bool onFind(QString text, bool regex, bool cs, bool wo, bool reverse);
-    void onReplace(QString newText);
-    bool onReplaceAll(QString text, bool regex, bool cs, bool wo, QString newText);
+    bool onFind(const QString& text, bool regex, bool cs, bool wo, bool reverse);
+    bool onFindNext();
+    void onReplace(const QString& newText);
+    bool onReplaceAll(const QString& text, bool regex, bool cs, bool wo,
+                      const QString& newText);
 
 private:
-    QsciScintilla* fEditor;
+    QPlasmaTextEdit* fEditor;
     SyntaxMode fSyntax;
     EncodingMode fEncoding;
-    bool fDoLineNumbers;
-    bool fLexersInited;
-
-    QsciLexerFni* fLexerFNI;
-    QsciLexerFX* fLexerFX;
-    QsciLexerHexIsle* fLexerHEX;
-    QsciLexerProperties* fLexerINI;
-    QsciLexerPython* fLexerPY;
-    QsciLexerSDL* fLexerSDL;
-    QsciLexerXML* fLexerXML;
-
-private slots:
-    void adjustLineNumbers();
 };
 
 
@@ -121,11 +101,12 @@ private:
 
 public:
     TextFindDialog(QPlasmaTextDoc* parent, bool replace);
-    virtual ~TextFindDialog();
+    ~TextFindDialog() Q_DECL_OVERRIDE;
+
+    bool performSearch();
 
 private slots:
     void handleFind();
-    void handleSkip() { fDocument->textFindNext(); }
     void handleReplaceAll();
 };
 

@@ -9,6 +9,7 @@ set(PSCommon_Headers
     QHexWidget.h
     QLinkLabel.h
     QNumerics.h
+    QPlasmaTextEdit.h
 )
 
 set(PSCommon_Sources
@@ -16,10 +17,11 @@ set(PSCommon_Sources
     QHexWidget.cpp
     QLinkLabel.cpp
     QNumerics.cpp
+    QPlasmaTextEdit.cpp
 )
 
 add_library(PSCommon STATIC ${PSCommon_Headers} ${PSCommon_Sources})
-target_link_libraries(PSCommon HSPlasma Qt5::Widgets)
+target_link_libraries(PSCommon HSPlasma Qt5::Widgets KF5::SyntaxHighlighting)
 
 if(NOT WIN32 AND NOT APPLE)
     set(PSIconLoader_Headers

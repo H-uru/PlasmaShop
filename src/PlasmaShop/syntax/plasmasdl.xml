@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Plasma SDL" section="Other" indenter="cstyle"
+          extensions="*.sdl" mimetype="" license="LGPL"
+          version="1" kateversion="5.0" priority="10"
+          author="Michael Hansen (zrax0111@gmail.com)">
+  <highlighting>
+    <list name="keywords">
+      <item>DEFAULT</item>
+      <item>DEFAULTOPTION</item>
+      <item>DISPLAYOPTION</item>
+      <item>STATEDESC</item>
+      <item>VAR</item>
+      <item>VERSION</item>
+      <item>default</item>
+      <item>struct</item>
+      <item>version</item>
+    </list>
+    <list name="types">
+      <item>AGETIMEOFDAY</item>
+      <item>BOOL</item>
+      <item>BYTE</item>
+      <item>CREATABLE</item>
+      <item>FLOAT</item>
+      <item>INT</item>
+      <item>PLKEY</item>
+      <item>POINT3</item>
+      <item>QUATERNION</item>
+      <item>RGB8</item>
+      <item>SHORT</item>
+      <item>STRING32</item>
+      <item>TIME</item>
+      <item>VECTOR3</item>
+      <item>AgeTimeElapsed</item>
+      <item>AgeTimeOfDay</item>
+      <item>bool</item>
+      <item>buffer</item>
+      <item>byte</item>
+      <item>double</item>
+      <item>float</item>
+      <item>GameTimeElapsed</item>
+      <item>int</item>
+      <item>matrix44</item>
+      <item>point3</item>
+      <item>quaternion</item>
+      <item>string</item>
+      <item>uint</item>
+      <item>uoid</item>
+      <item>vector3</item>
+    </list>
+    <list name="constants">
+      <item>false</item>
+      <item>true</item>
+      <item>nil</item>
+      <item>VAULT</item>
+      <item>red</item>
+      <item>hidden</item>
+    </list>
+
+    <contexts>
+      <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <DetectSpaces />
+        <keyword attribute="Keyword" context="#stay" String="keywords" />
+        <keyword attribute="Data Type" context="#stay" String="types" />
+        <keyword attribute="Constant" context="#stay" String="constants" />
+        <DetectIdentifier />
+        <DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+        <Float attribute="Float" context="#stay" />
+        <Int attribute="Number" context="#stay" />
+        <DetectChar attribute="String" context="Single String" char="'" />
+        <DetectChar attribute="String" context="Double String" char="&quot;" />
+        <DetectChar attribute="Comment" context="Hash Comment" char="#" />
+        <Detect2Chars attribute="Comment" context="Line Comment" char="/" char1="/" />
+        <Detect2Chars attribute="Comment" context="Block Comment" char="/" char1="*"
+                      beginRegion="Comment" />
+        <RegExpr attribute="Reference" context="#stay" String="\$[a-zA-Z_][a-zA-Z0-9_]*" />
+        <AnyChar attribute="Symbol" context="#stay" String="=()[].,;+-" />
+      </context>
+
+      <context name="Double String" attribute="String" lineEndContext="#pop">
+        <LineContinue attribute="String" context="#stay" />
+        <HlCStringChar attribute="String Char" context="#stay" />
+        <DetectChar attribute="String" context="#pop" char="&quot;" />
+      </context>
+      <context name="Single String" attribute="String" lineEndContext="#pop">
+        <LineContinue attribute="String" context="#stay" />
+        <HlCStringChar attribute="String Char" context="#stay" />
+        <DetectChar attribute="String" context="#pop" char="'" />
+      </context>
+
+      <context name="Hash Comment" attribute="Comment" lineEndContext="#pop">
+        <LineContinue attribute="Comment" context="#stay" />
+      </context>
+      <context name="Line Comment" attribute="Comment" lineEndContext="#pop">
+        <LineContinue attribute="Comment" context="#stay" />
+      </context>
+      <context name="Block Comment" attribute="Comment" lineEndContext="#pop">
+        <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/"
+                      endRegion="Comment" />
+      </context>
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal" spellChecking="false" />
+      <itemData name="Keyword" defStyleNum="dsKeyword" spellChecking="false" />
+      <itemData name="Data Type" defStyleNum="dsDataType" spellChecking="false" />
+      <itemData name="Constant" defStyleNum="dsBuiltIn" spellChecking="false" />
+      <itemData name="Number" defStyleNum="dsDecVal" spellChecking="false" />
+      <itemData name="Float" defStyleNum="dsFloat" spellChecking="false" />
+      <itemData name="String" defStyleNum="dsString" />
+      <itemData name="String Char" defStyleNum="dsSpecialChar" />
+      <itemData name="Comment" defStyleNum="dsComment" />
+      <itemData name="Reference" defStyleNum="dsOthers" />
+      <itemData name="Symbol" defStyleNum="dsNormal" spellChecking="false" />
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="hashLine" start="#" />
+      <comment name="singleLine" start="//" />
+      <comment name="multiLine" start="/*" end="*/" region="Comment" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
+</language>

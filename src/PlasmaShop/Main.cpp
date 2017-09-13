@@ -79,8 +79,6 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTextTypeUTF8] = new QAction(tr("UTF-&8"), this);
     fActions[kTextTypeUTF16] = new QAction(tr("UTF-1&6"), this);
     fActions[kTextTypeUTF32] = new QAction(tr("UTF-&32"), this);
-    fActions[kTextExpandAll] = new QAction(tr("E&xpand All"), this);
-    fActions[kTextCollapseAll] = new QAction(tr("&Collapse All"), this);
 
     fActions[kGenEncNone] = new QAction(tr("&None"), this);
     fActions[kGenEncXtea] = new QAction(tr("&Uru Prime / PotS / UU"), this);
@@ -171,9 +169,6 @@ PlasmaShopMain::PlasmaShopMain()
     text_typeMenu->addAction(fActions[kTextTypeUTF8]);
     text_typeMenu->addAction(fActions[kTextTypeUTF16]);
     text_typeMenu->addAction(fActions[kTextTypeUTF32]);
-    fTextMenu->addSeparator();
-    fTextMenu->addAction(fActions[kTextExpandAll]);
-    fTextMenu->addAction(fActions[kTextCollapseAll]);
 
     fEncryptMenu = menuBar()->addMenu(tr("Encr&yption"));
     fEncryptMenu->addAction(fActions[kGenEncNone]);
@@ -266,8 +261,6 @@ PlasmaShopMain::PlasmaShopMain()
     connect(fActions[kTextFind], SIGNAL(triggered()), this, SLOT(onTextFind()));
     connect(fActions[kTextFindNext], SIGNAL(triggered()), this, SLOT(onTextFindNext()));
     connect(fActions[kTextReplace], SIGNAL(triggered()), this, SLOT(onTextReplace()));
-    connect(fActions[kTextCollapseAll], SIGNAL(triggered()), this, SLOT(onTextCollapseAll()));
-    connect(fActions[kTextExpandAll], SIGNAL(triggered()), this, SLOT(onTextExpandAll()));
     connect(fActions[kTextStxNone], SIGNAL(triggered()), this, SLOT(onTextStxNone()));
     connect(fActions[kTextStxPython], SIGNAL(triggered()), this, SLOT(onTextStxPython()));
     connect(fActions[kTextStxSDL], SIGNAL(triggered()), this, SLOT(onTextStxSDL()));
@@ -385,15 +378,6 @@ void PlasmaShopMain::loadFile(QString filename)
     QPlasmaDocument* plDoc = QPlasmaDocument::GetEditor(dtype, this);
     if (plDoc != NULL) {
         fEditorPane->addTab(plDoc, QPlasmaDocument::GetDocIcon(filename), fnameDisplay);
-        if (!plDoc->loadFile(filename)) {
-            QMessageBox::critical(this, tr("Oops"),
-                        tr("Loading %1 failed.").arg(filename),
-                        QMessageBox::Ok);
-            // Error loading the file.  Remove it now to avoid problems later
-            fEditorPane->removeTab(fEditorPane->count() - 1);
-            delete plDoc;
-            return;
-        }
         if (dtype == kDocText) {
             if (ext == "fni" || ext == "cfg")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxConsole);
@@ -409,12 +393,22 @@ void PlasmaShopMain::loadFile(QString filename)
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxSDL);
             else if (ext == "loc" || ext == "sub" || ext == "xml")
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxXML);
-            else if (fnameNoPath == "serverconfig.ini")
-                ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
-            else if (ext == "ini")
-                ((QPlasmaTextDoc*)plDoc)->setSyntax(((QPlasmaTextDoc*)plDoc)->GuessIniType());
             else
                 ((QPlasmaTextDoc*)plDoc)->setSyntax(QPlasmaTextDoc::kStxNone);
+        }
+        if (!plDoc->loadFile(filename)) {
+            QMessageBox::critical(this, tr("Oops"),
+                                  tr("Loading %1 failed.").arg(filename),
+                                  QMessageBox::Ok);
+            // Error loading the file.  Remove it now to avoid problems later
+            fEditorPane->removeTab(fEditorPane->count() - 1);
+            delete plDoc;
+            return;
+        }
+        if (dtype == kDocText && ext == "ini" && fnameNoPath != "serverconfig.ini") {
+            // This can't be determined until the file is loaded
+            QPlasmaTextDoc *textDoc = reinterpret_cast<QPlasmaTextDoc*>(plDoc);
+            textDoc->setSyntax(textDoc->GuessIniType());
         }
         connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
         connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
@@ -872,274 +866,266 @@ void PlasmaShopMain::onCut()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performCut();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performCut();
 }
 
 void PlasmaShopMain::onCopy()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performCopy();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performCopy();
 }
 
 void PlasmaShopMain::onPaste()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performPaste();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performPaste();
 }
 
 void PlasmaShopMain::onDelete()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performDelete();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performDelete();
 }
 
 void PlasmaShopMain::onSelectAll()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performSelectAll();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performSelectAll();
 }
 
 void PlasmaShopMain::onUndo()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performUndo();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performUndo();
 }
 
 void PlasmaShopMain::onRedo()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->performRedo();
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->performRedo();
 }
 
 void PlasmaShopMain::onTextFind()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->textFind();
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->textFind();
 }
 
 void PlasmaShopMain::onTextFindNext()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->textFindNext();
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->textFindNext();
 }
 
 void PlasmaShopMain::onTextReplace()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->textReplace();
-}
-
-void PlasmaShopMain::onTextExpandAll()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->expandAll();
-}
-
-void PlasmaShopMain::onTextCollapseAll()
-{
-    if (fEditorPane->currentIndex() < 0)
-        return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->collapseAll();
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc)
+        doc->textReplace();
 }
 
 void PlasmaShopMain::onTextStxNone()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxNone);
-    setTextSyntax(kTextStxNone);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxNone);
+        setTextSyntax(kTextStxNone);
+    }
 }
 
 void PlasmaShopMain::onTextStxPython()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxPython);
-    setTextSyntax(kTextStxPython);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxPython);
+        setTextSyntax(kTextStxPython);
+    }
 }
 
 void PlasmaShopMain::onTextStxSDL()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxSDL);
-    setTextSyntax(kTextStxSDL);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxSDL);
+        setTextSyntax(kTextStxSDL);
+    }
 }
 
 void PlasmaShopMain::onTextStxIni()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxIni);
-    setTextSyntax(kTextStxIni);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxIni);
+        setTextSyntax(kTextStxIni);
+    }
 }
 
 void PlasmaShopMain::onTextStxConsole()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxConsole);
-    setTextSyntax(kTextStxConsole);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxConsole);
+        setTextSyntax(kTextStxConsole);
+    }
 }
 
 void PlasmaShopMain::onTextStxXML()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxXML);
-    setTextSyntax(kTextStxXML);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxXML);
+        setTextSyntax(kTextStxXML);
+    }
 }
 
 void PlasmaShopMain::onTextStxHex()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxHex);
-    setTextSyntax(kTextStxHex);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxHex);
+        setTextSyntax(kTextStxHex);
+    }
 }
 
 void PlasmaShopMain::onTextStxFX()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setSyntax(QPlasmaTextDoc::kStxFX);
-    setTextSyntax(kTextStxFX);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setSyntax(QPlasmaTextDoc::kStxFX);
+        setTextSyntax(kTextStxFX);
+    }
 }
 
 void PlasmaShopMain::onTextTypeAnsi()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncoding(QPlasmaTextDoc::kTypeAnsi);
-    setTextEncoding(kTextTypeAnsi);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncoding(QPlasmaTextDoc::kTypeAnsi);
+        setTextEncoding(kTextTypeAnsi);
+    }
 }
 
 void PlasmaShopMain::onTextTypeUTF8()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncoding(QPlasmaTextDoc::kTypeUTF8);
-    setTextEncoding(kTextTypeUTF8);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncoding(QPlasmaTextDoc::kTypeUTF8);
+        setTextEncoding(kTextTypeUTF8);
+    }
 }
 
 void PlasmaShopMain::onTextTypeUTF16()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncoding(QPlasmaTextDoc::kTypeUTF16);
-    setTextEncoding(kTextTypeUTF16);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncoding(QPlasmaTextDoc::kTypeUTF16);
+        setTextEncoding(kTextTypeUTF16);
+    }
 }
 
 void PlasmaShopMain::onTextTypeUTF32()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    if (doc->docType() != kDocText)
-        return;
-    ((QPlasmaTextDoc*)doc)->setEncoding(QPlasmaTextDoc::kTypeUTF32);
-    setTextEncoding(kTextTypeUTF32);
+    QPlasmaTextDoc* doc = qobject_cast<QPlasmaTextDoc*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncoding(QPlasmaTextDoc::kTypeUTF32);
+        setTextEncoding(kTextTypeUTF32);
+    }
 }
 
 void PlasmaShopMain::onGenEncNone()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->setEncryption(QPlasmaDocument::kEncNone);
-    setEncryption(kGenEncNone);
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncryption(QPlasmaDocument::kEncNone);
+        setEncryption(kGenEncNone);
+    }
 }
 
 void PlasmaShopMain::onGenEncXtea()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->setEncryption(QPlasmaDocument::kEncXtea);
-    setEncryption(kGenEncXtea);
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncryption(QPlasmaDocument::kEncXtea);
+        setEncryption(kGenEncXtea);
+    }
 }
 
 void PlasmaShopMain::onGenEncAes()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->setEncryption(QPlasmaDocument::kEncAes);
-    setEncryption(kGenEncAes);
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncryption(QPlasmaDocument::kEncAes);
+        setEncryption(kGenEncAes);
+    }
 }
 
 void PlasmaShopMain::onGenEncDroid()
 {
     if (fEditorPane->currentIndex() < 0)
         return;
-    QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
-    doc->setEncryption(QPlasmaDocument::kEncDroid);
-    setEncryption(kGenEncDroid);
+    QPlasmaDocument* doc = qobject_cast<QPlasmaDocument*>(fEditorPane->currentWidget());
+    if (doc) {
+        doc->setEncryption(QPlasmaDocument::kEncDroid);
+        setEncryption(kGenEncDroid);
+    }
 }
 
 void PlasmaShopMain::onCloseTab(int idx)
@@ -1239,8 +1225,6 @@ void PlasmaShopMain::onChangeTab(int idx)
     fActions[kTextFind]->setEnabled(false);
     fActions[kTextFindNext]->setEnabled(false);
     fActions[kTextReplace]->setEnabled(false);
-    fActions[kTextExpandAll]->setEnabled(false);
-    fActions[kTextCollapseAll]->setEnabled(false);
     fActions[kTextReplace]->setEnabled(false);
     fActions[kTextStxNone]->setEnabled(false);
     fActions[kTextStxPython]->setEnabled(false);
@@ -1291,8 +1275,6 @@ void PlasmaShopMain::onChangeTab(int idx)
         fActions[kTextFind]->setEnabled(true);
         fActions[kTextFindNext]->setEnabled(true);
         fActions[kTextReplace]->setEnabled(true);
-        fActions[kTextExpandAll]->setEnabled(true);
-        fActions[kTextCollapseAll]->setEnabled(true);
         fActions[kTextReplace]->setEnabled(true);
         fActions[kTextStxNone]->setEnabled(true);
         fActions[kTextStxPython]->setEnabled(true);
