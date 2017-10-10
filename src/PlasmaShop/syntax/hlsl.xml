@@ -70,6 +70,7 @@
       <item>bool4x2</item>
       <item>bool4x3</item>
       <item>bool4x4</item>
+      <item>Buffer</item>
       <item>centroid</item>
       <item>column_major</item>
       <item>const</item>
@@ -201,6 +202,111 @@
       <item>int4x3</item>
       <item>int4x4</item>
       <item>matrix</item>
+      <item>min10float</item>
+      <item>min10float1</item>
+      <item>min10float2</item>
+      <item>min10float3</item>
+      <item>min10float4</item>
+      <item>min10float1x1</item>
+      <item>min10float1x2</item>
+      <item>min10float1x3</item>
+      <item>min10float1x4</item>
+      <item>min10float2x1</item>
+      <item>min10float2x2</item>
+      <item>min10float2x3</item>
+      <item>min10float2x4</item>
+      <item>min10float3x1</item>
+      <item>min10float3x2</item>
+      <item>min10float3x3</item>
+      <item>min10float3x4</item>
+      <item>min10float4x1</item>
+      <item>min10float4x2</item>
+      <item>min10float4x3</item>
+      <item>min10float4x4</item>
+      <item>min12int</item>
+      <item>min12int1</item>
+      <item>min12int2</item>
+      <item>min12int3</item>
+      <item>min12int4</item>
+      <item>min12int1x1</item>
+      <item>min12int1x2</item>
+      <item>min12int1x3</item>
+      <item>min12int1x4</item>
+      <item>min12int2x1</item>
+      <item>min12int2x2</item>
+      <item>min12int2x3</item>
+      <item>min12int2x4</item>
+      <item>min12int3x1</item>
+      <item>min12int3x2</item>
+      <item>min12int3x3</item>
+      <item>min12int3x4</item>
+      <item>min12int4x1</item>
+      <item>min12int4x2</item>
+      <item>min12int4x3</item>
+      <item>min12int4x4</item>
+      <item>min16float</item>
+      <item>min16float1</item>
+      <item>min16float2</item>
+      <item>min16float3</item>
+      <item>min16float4</item>
+      <item>min16float1x1</item>
+      <item>min16float1x2</item>
+      <item>min16float1x3</item>
+      <item>min16float1x4</item>
+      <item>min16float2x1</item>
+      <item>min16float2x2</item>
+      <item>min16float2x3</item>
+      <item>min16float2x4</item>
+      <item>min16float3x1</item>
+      <item>min16float3x2</item>
+      <item>min16float3x3</item>
+      <item>min16float3x4</item>
+      <item>min16float4x1</item>
+      <item>min16float4x2</item>
+      <item>min16float4x3</item>
+      <item>min16float4x4</item>
+      <item>min16int</item>
+      <item>min16int1</item>
+      <item>min16int2</item>
+      <item>min16int3</item>
+      <item>min16int4</item>
+      <item>min16int1x1</item>
+      <item>min16int1x2</item>
+      <item>min16int1x3</item>
+      <item>min16int1x4</item>
+      <item>min16int2x1</item>
+      <item>min16int2x2</item>
+      <item>min16int2x3</item>
+      <item>min16int2x4</item>
+      <item>min16int3x1</item>
+      <item>min16int3x2</item>
+      <item>min16int3x3</item>
+      <item>min16int3x4</item>
+      <item>min16int4x1</item>
+      <item>min16int4x2</item>
+      <item>min16int4x3</item>
+      <item>min16int4x4</item>
+      <item>min16uint</item>
+      <item>min16uint1</item>
+      <item>min16uint2</item>
+      <item>min16uint3</item>
+      <item>min16uint4</item>
+      <item>min16uint1x1</item>
+      <item>min16uint1x2</item>
+      <item>min16uint1x3</item>
+      <item>min16uint1x4</item>
+      <item>min16uint2x1</item>
+      <item>min16uint2x2</item>
+      <item>min16uint2x3</item>
+      <item>min16uint2x4</item>
+      <item>min16uint3x1</item>
+      <item>min16uint3x2</item>
+      <item>min16uint3x3</item>
+      <item>min16uint3x4</item>
+      <item>min16uint4x1</item>
+      <item>min16uint4x2</item>
+      <item>min16uint4x3</item>
+      <item>min16uint4x4</item>
       <item>nointerpolation</item>
       <item>precise</item>
       <item>row_major</item>
@@ -208,6 +314,12 @@
       <item>snorm</item>
       <item>static</item>
       <item>string</item>
+      <item>Texture1D</item>
+      <item>Texture1DArray</item>
+      <item>Texture2D</item>
+      <item>Texture2DArray</item>
+      <item>Texture3D</item>
+      <item>TextureCube</item>
       <item>uint</item>
       <item>uint1</item>
       <item>uint2</item>
@@ -229,6 +341,7 @@
       <item>uint4x2</item>
       <item>uint4x3</item>
       <item>uint4x4</item>
+      <item>unorm</item>
       <item>unsigned</item>
       <item>vector</item>
       <item>void</item>
