@@ -112,7 +112,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     clampZLayout->setHorizontalSpacing(8);
     fClampFlags[kClampTextureU] = new QCheckBox(tr("Clamp Texture U"), clampZWidget);
     fClampFlags[kClampTextureV] = new QCheckBox(tr("Clamp Texture V"), clampZWidget);
-    fZFlags[kZIncLayer] = new QCheckBox(tr("Include Z Layer"), clampZWidget);
+    fZFlags[kZIncLayer] = new QCheckBox(tr("Increment Z Layer"), clampZWidget);
     fZFlags[kZClearZ] = new QCheckBox(tr("Clear Z"), clampZWidget);
     fZFlags[kZNoZRead] = new QCheckBox(tr("No Z Read"), clampZWidget);
     fZFlags[kZNoZWrite] = new QCheckBox(tr("No Z Write"), clampZWidget);
