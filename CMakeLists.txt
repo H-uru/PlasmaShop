@@ -9,6 +9,8 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
+add_definitions(-DST_NO_2_0_DEPRECATION)
+
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
     # Fix <windows.h> doing stupid stuff to QDateTime's header
