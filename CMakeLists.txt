@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 2.8.11.2)
 
 set(CMAKE_AUTOMOC TRUE)
 
+if(POLICY CMP0071)
+    # Don't run generated source files (bytes/python_*.cpp) through automoc
+    cmake_policy(SET CMP0071 OLD)
+endif()
+
 find_package(HSPlasma REQUIRED)
 find_package(string_theory REQUIRED)
 find_package(Qt5Core REQUIRED)
