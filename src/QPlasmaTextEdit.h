@@ -34,7 +34,7 @@ class QPlasmaTextEdit : public QPlainTextEdit {
         kShowLineNumbers = (1<<0),
         kExpandTabs = (1<<1),
         kAutoIndent = (1<<2),
-        kMatchParens = (1<<3),
+        kMatchBraces = (1<<3),
     };
 
 public:
@@ -58,13 +58,13 @@ public:
     void setLongLineMarker(int pos);
     int longLineMarker() const { return fLongLineMarker; }
 
-    void setMatchParentheses(bool match);
-    bool matchParentheses() const { return (fEditorSettings & kMatchParens) != 0; }
+    void setMatchBraces(bool match);
+    bool matchBraces() const { return (fEditorSettings & kMatchBraces) != 0; }
 
     static KSyntaxHighlighting::Repository* SyntaxRepo();
 
     void setTheme(const KSyntaxHighlighting::Theme& theme);
-    void setSyntax(const QString &name);
+    void setSyntax(const QString& name);
 
 protected:
     void resizeEvent(QResizeEvent* e) Q_DECL_OVERRIDE;
@@ -79,6 +79,7 @@ private slots:
     void updateMargins();
     void updateLineNumbers(const QRect& rect, int dy);
     void updateCursor();
+    void updateTabMetrics();
     void highlightCurrentLine();
 
 private:
@@ -87,7 +88,8 @@ private:
     QColor fLineMarginBg, fLineMarginFg;
     QColor fCursorLineBg, fCursorLineNum;
     QColor fLongLineColor;
-    QColor fParenMatchBg;
+    QColor fBraceMatchBg;
+    QColor fErrorBg;
     int fTabCharSize;
     int fLongLineMarker;
     unsigned int fEditorSettings;

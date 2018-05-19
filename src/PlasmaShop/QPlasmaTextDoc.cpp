@@ -342,7 +342,7 @@ void QPlasmaTextDoc::updateSettings()
 
     fEditor->setFont(textFont);
     fEditor->setWordWrapMode(QTextOption::NoWrap);
-    fEditor->setMatchParentheses(true);
+    fEditor->setMatchBraces(true);
 
     fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
     fEditor->setExpandTabs(settings.value("SciUseSpaces", true).toBool());
@@ -451,18 +451,19 @@ bool QPlasmaTextDoc::onReplaceAll(const QString& text, bool regex, bool cs,
 
 bool QPlasmaTextDoc::loadFile(QString filename)
 {
+    const ST::string stFilename = qstr2st(filename);
     if (filename.right(4).toLower() == ".elf") {
         // Encrypted Log File...  We have to handle it specially
         hsElfStream S;
-        if (!S.open(filename.toUtf8().data(), fmRead))
+        if (!S.open(stFilename, fmRead))
             return false;
         fEditor->clear();
         while (!S.eof())
             fEditor->appendPlainText(st2qstr(S.readLine() + "\n"));
         fEditor->setReadOnly(true);
-    } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
+    } else if (plEncryptedStream::IsFileEncrypted(stFilename)) {
         plEncryptedStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto))
+        if (!S.open(stFilename, fmRead, plEncryptedStream::kEncAuto))
             return false;
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
@@ -478,7 +479,7 @@ bool QPlasmaTextDoc::loadFile(QString filename)
         fEditor->setPlainText(LoadData(&S, fEncoding));
     } else {
         hsFileStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead))
+        if (!S.open(stFilename, fmRead))
             return false;
         fEncryption = kEncNone;
         fEncoding = DetectEncoding(&S);
@@ -496,9 +497,10 @@ static QString unixToWindowsText(QString &&text)
 
 bool QPlasmaTextDoc::saveTo(QString filename)
 {
+    const ST::string stFilename = qstr2st(filename);
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmCreate))
+        if (!S.open(stFilename, fmCreate))
             return false;
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, unixToWindowsText(fEditor->toPlainText()));
@@ -517,7 +519,7 @@ bool QPlasmaTextDoc::saveTo(QString filename)
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }
-        if (!S.open(filename.toUtf8().data(), fmCreate, type))
+        if (!S.open(stFilename, fmCreate, type))
             return false;
         WriteEncoding(&S, fEncoding);
         SaveData(&S, fEncoding, unixToWindowsText(fEditor->toPlainText()));
