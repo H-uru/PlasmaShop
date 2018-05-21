@@ -41,8 +41,6 @@ private:
     QLineEdit* fVaultEditorPath;
     QLineEdit* fImageEditorPath;
 
-    QCheckBox* fSciMargin;
-    QCheckBox* fSciFolding;
     QCheckBox* fSciLineNumbers;
     QCheckBox* fSciUseSpaces;
     QCheckBox* fSciAutoIndent;
