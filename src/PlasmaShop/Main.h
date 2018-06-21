@@ -50,7 +50,6 @@ private:
         kTextStxNone, kTextStxPython, kTextStxSDL, kTextStxIni,
         kTextStxConsole, kTextStxXML, kTextStxHex, kTextStxFX,
         kTextTypeAnsi, kTextTypeUTF8, kTextTypeUTF16, kTextTypeUTF32,
-        kTextExpandAll, kTextCollapseAll,
 
         // Generic Encryption options
         kGenEncNone, kGenEncXtea, kGenEncAes, kGenEncDroid,
@@ -109,8 +108,6 @@ private slots:
     void onTextFind();
     void onTextFindNext();
     void onTextReplace();
-    void onTextCollapseAll();
-    void onTextExpandAll();
     void onTextStxNone();
     void onTextStxPython();
     void onTextStxSDL();

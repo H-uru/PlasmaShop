@@ -114,17 +114,16 @@ if(WIN32)
 endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(PlasmaShop_RCC images.qrc)
+qt5_add_resources(PlasmaShop_RCC images.qrc PlasmaSyntax.qrc)
 
-include_directories("${PROJECT_SOURCE_DIR}/QScintilla/Qt4Qt5")
 include_directories("${pycdc_SOURCE_DIR}")
 
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_Headers} ${PlasmaShop_Sources}
                ${pycdc_Headers} ${pycdc_Sources} ${pycdc_GeneratedSources}
                ${PlasmaShop_RCC})
-target_link_libraries(PlasmaShop Qt5::Widgets)
-target_link_libraries(PlasmaShop qscintilla2-ps3 HSPlasma)
+target_link_libraries(PlasmaShop PSCommon Qt5::Widgets KF5::SyntaxHighlighting)
+target_link_libraries(PlasmaShop HSPlasma)
 if(NOT WIN32 AND NOT APPLE)
     target_link_libraries(PlasmaShop PSIconLoader)
 endif()

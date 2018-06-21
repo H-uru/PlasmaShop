@@ -31,7 +31,7 @@ static struct {
     QString text, newText;
     bool regex, cs, wo, reverse;
     class TextFindDialog* current;
-} s_findSettings = { QString(), QString(), false, false, false, false, NULL };
+} s_findSettings = { QString(), QString(), false, false, false, false, Q_NULLPTR };
 
 /* Find/Replace dialog */
 TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
@@ -52,7 +52,7 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
     if (replace)
         fNewText = new QLineEdit(s_findSettings.newText, this);
     else
-        fNewText = NULL;
+        fNewText = Q_NULLPTR;
     fCaseSensitive = new QCheckBox(tr("&Case sensitive"), this);
     fRegEx = new QCheckBox(tr("&Regular expression search"), this);
     fWholeWord = new QCheckBox(tr("Match &whole word"), this);
@@ -65,7 +65,7 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
 
     QWidget* buttonPanel = new QWidget(this);
     QPushButton* btnFind = new QPushButton(replace ? tr("&Replace") : tr("&Find"), buttonPanel);
-    QPushButton* btnReplaceAll = NULL;
+    QPushButton* btnReplaceAll = Q_NULLPTR;
     if (replace) {
         btnReplaceAll = new QPushButton(tr("Replace &All"), buttonPanel);
         fBtnSkip = new QPushButton(tr("&Skip"), buttonPanel);
@@ -116,7 +116,7 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
 TextFindDialog::~TextFindDialog()
 {
     s_findSettings.text = fFindText->text();
-    if (fNewText != NULL)
+    if (fNewText != Q_NULLPTR)
         s_findSettings.newText = fNewText->text();
     s_findSettings.regex = fRegEx->isChecked();
     s_findSettings.cs = fCaseSensitive->isChecked();
@@ -125,14 +125,24 @@ TextFindDialog::~TextFindDialog()
     s_findSettings.current = NULL;
 }
 
+bool TextFindDialog::performSearch()
+{
+    s_findSettings.text = fFindText->text();
+    if (fNewText != Q_NULLPTR)
+        s_findSettings.newText = fNewText->text();
+    s_findSettings.regex = fRegEx->isChecked();
+    s_findSettings.cs = fCaseSensitive->isChecked();
+    s_findSettings.wo = fWholeWord->isChecked();
+    s_findSettings.reverse = fReverse->isChecked();
+    return fDocument->onFindNext();
+}
+
 void TextFindDialog::handleFind()
 {
-    if (fNewText != NULL) {
+    if (fNewText != Q_NULLPTR) {
         // Replace
         if (!fBtnSkip->isEnabled()) {
-            if (!fDocument->onFind(fFindText->text(), fRegEx->isChecked(),
-                                   fCaseSensitive->isChecked(), fWholeWord->isChecked(),
-                                   fReverse->isChecked())) {
+            if (!performSearch()) {
                 QMessageBox::critical(this, tr("Not found"),
                                       tr("The pattern '%1' was not found in the current document")
                                       .arg(fFindText->text()), QMessageBox::Ok);
@@ -141,13 +151,11 @@ void TextFindDialog::handleFind()
             fBtnSkip->setEnabled(true);
         } else {
             fDocument->onReplace(fNewText->text());
-            fDocument->textFindNext();
+            performSearch();
         }
     } else {
         // Find (and close)
-        if (!fDocument->onFind(fFindText->text(), fRegEx->isChecked(),
-                               fCaseSensitive->isChecked(), fWholeWord->isChecked(),
-                               fReverse->isChecked())) {
+        if (!performSearch()) {
             QMessageBox::critical(this, tr("Not found"),
                                   tr("The pattern '%1' was not found in the current document")
                                   .arg(fFindText->text()), QMessageBox::Ok);
@@ -298,17 +306,11 @@ static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
 
 QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
               : QPlasmaDocument(kDocText, parent),
-                fSyntax(kStxNone), fEncoding(kTypeAnsi),
-                fLexersInited(false)
+                fSyntax(kStxNone), fEncoding(kTypeAnsi)
 {
     memset(fDroidKey, 0, sizeof(fDroidKey));
 
-    fEditor = new QsciScintilla(this);
-    fEditor->setEolMode(QsciScintilla::EolWindows); // Because it's what Plasma uses
-    fEditor->setUtf8(true);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETENDATLASTLINE, 0);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTHTRACKING, 1);
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSCROLLWIDTH, 1000);
+    fEditor = new QPlasmaTextEdit(this);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
@@ -318,11 +320,16 @@ QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
     // Initialize the editor settings, fonts, etc
     updateSettings();
 
-    connect(fEditor, SIGNAL(linesChanged()), this, SLOT(adjustLineNumbers()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTLEFT()), this, SLOT(makeDirty()));
-    connect(fEditor, SIGNAL(SCN_SAVEPOINTREACHED()), this, SLOT(maybeClean()));
-    connect(fEditor, SIGNAL(selectionChanged()), this, SIGNAL(statusChanged()));
-    connect(fEditor, SIGNAL(textChanged()), this, SIGNAL(statusChanged()));
+    connect(fEditor->document(), &QTextDocument::modificationChanged, [this](bool changed) {
+        if (changed)
+            makeDirty();
+        else
+            maybeClean();
+    });
+    connect(fEditor, &QPlainTextEdit::selectionChanged, this, &QPlasmaTextDoc::statusChanged);
+    connect(fEditor, &QPlainTextEdit::textChanged, this, &QPlasmaTextDoc::statusChanged);
+    connect(fEditor, &QPlainTextEdit::undoAvailable, [this](bool) { statusChanged(); });
+    connect(fEditor, &QPlainTextEdit::redoAvailable, [this](bool) { statusChanged(); });
 }
 
 void QPlasmaTextDoc::updateSettings()
@@ -333,76 +340,37 @@ void QPlasmaTextDoc::updateSettings()
                    settings.value("SciFontWeight", QFont::Normal).toInt(),
                    settings.value("SciFontItalic", false).toBool());
 
-    fEditor->setLexer(NULL);
-    if (fLexersInited) {
-        delete fLexerFNI;
-        delete fLexerFX;
-        delete fLexerHEX;
-        delete fLexerINI;
-        delete fLexerPY;
-        delete fLexerSDL;
-        delete fLexerXML;
-    }
-    fLexerFNI = new QsciLexerFni(fEditor);
-    fLexerFX = new QsciLexerFX(fEditor);
-    fLexerHEX = new QsciLexerHexIsle(fEditor);
-    fLexerINI = new QsciLexerProperties(fEditor);
-    fLexerPY = new QsciLexerPython(fEditor);
-    fLexerSDL = new QsciLexerSDL(fEditor);
-    fLexerXML = new QsciLexerXML(fEditor);
-    fLexersInited = true;
-
-    fLexerFNI->setDefaultFont(textFont);
-    fLexerFX->setDefaultFont(textFont);
-    fLexerHEX->setDefaultFont(textFont);
-    fLexerINI->setDefaultFont(textFont);
-    fLexerPY->setDefaultFont(textFont);
-    fLexerSDL->setDefaultFont(textFont);
-    fLexerXML->setDefaultFont(textFont);
-    fEditor->setWhitespaceForegroundColor(QColor(0xA0, 0xA0, 0xA0));
-
-    QFont braceFont = textFont;
-    braceFont.setBold(true);
-    fEditor->setMatchedBraceFont(braceFont);
-    fEditor->setUnmatchedBraceFont(braceFont);
-
-    QPalette pal;
-    fEditor->setMarginsBackgroundColor(pal.color(QPalette::Active, QPalette::Window));
-    fEditor->setMarginsForegroundColor(pal.color(QPalette::Active, QPalette::WindowText));
-    fEditor->setMatchedBraceForegroundColor(QColor(0x00, 0x00, 0xff));
-    fEditor->setUnmatchedBraceForegroundColor(QColor(0xff, 0x00, 0x00));
-    fEditor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    fEditor->setFont(textFont);
+    fEditor->setWordWrapMode(QTextOption::NoWrap);
+    fEditor->setMatchBraces(true);
 
     fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
-    fEditor->setIndentationsUseTabs(!settings.value("SciUseSpaces", true).toBool());
+    fEditor->setExpandTabs(settings.value("SciUseSpaces", true).toBool());
     fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
+
+    if (settings.value("SciMargin", true).toBool())
+        fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
+    else
+        fEditor->setShowLineNumbers(false);
+
+    QTextOption opt = fEditor->document()->defaultTextOption();
+    if (settings.value("SciShowWhitespace", false).toBool())
+        opt.setFlags(opt.flags() | QTextOption::ShowTabsAndSpaces);
+    else
+        opt.setFlags(opt.flags() & ~QTextOption::ShowTabsAndSpaces);
+    opt.setFlags(opt.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+    fEditor->document()->setDefaultTextOption(opt);
+
+    if (settings.value("SciLongLineMark", false).toBool())
+        fEditor->setLongLineMarker(settings.value("SciLongLineSize", 80).toInt());
+    else
+        fEditor->setLongLineMarker(0);
+
+    /* TODO if necessary:
     fEditor->setIndentationGuides(settings.value("SciIndentGuides", false).toBool());
-    fEditor->setWhitespaceVisibility(settings.value("SciShowWhitespace", false).toBool()
-                                     ? QsciScintilla::WsVisible : QsciScintilla::WsInvisible);
-    fEditor->setEdgeColor(QColor(0xE0, 0xE0, 0xE0));
-    fEditor->setEdgeMode(settings.value("SciLongLineMark", false).toBool()
-                         ? QsciScintilla::EdgeLine : QsciScintilla::EdgeNone);
-    fEditor->setEdgeColumn(settings.value("SciLongLineSize", 80).toInt());
-
-    // Margin Magic (tm)
-    fEditor->setMarginWidth(MARGIN_LINES, 0);
-    fEditor->setMarginWidth(MARGIN_FOLDERS, 0);
-    if (settings.value("SciMargin", true).toBool()) {
-        fDoLineNumbers = settings.value("SciLineNumberMargin", true).toBool();
-        if (settings.value("SciFoldMargin", true).toBool())
-            fEditor->setFolding(QsciScintilla::BoxedTreeFoldStyle, MARGIN_FOLDERS);
-        fEditor->setMarginLineNumbers(MARGIN_LINES, fDoLineNumbers);
-        adjustLineNumbers();
-        if (!fDoLineNumbers)
-            fEditor->setMarginWidth(MARGIN_LINES, 16);
-    } else {
-        fDoLineNumbers = false;
-        fEditor->setMarginLineNumbers(MARGIN_LINES, false);
-    }
-
-    setSyntax(fSyntax);
-    fEditor->setMarginsFont(textFont);
-    adjustLineNumbers();
+    if (settings.value("SciMargin", true).toBool())
+        fEditor->setFoldingEnabled(settings.value("SciFoldMargin", true).toBool());
+    */
 }
 
 void QPlasmaTextDoc::textFind()
@@ -431,47 +399,71 @@ void QPlasmaTextDoc::textReplace()
     dlg->activateWindow();
 }
 
-bool QPlasmaTextDoc::onFind(QString text, bool regex, bool cs, bool wo, bool reverse)
+bool QPlasmaTextDoc::onFind(const QString& text, bool regex, bool cs,
+                            bool wo, bool reverse)
 {
-    if (fEditor->length() == 0)
-        return false;
-    return fEditor->findFirst(text, regex, cs, wo, true, !reverse);
+    QTextDocument::FindFlags options = 0;
+    if (cs)
+        options |= QTextDocument::FindCaseSensitively;
+    if (wo)
+        options |= QTextDocument::FindWholeWords;
+    if (reverse)
+        options |= QTextDocument::FindBackward;
+
+    if (regex)
+        return fEditor->find(QRegExp(text, cs ? Qt::CaseSensitive : Qt::CaseInsensitive), options);
+    else
+        return fEditor->find(text, options);
 }
 
-void QPlasmaTextDoc::onReplace(QString newText)
+bool QPlasmaTextDoc::onFindNext()
 {
-    fEditor->replace(newText);
+    return onFind(s_findSettings.text, s_findSettings.regex,
+                  s_findSettings.cs, s_findSettings.wo,
+                  s_findSettings.reverse);
 }
 
-bool QPlasmaTextDoc::onReplaceAll(QString text, bool regex, bool cs, bool wo, QString newText)
+void QPlasmaTextDoc::onReplace(const QString& newText)
 {
-    if (fEditor->length() == 0)
-        return false;
+    QTextCursor cursor = fEditor->textCursor();
+    cursor.removeSelectedText();
+    cursor.insertText(newText);
+}
 
-    int ln, idx;
-    fEditor->getCursorPosition(&ln, &idx);
-    if (!fEditor->findFirst(text, regex, cs, wo, false, true, 0, 0))
+bool QPlasmaTextDoc::onReplaceAll(const QString& text, bool regex, bool cs,
+                                  bool wo, const QString& newText)
+{
+    QTextCursor cursorSave = fEditor->textCursor();
+
+    fEditor->moveCursor(QTextCursor::Start);
+    if (!onFind(text, regex, cs, wo, false)) {
+        fEditor->setTextCursor(cursorSave);
         return false;
+    }
+
     do {
-        fEditor->replace(newText);
-    } while (fEditor->findNext());
-    fEditor->setCursorPosition(ln, idx);
+        onReplace(newText);
+    } while (onFind(text, regex, cs, wo, false));
+
+    fEditor->setTextCursor(cursorSave);
     return true;
 }
 
 bool QPlasmaTextDoc::loadFile(QString filename)
 {
+    const ST::string stFilename = qstr2st(filename);
     if (filename.right(4).toLower() == ".elf") {
         // Encrypted Log File...  We have to handle it specially
         hsElfStream S;
-        if (!S.open(filename.toUtf8().data(), fmRead)) return false;
+        if (!S.open(stFilename, fmRead))
+            return false;
         fEditor->clear();
         while (!S.eof())
-            fEditor->append(st2qstr(S.readLine() + "\n"));
+            fEditor->appendPlainText(st2qstr(S.readLine() + "\n"));
         fEditor->setReadOnly(true);
-    } else if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
+    } else if (plEncryptedStream::IsFileEncrypted(stFilename)) {
         plEncryptedStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead, plEncryptedStream::kEncAuto))
+        if (!S.open(stFilename, fmRead, plEncryptedStream::kEncAuto))
             return false;
         if (S.getEncType() == plEncryptedStream::kEncDroid) {
             if (!GetEncryptionKeyFromUser(this, fDroidKey))
@@ -484,27 +476,34 @@ bool QPlasmaTextDoc::loadFile(QString filename)
             fEncryption = kEncAes;
         }
         fEncoding = DetectEncoding(&S);
-        fEditor->setText(LoadData(&S, fEncoding));
+        fEditor->setPlainText(LoadData(&S, fEncoding));
     } else {
         hsFileStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmRead))
+        if (!S.open(stFilename, fmRead))
             return false;
         fEncryption = kEncNone;
         fEncoding = DetectEncoding(&S);
-        fEditor->setText(LoadData(&S, fEncoding));
+        fEditor->setPlainText(LoadData(&S, fEncoding));
     }
 
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
+    fEditor->document()->clearUndoRedoStacks();
     return QPlasmaDocument::loadFile(filename);
+}
+
+static QString unixToWindowsText(QString &&text)
+{
+    return text.replace("\n", "\r\n").replace("\r\r\n", "\r\n");
 }
 
 bool QPlasmaTextDoc::saveTo(QString filename)
 {
+    const ST::string stFilename = qstr2st(filename);
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvUnknown);
-        if (!S.open(filename.toUtf8().data(), fmCreate)) return false;
+        if (!S.open(stFilename, fmCreate))
+            return false;
         WriteEncoding(&S, fEncoding);
-        SaveData(&S, fEncoding, fEditor->text());
+        SaveData(&S, fEncoding, unixToWindowsText(fEditor->toPlainText()));
     } else {
         plEncryptedStream S(PlasmaVer::pvUnknown);
         plEncryptedStream::EncryptionType type = plEncryptedStream::kEncNone;
@@ -520,13 +519,12 @@ bool QPlasmaTextDoc::saveTo(QString filename)
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }
-        if (!S.open(filename.toUtf8().data(), fmCreate, type))
+        if (!S.open(stFilename, fmCreate, type))
             return false;
         WriteEncoding(&S, fEncoding);
-        SaveData(&S, fEncoding, fEditor->text());
+        SaveData(&S, fEncoding, unixToWindowsText(fEditor->toPlainText()));
     }
 
-    fEditor->SendScintilla(QsciScintillaBase::SCI_SETSAVEPOINT);
     fEditor->setReadOnly(false);
     return QPlasmaDocument::saveTo(filename);
 }
@@ -536,36 +534,29 @@ void QPlasmaTextDoc::setSyntax(SyntaxMode syn)
     fSyntax = syn;
     switch (fSyntax) {
     case kStxConsole:
-        fEditor->setLexer(fLexerFNI);
+        fEditor->setSyntax("Plasma Console");
         break;
     case kStxFX:
-        fEditor->setLexer(fLexerFX);
+        fEditor->setSyntax("HLSL");
         break;
     case kStxHex:
-        fEditor->setLexer(fLexerHEX);
+        fEditor->setSyntax("Hex Isle Level");
         break;
     case kStxIni:
-        fEditor->setLexer(fLexerINI);
+        fEditor->setSyntax("INI Files");
         break;
     case kStxPython:
-        fEditor->setLexer(fLexerPY);
+        fEditor->setSyntax("Python");
         break;
     case kStxSDL:
-        fEditor->setLexer(fLexerSDL);
+        fEditor->setSyntax("Plasma SDL");
         break;
     case kStxXML:
-        fEditor->setLexer(fLexerXML);
+        fEditor->setSyntax("XML");
         break;
     default:
-        fEditor->setLexer(NULL);
-        {
-            QSettings settings("PlasmaShop", "PlasmaShop");
-            QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
-                           settings.value("SciFontSize", 10).toInt(),
-                           settings.value("SciFontWeight", QFont::Normal).toInt(),
-                           settings.value("SciFontItalic", false).toBool());
-            fEditor->setFont(textFont);
-        }
+        fEditor->setSyntax("");
+        break;
     }
 }
 
@@ -576,17 +567,13 @@ void QPlasmaTextDoc::setEncoding(EncodingMode type)
     fPersistDirty = true;
 }
 
-void QPlasmaTextDoc::adjustLineNumbers()
-{
-    if (fDoLineNumbers)
-        fEditor->setMarginWidth(MARGIN_LINES, QString(" %1").arg(fEditor->lines()));
-}
-
 QPlasmaTextDoc::SyntaxMode QPlasmaTextDoc::GuessIniType()
 {
-    for (int ln = 0; ln < fEditor->lines(); ln++) {
-        if (fEditor->text(ln).startsWith('['))
+    QTextBlock block = fEditor->document()->firstBlock();
+    while (block.isValid()) {
+        if (block.text().startsWith('['))
             return kStxIni;
+        block = block.next();
     }
     return kStxConsole;
 }

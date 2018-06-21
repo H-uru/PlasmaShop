@@ -1,5 +1,5 @@
 project(PlasmaShop)
-cmake_minimum_required(VERSION 2.8.11.2)
+cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_AUTOMOC TRUE)
 
@@ -13,6 +13,14 @@ find_package(string_theory REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(KF5SyntaxHighlighting REQUIRED)
+
+if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
+    message(WARNING "KF5SyntaxHighlighting version 5.39.0 or later is required \
+in order to use custom highlighting rules.  KF5SyntaxHighlighting version \
+${KF5SyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
+    add_definitions("-DKSYN_NO_CUSTOM_RULES_SUPPORT")
+endif()
 
 add_definitions(-DST_NO_2_0_DEPRECATION)
 
@@ -21,10 +29,11 @@ if(MSVC)
     # Fix <windows.h> doing stupid stuff to QDateTime's header
     add_definitions("/DNOMINMAX")
 endif()
-add_subdirectory(QScintilla/Qt4Qt5)
 
 if(WIN32)
-    add_definitions(-DPLAT_FONT="Courier New")
+    # Requires Vista, Office 2007, or Visual Studio 2010 (or manual install).
+    # If you're still on XP, who knows what you'll get (Probably Courier)
+    add_definitions(-DPLAT_FONT="Consolas")
 else()
     add_definitions(-DPLAT_FONT="Monospace")
 endif()

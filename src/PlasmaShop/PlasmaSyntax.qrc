@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/plasma-syntax">
+    <file>syntax/hexisle.xml</file>
+    <file>syntax/hlsl.xml</file>
+    <file>syntax/plasmaconsole.xml</file>
+    <file>syntax/plasmasdl.xml</file>
+</qresource>
+</RCC>
