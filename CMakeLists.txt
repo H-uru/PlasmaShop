@@ -14,6 +14,7 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(KF5SyntaxHighlighting REQUIRED)
+find_package(PythonInterp REQUIRED)
 
 if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
     message(WARNING "KF5SyntaxHighlighting version 5.39.0 or later is required \

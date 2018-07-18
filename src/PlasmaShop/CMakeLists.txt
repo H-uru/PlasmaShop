@@ -103,7 +103,7 @@ set(pycdc_GeneratedSources
 add_custom_target(create-bytes-source-dir ALL
                   COMMAND ${CMAKE_COMMAND} -E make_directory ${pycdc_BINARY_DIR}/bytes)
 add_custom_command(OUTPUT ${pycdc_GeneratedSources}
-                   COMMAND ${pycdc_SOURCE_DIR}/bytes/comp_map.py
+                   COMMAND ${PYTHON_EXECUTABLE} ${pycdc_SOURCE_DIR}/bytes/comp_map.py
                            ${pycdc_SOURCE_DIR}/bytes ${pycdc_BINARY_DIR}/bytes
                    DEPENDS ${pycdc_Maps} ${pycdc_SOURCE_DIR}/bytes/comp_map.py
                            create-bytes-source-dir
