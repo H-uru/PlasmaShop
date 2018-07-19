@@ -32,13 +32,14 @@ Source: PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
 Source: Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5Network.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
-Source: Qt5PrintSupport.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
-Source: icudt52.dll; DestDir: {app}; Flags: ignoreversion
-Source: icuin52.dll; DestDir: {app}; Flags: ignoreversion
-Source: icuuc52.dll; DestDir: {app}; Flags: ignoreversion
+Source: KF5SyntaxHighlighting.dll; DestDir: {app}; Flags: ignoreversion
+Source: NxCooking.dll; DestDir: {app}; Flags: ignoreversion
 Source: jpeg8.dll; DestDir: {app}; Flags: ignoreversion
+Source: libpng16.dll; DestDir: {app}; Flags: ignoreversion
+Source: string_theory.dll; DestDir: {app}; Flags: ignoreversion
 Source: zlib.dll; DestDir: {app}; Flags: ignoreversion
 Source: iconengines\qsvgicon.dll; DestDir: {app}\iconengines; Flags: ignoreversion
 Source: imageformats\qico.dll; DestDir: {app}\imageformats; Flags: ignoreversion
@@ -46,9 +47,15 @@ Source: imageformats\qjpeg.dll; DestDir: {app}\imageformats; Flags: ignoreversio
 Source: imageformats\qsvg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qtiff.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qwbmp.dll; DestDir: {app}\imageformats; Flags: ignoreversion
-Source: platforms\qminimal.dll; DestDir: {app}\platforms; Flags: ignoreversion
 Source: platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
+
+[InstallDelete]
+Name: {app}\icudt52.dll; Type: files
+Name: {app}\icuin52.dll; Type: files
+Name: {app}\icuuc52.dll; Type: files
+Name: {app}\Qt5PrintSupport.dll; Type: files
+Name: {app}\platforms\qminimal.dll; Type: files
 
 [Run]
 Filename: {tmp}\vcredist_x86.exe; Parameters: /q
