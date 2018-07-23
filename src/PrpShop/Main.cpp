@@ -30,7 +30,6 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
-#include <qticonloader.h>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 #include <PRP/Surface/plMipmap.h>

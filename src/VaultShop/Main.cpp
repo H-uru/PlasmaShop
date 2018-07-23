@@ -24,7 +24,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <qticonloader.h>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 

@@ -23,7 +23,6 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QSettings>
-#include <qticonloader.h>
 #include "QPlasma.h"
 
 #include <ASTree.h>

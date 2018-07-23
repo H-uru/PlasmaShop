@@ -152,9 +152,6 @@ add_executable(PrpShop WIN32 MACOSX_BUNDLE
 target_link_libraries(PrpShop PSCommon Qt5::Widgets Qt5::OpenGL)
 target_link_libraries(PrpShop KF5::SyntaxHighlighting HSPlasma)
 target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
-if(NOT WIN32 AND NOT APPLE)
-    target_link_libraries(PrpShop PSIconLoader)
-endif()
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

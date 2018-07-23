@@ -96,4 +96,12 @@ struct QOverload
 };
 #endif
 
+#if defined(Q_OS_WIN)
+#  define qStdIcon(name) QIcon(":/res/win/" name ".png")
+#elif defined(Q_OS_MAC)
+#  define qStdIcon(name) QIcon(":/res/mac/" name ".png")
+#else
+#  define qStdIcon(name) QIcon::fromTheme(name, QIcon(":/res/def/" name ".png"))
+#endif
+
 #endif

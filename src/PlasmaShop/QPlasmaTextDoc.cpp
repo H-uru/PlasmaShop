@@ -18,7 +18,6 @@
 #include <QGridLayout>
 #include <QSettings>
 #include <QMessageBox>
-#include <qticonloader.h>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "QPlasma.h"

@@ -23,19 +23,6 @@ set(PSCommon_Sources
 add_library(PSCommon STATIC ${PSCommon_Headers} ${PSCommon_Sources})
 target_link_libraries(PSCommon HSPlasma Qt5::Widgets KF5::SyntaxHighlighting)
 
-if(NOT WIN32 AND NOT APPLE)
-    set(PSIconLoader_Headers
-        3rdParty/qticonloader.h
-    )
-
-    set(PSIconLoader_Sources
-        3rdParty/qticonloader.cpp
-    )
-
-    add_library(PSIconLoader STATIC ${PSIconLoader_Headers} ${PSIconLoader_Sources})
-    target_link_libraries(PSIconLoader Qt5::Gui)
-endif()
-
 add_subdirectory(PlasmaShop)
 add_subdirectory(PrpShop)
 add_subdirectory(VaultShop)

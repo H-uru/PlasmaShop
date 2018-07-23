@@ -28,7 +28,6 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
-#include <qticonloader.h>
 #include <Debug/plDebug.h>
 
 #include "Main.h"
