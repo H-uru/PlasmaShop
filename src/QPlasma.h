@@ -21,14 +21,6 @@
 #include <string_theory/formatter>
 #include <PRP/KeyedObject/plLocation.h>
 
-#ifndef Q_NULLPTR
-#   define Q_NULLPTR 0
-#endif
-
-#ifndef Q_DECL_OVERRIDE
-#   define Q_DECL_OVERRIDE
-#endif
-
 // Shorthand Plasma-Qt string conversion
 inline QString st2qstr(const ST::string& str)
 {

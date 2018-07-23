@@ -410,7 +410,7 @@ void VaultShopMain::loadGame(QString path)
                     loadSaves(vaultPath, dataRoot);
                     loadVault(vaultPath + "/vault.dat", QString("Vault"), dataRoot);
                 }
-            } catch (hsException ex) {
+            } catch (const hsException& ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error loading vault %1: %2")
                                     .arg(*it).arg(ex.what()),
@@ -431,7 +431,7 @@ void VaultShopMain::loadGame(QString path)
             try {
                 if (QFile::exists(sdlPath))
                     fSDLMgr.ReadDescriptors(qstr2st(sdlPath));
-            } catch (hsException ex) {
+            } catch (const hsException& ex) {
                 QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                     tr("Error parsing %1: %2")
                                     .arg(*it).arg(ex.what()),

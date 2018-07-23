@@ -22,9 +22,6 @@
 #include <Stream/hsElfStream.h>
 #include "QPlasma.h"
 
-#define MARGIN_LINES 0
-#define MARGIN_FOLDERS 1
-
 // To preserve settings within a session
 static struct {
     QString text, newText;
