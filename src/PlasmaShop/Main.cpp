@@ -28,6 +28,7 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
+#include <QStandardPaths>
 #include <Debug/plDebug.h>
 
 #include "Main.h"
@@ -1424,7 +1425,7 @@ void PlasmaShopMain::onDocClean()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PlasmaShop.log
-    QString logpath = QStandardPaths_DataLocation();
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PlasmaShop.log";

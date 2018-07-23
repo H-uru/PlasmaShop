@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QStandardPaths>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 
@@ -762,7 +763,7 @@ void VaultShopMain::renameVault()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to VaultShop.log
-    QString logpath = QStandardPaths_DataLocation();
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/VaultShop.log";
