@@ -30,7 +30,7 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
-#include <qticonloader.h>
+#include <QStandardPaths>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 #include <PRP/Surface/plMipmap.h>
@@ -1176,7 +1176,7 @@ void PrpShopMain::showTypeIDs(bool show)
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PrpShop.log
-    QString logpath = QStandardPaths_DataLocation();
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PrpShop.log";

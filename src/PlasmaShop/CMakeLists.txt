@@ -124,9 +124,6 @@ add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_RCC})
 target_link_libraries(PlasmaShop PSCommon Qt5::Widgets KF5::SyntaxHighlighting)
 target_link_libraries(PlasmaShop HSPlasma)
-if(NOT WIN32 AND NOT APPLE)
-    target_link_libraries(PlasmaShop PSIconLoader)
-endif()
 
 if(WIN32)
     target_link_libraries(PlasmaShop shell32)

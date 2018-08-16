@@ -43,9 +43,6 @@ add_executable(VaultShop WIN32 MACOSX_BUNDLE
                ${VaultShop_Sources} ${VaultShop_Headers} ${VaultShop_RCC})
 target_link_libraries(VaultShop PSCommon Qt5::Widgets)
 target_link_libraries(VaultShop HSPlasma)
-if(NOT WIN32 AND NOT APPLE)
-    target_link_libraries(VaultShop PSIconLoader)
-endif()
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

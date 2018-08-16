@@ -18,13 +18,9 @@
 #include <QGridLayout>
 #include <QSettings>
 #include <QMessageBox>
-#include <qticonloader.h>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "QPlasma.h"
-
-#define MARGIN_LINES 0
-#define MARGIN_FOLDERS 1
 
 // To preserve settings within a session
 static struct {

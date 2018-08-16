@@ -25,7 +25,6 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QCryptographicHash>
-#include <qticonloader.h>
 #include "QPlasma.h"
 
 /* SumData */

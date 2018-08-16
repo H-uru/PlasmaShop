@@ -22,15 +22,11 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <qticonloader.h>
 #include <ResManager/plResManager.h>
 #include <Stream/hsRAMStream.h>
 #include <PRP/KeyedObject/hsKeyedObject.h>
 #include "QPlasma.h"
 #include "Main.h"
-
-#define MARGIN_LINES 0
-#define MARGIN_FOLDERS 1
 
 QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
           : QCreatable(pCre, kPRC_Type | pCre->ClassIndex(), parent),

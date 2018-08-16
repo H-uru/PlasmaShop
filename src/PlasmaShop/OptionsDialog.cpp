@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QStandardPaths>
 #include "QPlasma.h"
 
 #ifdef Q_OS_WIN
@@ -269,11 +270,11 @@ QString GetAppDataPath()
     return QString::fromUtf16((const ushort*)path);
 #else
     // Just return the user's home dir
-    return QStandardPaths_HomeLocation();
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 #endif
 }
 
 QString GetDocumentsPath()
 {
-    return QStandardPaths_DocumentsLocation();
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 }

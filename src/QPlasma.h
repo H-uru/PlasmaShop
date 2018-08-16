@@ -21,42 +21,11 @@
 #include <string_theory/formatter>
 #include <PRP/KeyedObject/plLocation.h>
 
-// Use consistent APIs and macros between Qt4 and Qt5
-#if QT_VERSION >= 0x050000
-    #include <QStandardPaths>
-
-    inline QString QStandardPaths_DataLocation()
-    { return QStandardPaths::writableLocation(QStandardPaths::DataLocation); }
-
-    inline QString QStandardPaths_HomeLocation()
-    { return QStandardPaths::writableLocation(QStandardPaths::HomeLocation); }
-
-    inline QString QStandardPaths_DocumentsLocation()
-    { return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation); }
-#else
-    #include <QDesktopServices>
-
-    inline QString QStandardPaths_DataLocation()
-    { return QDesktopServices::storageLocation(QDesktopServices::DataLocation); }
-
-    inline QString QStandardPaths_HomeLocation()
-    { return QDesktopServices::storageLocation(QDesktopServices::HomeLocation); }
-
-    inline QString QStandardPaths_DocumentsLocation()
-    { return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation); }
-#endif
-
-#ifndef Q_NULLPTR
-#   define Q_NULLPTR 0
-#endif
-
-#ifndef Q_DECL_OVERRIDE
-#   define Q_DECL_OVERRIDE
-#endif
-
 // Shorthand Plasma-Qt string conversion
 inline QString st2qstr(const ST::string& str)
-{ return QString::fromUtf8(str.c_str()); }
+{
+    return QString::fromUtf8(str.c_str());
+}
 
 inline ST::string qstr2st(const QString& str)
 {
@@ -94,6 +63,14 @@ struct QOverload
         return ptr;
     }
 };
+#endif
+
+#if defined(Q_OS_WIN)
+#  define qStdIcon(name) QIcon(":/res/win/" name ".png")
+#elif defined(Q_OS_MAC)
+#  define qStdIcon(name) QIcon(":/res/mac/" name ".png")
+#else
+#  define qStdIcon(name) QIcon::fromTheme(name, QIcon(":/res/def/" name ".png"))
 #endif
 
 #endif

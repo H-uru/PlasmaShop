@@ -34,19 +34,6 @@
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
-void multMatrix(const QMatrix4x4& m)
-{
-#if QT_VERSION >= 0x050000
-    glMultMatrixf(static_cast<const GLfloat *>(m.constData()));
-#else
-    GLfloat mat[16];
-    const qreal *data = m.constData();
-    for (int index = 0; index < 16; ++index)
-        mat[index] = data[index];
-    glMultMatrixf(mat);
-#endif
-}
-
 void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {
     switch (mode & kDrawModeMask) {
     case kDrawFlat:
@@ -172,7 +159,7 @@ void QPlasmaRender::paintGL()
     glLoadIdentity();
     if (fNavMode == kNavModel || fNavMode == kNavModelInScene) {
         glTranslatef(0.0f, 0.0f, -fModelDist);
-        multMatrix(fTrackball.rotation());
+        glMultMatrixf(fTrackball.rotation().constData());
         glTranslatef(-fViewPos.X, -fViewPos.Y, -fViewPos.Z);
     } else {
         glRotatef(-90.0f + fRotX, 1.0f, 0.0f, 0.0f);
