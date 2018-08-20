@@ -196,6 +196,19 @@ QString getCompressionText(plBitmap* tex)
         case plBitmap::kAInten88:
             return "JPEG (Alpha+Greyscale)";
         }
+    } else if (tex->getCompressionType() == plBitmap::kPNGCompression) {
+        switch (tex->getARGBType()) {
+        case plBitmap::kRGB8888:
+            return "PNG (ARGB8888)";
+        case plBitmap::kRGB4444:
+            return "PNG (ARGB4444)";
+        case plBitmap::kRGB1555:
+            return "PNG (ARGB1555)";
+        case plBitmap::kInten8:
+            return "PNG (Greyscale)";
+        case plBitmap::kAInten88:
+            return "PNG (Alpha+Greyscale)";
+        }
     } else {
         switch (tex->getARGBType()) {
         case plBitmap::kRGB8888:
