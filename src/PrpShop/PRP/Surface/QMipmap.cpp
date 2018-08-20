@@ -81,7 +81,7 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
     fImageData = new unsigned char[size];
     tex->DecompressImage(level, fImageData, size);
 
-    if (tex->getCompressionType() != plMipmap::kUncompressed) {
+    if (tex->getCompressionType() == plMipmap::kDirectXCompression) {
         // Manipulate the data from RGBA to BGRA
         unsigned int* dp = (unsigned int*)fImageData;
         for (size_t i=0; i<size; i += 4) {
@@ -341,6 +341,17 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
     connect(iJPGLink, &QLinkLabel::activated, this, &QMipmap::onImportJPEG);
 }
 
+static void swapColorChannels(unsigned char* data, size_t size)
+{
+    unsigned int* dp = reinterpret_cast<unsigned int*>(data);
+    for (size_t i=0; i<size; i += 4) {
+        *dp = (*dp & 0xFF00FF00)
+            | (*dp & 0x00FF0000) >> 16
+            | (*dp & 0x000000FF) << 16;
+        dp++;
+    }
+}
+
 static void makeJColorSurface(const plMipmap* tex, hsStream* S)
 {
     if (tex->getCompressionType() != plBitmap::kJPEGCompression) {
@@ -367,6 +378,7 @@ static void makeJColorSurface(const plMipmap* tex, hsStream* S)
     // Strip down data to 24 bit color
     unsigned char* data = new unsigned char[dds.fLinearSize];
     tex->extractColorData(data, dds.fLinearSize);
+    swapColorChannels(data, dds.fLinearSize);
     dds.setData(dds.fLinearSize, data);
     delete[] data;
 
@@ -425,6 +437,7 @@ static bool getJColorSurface(const plDDSurface& dds, plMipmap* tex)
 
     tex->Create(dds.fWidth, dds.fHeight, 0, plBitmap::kJPEGCompression, plBitmap::kRGB8888);
     tex->setColorData(dds.getData(), dds.getDataSize());
+    swapColorChannels(reinterpret_cast<unsigned char*>(tex->getImageData()), dds.getDataSize());
     return true;
 }
 
