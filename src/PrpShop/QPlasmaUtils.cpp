@@ -596,9 +596,9 @@ std::vector<short> pqGetValidKOTypes()
         kLayerSDLAnimation, kGMaterial, kMaintainersMarkerModifier, kMipmap,
         kMsgForwarder, kMultistageBehMod, kOneShotMod, kPanicLinkRegion,
         kPickingDetector, kPointShadowMaster, kPythonFileMod, kSceneNode,
-        kSceneObject, kShadowMaster, kSimulationInterface, kSound, kSoundBuffer,
-        kSpawnModifier, kSubworldRegionDetector, kWinAudible, kWin32LinkSound,
-        kWin32Sound, kWin32StaticSound, kWin32StreamingSound,
+        kSceneObject, kSeekPointMod, kShadowMaster, kSimulationInterface, kSound,
+        kSoundBuffer, kSpawnModifier, kSubworldRegionDetector, kWinAudible,
+        kWin32LinkSound, kWin32Sound, kWin32StaticSound, kWin32StreamingSound,
     };
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 
