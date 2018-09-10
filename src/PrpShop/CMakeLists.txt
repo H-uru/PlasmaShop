@@ -16,6 +16,7 @@ set(PrpShop_Headers
     PRP/Audio/QWinSound.h
     PRP/Avatar/QMultistageBehMod.h
     PRP/Avatar/QAvLadderMod.h
+    PRP/Avatar/QSeekPointMod.h
     PRP/GUI/QGUIButtonMod.h
     PRP/GUI/QGUICheckBoxCtrl.h
     PRP/GUI/QGUIClickMapCtrl.h
@@ -83,6 +84,7 @@ set(PrpShop_Sources
     PRP/Audio/QWinSound.cpp
     PRP/Avatar/QMultistageBehMod.cpp
     PRP/Avatar/QAvLadderMod.cpp
+    PRP/Avatar/QSeekPointMod.cpp
     PRP/GUI/QGUIButtonMod.cpp
     PRP/GUI/QGUICheckBoxCtrl.cpp
     PRP/GUI/QGUIClickMapCtrl.cpp

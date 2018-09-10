@@ -73,6 +73,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Audio/QWinSound.h"
 #include "PRP/Avatar/QMultistageBehMod.h"
 #include "PRP/Avatar/QAvLadderMod.h"
+#include "PRP/Avatar/QSeekPointMod.h"
 #include "PRP/GUI/QGUIButtonMod.h"
 #include "PRP/GUI/QGUICheckBoxCtrl.h"
 #include "PRP/GUI/QGUIClickMapCtrl.h"
@@ -241,6 +242,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QSceneNode(pCre, parent);
     case kSceneObject:
         return new QSceneObject(pCre, parent);
+    case kSeekPointMod:
+        return new QSeekPointMod(pCre, parent);
     case kShadowMaster:
         return new QShadowMaster(pCre, parent);
     case kSimulationInterface:
