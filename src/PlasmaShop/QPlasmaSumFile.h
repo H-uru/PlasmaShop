@@ -19,31 +19,10 @@
 
 #include "QPlasmaDocument.h"
 #include <Stream/hsStream.h>
-#include <Util/plMD5.h>
+#include <Util/hsSumFile.h>
 #include <QTreeWidget>
 #include <QAction>
 #include <vector>
-
-struct SumData {
-    struct Entry {
-        ST::string fPath;
-        plMD5Hash fHash;
-        time_t fTimestamp;
-        unsigned int fUnknown;
-
-        Entry() : fTimestamp(0), fUnknown(0) { }
-    };
-
-    unsigned int fUnknown;
-    std::vector<Entry> fEntries;
-
-    SumData() : fUnknown(0) { }
-
-    void read(hsStream* S);
-    void write(hsStream* S);
-
-    void addFrom(QString filename);
-};
 
 class QPlasmaSumFile : public QPlasmaDocument {
     Q_OBJECT
@@ -56,7 +35,7 @@ public:
 
 private:
     QTreeWidget* fFileList;
-    SumData fSumData;
+    hsSumFile fSumData;
 
     enum {
         kAUpdate, kAAdd, kADel, kANumActions
@@ -65,6 +44,7 @@ private:
 
     bool loadSumData(hsStream* S);
     bool saveSumData(hsStream* S);
+    void addToSumFile(const QString& filename);
 
 private slots:
     void onContextMenu(QPoint pos);
