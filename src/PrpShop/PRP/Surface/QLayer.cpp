@@ -54,7 +54,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     fBlendFlags[kBlendAlpha] = new QCheckBox(tr("Alpha"), blendWidget);
     fBlendFlags[kBlendMult] = new QCheckBox(tr("Mult"), blendWidget);
     fBlendFlags[kBlendAdd] = new QCheckBox(tr("Add"), blendWidget);
-    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(trUtf8("Add Color × Alpha"), blendWidget);
+    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(tr("Add Color × Alpha"), blendWidget);
     fBlendFlags[kBlendAntiAlias] = new QCheckBox(tr("Anti-Alias"), blendWidget);
     fBlendFlags[kBlendDetail] = new QCheckBox(tr("Detail"), blendWidget);
     fBlendFlags[kBlendNoColor] = new QCheckBox(tr("No Color"), blendWidget);
