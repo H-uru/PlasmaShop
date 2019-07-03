@@ -27,83 +27,51 @@
 #include <QCryptographicHash>
 #include "QPlasma.h"
 
-/* SumData */
-void SumData::read(hsStream* S)
-{
-    fEntries.resize(S->readInt());
-    fUnknown = S->readInt();
-    for (size_t i=0; i<fEntries.size(); i++) {
-        fEntries[i].fPath = S->readSafeStr();
-        fEntries[i].fHash.read(S);
-        fEntries[i].fTimestamp = S->readInt();
-        fEntries[i].fUnknown = S->readInt();
-    }
-}
-
-void SumData::write(hsStream* S)
-{
-    S->writeInt(fEntries.size());
-    S->writeInt(fUnknown);
-    for (size_t i=0; i<fEntries.size(); i++) {
-        S->writeSafeStr(fEntries[i].fPath);
-        fEntries[i].fHash.write(S);
-        S->writeInt(fEntries[i].fTimestamp);
-        S->writeInt(fEntries[i].fUnknown);
-    }
-}
-
-void SumData::addFrom(QString filename)
+void QPlasmaSumFile::addToSumFile(const QString& filename)
 {
     QFileInfo finfo(filename);
-    Entry sum;
 
-    sum.fTimestamp = (time_t)finfo.lastModified().toTime_t();
+    ST::string sumPath;
+    uint32_t timestamp = finfo.lastModified().toTime_t();
 
     // Construct a default path based on the file extension
     if (finfo.suffix() == "prp" || finfo.suffix() == "fni" || finfo.suffix() == "age" ||
         finfo.suffix() == "pfp" || finfo.suffix() == "p2f" || finfo.suffix() == "dat" ||
         finfo.suffix() == "sub" || finfo.suffix() == "loc" || finfo.suffix() == "csv" ||
         finfo.suffix() == "node")
-        sum.fPath = ST::format("dat\\{}", finfo.fileName());
+        sumPath = ST::format("dat\\{}", finfo.fileName());
     else if (finfo.suffix() == "ogg")
-        sum.fPath = ST::format("sfx\\{}", finfo.fileName());
+        sumPath = ST::format("sfx\\{}", finfo.fileName());
     else if (finfo.suffix() == "pak")
-        sum.fPath = ST::format("Python\\{}", finfo.fileName());
+        sumPath = ST::format("Python\\{}", finfo.fileName());
     else if (finfo.suffix() == "sdl")
-        sum.fPath = ST::format("SDL\\{}", finfo.fileName());
+        sumPath = ST::format("SDL\\{}", finfo.fileName());
     else
-        sum.fPath = qstr2st(finfo.fileName());
+        sumPath = qstr2st(finfo.fileName());
 
     // Calculate updated MD5 hash
-    QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    QByteArray data = file.readAll();
-    QByteArray hash = QCryptographicHash::hash(data, QCryptographicHash::Md5);
-    sum.fHash.fromHex(hash.toHex().data());
-    file.close();
-
-    // Check if the file is already in the sum file...  If so, just update it;
-    // otherwise, add a new entry to the end
-    std::vector<Entry>::iterator iter;
-    bool updated = false;
-    for (iter = fEntries.begin(); iter != fEntries.end(); ++iter) {
-        QString path = st2qstr(iter->fPath);
-        path.replace('\\', QDir::separator()).replace('/', QDir::separator());
-        if (QFileInfo(path).fileName() == finfo.fileName()) {
-            iter->fHash = sum.fHash;
-            iter->fTimestamp = sum.fTimestamp;
-            updated = true;
-            break;
-        }
-    }
-    if (!updated)
-        fEntries.push_back(sum);
+    hsFileStream FS;
+    FS.open(qstr2st(filename), fmRead);
+    fSumData.updateFile(sumPath, &FS, timestamp);
 }
 
 
-/* QPlasmaSumFile */
-static int s_editLock = 0;
+struct TreeSignalBlocker
+{
+    TreeSignalBlocker(QTreeWidget *tree) : fTree(tree)
+    {
+        fTree->blockSignals(true);
+    }
 
+    ~TreeSignalBlocker()
+    {
+        fTree->blockSignals(false);
+    }
+
+    QTreeWidget *fTree;
+};
+
+/* QPlasmaSumFile */
 QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
               : QPlasmaDocument(kDocManifest, parent)
 {
@@ -114,7 +82,7 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
                                QAbstractItemView::EditKeyPressed);
     fFileList->setContextMenuPolicy(Qt::CustomContextMenu);
     fFileList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    fFileList->setHeaderLabels(QStringList() << "Filename" << "Timestamp" << "MD5");
+    fFileList->setHeaderLabels(QStringList{tr("Filename"), tr("Timestamp"), tr("MD5")});
 
     QToolBar* toolbar = new QToolBar(this);
     toolbar->setOrientation(Qt::Vertical);
@@ -136,13 +104,13 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
     toolbar->addAction(fActions[kAAdd]);
     toolbar->addAction(fActions[kADel]);
 
-    connect(fFileList, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(onContextMenu(QPoint)));
-    connect(fFileList, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-            this, SLOT(onItemChanged(QTreeWidgetItem*, int)));
-    connect(fActions[kAUpdate], SIGNAL(triggered()), this, SLOT(onUpdate()));
-    connect(fActions[kAAdd], SIGNAL(triggered()), this, SLOT(onAdd()));
-    connect(fActions[kADel], SIGNAL(triggered()), this, SLOT(onDel()));
+    connect(fFileList, &QTreeWidget::customContextMenuRequested,
+            this, &QPlasmaSumFile::onContextMenu);
+    connect(fFileList, &QTreeWidget::itemChanged,
+            this, &QPlasmaSumFile::onItemChanged);
+    connect(fActions[kAUpdate], &QAction::triggered, this, &QPlasmaSumFile::onUpdate);
+    connect(fActions[kAAdd], &QAction::triggered, this, &QPlasmaSumFile::onAdd);
+    connect(fActions[kADel], &QAction::triggered, this, &QPlasmaSumFile::onDel);
 }
 
 bool QPlasmaSumFile::loadFile(QString filename)
@@ -166,7 +134,7 @@ bool QPlasmaSumFile::loadFile(QString filename)
             return false;
     } else {
         hsFileStream S(PlasmaVer::pvMoul);
-        S.open(filename.toUtf8().data(), fmRead);
+        S.open(st_filename, fmRead);
         fEncryption = kEncNone;
         if (!loadSumData(&S))
             return false;
@@ -179,9 +147,10 @@ bool QPlasmaSumFile::loadFile(QString filename)
 
 bool QPlasmaSumFile::saveTo(QString filename)
 {
+    ST::string st_filename = qstr2st(filename);
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvMoul);
-        S.open(filename.toUtf8().data(), fmCreate);
+        S.open(st_filename, fmCreate);
         if (!saveSumData(&S))
             return false;
     } else {
@@ -200,7 +169,7 @@ bool QPlasmaSumFile::saveTo(QString filename)
         } else if (fEncryption == kEncXtea) {
             type = plEncryptedStream::kEncXtea;
         }
-        S.open(filename.toUtf8().data(), fmCreate, type);
+        S.open(st_filename, fmCreate, type);
         if (!saveSumData(&S))
             return false;
     }
@@ -210,26 +179,26 @@ bool QPlasmaSumFile::saveTo(QString filename)
 bool QPlasmaSumFile::loadSumData(hsStream* S)
 {
     fFileList->clear();
-    if (S != NULL) {
+    if (S != nullptr) {
         try {
             fSumData.read(S);
-        } catch (std::exception &e) {
-            plDebug::Error("Error reading SUM file {}: {}", fFilename.toUtf8().data(), e.what());
+        } catch (const std::exception &e) {
+            plDebug::Error("Error reading SUM file {}: {}", fFilename, e.what());
             return false;
         }
     }
 
-    ++s_editLock;
-    for (size_t i=0; i<fSumData.fEntries.size(); i++) {
+    TreeSignalBlocker block(fFileList);
+    for (const hsSumFile::FileInfo& file : fSumData.getFiles()) {
         QTreeWidgetItem* ent = new QTreeWidgetItem(fFileList);
-        ent->setText(0, st2qstr(fSumData.fEntries[i].fPath));
-        ent->setText(1, QDateTime::fromTime_t(fSumData.fEntries[i].fTimestamp)
+        QString qpath = st2qstr(file.fPath);
+        ent->setText(0, qpath);
+        ent->setText(1, QDateTime::fromTime_t(file.fTimestamp)
                                   .toString(Qt::SystemLocaleShortDate));
-        ent->setText(2, st2qstr(fSumData.fEntries[i].fHash.toHex()));
-        ent->setIcon(0, QPlasmaDocument::GetDocIcon(st2qstr(fSumData.fEntries[i].fPath)));
+        ent->setText(2, st2qstr(file.fHash.toHex()));
+        ent->setIcon(0, QPlasmaDocument::GetDocIcon(qpath));
         ent->setFlags(ent->flags() | Qt::ItemIsEditable);
     }
-    --s_editLock;
     return true;
 }
 
@@ -237,8 +206,8 @@ bool QPlasmaSumFile::saveSumData(hsStream* S)
 {
     try {
         fSumData.write(S);
-    } catch (std::exception &e) {
-        plDebug::Error("Error writing SUM file {}: {}", fFilename.toUtf8().data(), e.what());
+    } catch (const std::exception &e) {
+        plDebug::Error("Error writing SUM file {}: {}", fFilename, e.what());
         return false;
     }
     return true;
@@ -248,8 +217,8 @@ void QPlasmaSumFile::onContextMenu(QPoint pos)
 {
     if (fFileList->selectedItems().size() <= 1) {
         fFileList->setCurrentItem(fFileList->itemAt(pos));
-        QTreeWidgetItem* item = (QTreeWidgetItem*)fFileList->currentItem();
-        if (item == NULL)
+        QTreeWidgetItem* item = fFileList->currentItem();
+        if (item == nullptr)
             fActions[kADel]->setEnabled(false);
         else
             fActions[kADel]->setEnabled(true);
@@ -267,18 +236,15 @@ void QPlasmaSumFile::onContextMenu(QPoint pos)
 
 void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
 {
-    if (s_editLock != 0)
-        return;
+    TreeSignalBlocker block(fFileList);
 
-    ++s_editLock;
     int idx = fFileList->indexOfTopLevelItem(item);
+    hsSumFile::FileInfo& file = fSumData.getFiles().at(idx);
     switch (column) {
     case 0:
-        if (fSumData.fEntries[idx].fPath != qstr2st(item->text(0))) {
-            fSumData.fEntries[idx].fPath = qstr2st(item->text(0));
-            item->setIcon(0, QPlasmaDocument::GetDocIcon(st2qstr(fSumData.fEntries[idx].fPath)));
-            makeDirty();
-        }
+        file.fPath = qstr2st(item->text(0));
+        item->setIcon(0, QPlasmaDocument::GetDocIcon(item->text(0)));
+        makeDirty();
         break;
     case 1:
         {
@@ -287,40 +253,28 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
                 QMessageBox::critical(this, tr("Error"),
                                       tr("Invalid date/time: %1").arg(item->text(1)),
                                       QMessageBox::Ok);
-                item->setText(1, QDateTime::fromTime_t(fSumData.fEntries[idx].fTimestamp)
+                item->setText(1, QDateTime::fromTime_t(file.fTimestamp)
                                            .toString(Qt::SystemLocaleShortDate));
                 break;
             }
-            fSumData.fEntries[idx].fTimestamp = ts.toTime_t();
+            file.fTimestamp = ts.toTime_t();
             makeDirty();
         }
         break;
     case 2:
         {
             QString h = item->text(2);
-            if (h.length() != 32) {
+            try {
+                file.fHash.fromHex(h.toUtf8().constData());
+            } catch (const hsBadParamException&) {
                 QMessageBox::critical(this, tr("Error"), tr("Invalid MD5 hash"),
                                       QMessageBox::Ok);
-                item->setText(2, st2qstr(fSumData.fEntries[idx].fHash.toHex()));
+                item->setText(2, st2qstr(file.fHash.toHex()));
                 break;
             }
-            quint32 newhash[4];
-            bool ok = true;
-            if (ok) newhash[0] = h.mid(0, 8).toUInt(&ok, 16);
-            if (ok) newhash[1] = h.mid(8, 8).toUInt(&ok, 16);
-            if (ok) newhash[2] = h.mid(16, 8).toUInt(&ok, 16);
-            if (ok) newhash[3] = h.mid(24, 8).toUInt(&ok, 16);
-            if (!ok) {
-                QMessageBox::critical(this, tr("Error"), tr("Invalid MD5 hash"),
-                                      QMessageBox::Ok);
-                item->setText(2, st2qstr(fSumData.fEntries[idx].fHash.toHex()));
-                break;
-            }
-            memcpy(fSumData.fEntries[idx].fHash.fHash, newhash, 32);
             makeDirty();
         }
     }
-    --s_editLock;
 }
 
 void QPlasmaSumFile::onUpdate()
@@ -337,16 +291,17 @@ void QPlasmaSumFile::onUpdate()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Game directory"),
                                                     gameRoot);
     if (!dir.isEmpty()) {
-        std::vector<SumData::Entry>::iterator iter;
-        for (iter = fSumData.fEntries.begin(); iter != fSumData.fEntries.end(); ++iter) {
-            QString path = st2qstr(iter->fPath);
+        // Need a copy since addToSumFile() can invalidate iterators
+        const std::vector<hsSumFile::FileInfo> curFiles = fSumData.getFiles();
+        for (const hsSumFile::FileInfo& file : curFiles) {
+            QString path = st2qstr(file.fPath);
             path.replace('\\', QDir::separator()).replace('/', QDir::separator());
             path = dir + QDir::separator() + QFileInfo(path).fileName();
             if (QFileInfo(path).exists())
-                fSumData.addFrom(path);
+                addToSumFile(path);
         }
 
-        loadSumData(NULL);
+        loadSumData(nullptr);
         makeDirty();
     }
 }
@@ -364,23 +319,23 @@ void QPlasmaSumFile::onAdd()
     }
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Add / update files"),
                                                       gameRoot, QString("All Files (*)"));
-    foreach (QString f, files)
-        fSumData.addFrom(f);
+    for (const QString& f : files)
+        addToSumFile(f);
 
     if (files.size() != 0) {
-        loadSumData(NULL);
+        loadSumData(nullptr);
         makeDirty();
     }
 }
 
 void QPlasmaSumFile::onDel()
 {
-    foreach (QTreeWidgetItem* item, fFileList->selectedItems()) {
+    for (QTreeWidgetItem* item : fFileList->selectedItems()) {
         int idx = fFileList->indexOfTopLevelItem(item);
-        fSumData.fEntries.erase(fSumData.fEntries.begin() + idx);
+        fSumData.getFiles().erase(fSumData.getFiles().begin() + idx);
         delete item;
     }
 
-    loadSumData(NULL);
+    loadSumData(nullptr);
     makeDirty();
 }
