@@ -377,13 +377,13 @@ void GameScanner::scan()
     else if (fGameType == GameInfo::kGameMyst5 && root.cd("Myst V Demo"))
         recursiveAppDataScan(QStringList(), root);
 
-    root = fDocumentsDir;
+    root.setPath(fDocumentsDir);
     if (fGameType == GameInfo::kGameUruLive && root.cd("Uru Live"))
         recursiveDocumentScan(QStringList(), root);
     else if (fGameType == GameInfo::kGameMQO && root.cd("MagiQuest Online"))
         recursiveDocumentScan(QStringList(), root);
 
-    root = fGameDir;
+    root.setPath(fGameDir);
     root.setSorting(QDir::Name | QDir::IgnoreCase);
     recursiveScan(QStringList(), root);
 
@@ -400,7 +400,7 @@ void GameScanner::scan()
     fAppDataItem->setHidden(fAppDataItem->childCount() == 0);
     fDocumentsItem->setHidden(fDocumentsItem->childCount() == 0);
 
-    root = fGameDir;
+    root.setPath(fGameDir);
     if (fGameType == GameInfo::kGameUru && root.exists("sav/vault.dat")) {
         QTreeWidgetItem* vault = new QTreeWidgetItem(fTree);
         vault->setIcon(0, QPlasmaDocument::GetDocIcon("<VAULT>"));

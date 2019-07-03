@@ -9,7 +9,7 @@ if(POLICY CMP0071)
 endif()
 
 find_package(HSPlasma REQUIRED)
-find_package(string_theory REQUIRED)
+find_package(string_theory 2.0 REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -22,8 +22,6 @@ in order to use custom highlighting rules.  KF5SyntaxHighlighting version \
 ${KF5SyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
     add_definitions("-DKSYN_NO_CUSTOM_RULES_SUPPORT")
 endif()
-
-add_definitions(-DST_NO_2_0_DEPRECATION)
 
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")

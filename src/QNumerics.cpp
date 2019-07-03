@@ -14,6 +14,9 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Not ready to depend on Qt 5.11+ yet
+#define QT_NO_DEPRECATED_WARNINGS
+
 #include "QNumerics.h"
 #include <QDoubleValidator>
 #include <QIntValidator>
