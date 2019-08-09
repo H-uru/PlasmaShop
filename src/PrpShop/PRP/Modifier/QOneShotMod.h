@@ -24,7 +24,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QOneShotMod : public QCreatable {
+class QOneShotMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

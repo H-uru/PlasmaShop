@@ -22,7 +22,8 @@
 #include <QCheckBox>
 #include "PRP/QKeyList.h"
 
-class QTargetList : public QCreatable {
+class QTargetList : public QCreatable
+{
     Q_OBJECT
 
 protected:

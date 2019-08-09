@@ -20,7 +20,7 @@
 #include <PRP/Avatar/plSeekPointMod.h>
 
 QSeekPointMod::QSeekPointMod(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kSeekPointMod, parent)
+    : QCreatable(pCre, kSeekPointMod, parent)
 {
     plSeekPointMod* obj = plSeekPointMod::Convert(fCreatable);
 

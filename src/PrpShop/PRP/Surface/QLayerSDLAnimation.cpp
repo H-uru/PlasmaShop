@@ -21,7 +21,7 @@
 #include <ResManager/plFactory.h>
 
 QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
-                  : QCreatable(pCre, kLayerSDLAnimation, parent)
+    : QCreatable(pCre, kLayerSDLAnimation, parent)
 {
     plLayerSDLAnimation* lay = plLayerSDLAnimation::Convert(fCreatable);
 

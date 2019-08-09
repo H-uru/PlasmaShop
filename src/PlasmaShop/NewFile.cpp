@@ -22,7 +22,8 @@
 #include <QDialogButtonBox>
 #include <QSettings>
 
-enum FilterValue {
+enum FilterValue
+{
     kGameAny, kGameUru, kGameMoul, kGameMyst5, kGameCT, kGameHex, kGameMQO
 };
 

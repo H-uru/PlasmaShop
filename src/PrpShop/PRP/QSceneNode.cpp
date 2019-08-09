@@ -21,7 +21,7 @@
 #include <QTabWidget>
 
 QSceneNode::QSceneNode(plCreatable* pCre, QWidget* parent)
-          : QCreatable(pCre, kSceneNode, parent)
+    : QCreatable(pCre, kSceneNode, parent)
 {
     plSceneNode* node = plSceneNode::Convert(fCreatable);
 

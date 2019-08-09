@@ -585,7 +585,8 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
     return folderItem;
 }
 
-void PrpShopMain::closeWindows(const plLocation& loc) {
+void PrpShopMain::closeWindows(const plLocation& loc)
+{
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList(); 
     for (auto it = windows.begin(); it != windows.end(); it++) {
         QCreatable* creWin = qobject_cast<QCreatable*>((*it)->widget());

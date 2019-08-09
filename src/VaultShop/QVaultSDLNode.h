@@ -31,7 +31,8 @@
 #include "QVaultNodeEdit.h"
 #include "QColorEdit.h"
 
-class QSDLEditor : public QWidget {
+class QSDLEditor : public QWidget
+{
     Q_OBJECT
 
 public:
@@ -80,7 +81,8 @@ private slots:
 };
 
 
-class QVaultSDLNode : public QVaultNodeEdit {
+class QVaultSDLNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 public:

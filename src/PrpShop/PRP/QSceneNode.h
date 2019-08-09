@@ -22,7 +22,8 @@
 #include <PRP/plSceneNode.h>
 #include "QKeyList.h"
 
-class QSceneNode : public QCreatable {
+class QSceneNode : public QCreatable
+{
     Q_OBJECT
 
 protected:

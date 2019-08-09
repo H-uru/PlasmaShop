@@ -24,11 +24,13 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUIProgressCtrl : public QCreatable {
+class QGUIProgressCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUIProgressCtrl::kReverseValues,
         kModFlagEnd = pfGUIProgressCtrl::kMapToAnimationRange,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1

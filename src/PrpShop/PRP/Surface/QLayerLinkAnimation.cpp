@@ -23,7 +23,7 @@
 #include "QPlasma.h"
 
 QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
-                   : QCreatable(pCre, kLayerLinkAnimation, parent)
+    : QCreatable(pCre, kLayerLinkAnimation, parent)
 {
     plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
 

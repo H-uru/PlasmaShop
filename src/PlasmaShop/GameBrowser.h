@@ -22,8 +22,10 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-struct GameInfo {
-    enum GameType {
+struct GameInfo
+{
+    enum GameType
+    {
         kGameNone, kGameUru, kGameUruLive, kGameMyst5, kGameCrowthistle,
         kGameHexIsle, kGameMQO, kNumGameTypes
     };
@@ -35,7 +37,8 @@ struct GameInfo {
     static QString GetGameTypeName(int type);
 };
 
-class GameListDialog : public QDialog {
+class GameListDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -52,7 +55,8 @@ private:
     QTreeWidget* fGameTree;
 };
 
-class GameConfigDialog : public QDialog {
+class GameConfigDialog : public QDialog
+{
     Q_OBJECT
 
 public:

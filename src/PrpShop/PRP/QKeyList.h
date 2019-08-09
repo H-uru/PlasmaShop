@@ -21,7 +21,8 @@
 #include <QListWidget>
 #include <PRP/KeyedObject/plKey.h>
 
-class QKeyList : public QTreeWidget {
+class QKeyList : public QTreeWidget
+{
     Q_OBJECT
 
 protected:
@@ -48,14 +49,15 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
-class QStringListWidget : public QListWidget {
+class QStringListWidget : public QListWidget
+{
     Q_OBJECT
 
 private:
     QStringList fStrings;
 
 public:
-    QStringListWidget(QWidget* parent = NULL);
+    QStringListWidget(QWidget* parent = NULL) : QListWidget(parent) { }
     virtual QSize sizeHint() const;
 
     void addString(const QString& str);
@@ -66,7 +68,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
-class QIntListWidget : public QListWidget {
+class QIntListWidget : public QListWidget
+{
     Q_OBJECT
 
 private:
@@ -74,7 +77,9 @@ private:
     int fMin, fMax;
 
 public:
-    QIntListWidget(int min, int max, QWidget* parent = NULL);
+    QIntListWidget(int min, int max, QWidget* parent = NULL)
+        : QListWidget(parent), fMin(min), fMax(max) { }
+
     virtual QSize sizeHint() const;
 
     void addValue(int value);
@@ -85,14 +90,16 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
-class QDoubleListWidget : public QListWidget {
+class QDoubleListWidget : public QListWidget
+{
     Q_OBJECT
 
 protected:
     QList<double> fValues;
 
 public:
-    QDoubleListWidget(QWidget* parent = NULL);
+    QDoubleListWidget(QWidget* parent = NULL) : QListWidget(parent) { }
+
     virtual QSize sizeHint() const;
 
     void addValue(double value);

@@ -24,11 +24,13 @@
 #include <QSpinBox>
 #include <PRP/Audio/plSoundBuffer.h>
 
-class QSoundBuffer : public QCreatable {
+class QSoundBuffer : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kIsExternal, kAlwaysExternal, kOnlyLeftChannel, kOnlyRightChannel,
         kStreamCompressed, kNumFlags
     };

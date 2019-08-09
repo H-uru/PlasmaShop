@@ -95,7 +95,7 @@ unsigned int QVaultNode::UnmapNodeType(int idx)
 }
 
 QVaultNode::QVaultNode(QWidget* parent)
-          : QWidget(parent), fSignalLock(false)
+    : QWidget(parent), fSignalLock(false)
 {
     QWidget* top = new QWidget(this);
     QWidget* middle = new QWidget(this);

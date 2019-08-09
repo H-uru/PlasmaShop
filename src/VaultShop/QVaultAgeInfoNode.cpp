@@ -22,7 +22,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultAgeInfoNode::QVaultAgeInfoNode(QWidget* parent)
-                 : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fAgeID = new QSpinBox(this);
     fAgeID->setRange(0, 0x7FFFFFFF);

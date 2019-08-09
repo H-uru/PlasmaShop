@@ -21,7 +21,7 @@
 #include <QGridLayout>
 
 QSceneObj_Preview::QSceneObj_Preview(plCreatable* pCre, QWidget* parent)
-                 : QCreatable(pCre, kPreviewSceneObject, parent)
+    : QCreatable(pCre, kPreviewSceneObject, parent)
 {
     plSceneObject* obj = plSceneObject::Convert(fCreatable);
     fRender = new QPlasmaRender(this);

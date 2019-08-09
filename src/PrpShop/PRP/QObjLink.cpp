@@ -23,8 +23,7 @@
 
 /* QCreatableLink */
 QCreatableLink::QCreatableLink(QWidget* parent, bool canEdit)
-              : QWidget(parent), fCreatable(NULL), fEditLabel(NULL),
-                fForceType(-1)
+    : QWidget(parent), fCreatable(), fEditLabel(), fForceType(-1)
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -90,7 +89,7 @@ void QCreatableLink::menuRequested()
 
 /* QControllerLink */
 QControllerLink::QControllerLink(const QString& text, QWidget* parent, bool canEdit)
-               : QCreatableLink(parent, canEdit)
+    : QCreatableLink(parent, canEdit)
 {
     setText(text);
 }

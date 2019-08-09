@@ -23,7 +23,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QCollisionDetector : public QCreatable {
+class QCollisionDetector : public QCreatable
+{
     Q_OBJECT
 
 protected:
@@ -31,7 +32,8 @@ protected:
     QCheckBox* fBoolParam;
     QCreatableLink* fSubworld;
 
-    enum {
+    enum
+    {
         kCBTypeEnter, kCBTypeExit, kCBTypeAny, kCBTypeUnEnter, kCBTypeUnExit,
         kCBTypeBump, kNumTypeFlags
     };

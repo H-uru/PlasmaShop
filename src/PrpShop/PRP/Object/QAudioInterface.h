@@ -23,7 +23,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QAudioInterface : public QCreatable {
+class QAudioInterface : public QCreatable
+{
     Q_OBJECT
 
 protected:

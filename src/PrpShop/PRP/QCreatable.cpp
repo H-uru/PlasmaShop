@@ -21,7 +21,7 @@
 #include "QPlasmaUtils.h"
 
 QCreatable::QCreatable(plCreatable* pCre, int type, QWidget* parent)
-          : QWidget(parent), fCreatable(pCre), fForceType(type)
+    : QWidget(parent), fCreatable(pCre), fForceType(type)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     QIcon ico = pqGetTypeIcon(type);
@@ -45,7 +45,8 @@ bool QCreatable::isMatch(plCreatable* pCre, int type)
     return (fCreatable == pCre) && (fForceType == type);
 }
 
-bool QCreatable::compareLocation(const plLocation& loc) {
+bool QCreatable::compareLocation(const plLocation& loc)
+{
     if (fCreatable == NULL)
         return false;
 

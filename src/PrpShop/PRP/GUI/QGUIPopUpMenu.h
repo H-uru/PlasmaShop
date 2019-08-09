@@ -26,7 +26,8 @@
 #include <QDialog>
 #include "PRP/QObjLink.h"
 
-class QPopupMenuItemList : public QTreeWidget {
+class QPopupMenuItemList : public QTreeWidget
+{
     Q_OBJECT
 
 public:
@@ -54,11 +55,13 @@ private slots:
 };
 
 
-class QGUIPopUpMenu : public QCreatable {
+class QGUIPopUpMenu : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUIPopUpMenu::kStayOpenAfterClick,
         kModFlagEnd = pfGUIPopUpMenu::kScaleWithResolution,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1
@@ -91,7 +94,8 @@ private slots:
 };
 
 
-class QPopUpMenuItemDialog : public QDialog {
+class QPopUpMenuItemDialog : public QDialog
+{
     Q_OBJECT
 
 protected:

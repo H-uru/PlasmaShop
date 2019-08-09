@@ -22,7 +22,8 @@
 #include <PRP/Message/plMsgForwarder.h>
 #include "PRP/QKeyList.h"
 
-class QMsgForwarder : public QCreatable {
+class QMsgForwarder : public QCreatable
+{
     Q_OBJECT
 
 protected:

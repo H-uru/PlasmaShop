@@ -22,7 +22,8 @@
 #include "QVaultNodeEdit.h"
 #include "QLinkLabel.h"
 
-class QVaultAgeInfoNode : public QVaultNodeEdit {
+class QVaultAgeInfoNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

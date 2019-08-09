@@ -20,7 +20,8 @@
 
 bool s_showTypeIDs = false;
 
-enum {
+enum
+{
     kIcoSceneObj, kIcoSceneNode, kIcoDraw, kIcoDraw2, kIcoSim, kIcoCoord,
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
     kIcoGUICheck, kIcoGUIClick, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2,
@@ -626,6 +627,7 @@ bool pqCanPreviewType(plCreatable* pCre)
     return false;
 }
 
-bool pqHasTargets(plCreatable* c) {
+bool pqHasTargets(plCreatable* c)
+{
     return c->ClassInstance(kModifier);
 }

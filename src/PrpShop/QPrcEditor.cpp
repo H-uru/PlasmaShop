@@ -32,8 +32,8 @@
 #include "Main.h"
 
 QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
-          : QCreatable(pCre, kPRC_Type | pCre->ClassIndex(), parent),
-            fLexersInited(false)
+    : QCreatable(pCre, kPRC_Type | pCre->ClassIndex(), parent),
+      fLexersInited(false)
 {
     fEditor = new QPlasmaTextEdit(this);
 

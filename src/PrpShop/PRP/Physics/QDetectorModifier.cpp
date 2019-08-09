@@ -22,7 +22,7 @@
 #include "Main.h"
 
 QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
-                 : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plDetectorModifier* obj = plDetectorModifier::Convert(fCreatable);
 

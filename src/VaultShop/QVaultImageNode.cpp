@@ -26,7 +26,7 @@
 
 /* QStaticImage */
 QStaticImage::QStaticImage(QWidget* parent)
-            : QWidget(parent), fImg(NULL)
+    : QWidget(parent), fImg()
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
@@ -72,7 +72,7 @@ void QStaticImage::resizeEvent(QResizeEvent*)
 
 /* QVaultImageNode */
 QVaultImageNode::QVaultImageNode(QWidget* parent)
-               : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     static QString s_ImgTypes[] = {
         "(Invalid)", "JPEG",

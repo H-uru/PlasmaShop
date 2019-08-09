@@ -21,7 +21,8 @@
 #include "PRP/QCreatable.h"
 #include "PRP/QObjLink.h"
 
-class QMaintainersMarkerModifier : public QCreatable {
+class QMaintainersMarkerModifier : public QCreatable
+{
     Q_OBJECT
 
 protected:

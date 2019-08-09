@@ -23,7 +23,7 @@
 
 /* QFloatEdit */
 QFloatEdit::QFloatEdit(QWidget* parent)
-          : QLineEdit(parent)
+    : QLineEdit(parent)
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed, QSizePolicy::LineEdit));
     setValue(0.0);
@@ -50,7 +50,7 @@ void QFloatEdit::setRange(double minimum, double maximum, int decimals)
 
 /* QIntEdit */
 QIntEdit::QIntEdit(QWidget* parent)
-        : QLineEdit(parent)
+    : QLineEdit(parent)
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed, QSizePolicy::LineEdit));
     setValue(0);

@@ -23,14 +23,15 @@
 #include <ResManager/plResManager.h>
 #include "QPlasma.h"
 
-class QVaultNodeEdit : public QWidget {
+class QVaultNodeEdit : public QWidget
+{
     Q_OBJECT
 
 protected:
     plVaultNode fNode;
 
 public:
-    QVaultNodeEdit(QWidget* parent);
+    QVaultNodeEdit(QWidget* parent) : QWidget(parent) { }
     static QVaultNodeEdit* MakeEditor(QWidget* parent, const plVaultNode& node,
                                       plResManager* mgr, plSDLMgr* sdl);
 

@@ -28,7 +28,8 @@
 #include "GameBrowser.h"
 #include "GameScanner.h"
 
-class PlasmaShopMain : public QMainWindow {
+class PlasmaShopMain : public QMainWindow
+{
     Q_OBJECT
 
 private:
@@ -37,7 +38,8 @@ private:
     QDockWidget* fBrowserDock;
 
     // Menu actions
-    enum {
+    enum
+    {
         // Main Menu
         kFileNew, kFileOpen, kFileSave, kFileSaveAs, kFileExit, kFileOptions,
         kFileRevert, kFileShowBrowser,

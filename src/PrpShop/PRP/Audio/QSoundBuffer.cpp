@@ -22,7 +22,7 @@
 #include "QPlasma.h"
 
 QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
-            : QCreatable(pCre, kSoundBuffer, parent)
+    : QCreatable(pCre, kSoundBuffer, parent)
 {
     plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
 

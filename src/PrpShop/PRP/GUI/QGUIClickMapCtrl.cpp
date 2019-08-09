@@ -21,7 +21,7 @@
 
 /* QGUIClickMapCtrl */
 QGUIClickMapCtrl::QGUIClickMapCtrl(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kGUIClickMapCtrl, parent)
+    : QCreatable(pCre, kGUIClickMapCtrl, parent)
 {
     pfGUIClickMapCtrl* ctrl = pfGUIClickMapCtrl::Convert(fCreatable);
 

@@ -27,7 +27,8 @@
 #include "PRP/QKeyList.h"
 #include "PRP/QObjLink.h"
 
-class QDrawableList : public QKeyList {
+class QDrawableList : public QKeyList
+{
     Q_OBJECT
 
 protected:
@@ -43,7 +44,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
-class QFindDrawKeyDialog : public QDialog {
+class QFindDrawKeyDialog : public QDialog
+{
     Q_OBJECT
 
 protected:
@@ -61,7 +63,8 @@ public:
     int drawKey() const { return fDrawKey->value(); }
 };
 
-class QDrawInterface : public QCreatable {
+class QDrawInterface : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -21,7 +21,8 @@
 #include <QLineEdit>
 #include "QVaultNodeEdit.h"
 
-class QVaultLinkNode : public QVaultNodeEdit {
+class QVaultLinkNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

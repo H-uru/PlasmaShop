@@ -27,7 +27,8 @@
 #include "PRP/QMatrix44.h"
 #include "QColorEdit.h"
 
-class QLayer : public QCreatable {
+class QLayer : public QCreatable
+{
     Q_OBJECT
 
 protected:
@@ -47,7 +48,8 @@ protected:
     QFloatEdit* fLodBias;
     QFloatEdit* fSpecPower;
 
-    enum {
+    enum
+    {
         kBlendTest, kBlendAlpha, kBlendMult, kBlendAdd, kBlendAddColorTimesAlpha,
         kBlendAntiAlias, kBlendDetail, kBlendNoColor, kBlendMADD, kBlendDot3,
         kBlendAddSigned, kBlendAddSigned2X, kBlendInvertAlpha, kBlendInvertColor,
@@ -58,12 +60,14 @@ protected:
     };
     QCheckBox* fBlendFlags[kNumBlendFlags];
 
-    enum {
+    enum
+    {
         kClampTextureU, kClampTextureV, kNumClampFlags
     };
     QCheckBox* fClampFlags[kNumClampFlags];
 
-    enum {
+    enum
+    {
         kShadeSoftShadow, kShadeNoProjectors, kShadeEnvironMap,
         kShadeVertexShade, kShadeBlack, kShadeSpecular, kShadeNoFog,
         kShadeWhite, kShadeSpecularAlpha, kShadeSpecularColor,
@@ -72,12 +76,14 @@ protected:
     };
     QCheckBox* fShadeFlags[kNumShadeFlags];
 
-    enum {
+    enum
+    {
         kZIncLayer, kZClearZ, kZNoZRead, kZNoZWrite, kZLODBias, kNumZFlags
     };
     QCheckBox* fZFlags[kNumZFlags];
 
-    enum {
+    enum
+    {
         kMiscWireFrame, kMiscDrawMeshOutlines, kMiscTwoSided, kMiscDrawAsSplats,
         kMiscAdjustPlane, kMiscAdjustCylinder, kMiscAdjustSphere,
         kMiscTroubledLoner, kMiscBindSkip, kMiscBindMask, kMiscBindNext,

@@ -21,7 +21,7 @@
 #include <ResManager/plFactory.h>
 
 QLayerMovie::QLayerMovie(plCreatable* pCre, QWidget* parent)
-           : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plLayerMovie* lay = plLayerMovie::Convert(fCreatable);
 

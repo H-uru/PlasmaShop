@@ -24,14 +24,13 @@
 #include <QSpinBox>
 #include <PRP/Surface/plFadeOpacityMod.h>
 
-class QFadeOpacityMod : public QCreatable {
+class QFadeOpacityMod : public QCreatable
+{
     Q_OBJECT
 
 protected:
     QCreatableLink* fSynchObjLink;
-    enum {
-        kBoundsCenter, kNumBitmapFlags
-    };
+    enum { kBoundsCenter, kNumBitmapFlags };
     QCheckBox* fFlags[kNumBitmapFlags];
     QFloatEdit* fUp;
     QFloatEdit* fDown;

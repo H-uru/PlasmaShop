@@ -21,7 +21,8 @@
 #include <Math/hsGeometry3.h>
 #include "QNumerics.h"
 
-class QVector3 : public QWidget {
+class QVector3 : public QWidget
+{
     Q_OBJECT
 
 protected:

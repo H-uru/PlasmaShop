@@ -23,7 +23,7 @@
 #include "Main.h"
 
 QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
-                  : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
 

@@ -27,7 +27,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QPythonParamList : public QTreeWidget {
+class QPythonParamList : public QTreeWidget
+{
     Q_OBJECT
 
 protected:
@@ -50,7 +51,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* evt);
 };
 
-class QPythonFileMod : public QCreatable {
+class QPythonFileMod : public QCreatable
+{
     Q_OBJECT
 
 protected:
@@ -64,7 +66,8 @@ public:
     virtual void saveDamage();
 };
 
-class QPythonParamDialog : public QDialog {
+class QPythonParamDialog : public QDialog
+{
     Q_OBJECT
 
 protected:

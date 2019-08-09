@@ -20,7 +20,8 @@
 #include <PRP/KeyedObject/hsKeyedObject.h>
 #include "QLinkLabel.h"
 
-class QCreatableLink : public QWidget {
+class QCreatableLink : public QWidget
+{
     Q_OBJECT
 
 protected:
@@ -46,7 +47,8 @@ signals:
     void delObject();
 };
 
-class QControllerLink : public QCreatableLink {
+class QControllerLink : public QCreatableLink
+{
     Q_OBJECT
 
 public:

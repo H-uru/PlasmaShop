@@ -1145,8 +1145,7 @@ void PlasmaShopMain::onCloseTab(int idx)
                             QMessageBox::Ok);
                 return;
             }
-        }
-        else if (result == QMessageBox::Cancel) {
+        } else if (result == QMessageBox::Cancel) {
             // Don't continue and don't close anything
             return;
         }

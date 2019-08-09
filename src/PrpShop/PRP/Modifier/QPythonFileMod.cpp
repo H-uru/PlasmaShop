@@ -58,7 +58,7 @@ static QStringList makeParamItem(const plPythonParameter& param)
 
 /* QPythonParamList */
 QPythonParamList::QPythonParamList(QWidget* parent)
-                : QTreeWidget(parent)
+    : QTreeWidget(parent)
 {
     setColumnCount(3);
     setUniformRowHeights(true);
@@ -137,7 +137,7 @@ void QPythonParamList::contextMenuEvent(QContextMenuEvent* evt)
 
 /* QPythonFileMod */
 QPythonFileMod::QPythonFileMod(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kPythonFileMod, parent)
+    : QCreatable(pCre, kPythonFileMod, parent)
 {
     plPythonFileMod* mod = plPythonFileMod::Convert(fCreatable);
 
@@ -187,7 +187,7 @@ void QPythonFileMod::saveDamage()
 
 /* QPythonParamDialog */
 QPythonParamDialog::QPythonParamDialog(QWidget* parent)
-                  : QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Python Parameter"));
 

@@ -24,7 +24,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUICheckBoxCtrl : public QCreatable {
+class QGUICheckBoxCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:

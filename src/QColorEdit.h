@@ -21,7 +21,8 @@
 #include <QDoubleSpinBox>
 #include <Sys/hsColor.h>
 
-class QColorBox : public QWidget {
+class QColorBox : public QWidget
+{
     Q_OBJECT
 
 protected:
@@ -42,7 +43,8 @@ signals:
     void activated();
 };
 
-class QColorEdit : public QWidget {
+class QColorEdit : public QWidget
+{
     Q_OBJECT
 
 protected:

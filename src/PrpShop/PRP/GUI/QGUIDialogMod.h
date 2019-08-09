@@ -25,7 +25,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUIDialogMod : public QCreatable {
+class QGUIDialogMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

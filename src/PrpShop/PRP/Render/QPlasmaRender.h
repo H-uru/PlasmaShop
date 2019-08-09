@@ -25,28 +25,33 @@
 
 #include "QTrackball.h"
 
-class QPlasmaRender : public QGLWidget {
+class QPlasmaRender : public QGLWidget
+{
     Q_OBJECT
 
 public:
-    enum DrawMode {
+    enum DrawMode
+    {
         kDrawPoints, kDrawWire, kDrawFlat, kDrawTextured, kDrawModeNum,
         kDrawModeMask = 0x0000000F,
         kDrawForce2Sided = 1<<4,
         kDrawNo2Sided = 1<<5,
     };
 
-    enum NavigationMode {
+    enum NavigationMode
+    {
         kNavModel, kNavScene, kNavModelInScene,
     };
 
 protected:
-    struct LayerInfo {
+    struct LayerInfo
+    {
         size_t fTexNameId;
         GLuint fTexTarget;
 
-        LayerInfo();
-        LayerInfo(size_t texNameId, GLuint texTarget);
+        LayerInfo() : fTexNameId(), fTexTarget() { }
+        LayerInfo(size_t texNameId, GLuint texTarget)
+            : fTexNameId(texNameId), fTexTarget(texTarget) { }
     };
 
     size_t fTexCount;
@@ -62,7 +67,8 @@ protected:
     QTrackball fTrackball;
 
 private:
-    struct ObjectInfo {
+    struct ObjectInfo
+    {
         int32_t fPointsList;
         int32_t fTexturedList;
         int32_t fSolidList;
@@ -71,7 +77,8 @@ private:
         void setList(DrawMode mode, int32_t value);
         int32_t getList(DrawMode mode);
 
-        ObjectInfo() {
+        ObjectInfo()
+        {
             fPointsList = fTexturedList = fSolidList = fWireframeList = -1;
         }
     };
@@ -114,7 +121,9 @@ public slots:
 
 private slots:
     void selectDrawMode(QAction* action)
-    { changeMode((DrawMode)action->data().toInt()); }
+    {
+        changeMode((DrawMode)action->data().toInt());
+    }
 };
 
 #endif

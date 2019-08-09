@@ -23,7 +23,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QLayerLinkAnimation : public QCreatable {
+class QLayerLinkAnimation : public QCreatable
+{
     Q_OBJECT
 
 protected:

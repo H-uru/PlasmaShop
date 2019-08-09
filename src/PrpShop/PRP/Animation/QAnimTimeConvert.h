@@ -25,7 +25,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QATCCurveLink : public QCreatableLink {
+class QATCCurveLink : public QCreatableLink
+{
     Q_OBJECT
 
 public:
@@ -36,7 +37,8 @@ protected slots:
     virtual void menuRequested();
 };
 
-class QATCEaseCurve : public QCreatable {
+class QATCEaseCurve : public QCreatable
+{
     Q_OBJECT
 
 protected:
@@ -53,11 +55,13 @@ public:
     virtual void saveDamage();
 };
 
-class QAnimTimeConvert : public QCreatable {
+class QAnimTimeConvert : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kStopped, kLoop, kBackwards, kWrap, kNeedsReset, kEasingIn, kForcedMove,
         kNoCallbacks, kNumATCFlags
     };

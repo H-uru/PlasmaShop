@@ -22,7 +22,8 @@
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
 #include "PRP/QObjLink.h"
 
-class QGUIUpDownPairMod : public QCreatable {
+class QGUIUpDownPairMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

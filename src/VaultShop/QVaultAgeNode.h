@@ -21,7 +21,8 @@
 #include <QSpinBox>
 #include "QVaultNodeEdit.h"
 
-class QVaultAgeNode : public QVaultNodeEdit {
+class QVaultAgeNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

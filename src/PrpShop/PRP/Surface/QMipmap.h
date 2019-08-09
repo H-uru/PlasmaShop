@@ -24,7 +24,8 @@
 #include <QSpinBox>
 #include <PRP/Surface/plMipmap.h>
 
-class QTextureBox : public QWidget {
+class QTextureBox : public QWidget
+{
     Q_OBJECT
 
 protected:
@@ -32,7 +33,9 @@ protected:
     unsigned char* fImageData;
 
 public:
-    QTextureBox(QWidget* parent = NULL);
+    QTextureBox(QWidget* parent = NULL)
+        : QWidget(parent), fImage(), fImageData() { }
+
     virtual ~QTextureBox();
     void setTexture(plMipmap* tex, int level = 0);
 
@@ -46,7 +49,8 @@ signals:
     void textureChanged(bool success);
 };
 
-class QMipmap_Preview : public QCreatable {
+class QMipmap_Preview : public QCreatable
+{
     Q_OBJECT
 
 protected:
@@ -63,11 +67,13 @@ public slots:
     void setLevel(int level);
 };
 
-class QMipmap : public QCreatable {
+class QMipmap : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kAlphaChannelFlag, kAlphaBitFlag, kBumpEnvMap, kForce32Bit,
         kDontThrowAwayImage, kForceOneMipLevel, kNoMaxSize, kIntensityMap,
         kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,

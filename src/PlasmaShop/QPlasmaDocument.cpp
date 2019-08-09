@@ -147,11 +147,6 @@ bool QPlasmaDocument::GetEncryptionKeyFromUser(QWidget* parent, unsigned int* ke
     return true;
 }
 
-QPlasmaDocument::QPlasmaDocument(DocumentType docType, QWidget* parent)
-               : QWidget(parent), fDocType(docType), fEncryption(kEncNone),
-                 fDirty(false), fPersistDirty(false)
-{ }
-
 bool QPlasmaDocument::loadFile(QString filename)
 {
     fFilename = filename;

@@ -23,15 +23,18 @@
 #include <QAction>
 #include <vector>
 
-struct PlasmaPackage {
-    struct FileBlob {
-        struct _data {
+struct PlasmaPackage
+{
+    struct FileBlob
+    {
+        struct _data
+        {
             const uint8_t* fData;
             size_t fSize;
             unsigned int fRefs;
         } *fData;
 
-        FileBlob() : fData(NULL) { }
+        FileBlob() : fData() { }
 
         FileBlob(const uint8_t* data, size_t size)
         {
@@ -67,7 +70,8 @@ struct PlasmaPackage {
         size_t getSize() const { return fData ? fData->fSize : 0; }
     };
 
-    struct FileEntry {
+    struct FileEntry
+    {
         ST::string fName;
         uint32_t fOffset;
         FileBlob fData;
@@ -76,7 +80,8 @@ struct PlasmaPackage {
         FileEntry() { }
     };
 
-    enum PackageType {
+    enum PackageType
+    {
         kPythonPak, kCursorsDat, kFontsPfp,
         kMyst5Arc = 0xCBBCF00D,
     };
@@ -98,7 +103,8 @@ struct PlasmaPackage {
     QString getFilter() const;
 };
 
-class QPlasmaPakFile : public QPlasmaDocument {
+class QPlasmaPakFile : public QPlasmaDocument
+{
     Q_OBJECT
 
 public:
@@ -129,7 +135,8 @@ private:
     QTreeWidget* fFileList;
     PlasmaPackage fPackage;
 
-    enum {
+    enum
+    {
         kAdd, kDel, kExtract, kExtractAll, kANumActions
     };
     QAction* fActions[kANumActions];

@@ -23,7 +23,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QShadowMaster : public QCreatable {
+class QShadowMaster : public QCreatable
+{
     Q_OBJECT
 
 protected:

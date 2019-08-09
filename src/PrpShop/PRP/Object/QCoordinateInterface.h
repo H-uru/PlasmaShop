@@ -25,7 +25,8 @@
 #include "PRP/QMatrix44.h"
 #include "PRP/QObjLink.h"
 
-class QCoordinateInterface : public QCreatable {
+class QCoordinateInterface : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -20,7 +20,8 @@
 #include <QLabel>
 #include <QMouseEvent>
 
-class QLinkLabel : public QLabel {
+class QLinkLabel : public QLabel
+{
 protected:
     Q_OBJECT
     bool fInClick;

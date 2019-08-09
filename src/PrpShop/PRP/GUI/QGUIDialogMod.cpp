@@ -23,7 +23,7 @@
 
 /* QGUIDialogMod */
 QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, kGUIDialogMod, parent)
+    : QCreatable(pCre, kGUIDialogMod, parent)
 {
     pfGUIDialogMod* dlg = pfGUIDialogMod::Convert(fCreatable);
 

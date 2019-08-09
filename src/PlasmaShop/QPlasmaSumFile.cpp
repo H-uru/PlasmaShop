@@ -73,7 +73,7 @@ struct TreeSignalBlocker
 
 /* QPlasmaSumFile */
 QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
-              : QPlasmaDocument(kDocManifest, parent)
+    : QPlasmaDocument(kDocManifest, parent)
 {
     fFileList = new QTreeWidget(this);
     fFileList->setUniformRowHeights(true);

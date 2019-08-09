@@ -22,7 +22,8 @@
 #include <QPlainTextEdit>
 #include "QVaultNodeEdit.h"
 
-class QVaultTextNode : public QVaultNodeEdit {
+class QVaultTextNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

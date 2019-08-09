@@ -23,11 +23,13 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QGUIClickMapCtrl : public QCreatable {
+class QGUIClickMapCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUIClickMapCtrl::kReportDragging,
         kModFlagEnd = pfGUIClickMapCtrl::kReportHovering,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1

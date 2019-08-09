@@ -20,8 +20,7 @@
 #include "QPlasmaDocument.h"
 
 GameScanner::GameScanner(QTreeWidget* tree)
-           : fTree(tree), fGameType(GameInfo::kGameNone)
-{ }
+    : fTree(tree), fGameType(GameInfo::kGameNone) { }
 
 void GameScanner::scanGame(int gameType, QString gameDir, QString appDataDir,
                            QString docsDir)

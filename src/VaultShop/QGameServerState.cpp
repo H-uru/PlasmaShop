@@ -18,7 +18,7 @@
 #include <QLabel>
 
 QGameServerState::QGameServerState(QWidget* parent)
-                : QWidget(parent)
+    : QWidget(parent)
 {
     fObjectSel = new QComboBox(this);
     fSDLEditor = new QSDLEditor(this);

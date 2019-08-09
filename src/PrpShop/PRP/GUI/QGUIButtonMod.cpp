@@ -23,7 +23,7 @@
 
 /* QGUIButtonMod */
 QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, kGUIButtonMod, parent)
+    : QCreatable(pCre, kGUIButtonMod, parent)
 {
     pfGUIButtonMod* ctrl = pfGUIButtonMod::Convert(fCreatable);
 

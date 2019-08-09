@@ -30,7 +30,8 @@
 #include <KSyntaxHighlighting/SyntaxHighlighter>
 #include <cmath>
 
-class LineNumberMargin : public QWidget {
+class LineNumberMargin : public QWidget
+{
 public:
     explicit LineNumberMargin(QPlasmaTextEdit* editor)
         : QWidget(editor), fEditor(editor) { }
@@ -55,8 +56,7 @@ class WhitespaceKSyntaxHighlighter : public KSyntaxHighlighting::SyntaxHighlight
 {
 public:
     explicit WhitespaceKSyntaxHighlighter(QTextDocument* document)
-        : KSyntaxHighlighting::SyntaxHighlighter(document)
-    { }
+        : KSyntaxHighlighting::SyntaxHighlighter(document) { }
 
     void highlightBlock(const QString& text) Q_DECL_OVERRIDE
     {

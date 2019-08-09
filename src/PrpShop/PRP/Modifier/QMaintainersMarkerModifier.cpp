@@ -20,7 +20,7 @@
 #include <PRP/Modifier/plMaintainersMarkerModifier.h>
 
 QMaintainersMarkerModifier::QMaintainersMarkerModifier(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kMaintainersMarkerModifier, parent)
+    : QCreatable(pCre, kMaintainersMarkerModifier, parent)
 {
     plMaintainersMarkerModifier* obj = plMaintainersMarkerModifier::Convert(fCreatable);
 

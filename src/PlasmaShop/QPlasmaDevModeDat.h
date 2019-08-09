@@ -26,7 +26,8 @@
 #include <QLineEdit>
 #include <QSlider>
 
-class QPlasmaDevModeDat : public QPlasmaDocument {
+class QPlasmaDevModeDat : public QPlasmaDocument
+{
     Q_OBJECT
 
 public:
@@ -36,7 +37,8 @@ public:
     virtual bool saveTo(QString filename);
 
 private:
-    enum { //DeviceRecord Labels
+    enum //DeviceRecord Labels
+    {
         kDevMRecordVersion, kDevMFlags, kDevMDeviceType,
         kDevMDriverDesc, kDevMDriverName, kDevMDriverVersion,
         kDevMDeviceDesc, kDevMLayersAtOnce, kDevMMemoryBytes,
@@ -44,7 +46,8 @@ private:
         kDevMFogExp2ApproxStart, kDevMFogEndBias,
         kNumDevRecordLabels
     };
-    enum { //Capabilities, Name Strings in getCapName()
+    enum //Capabilities, Name Strings in getCapName()
+    {
         kCapsNone, kCapsNoWindow, kCapsMipmap,
         kCapsPerspective, kCapsHardware, kCapsWBuffer,
         kCapsCompressTextures, kCapsHWTransform, kCapsDither,

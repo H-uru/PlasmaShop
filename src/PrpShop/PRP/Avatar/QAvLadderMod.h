@@ -25,7 +25,8 @@
 #include <QButtonGroup>
 #include "PRP/QVector3.h"
 
-class QAvLadderMod : public QCreatable {
+class QAvLadderMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

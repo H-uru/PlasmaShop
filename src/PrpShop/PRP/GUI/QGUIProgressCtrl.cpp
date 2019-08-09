@@ -21,7 +21,7 @@
 
 /* QGUIProgressCtrl */
 QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kGUIProgressCtrl, parent)
+    : QCreatable(pCre, kGUIProgressCtrl, parent)
 {
     pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
 

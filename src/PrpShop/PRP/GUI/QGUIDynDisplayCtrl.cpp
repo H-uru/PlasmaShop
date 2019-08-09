@@ -21,7 +21,7 @@
 
 /* QGUIDynDisplayCtrl */
 QGUIDynDisplayCtrl::QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent)
-                  : QCreatable(pCre, kGUIDynDisplayCtrl, parent)
+    : QCreatable(pCre, kGUIDynDisplayCtrl, parent)
 {
     pfGUIDynDisplayCtrl* ctrl = pfGUIDynDisplayCtrl::Convert(fCreatable);
 

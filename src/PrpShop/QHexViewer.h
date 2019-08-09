@@ -24,7 +24,8 @@ class QLabel;
 class QCheckBox;
 class QStatusBar;
 
-class QHexViewer : public QCreatable {
+class QHexViewer : public QCreatable
+{
     Q_OBJECT
 
 protected:

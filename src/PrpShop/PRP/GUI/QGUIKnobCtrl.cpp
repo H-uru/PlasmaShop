@@ -21,7 +21,7 @@
 
 /* QGUIKnobCtrl */
 QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
-            : QCreatable(pCre, kGUIKnobCtrl, parent)
+    : QCreatable(pCre, kGUIKnobCtrl, parent)
 {
     pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
 

@@ -23,7 +23,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultAgeNode::QVaultAgeNode(QWidget* parent)
-             : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fAgeInstanceGuid = new QLineEdit("0000000000000000", this);
     fAgeInstanceGuid->setValidator(new QRegExpValidator(QRegExp("[0-9A-Fa-f]{16}"), fAgeInstanceGuid));

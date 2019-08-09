@@ -34,7 +34,8 @@
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
 
-void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {
+void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value)
+{
     switch (mode & kDrawModeMask) {
     case kDrawFlat:
         fSolidList = value;
@@ -51,7 +52,8 @@ void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value) {
     }
 }
 
-int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode) {
+int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode)
+{
     switch (mode & kDrawModeMask) {
     case kDrawFlat:
         return fSolidList;
@@ -69,19 +71,11 @@ const float RADS = 0.0174532925f;
 static QGLFormat s_format = QGL::DepthBuffer | QGL::StencilBuffer
                           | QGL::Rgba | QGL::AlphaChannel | QGL::DoubleBuffer;
 
-QPlasmaRender::LayerInfo::LayerInfo()
-             : fTexNameId(0), fTexTarget(0)
-{ }
-
-QPlasmaRender::LayerInfo::LayerInfo(size_t texNameId, GLuint texTarget)
-             : fTexNameId(texNameId), fTexTarget(texTarget)
-{ }
-
 QPlasmaRender::QPlasmaRender(QWidget* parent)
-             : QGLWidget(s_format, parent), fDrawMode(kDrawTextured),
-               fNavMode(kNavModel), fRotZ(0.0f), fRotX(0.0f),
-               fModelDist(0.0f), fTexList(NULL)
-{ }
+    : QGLWidget(s_format, parent), fDrawMode(kDrawTextured),
+      fNavMode(kNavModel), fRotZ(), fRotX(), fModelDist(), fTexList()
+{
+}
 
 QPlasmaRender::~QPlasmaRender()
 {
@@ -375,7 +369,8 @@ void QPlasmaRender::rebuildObject(plKey obj)
     }
 }
 
-bool QPlasmaRender::buildMipmap(plMipmap* map, GLuint id, GLuint target) {
+bool QPlasmaRender::buildMipmap(plMipmap* map, GLuint id, GLuint target)
+{
     glBindTexture(target, id);
     //glTexParameteri(target, GL_GENERATE_MIPMAP, GL_FALSE);
     glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -765,7 +760,8 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
     }*/
 }
 
-void QPlasmaRender::changeMode(DrawMode mode) {
+void QPlasmaRender::changeMode(DrawMode mode)
+{
     if (mode == fDrawMode)
         return;
 

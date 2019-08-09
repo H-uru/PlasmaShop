@@ -23,7 +23,7 @@
 
 /* QGUISkin */
 QGUISkin::QGUISkin(plCreatable* pCre, QWidget* parent)
-        : QCreatable(pCre, kGUISkin, parent), fCurElement(-1)
+    : QCreatable(pCre, kGUISkin, parent), fCurElement(-1)
 {
     pfGUISkin* skin = pfGUISkin::Convert(fCreatable);
 

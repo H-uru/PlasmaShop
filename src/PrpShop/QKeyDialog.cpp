@@ -23,7 +23,7 @@
 
 /* QNewKeyDialog */
 QNewKeyDialog::QNewKeyDialog(QWidget* parent)
-             : QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("New Object..."));
 
@@ -83,7 +83,7 @@ void QNewKeyDialog::init(plResManager* mgr, plLocation loc, short type)
 
 /* QFindKeyDialog */
 QFindKeyDialog::QFindKeyDialog(QWidget* parent)
-              : QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Find Object..."));
 

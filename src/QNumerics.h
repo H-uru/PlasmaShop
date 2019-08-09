@@ -19,7 +19,8 @@
 
 #include <QLineEdit>
 
-class QFloatEdit : public QLineEdit {
+class QFloatEdit : public QLineEdit
+{
     Q_OBJECT
 
 public:
@@ -34,7 +35,8 @@ public slots:
     void setValue(double value) { setText(QString::number(value)); }
 };
 
-class QIntEdit : public QLineEdit {
+class QIntEdit : public QLineEdit
+{
     Q_OBJECT
 
 public:

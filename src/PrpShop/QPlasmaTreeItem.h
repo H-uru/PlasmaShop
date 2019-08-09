@@ -21,7 +21,8 @@
 #include <ResManager/plResManager.h>
 #include <PRP/KeyedObject/hsKeyedObject.h>
 
-class QPlasmaTreeItem : public QTreeWidgetItem {
+class QPlasmaTreeItem : public QTreeWidgetItem
+{
 private:
     plKey fObjKey;
     plPageInfo* fPage;
@@ -31,7 +32,8 @@ private:
     QString fFilename;
 
 public:
-    enum ItemType {
+    enum ItemType
+    {
         kTypeNone = QTreeWidgetItem::UserType, kTypeAge, kTypePage, kTypeKO,
         kMaxPlasmaTypes
     };

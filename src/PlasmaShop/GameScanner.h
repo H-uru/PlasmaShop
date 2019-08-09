@@ -20,7 +20,8 @@
 #include <QTreeWidget>
 #include <QDir>
 
-class GameScanner : public QObject {
+class GameScanner : public QObject
+{
     Q_OBJECT
 
 public:

@@ -71,7 +71,7 @@ QString GameInfo::GetGameTypeName(int type)
 
 /* GameListDialog */
 GameListDialog::GameListDialog(QWidget* parent)
-              : QDialog(parent)
+    : QDialog(parent)
 {
     fGameTree = new QTreeWidget(this);
     fGameTree->setHeaderLabels(QStringList() << tr("Game Name") << tr("Game Type")
@@ -198,7 +198,7 @@ void GameListDialog::onEditGame(QTreeWidgetItem* item, int)
 
 /* GameConfigDialog */
 GameConfigDialog::GameConfigDialog(const GameInfo& info, QWidget* parent)
-                : QDialog(parent)
+    : QDialog(parent)
 {
     QDirModel* dirModel = new QDirModel(QStringList("*"),
                                         QDir::Dirs | QDir::NoDotAndDotDot,

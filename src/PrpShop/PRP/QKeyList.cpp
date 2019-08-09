@@ -25,7 +25,7 @@
 
 /* QKeyList */
 QKeyList::QKeyList(plKey container, QWidget* parent)
-        : QTreeWidget(parent), fContainer(container)
+    : QTreeWidget(parent), fContainer(container)
 {
     setColumnCount(2);
     setUniformRowHeights(true);
@@ -93,10 +93,6 @@ void QKeyList::contextMenuEvent(QContextMenuEvent* evt)
 
 
 /* QStringListWidget */
-QStringListWidget::QStringListWidget(QWidget* parent)
-                 : QListWidget(parent)
-{ }
-
 QSize QStringListWidget::sizeHint() const
 {
     QSize listSize = QListWidget::sizeHint();
@@ -139,10 +135,6 @@ void QStringListWidget::contextMenuEvent(QContextMenuEvent* evt)
 
 
 /* QIntListWidget */
-QIntListWidget::QIntListWidget(int min, int max, QWidget* parent)
-              : QListWidget(parent), fMin(min), fMax(max)
-{ }
-
 QSize QIntListWidget::sizeHint() const
 {
     QSize listSize = QListWidget::sizeHint();
@@ -185,10 +177,6 @@ void QIntListWidget::contextMenuEvent(QContextMenuEvent* evt)
 
 
 /* QDoubleListWidget */
-QDoubleListWidget::QDoubleListWidget(QWidget* parent)
-                 : QListWidget(parent)
-{ }
-
 QSize QDoubleListWidget::sizeHint() const
 {
     QSize listSize = QListWidget::sizeHint();

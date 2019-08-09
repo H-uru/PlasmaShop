@@ -34,7 +34,8 @@
 
 class QCreatable;
 
-class PrpShopMain : public QMainWindow {
+class PrpShopMain : public QMainWindow
+{
     Q_OBJECT
 
 private:
@@ -60,14 +61,16 @@ private:
     QSpinBox* fCloneId;
     QSpinBox* fClonePlayerId;
 
-    enum {
+    enum
+    {
         kLocLocalOnly, kLocVolatile, kLocItinerant, kLocReserved, kLocBuiltIn,
         kLocNumFlags
     };
     QCheckBox* fLocationFlags[kLocNumFlags];
 
     // Menu actions
-    enum {
+    enum
+    {
         // Main Menu
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
         kToolsProperties, kToolsShowTypeIDs, kToolsNewObject, kWindowPrev,

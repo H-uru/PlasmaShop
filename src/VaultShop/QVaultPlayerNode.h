@@ -20,7 +20,8 @@
 #include <QLineEdit>
 #include "QVaultNodeEdit.h"
 
-class QVaultPlayerNode : public QVaultNodeEdit {
+class QVaultPlayerNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

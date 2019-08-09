@@ -23,7 +23,8 @@
 #include <ResManager/plResManager.h>
 #include <vector>
 
-class QNewKeyDialog : public QDialog {
+class QNewKeyDialog : public QDialog
+{
     Q_OBJECT
 
 protected:
@@ -42,7 +43,8 @@ public:
     QString name() const { return fName->text(); }
 };
 
-class QFindKeyDialog : public QDialog {
+class QFindKeyDialog : public QDialog
+{
     Q_OBJECT
 
 protected:

@@ -23,7 +23,7 @@
 
 /* QDynamicTextMap */
 QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
-               : QCreatable(pCre, kDynamicTextMap, parent)
+    : QCreatable(pCre, kDynamicTextMap, parent)
 {
     plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
 

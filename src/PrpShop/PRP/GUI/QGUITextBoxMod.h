@@ -24,11 +24,13 @@
 #include <QTextEdit>
 #include "PRP/QObjLink.h"
 
-class QGUITextBoxMod : public QCreatable {
+class QGUITextBoxMod : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUITextBoxMod::kCenterJustify,
         kModFlagEnd = pfGUITextBoxMod::kRightJustify,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1

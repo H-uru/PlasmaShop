@@ -23,7 +23,7 @@
 #include "Main.h"
 
 QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
-                    : QCreatable(pCre, kSimulationInterface, parent)
+    : QCreatable(pCre, kSimulationInterface, parent)
 {
     plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
 

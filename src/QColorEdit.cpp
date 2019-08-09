@@ -25,7 +25,7 @@
 
 /* QColorBox */
 QColorBox::QColorBox(QWidget* parent)
-         : QWidget(parent)
+    : QWidget(parent)
 {
     setColor(QColor());
 }
@@ -62,7 +62,7 @@ void QColorBox::paintEvent(QPaintEvent*)
 
 /* QColorEdit */
 QColorEdit::QColorEdit(bool doAlpha, QWidget* parent)
-          : QWidget(parent)
+    : QWidget(parent)
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

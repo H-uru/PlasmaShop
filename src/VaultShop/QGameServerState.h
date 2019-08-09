@@ -21,7 +21,8 @@
 #include <QComboBox>
 #include "SDL/plNetGameServerState.h"
 
-class QGameServerState : public QWidget {
+class QGameServerState : public QWidget
+{
     Q_OBJECT
 
 public:

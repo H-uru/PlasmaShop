@@ -252,7 +252,7 @@ QString PlasmaPackage::getFilter() const
 
 /* QPlasmaPakFile */
 QPlasmaPakFile::QPlasmaPakFile(QWidget* parent)
-              : QPlasmaDocument(kDocPackage, parent)
+    : QPlasmaDocument(kDocPackage, parent)
 {
     fFileList = new QTreeWidget(this);
     fFileList->setUniformRowHeights(true);

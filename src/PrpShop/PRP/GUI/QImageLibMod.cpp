@@ -19,7 +19,7 @@
 
 /* QImageLibMod */
 QImageLibMod::QImageLibMod(plCreatable* pCre, QWidget* parent)
-            : QCreatable(pCre, kImageLibMod, parent)
+    : QCreatable(pCre, kImageLibMod, parent)
 {
     plImageLibMod* mod = plImageLibMod::Convert(fCreatable);
 

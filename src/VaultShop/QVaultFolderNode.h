@@ -21,7 +21,8 @@
 #include <QLineEdit>
 #include "QVaultNodeEdit.h"
 
-class QVaultFolderNode : public QVaultNodeEdit {
+class QVaultFolderNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 public:
@@ -42,8 +43,8 @@ protected:
     virtual void IRefreshNode();
 };
 
-class QVaultPlayerInfoList : public QVaultFolderNode {
-protected:
+class QVaultPlayerInfoList : public QVaultFolderNode
+{
     Q_OBJECT
 
 public:
@@ -52,8 +53,8 @@ public:
     virtual QString getEditorTitle() const { return "Player Info List"; }
 };
 
-class QVaultAgeInfoList : public QVaultFolderNode {
-protected:
+class QVaultAgeInfoList : public QVaultFolderNode
+{
     Q_OBJECT
 
 public:

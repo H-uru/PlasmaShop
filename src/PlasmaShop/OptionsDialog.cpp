@@ -40,7 +40,7 @@
 #endif
 
 OptionsDialog::OptionsDialog(QWidget* parent)
-             : QDialog(parent)
+    : QDialog(parent)
 {
     QTabWidget* tabs = new QTabWidget(this);
     QDirModel* dirModel = new QDirModel(QStringList("*"),

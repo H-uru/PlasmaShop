@@ -24,7 +24,8 @@
 #include <QAction>
 #include <vector>
 
-class QPlasmaSumFile : public QPlasmaDocument {
+class QPlasmaSumFile : public QPlasmaDocument
+{
     Q_OBJECT
 
 public:
@@ -37,7 +38,8 @@ private:
     QTreeWidget* fFileList;
     hsSumFile fSumData;
 
-    enum {
+    enum
+    {
         kAUpdate, kAAdd, kADel, kANumActions
     };
     QAction* fActions[kANumActions];

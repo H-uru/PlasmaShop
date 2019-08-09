@@ -21,7 +21,7 @@
 
 /* QGUIRadioGroupCtrl */
 QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
-                  : QCreatable(pCre, kGUIRadioGroupCtrl, parent)
+    : QCreatable(pCre, kGUIRadioGroupCtrl, parent)
 {
     pfGUIRadioGroupCtrl* ctrl = pfGUIRadioGroupCtrl::Convert(fCreatable);
 

@@ -22,7 +22,8 @@
 #include <QtGui/qvector3d.h>
 #include <QtGui/qquaternion.h>
 
-class QTrackball {
+class QTrackball
+{
 public:
     QTrackball() { }
     virtual ~QTrackball() { }

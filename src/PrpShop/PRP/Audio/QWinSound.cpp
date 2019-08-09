@@ -25,7 +25,7 @@
 
 /* QEaxSourceSettings */
 QEaxSourceSettings::QEaxSourceSettings(plEAXSourceSettings* eax, QWidget* parent)
-                  : QWidget(parent), fEaxObject(eax)
+    : QWidget(parent), fEaxObject(eax)
 {
     fEnabled = new QCheckBox(tr("Enabled"), this);
     fEnabled->setChecked(true);
@@ -170,7 +170,7 @@ void QEaxSourceSettings::closeEvent(QCloseEvent*)
 
 /* QWinSound */
 QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
-         : QCreatable(pCre, kSound, parent)
+    : QCreatable(pCre, kSound, parent)
 {
     plSound* obj = plSound::Convert(fCreatable);
 
@@ -485,7 +485,7 @@ void QWinSound::editEaxSettings()
 
 /* QWin32Sound */
 QWin32Sound::QWin32Sound(plCreatable* pCre, QWidget* parent)
-           : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plWin32Sound* obj = plWin32Sound::Convert(fCreatable);
 

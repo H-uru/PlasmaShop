@@ -23,7 +23,8 @@
 #include <QLineEdit>
 #include "PRP/QObjLink.h"
 
-class QLayerMovie : public QCreatable {
+class QLayerMovie : public QCreatable
+{
     Q_OBJECT
 
 protected:

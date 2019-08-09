@@ -23,7 +23,8 @@
 #include "QPlasma.h"
 
 // To preserve settings within a session
-static struct {
+static struct
+{
     QString text, newText;
     bool regex, cs, wo, reverse;
     class TextFindDialog* current;
@@ -31,7 +32,7 @@ static struct {
 
 /* Find/Replace dialog */
 TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
-              : QDialog(parent)
+    : QDialog(parent)
 {
     s_findSettings.current = this;
     fDocument = parent;
@@ -301,8 +302,7 @@ static void SaveData(hsStream* S, QPlasmaTextDoc::EncodingMode mode,
 }
 
 QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
-              : QPlasmaDocument(kDocText, parent),
-                fSyntax(kStxNone), fEncoding(kTypeAnsi)
+    : QPlasmaDocument(kDocText, parent), fSyntax(kStxNone), fEncoding(kTypeAnsi)
 {
     memset(fDroidKey, 0, sizeof(fDroidKey));
 

@@ -24,7 +24,7 @@
 #include "Main.h"
 
 QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
 

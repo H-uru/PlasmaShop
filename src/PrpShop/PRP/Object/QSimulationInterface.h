@@ -23,7 +23,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QSimulationInterface : public QCreatable {
+class QSimulationInterface : public QCreatable
+{
     Q_OBJECT
 
 protected:

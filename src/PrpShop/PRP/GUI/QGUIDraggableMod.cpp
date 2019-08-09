@@ -21,7 +21,7 @@
 
 /* QGUIDraggableMod */
 QGUIDraggableMod::QGUIDraggableMod(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kGUIDraggableMod, parent)
+    : QCreatable(pCre, kGUIDraggableMod, parent)
 {
     pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
 

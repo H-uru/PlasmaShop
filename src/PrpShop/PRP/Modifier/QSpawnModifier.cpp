@@ -20,7 +20,7 @@
 #include <PRP/Modifier/plSpawnModifier.h>
 
 QSpawnModifier::QSpawnModifier(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kSpawnModifier, parent)
+    : QCreatable(pCre, kSpawnModifier, parent)
 {
     plSpawnModifier* obj = plSpawnModifier::Convert(fCreatable);
 

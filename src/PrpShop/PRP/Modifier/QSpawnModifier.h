@@ -20,7 +20,8 @@
 #include "PRP/QCreatable.h"
 #include "PRP/QObjLink.h"
 
-class QSpawnModifier : public QCreatable {
+class QSpawnModifier : public QCreatable
+{
     Q_OBJECT
 
 protected:

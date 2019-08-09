@@ -23,7 +23,7 @@
 #include "Main.h"
 
 QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
-               : QCreatable(pCre, kAudioInterface, parent)
+    : QCreatable(pCre, kAudioInterface, parent)
 {
     plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
 

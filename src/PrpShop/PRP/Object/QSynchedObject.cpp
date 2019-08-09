@@ -23,7 +23,7 @@
 #include "QPlasma.h"
 
 QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kSynchedObject, parent)
+    : QCreatable(pCre, kSynchedObject, parent)
 {
     plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
 

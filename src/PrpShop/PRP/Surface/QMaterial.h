@@ -24,11 +24,13 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QMaterial : public QCreatable {
+class QMaterial : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kCbShaded, kCbEnvironMap, kCbProjectOnto, kCbSoftShadow, kCbSpecular,
         kCbTwoSided, kCbDrawAsSplats, kCbAdjusted, kCbNoSoftShadow, kCbDynamic,
         kCbDecal, kCbIsEmissive, kCbIsLightMapped, kCbNeedsBlendChannel,

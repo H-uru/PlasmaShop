@@ -19,11 +19,11 @@
 #include <QGroupBox>
 #include <QGridLayout>
 
-class QSmallTextEdit : public QTextEdit {
+class QSmallTextEdit : public QTextEdit
+{
 public:
-    QSmallTextEdit(QWidget* parent = 0)
-        : QTextEdit(parent)
-    { }
+    QSmallTextEdit(QWidget* parent = nullptr)
+        : QTextEdit(parent) { }
 
     virtual QSize sizeHint() const
     {
@@ -40,7 +40,7 @@ public:
 
 /* QGUITextBoxMod */
 QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kGUITextBoxMod, parent)
+    : QCreatable(pCre, kGUITextBoxMod, parent)
 {
     pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
 

@@ -23,11 +23,13 @@
 #include <QCheckBox>
 #include "PRP/QKeyList.h"
 
-class QSynchedObject : public QCreatable {
+class QSynchedObject : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kCbDontDirty, kCbSendReliably, kCbHasConstantNetGroup,
         kCbDontSynchGameMessages, kCbExcludePersistentState,
         kCbExcludeAllPersistentState, kCbHasVolatileState,

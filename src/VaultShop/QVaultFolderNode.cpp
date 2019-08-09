@@ -118,7 +118,7 @@ int QVaultFolderNode::UnmapFolderType(int idx)
 }
 
 QVaultFolderNode::QVaultFolderNode(QWidget* parent)
-                : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fFolderType = new QComboBox(this);
     for (int i=0; i<=26; i++)

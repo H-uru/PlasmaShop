@@ -23,7 +23,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QDetectorModifier : public QCreatable {
+class QDetectorModifier : public QCreatable
+{
     Q_OBJECT
 
 protected:

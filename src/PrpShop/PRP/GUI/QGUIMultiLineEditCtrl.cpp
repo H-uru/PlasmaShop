@@ -22,7 +22,7 @@
 
 /* QGUIMultiLineEditCtrl */
 QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)
-                     : QCreatable(pCre, kGUIMultiLineEditCtrl, parent)
+    : QCreatable(pCre, kGUIMultiLineEditCtrl, parent)
 {
     pfGUIMultiLineEditCtrl* ctrl = pfGUIMultiLineEditCtrl::Convert(fCreatable);
 

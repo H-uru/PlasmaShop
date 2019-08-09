@@ -23,7 +23,7 @@
 
 /* QCubicEnvironmap */
 QCubicEnvironmap::QCubicEnvironmap(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kCubicEnvironmap, parent)
+    : QCreatable(pCre, kCubicEnvironmap, parent)
 {
     plCubicEnvironmap* tex = plCubicEnvironmap::Convert(fCreatable);
 

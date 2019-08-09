@@ -26,11 +26,13 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QAnimStage : public QCreatable {
+class QAnimStage : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kNotifyEnter, kNotifyLoop, kNotifyAdvance, kNotifyRegress,
         kNumNotifyFlags
     };
@@ -52,7 +54,8 @@ public:
     virtual void saveDamage();
 };
 
-class QMultistageBehMod : public QCreatable {
+class QMultistageBehMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

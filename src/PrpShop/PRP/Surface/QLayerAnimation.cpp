@@ -25,7 +25,7 @@
 #include "QKeyDialog.h"
 
 QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
-               : QCreatable(pCre, kLayerAnimation, parent)
+    : QCreatable(pCre, kLayerAnimation, parent)
 {
     plLayerAnimation* lay = plLayerAnimation::Convert(fCreatable);
 

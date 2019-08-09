@@ -22,7 +22,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultLinkNode::QVaultLinkNode(QWidget* parent)
-              : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fUnlocked = new QCheckBox(tr("Unlocked"), this);
     fVolatile = new QCheckBox(tr("Volatile"), this);

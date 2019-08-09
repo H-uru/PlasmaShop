@@ -21,13 +21,15 @@
 #include <QComboBox>
 #include <QListWidget>
 
-enum FileClass {
+enum FileClass
+{
     kFileAge, kFileFni, kFileSum, kFileCsv, kFileFont, kFilePython, kFilePak,
     kFileSDL, kFileLoc, kFileSub, kFileCursorPak, kFileFontPak, kFileHexLevel,
     kFileShader,
 };
 
-class NewFileDialog : public QDialog {
+class NewFileDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -35,7 +37,9 @@ public:
     virtual ~NewFileDialog();
 
     FileClass fileType() const
-    { return (FileClass)fFileTypeList->currentItem()->data(Qt::UserRole).toUInt(); }
+    {
+        return (FileClass)fFileTypeList->currentItem()->data(Qt::UserRole).toUInt();
+    }
 
 private:
     QComboBox* fFileTypeFilter;

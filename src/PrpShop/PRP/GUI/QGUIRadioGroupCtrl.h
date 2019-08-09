@@ -25,7 +25,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUIRadioGroupCtrl : public QCreatable {
+class QGUIRadioGroupCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:

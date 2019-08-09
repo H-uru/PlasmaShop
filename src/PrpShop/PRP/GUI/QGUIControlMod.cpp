@@ -23,7 +23,7 @@
 
 /* QGUIColorScheme */
 QGUIColorScheme::QGUIColorScheme(QWidget* parent)
-               : QWidget(parent)
+    : QWidget(parent)
 {
     fForeColor = new QColorEdit(true, this);
     fBackColor = new QColorEdit(true, this);
@@ -111,7 +111,7 @@ void QGUIColorScheme::saveColorScheme(pfGUIColorScheme* scheme)
 
 /* QGUIControlMod */
 QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 

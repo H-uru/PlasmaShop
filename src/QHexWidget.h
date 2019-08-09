@@ -19,7 +19,8 @@
 
 #include <QAbstractScrollArea>
 
-class QHexWidget : public QAbstractScrollArea {
+class QHexWidget : public QAbstractScrollArea
+{
     Q_OBJECT
 
 public:

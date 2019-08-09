@@ -22,7 +22,7 @@
 #include <QGridLayout>
 
 QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
-         : QCreatable(pCre, kGMaterial, parent)
+    : QCreatable(pCre, kGMaterial, parent)
 {
     hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
 

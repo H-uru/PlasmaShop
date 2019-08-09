@@ -25,16 +25,19 @@
 #include "QPlasmaDocument.h"
 #include "QPlasmaTextEdit.h"
 
-class QPlasmaTextDoc : public QPlasmaDocument {
+class QPlasmaTextDoc : public QPlasmaDocument
+{
     Q_OBJECT
 
 public:
-    enum SyntaxMode {
+    enum SyntaxMode
+    {
         kStxNone, kStxPython, kStxSDL, kStxIni, kStxConsole, kStxXML,
         kStxHex, kStxFX,
     };
 
-    enum EncodingMode {
+    enum EncodingMode
+    {
         kTypeAnsi, kTypeUTF8, kTypeUTF16, kTypeUTF32,
     };
 
@@ -86,7 +89,8 @@ private:
 };
 
 
-class TextFindDialog : public QDialog {
+class TextFindDialog : public QDialog
+{
     Q_OBJECT
 
 private:

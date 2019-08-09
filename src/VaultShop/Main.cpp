@@ -56,7 +56,7 @@ static QString StrToHex(const QString& str)
 
 /* VaultInfo */
 VaultShopMain::VaultInfo::VaultInfo(QString filename)
-             : fVaultFile(filename), fRootItem(NULL)
+    : fVaultFile(filename), fRootItem()
 {
     fVault = new plVaultStore();
     fVault->ImportFile(filename.toUtf8().constData());
@@ -76,7 +76,7 @@ void VaultShopMain::VaultInfo::save()
 
 /* SaveInfo */
 VaultShopMain::SaveInfo::SaveInfo(QString filename)
-             : fSaveFile(filename)
+    : fSaveFile(filename)
 {
     fSave = new plNetGameServerState();
     hsFileStream FS(PlasmaVer::pvPots);

@@ -23,7 +23,8 @@
 #include "PRP/QKeyList.h"
 #include "PRP/QObjLink.h"
 
-class QInterfaceInfoModifier : public QCreatable {
+class QInterfaceInfoModifier : public QCreatable
+{
     Q_OBJECT
 
 protected:

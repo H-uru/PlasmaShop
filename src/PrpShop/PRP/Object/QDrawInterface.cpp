@@ -27,7 +27,7 @@
 
 /* QDrawableList */
 QDrawableList::QDrawableList(plKey container, QWidget* parent)
-             : QKeyList(container, parent)
+    : QKeyList(container, parent)
 {
     setColumnCount(2);
     setUniformRowHeights(true);
@@ -82,7 +82,7 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
 
 /* QFindDrawKeyDialog */
 QFindDrawKeyDialog::QFindDrawKeyDialog(QWidget* parent)
-                  : QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Add Drawable..."));
 
@@ -121,7 +121,7 @@ void QFindDrawKeyDialog::init(plResManager* mgr, const plLocation& loc)
 
 /* QDrawInterface */
 QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kDrawInterface, parent)
+    : QCreatable(pCre, kDrawInterface, parent)
 {
     plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
 

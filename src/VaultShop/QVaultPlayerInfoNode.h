@@ -22,7 +22,8 @@
 #include "QVaultNodeEdit.h"
 #include "QLinkLabel.h"
 
-class QVaultPlayerInfoNode : public QVaultNodeEdit {
+class QVaultPlayerInfoNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

@@ -31,11 +31,13 @@
 #include "QVaultNodeEdit.h"
 #include "QGameServerState.h"
 
-class VaultShopMain : public QMainWindow {
+class VaultShopMain : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    enum TreeRoles {
+    enum TreeRoles
+    {
         kRoleNodeID = Qt::UserRole, kRoleSavFile,
     };
 
@@ -49,15 +51,17 @@ private:
     int fEditorTabPreference;
 
     // Menu actions
-    enum {
+    enum
+    {
         kFileOpenVault, kFileSaveVault, kFileExit, kVaultOpenNode,
         kNodeUnLink, kNodeLink, kNodeCreate, kNodeUnsubscribe, kNodeRenameVault,
         kNumActions
     };
     QAction* fActions[kNumActions];
 
-    // libPlasma stuff
-    struct VaultInfo {
+    // libHSPlasma stuff
+    struct VaultInfo
+    {
         plVaultStore* fVault;
         QString fVaultFile;
         QTreeWidgetItem* fRootItem;
@@ -68,7 +72,8 @@ private:
     };
     std::list<VaultInfo*> fLoadedVaults;
 
-    struct SaveInfo {
+    struct SaveInfo
+    {
         plNetGameServerState* fSave;
         QString fSaveFile;
 

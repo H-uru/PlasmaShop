@@ -26,7 +26,8 @@
 
 extern bool s_showTypeIDs;
 
-enum {
+enum
+{
     kPreview_Type = 0x1000,
     kPRC_Type = 0x2000,
     kTargets_Type = 0x4000,

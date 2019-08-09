@@ -22,7 +22,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultChronicleNode::QVaultChronicleNode(QWidget* parent)
-                   : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fChronicleType = new QSpinBox(this);
     fChronicleType->setRange(-0x80000000, 0x7FFFFFFF);

@@ -42,7 +42,9 @@ inline ST_FORMAT_TYPE(const QString&)
 
 // qHash functions for QHashMaps
 inline unsigned int qHash(const plLocation& loc)
-{ return loc.unparse(); }
+{
+    return loc.unparse();
+}
 
 /*
 inline unsigned int qHash(const plKey& key)

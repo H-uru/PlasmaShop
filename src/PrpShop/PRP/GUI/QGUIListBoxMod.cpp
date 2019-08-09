@@ -23,7 +23,7 @@
 
 /* QGUIListBoxMod */
 QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
-              : QCreatable(pCre, kGUIListBoxMod, parent)
+    : QCreatable(pCre, kGUIListBoxMod, parent)
 {
     pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
 

@@ -24,7 +24,8 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QEaxSourceSettings : public QWidget {
+class QEaxSourceSettings : public QWidget
+{
     Q_OBJECT
 
 protected:
@@ -39,7 +40,8 @@ protected:
     QFloatEdit* fDopplerFactor;
     QFloatEdit* fRolloffFactor;
     QFloatEdit* fOcclusionSoftValue;
-    struct {
+    struct
+    {
         QIntEdit* fOcclusion;
         QFloatEdit* fLFRatio;
         QFloatEdit* fRoomRatio;
@@ -79,7 +81,8 @@ protected:
     QLineEdit* fSubtitleId;
 
     // Properties
-    enum {
+    enum
+    {
         kPropIs3DSound, kPropDisableLOD, kPropLooping, kPropAutoStart,
         kPropLocalOnly, kPropLoadOnlyOnCall, kPropFullyDisabled, kPropDontFade,
         kPropIncidental, kNumProps
@@ -87,7 +90,8 @@ protected:
     QCheckBox* fProperties[kNumProps];
 
     // Fade Params
-    struct {
+    struct
+    {
         QFloatEdit* fLength;
         QFloatEdit* fVolStart;
         QFloatEdit* fVolEnd;
@@ -112,7 +116,8 @@ protected slots:
     void editEaxSettings();
 };
 
-class QWin32Sound : public QCreatable {
+class QWin32Sound : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -19,7 +19,7 @@
 
 /* QGUICheckBoxCtrl */
 QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kGUICheckBoxCtrl, parent)
+    : QCreatable(pCre, kGUICheckBoxCtrl, parent)
 {
     pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
 

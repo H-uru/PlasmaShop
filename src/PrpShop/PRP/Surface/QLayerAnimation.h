@@ -24,7 +24,8 @@
 #include "PRP/QMatrix44.h"
 #include "QColorEdit.h"
 
-class QLayerAnimation : public QCreatable {
+class QLayerAnimation : public QCreatable
+{
     Q_OBJECT
 
 protected:

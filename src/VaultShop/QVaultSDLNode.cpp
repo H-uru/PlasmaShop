@@ -26,7 +26,8 @@
 #include <ResManager/pdUnifiedTypeMap.h>
 
 /* QSDLTreeItem */
-class QSDLTreeItem : public QTreeWidgetItem {
+class QSDLTreeItem : public QTreeWidgetItem
+{
 public:
     enum { kSDLVarType = UserType };
 
@@ -211,7 +212,7 @@ QString QSDLEditor::GetSDLName(plVaultBlob blob)
 }
 
 QSDLEditor::QSDLEditor(QWidget* parent)
-          : QWidget(parent), fRecord(NULL), fIOwnRecord(false), fSDLVersion(-1)
+    : QWidget(parent), fRecord(), fIOwnRecord(false), fSDLVersion(-1)
 {
     fSDLList = new QTreeWidget(this);
     fSDLList->setColumnCount(2);
@@ -724,7 +725,7 @@ int QVaultSDLNode::UnmapSDLType(int idx)
 }
 
 QVaultSDLNode::QVaultSDLNode(QWidget* parent)
-             : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fSDLType = new QComboBox(this);
     for (int i=0; i<=2; i++)

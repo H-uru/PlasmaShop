@@ -22,7 +22,7 @@
 
 /* QVaultTextNode */
 QVaultTextNode::QVaultTextNode(QWidget* parent)
-              : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     static QString s_NoteTypes[] = {
         "(Generic)", "CCR Petition", "Device Inbox", "Invite",

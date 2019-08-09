@@ -27,10 +27,12 @@ namespace KSyntaxHighlighting
 }
 class WhitespaceKSyntaxHighlighter;
 
-class QPlasmaTextEdit : public QPlainTextEdit {
+class QPlasmaTextEdit : public QPlainTextEdit
+{
     Q_OBJECT
 
-    enum EditorSettings {
+    enum EditorSettings
+    {
         kShowLineNumbers = (1<<0),
         kExpandTabs = (1<<1),
         kAutoIndent = (1<<2),

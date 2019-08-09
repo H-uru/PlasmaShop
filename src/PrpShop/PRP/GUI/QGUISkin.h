@@ -23,7 +23,8 @@
 #include <QComboBox>
 #include "PRP/QObjLink.h"
 
-class QGUISkin : public QCreatable {
+class QGUISkin : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -23,7 +23,8 @@
 #include <QLineEdit>
 #include "PRP/QObjLink.h"
 
-class QLayerSDLAnimation : public QCreatable {
+class QLayerSDLAnimation : public QCreatable
+{
     Q_OBJECT
 
 protected:

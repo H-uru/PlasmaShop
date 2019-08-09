@@ -21,7 +21,7 @@
 
 /* QGUIMenuItem */
 QGUIMenuItem::QGUIMenuItem(plCreatable* pCre, QWidget* parent)
-            : QCreatable(pCre, kGUIMenuItem, parent)
+    : QCreatable(pCre, kGUIMenuItem, parent)
 {
     pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
 

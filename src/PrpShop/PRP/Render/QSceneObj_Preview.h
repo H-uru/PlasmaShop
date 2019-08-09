@@ -20,7 +20,8 @@
 #include "PRP/QCreatable.h"
 #include "QPlasmaRender.h"
 
-class QSceneObj_Preview : public QCreatable {
+class QSceneObj_Preview : public QCreatable
+{
     Q_OBJECT
 
 protected:

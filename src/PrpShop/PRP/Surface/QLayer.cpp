@@ -25,7 +25,7 @@
 #include "Main.h"
 
 QLayer::QLayer(plCreatable* pCre, QWidget* parent)
-      : QCreatable(pCre, kLayer, parent)
+    : QCreatable(pCre, kLayer, parent)
 {
     plLayer* lay = plLayer::Convert(fCreatable);
 

@@ -23,11 +23,13 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QGUIMenuItem : public QCreatable {
+class QGUIMenuItem : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUIMenuItem::kDrawSubMenuArrow,
         kModFlagEnd = pfGUIMenuItem::kReportHovers,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1

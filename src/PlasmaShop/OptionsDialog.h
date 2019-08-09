@@ -30,7 +30,8 @@
     #define DEFAULT_VAULT_EDITOR "VaultShop"
 #endif
 
-class OptionsDialog : public QDialog {
+class OptionsDialog : public QDialog
+{
     Q_OBJECT
 
 public:

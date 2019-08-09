@@ -21,7 +21,8 @@
 #include "PRP/QKeyList.h"
 #include "PRP/QObjLink.h"
 
-class QAudible : public QCreatable {
+class QAudible : public QCreatable
+{
     Q_OBJECT
 
 public:
@@ -29,7 +30,8 @@ public:
     virtual void saveDamage() { }
 };
 
-class QWinAudible : public QCreatable {
+class QWinAudible : public QCreatable
+{
     Q_OBJECT
 
 protected:

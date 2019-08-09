@@ -20,8 +20,8 @@
 #include <PRP/Modifier/plModifier.h>
 
 QTargetList::QTargetList(plCreatable* pCre, QWidget* parent)
-    : QCreatable(pCre, kTargets_Type | pCre->ClassIndex(), parent) {
-
+    : QCreatable(pCre, kTargets_Type | pCre->ClassIndex(), parent)
+{
     plModifier* mod = plModifier::Convert(pCre);
 
     fTargets = new QKeyList(mod->getKey(), this);

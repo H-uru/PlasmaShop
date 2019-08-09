@@ -22,7 +22,8 @@
 #include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
 #include "PRP/QObjLink.h"
 
-class QGUIMultiLineEditCtrl : public QCreatable {
+class QGUIMultiLineEditCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -24,7 +24,7 @@
 #include "Main.h"
 
 QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
-                    : QCreatable(pCre, kCoordinateInterface, parent)
+    : QCreatable(pCre, kCoordinateInterface, parent)
 {
     plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
 

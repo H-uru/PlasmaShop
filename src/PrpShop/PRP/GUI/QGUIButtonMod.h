@@ -24,7 +24,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUIButtonMod : public QCreatable {
+class QGUIButtonMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

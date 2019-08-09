@@ -28,7 +28,7 @@ static QString s_PlayTypes[] = { "None", "Key", "Auto" };
 static QString s_AdvanceTypes[] = { "None", "On Move", "Auto", "Any Key" };
 
 QAnimStage::QAnimStage(plCreatable* pCre, QWidget* parent)
-          : QCreatable(pCre, kAnimStage, parent)
+    : QCreatable(pCre, kAnimStage, parent)
 {
     plAnimStage* obj = (plAnimStage*)fCreatable;
 
@@ -131,7 +131,7 @@ void QAnimStage::saveDamage()
 
 /* QMultistageBehMod */
 QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
-                 : QCreatable(pCre, kMultistageBehMod, parent)
+    : QCreatable(pCre, kMultistageBehMod, parent)
 {
     plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
 

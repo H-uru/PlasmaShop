@@ -24,7 +24,8 @@
 
 class QStatusBar;
 
-class QPrcEditor : public QCreatable {
+class QPrcEditor : public QCreatable
+{
     Q_OBJECT
 
 protected:

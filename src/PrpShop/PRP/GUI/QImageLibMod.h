@@ -23,7 +23,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QImageLibMod : public QCreatable {
+class QImageLibMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

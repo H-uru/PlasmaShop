@@ -20,16 +20,19 @@
 #include <QWidget>
 #include <QIcon>
 
-enum DocumentType {
+enum DocumentType
+{
     kDocText, kDocFont, kDocPackage, kDocManifest, kDocDevMode,
     kDocUnknown
 };
 
-class QPlasmaDocument : public QWidget {
+class QPlasmaDocument : public QWidget
+{
     Q_OBJECT
 
 public:
-    enum EncryptionMode {
+    enum EncryptionMode
+    {
         kEncNone, kEncXtea, kEncAes, kEncDroid,
     };
 
@@ -38,7 +41,9 @@ public:
     static QPlasmaDocument* GetEditor(DocumentType docType, QWidget* parent);
     static bool GetEncryptionKeyFromUser(QWidget* parent, unsigned int* key);
 
-    QPlasmaDocument(DocumentType docType, QWidget* parent);
+    QPlasmaDocument(DocumentType docType, QWidget* parent)
+        : QWidget(parent), fDocType(docType), fEncryption(kEncNone),
+          fDirty(), fPersistDirty() { }
 
     DocumentType docType() const { return fDocType; }
     bool isDirty() const { return fDirty; }
@@ -85,7 +90,9 @@ protected:
     bool fDirty, fPersistDirty;
 
     static bool isZeroKey(const unsigned int* key)
-    { return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0); }
+    {
+        return (key[0] == 0) && (key[1] == 0) && (key[2] == 0) && (key[3] == 0);
+    }
 
 public slots:
     void makeDirty();

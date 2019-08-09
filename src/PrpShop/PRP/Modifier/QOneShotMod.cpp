@@ -22,7 +22,7 @@
 #include "QPlasma.h"
 
 QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
-           : QCreatable(pCre, kOneShotMod, parent)
+    : QCreatable(pCre, kOneShotMod, parent)
 {
     plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
 

@@ -22,7 +22,8 @@
 #include <QPixmap>
 #include "QVaultNodeEdit.h"
 
-class QStaticImage : public QWidget {
+class QStaticImage : public QWidget
+{
     Q_OBJECT
 
 public:
@@ -43,7 +44,8 @@ private:
 };
 
 
-class QVaultImageNode : public QVaultNodeEdit {
+class QVaultImageNode : public QVaultNodeEdit
+{
     Q_OBJECT
 
 protected:

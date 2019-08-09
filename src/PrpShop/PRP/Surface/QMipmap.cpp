@@ -47,10 +47,6 @@ static void setExportDir(const QString& filename)
 }
 
 /* QTextureBox */
-QTextureBox::QTextureBox(QWidget* parent)
-           : QWidget(parent), fImage(NULL), fImageData(NULL)
-{ }
-
 QTextureBox::~QTextureBox()
 {
     delete fImage;
@@ -129,7 +125,7 @@ void QTextureBox::paintEvent(QPaintEvent* evt)
 
 /* QMipmap_Preview */
 QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
-               : QCreatable(pCre, kPreviewMipmap, parent), fLevel(0)
+    : QCreatable(pCre, kPreviewMipmap, parent), fLevel()
 {
     plMipmap* tex = plMipmap::Convert(fCreatable);
 
@@ -213,7 +209,7 @@ QString getCompressionText(plBitmap* tex)
 }
 
 QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
-       : QCreatable(pCre, kMipmap, parent)
+    : QCreatable(pCre, kMipmap, parent)
 {
     plMipmap* tex = plMipmap::Convert(fCreatable);
 

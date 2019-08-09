@@ -23,11 +23,13 @@
 #include <QCheckBox>
 #include "PRP/QObjLink.h"
 
-class QGUIListBoxMod : public QCreatable {
+class QGUIListBoxMod : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kModFlagStart = pfGUIListBoxMod::kSingleSelect,
         kModFlagEnd = pfGUIListBoxMod::kForbidNoSelection,
         kModFlagCount = (kModFlagEnd - kModFlagStart) + 1

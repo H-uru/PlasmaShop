@@ -21,7 +21,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultPlayerInfoNode::QVaultPlayerInfoNode(QWidget* parent)
-                    : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fPlayerName = new QLineEdit(this);
     fPlayerID = new QSpinBox(this);

@@ -24,7 +24,7 @@
 #include "Main.h"
 
 QSceneObject::QSceneObject(plCreatable* pCre, QWidget* parent)
-            : QCreatable(pCre, kSceneObject, parent)
+    : QCreatable(pCre, kSceneObject, parent)
 {
     plSceneObject* obj = plSceneObject::Convert(fCreatable);
 

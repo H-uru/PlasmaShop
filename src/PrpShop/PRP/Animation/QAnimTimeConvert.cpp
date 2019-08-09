@@ -26,7 +26,7 @@
 
 /* QATCCurveLink */
 QATCCurveLink::QATCCurveLink(const QString& text, QWidget* parent, bool canEdit)
-             : QCreatableLink(parent, canEdit)
+    : QCreatableLink(parent, canEdit)
 {
     setText(text);
 }
@@ -61,7 +61,7 @@ void QATCCurveLink::menuRequested()
 
 /* QATCEaseCurve */
 QATCEaseCurve::QATCEaseCurve(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plATCEaseCurve* obj = (plATCEaseCurve*)fCreatable;
 
@@ -128,7 +128,7 @@ void QATCEaseCurve::saveDamage()
 
 /* QAnimTimeConvert */
 QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
-                : QCreatable(pCre, kAnimTimeConvert, parent)
+    : QCreatable(pCre, kAnimTimeConvert, parent)
 {
     plAnimTimeConvert* obj = (plAnimTimeConvert*)fCreatable;
 

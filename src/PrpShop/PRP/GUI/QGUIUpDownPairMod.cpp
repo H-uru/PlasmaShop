@@ -22,7 +22,7 @@
 
 /* QGUIUpDownPairMod */
 QGUIUpDownPairMod::QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent)
-                 : QCreatable(pCre, kGUIUpDownPairMod, parent)
+    : QCreatable(pCre, kGUIUpDownPairMod, parent)
 {
     pfGUIUpDownPairMod* ctrl = pfGUIUpDownPairMod::Convert(fCreatable);
 

@@ -20,7 +20,8 @@
 #include "PRP/QCreatable.h"
 #include "PRP/QObjLink.h"
 
-class QSeekPointMod : public QCreatable {
+class QSeekPointMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

@@ -23,7 +23,7 @@
 
 /* QFadeOpacityMod */
 QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
-               : QCreatable(pCre, kFadeOpacityMod, parent)
+    : QCreatable(pCre, kFadeOpacityMod, parent)
 {
     plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
 

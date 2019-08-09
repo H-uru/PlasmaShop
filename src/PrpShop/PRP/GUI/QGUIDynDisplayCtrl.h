@@ -23,7 +23,8 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
-class QGUIDynDisplayCtrl : public QCreatable {
+class QGUIDynDisplayCtrl : public QCreatable
+{
     Q_OBJECT
 
 protected:

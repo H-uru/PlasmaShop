@@ -23,7 +23,7 @@
 
 /* QPlasmaDevModeDat */
 QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
-              : QPlasmaDocument(kDocDevMode, parent)
+    : QPlasmaDocument(kDocDevMode, parent)
 {
     //DeviceRecord Group
     QGroupBox* grpRecord = new QGroupBox(tr("Device Record"), this);

@@ -24,7 +24,7 @@
 
 /* QPopupMenuItemList */
 QPopupMenuItemList::QPopupMenuItemList(QWidget* parent)
-                  : QTreeWidget(parent)
+    : QTreeWidget(parent)
 {
     setColumnCount(2);
     setUniformRowHeights(true);
@@ -95,7 +95,7 @@ void QPopupMenuItemList::contextMenuEvent(QContextMenuEvent* evt)
 
 /* QGUIPopUpMenu */
 QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, kGUIPopUpMenu, parent)
+    : QCreatable(pCre, kGUIPopUpMenu, parent)
 {
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
 
@@ -276,7 +276,7 @@ void QGUIPopUpMenu::delMenuItem(int idx)
 
 /* QPopUpMenuItemDialog */
 QPopUpMenuItemDialog::QPopUpMenuItemDialog(QWidget* parent)
-                    : QDialog(parent), fItem(NULL), fItemIdx(0)
+    : QDialog(parent), fItem(), fItemIdx()
 {
     fName = new QLineEdit(this);
     fProcType = new QComboBox(this);

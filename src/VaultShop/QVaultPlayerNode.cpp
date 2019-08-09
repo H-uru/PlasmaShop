@@ -24,7 +24,7 @@
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultPlayerNode::QVaultPlayerNode(QWidget* parent)
-                : QVaultNodeEdit(parent)
+    : QVaultNodeEdit(parent)
 {
     fPlayerName = new QLineEdit(this);
     fAvatarShape = new QLineEdit(this);

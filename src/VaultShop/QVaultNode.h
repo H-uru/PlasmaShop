@@ -24,7 +24,8 @@
 #include <QPlainTextEdit>
 #include <Vault/plVaultNode.h>
 
-class QVaultNode : public QWidget {
+class QVaultNode : public QWidget
+{
     Q_OBJECT
 
 public:

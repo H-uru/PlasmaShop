@@ -20,7 +20,7 @@
 #include <QGridLayout>
 
 QMsgForwarder::QMsgForwarder(plCreatable* pCre, QWidget* parent)
-             : QCreatable(pCre, kMsgForwarder, parent)
+    : QCreatable(pCre, kMsgForwarder, parent)
 {
     plMsgForwarder* obj = plMsgForwarder::Convert(fCreatable);
 

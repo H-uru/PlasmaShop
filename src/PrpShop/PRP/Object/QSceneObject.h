@@ -23,7 +23,8 @@
 #include "PRP/QKeyList.h"
 #include "PRP/QObjLink.h"
 
-class QSceneObject : public QCreatable {
+class QSceneObject : public QCreatable
+{
     Q_OBJECT
 
 protected:

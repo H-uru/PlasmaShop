@@ -28,10 +28,6 @@
 #include "QVaultImageNode.h"
 
 /* QVaultNodeEdit */
-QVaultNodeEdit::QVaultNodeEdit(QWidget* parent)
-              : QWidget(parent)
-{ }
-
 QVaultNodeEdit* QVaultNodeEdit::MakeEditor(QWidget* parent, const plVaultNode& node,
                                            plResManager* mgr, plSDLMgr* sdl)
 {

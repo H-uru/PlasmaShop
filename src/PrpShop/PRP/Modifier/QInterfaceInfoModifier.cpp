@@ -20,7 +20,7 @@
 #include <QGridLayout>
 
 QInterfaceInfoModifier::QInterfaceInfoModifier(plCreatable* pCre, QWidget* parent)
-                      : QCreatable(pCre, kInterfaceInfoModifier, parent)
+    : QCreatable(pCre, kInterfaceInfoModifier, parent)
 {
     plInterfaceInfoModifier* obj = plInterfaceInfoModifier::Convert(fCreatable);
 

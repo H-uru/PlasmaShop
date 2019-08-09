@@ -23,7 +23,7 @@
 
 /* QAudible */
 QAudible::QAudible(plCreatable* pCre, QWidget* parent)
-        : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -33,7 +33,7 @@ QAudible::QAudible(plCreatable* pCre, QWidget* parent)
 
 /* QWinAudible */
 QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
-           : QCreatable(pCre, pCre->ClassIndex(), parent)
+    : QCreatable(pCre, pCre->ClassIndex(), parent)
 {
     plWinAudible* obj = plWinAudible::Convert(fCreatable);
 

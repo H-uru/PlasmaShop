@@ -27,7 +27,8 @@
 #include "PRP/QKeyList.h"
 #include "QColorEdit.h"
 
-class QGUIColorScheme : public QWidget {
+class QGUIColorScheme : public QWidget
+{
     Q_OBJECT
 
 private:
@@ -48,7 +49,8 @@ public:
     void saveColorScheme(pfGUIColorScheme* scheme);
 };
 
-class QGUIControlMod : public QCreatable {
+class QGUIControlMod : public QCreatable
+{
     Q_OBJECT
 
 protected:

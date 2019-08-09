@@ -20,11 +20,13 @@
 #include "QMipmap.h"
 #include <PRP/Surface/plDynamicTextMap.h>
 
-class QDynamicTextMap : public QCreatable {
+class QDynamicTextMap : public QCreatable
+{
     Q_OBJECT
 
 protected:
-    enum {
+    enum
+    {
         kAlphaChannelFlag, kAlphaBitFlag, kBumpEnvMap, kForce32Bit,
         kDontThrowAwayImage, kForceOneMipLevel, kNoMaxSize, kIntensityMap,
         kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,
