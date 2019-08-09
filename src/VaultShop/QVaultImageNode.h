@@ -28,15 +28,15 @@ class QStaticImage : public QWidget
 
 public:
     QStaticImage(QWidget* parent);
-    virtual ~QStaticImage();
+    ~QStaticImage();
 
     void set(QPixmap* img);
     QPixmap* get() const { return fImg; }
     void refresh();
 
 protected:
-    virtual void paintEvent(QPaintEvent*);
-    virtual void resizeEvent(QResizeEvent*);
+    void paintEvent(QPaintEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
 
 private:
     QPixmap* fImg;
@@ -55,15 +55,15 @@ protected:
 
 public:
     QVaultImageNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Image"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Image"; }
+    plVaultNode saveNode() override;
 
 protected slots:
     void IImportImage();
     void IExportImage();
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

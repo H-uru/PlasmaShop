@@ -27,7 +27,7 @@ class QAudible : public QCreatable
 
 public:
     QAudible(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage() { }
+    void saveDamage() override { }
 };
 
 class QWinAudible : public QCreatable
@@ -40,7 +40,7 @@ protected:
 
 public:
     QWinAudible(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void setSceneNode();

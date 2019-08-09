@@ -41,7 +41,7 @@ public:
     QList<int> drawKeys() const { return fDrawKeys; }
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 class QFindDrawKeyDialog : public QDialog
@@ -76,7 +76,7 @@ protected:
 
 public:
     QDrawInterface(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void setOwner();

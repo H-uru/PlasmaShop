@@ -32,7 +32,7 @@ class QPopupMenuItemList : public QTreeWidget
 
 public:
     QPopupMenuItemList(QWidget* parent = NULL);
-    virtual QSize sizeHint() const;
+    QSize sizeHint() const override;
 
     void addItem(const pfGUIPopUpMenu::pfMenuItem& item);
     void delItem(int idx);
@@ -48,7 +48,7 @@ public slots:
     void handleUpdate(int idx, QString name, bool hasSubMenu);
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 
 private slots:
     void handleActivate(QTreeWidgetItem* item, int column);
@@ -78,7 +78,7 @@ protected:
 
 public:
     QGUIPopUpMenu(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 private slots:
     void setSkin();

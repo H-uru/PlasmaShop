@@ -36,11 +36,11 @@ protected:
 
 public:
     QVaultFolderNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Folder"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Folder"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 class QVaultPlayerInfoList : public QVaultFolderNode
@@ -50,7 +50,7 @@ class QVaultPlayerInfoList : public QVaultFolderNode
 public:
     QVaultPlayerInfoList(QWidget* parent)
         : QVaultFolderNode(parent) { }
-    virtual QString getEditorTitle() const { return "Player Info List"; }
+    QString getEditorTitle() const override { return "Player Info List"; }
 };
 
 class QVaultAgeInfoList : public QVaultFolderNode
@@ -60,7 +60,7 @@ class QVaultAgeInfoList : public QVaultFolderNode
 public:
     QVaultAgeInfoList(QWidget* parent)
         : QVaultFolderNode(parent) { }
-    virtual QString getEditorTitle() const { return "Age Info List"; }
+    QString getEditorTitle() const override { return "Age Info List"; }
 };
 
 #endif

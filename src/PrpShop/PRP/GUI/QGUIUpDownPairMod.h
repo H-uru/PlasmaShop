@@ -36,7 +36,7 @@ protected:
 
 public:
     QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 private slots:
     void setUpCtrl();

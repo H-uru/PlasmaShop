@@ -31,8 +31,8 @@ class QPlasmaSumFile : public QPlasmaDocument
 public:
     QPlasmaSumFile(QWidget* parent);
 
-    virtual bool loadFile(QString filename);
-    virtual bool saveTo(QString filename);
+    bool loadFile(QString filename) override;
+    bool saveTo(QString filename) override;
 
 private:
     QTreeWidget* fFileList;

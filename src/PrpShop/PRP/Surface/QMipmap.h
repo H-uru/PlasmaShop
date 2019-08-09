@@ -36,14 +36,14 @@ public:
     QTextureBox(QWidget* parent = NULL)
         : QWidget(parent), fImage(), fImageData() { }
 
-    virtual ~QTextureBox();
+    ~QTextureBox();
     void setTexture(plMipmap* tex, int level = 0);
 
 public slots:
     void saveAs();
 
 protected:
-    virtual void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent*) override;
 
 signals:
     void textureChanged(bool success);
@@ -59,7 +59,7 @@ protected:
 
 public:
     QMipmap_Preview(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage() { }
+    void saveDamage() override { }
 
     int level() const { return fLevel; }
 
@@ -84,7 +84,7 @@ protected:
 
 public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 private slots:
     void onExportDDS();

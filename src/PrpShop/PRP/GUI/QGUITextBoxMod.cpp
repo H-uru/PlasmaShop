@@ -25,13 +25,13 @@ public:
     QSmallTextEdit(QWidget* parent = nullptr)
         : QTextEdit(parent) { }
 
-    virtual QSize sizeHint() const
+    QSize sizeHint() const override
     {
         return QSize(QTextEdit::sizeHint().width(),
                      QTextEdit::sizeHint().height() / 2);
     }
 
-    virtual QSize minimumSizeHint() const
+    QSize minimumSizeHint() const override
     {
         return sizeHint();
     }

@@ -56,7 +56,7 @@ public:
                     bool canEdit = true);
 
 protected slots:
-    virtual void menuRequested();
+    void menuRequested() override;
 };
 
 #endif

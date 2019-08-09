@@ -33,11 +33,11 @@ protected:
 
 public:
     QVaultPlayerInfoNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Player Info"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Player Info"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 
 protected slots:
     void subscribePlayer();

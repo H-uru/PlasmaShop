@@ -35,7 +35,7 @@ protected:
 
 public:
     QGUIDynDisplayCtrl(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 #endif

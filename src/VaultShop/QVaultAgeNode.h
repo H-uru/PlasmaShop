@@ -30,11 +30,11 @@ protected:
 
 public:
     QVaultAgeNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Age Instance"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Age Instance"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

@@ -32,11 +32,11 @@ protected:
 
 public:
     QVaultChronicleNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Chronicle"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Chronicle"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

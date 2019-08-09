@@ -36,7 +36,7 @@ public:
     virtual void saveDamage() = 0;
 
 protected:
-    virtual void closeEvent(QCloseEvent* evt);
+    void closeEvent(QCloseEvent* evt) override;
 };
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceType = -1);

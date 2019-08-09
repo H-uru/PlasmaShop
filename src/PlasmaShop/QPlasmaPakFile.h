@@ -112,8 +112,8 @@ public:
     
     QPlasmaPakFile(QWidget* parent);
 
-    virtual bool loadFile(QString filename);
-    virtual bool saveTo(QString filename);
+    bool loadFile(QString filename) override;
+    bool saveTo(QString filename) override;
 
     void setPackageType(PlasmaPackage::PackageType type)
     {

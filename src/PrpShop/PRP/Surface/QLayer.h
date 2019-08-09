@@ -96,7 +96,7 @@ protected:
 
 public:
     QLayer(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected:
     void updateFlags(const hsGMatState& state);

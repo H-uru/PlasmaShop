@@ -30,7 +30,7 @@ protected:
 
 public:
     QSeekPointMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 #endif

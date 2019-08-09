@@ -36,7 +36,7 @@ protected:
 
 public:
     QPythonParamList(QWidget* parent = NULL);
-    virtual QSize sizeHint() const;
+    QSize sizeHint() const override;
 
     void addParam(const plPythonParameter& param);
     void delParam(int idx);
@@ -48,7 +48,7 @@ protected slots:
     void handleActivate(QTreeWidgetItem* item, int column);
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 class QPythonFileMod : public QCreatable
@@ -63,7 +63,7 @@ protected:
 
 public:
     QPythonFileMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 class QPythonParamDialog : public QDialog

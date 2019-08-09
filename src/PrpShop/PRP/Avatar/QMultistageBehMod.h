@@ -51,7 +51,7 @@ protected:
 
 public:
     QAnimStage(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 class QMultistageBehMod : public QCreatable
@@ -68,7 +68,7 @@ protected:
 
 public:
     QMultistageBehMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void stageContextMenu(const QPoint& pos);

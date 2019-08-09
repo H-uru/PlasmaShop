@@ -96,12 +96,16 @@ protected:
 
 public:
     QVaultSDLNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "SDL"; }
-    virtual plVaultNode saveNode();
-    virtual void setMgrs(plResManager* mgr, plSDLMgr* sdl) { fSDLEditor->setMgrs(mgr, sdl); }
+    QString getEditorTitle() const override { return "SDL"; }
+    plVaultNode saveNode() override;
+
+    void setMgrs(plResManager* mgr, plSDLMgr* sdl) override
+    {
+        fSDLEditor->setMgrs(mgr, sdl);
+    }
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

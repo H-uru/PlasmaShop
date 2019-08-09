@@ -40,7 +40,7 @@ protected:
 
 public:
     QGUISkin(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 private slots:
     void setTexture();

@@ -32,11 +32,11 @@ protected:
 
 public:
     QVaultLinkNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Age Link"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Age Link"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

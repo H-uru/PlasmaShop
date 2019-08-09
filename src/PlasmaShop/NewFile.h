@@ -34,7 +34,7 @@ class NewFileDialog : public QDialog
 
 public:
     NewFileDialog(QWidget* parent);
-    virtual ~NewFileDialog();
+    ~NewFileDialog();
 
     FileClass fileType() const
     {

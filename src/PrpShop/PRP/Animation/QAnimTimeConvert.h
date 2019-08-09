@@ -34,7 +34,7 @@ public:
                   bool canEdit = true);
 
 protected slots:
-    virtual void menuRequested();
+    void menuRequested() override;
 };
 
 class QATCEaseCurve : public QCreatable
@@ -52,7 +52,7 @@ protected:
 
 public:
     QATCEaseCurve(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 class QAnimTimeConvert : public QCreatable
@@ -82,7 +82,7 @@ protected:
 
 public:
     QAnimTimeConvert(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void callbackContextMenu(const QPoint& pos);

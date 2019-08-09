@@ -39,7 +39,7 @@ protected:
 
 public:
     QGUIButtonMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void setDraggable();

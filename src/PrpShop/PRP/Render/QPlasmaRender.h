@@ -87,10 +87,10 @@ private:
 
 public:
     QPlasmaRender(QWidget* parent);
-    virtual ~QPlasmaRender();
+    ~QPlasmaRender();
 
-    virtual QSize minimumSizeHint() const { return QSize(50, 50); }
-    virtual QSize sizeHint() const { return QSize(400, 400); }
+    QSize minimumSizeHint() const override { return QSize(50, 50); }
+    QSize sizeHint() const override { return QSize(400, 400); }
 
     void addObject(plKey obj) { fObjects[obj] = ObjectInfo(); }
     void setView(const hsVector3& view, float angle = 0.0f);
@@ -102,14 +102,14 @@ public:
     QActionGroup* createViewActions();
 
 protected:
-    virtual void initializeGL();
-    virtual void resizeGL(int width, int height);
-    virtual void paintGL();
+    void initializeGL() override;
+    void resizeGL(int width, int height) override;
+    void paintGL() override;
 
     QPointF pixelPosToViewPos(const QPoint& p);
-    virtual void mouseMoveEvent(QMouseEvent* evt);
-    virtual void mousePressEvent(QMouseEvent* evt);
-    virtual void mouseReleaseEvent(QMouseEvent* evt);
+    void mouseMoveEvent(QMouseEvent* evt) override;
+    void mousePressEvent(QMouseEvent* evt) override;
+    void mouseReleaseEvent(QMouseEvent* evt) override;
 
     bool buildMipmap(plMipmap* map, GLuint id, GLuint target);
     void compileTexture(plKey layer, size_t id);

@@ -41,7 +41,7 @@ protected:
 
 public:
     QGUIListBoxMod(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 private slots:
     void setScrollCtrl();

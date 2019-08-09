@@ -33,11 +33,11 @@ protected:
 
 public:
     QVaultTextNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Text Note"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Text Note"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    void IRefreshNode() override;
 };
 
 #endif

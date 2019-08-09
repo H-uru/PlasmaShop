@@ -77,13 +77,13 @@ private:
 
 public:
     PlasmaShopMain();
-    virtual ~PlasmaShopMain();
+    ~PlasmaShopMain();
     void loadFile(QString filename);
 
 protected:
-    virtual void closeEvent(QCloseEvent* evt);
-    virtual void dragEnterEvent(QDragEnterEvent* evt);
-    virtual void dropEvent(QDropEvent* evt);
+    void closeEvent(QCloseEvent* evt) override;
+    void dragEnterEvent(QDragEnterEvent* evt) override;
+    void dropEvent(QDropEvent* evt) override;
 
     void setTextSyntax(int sel);
     void setTextEncoding(int sel);

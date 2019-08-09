@@ -36,7 +36,7 @@ protected:
 
 public:
     QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 #endif

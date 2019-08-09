@@ -55,7 +55,7 @@ public:
     void saveDamage();
 
 protected:
-    virtual void closeEvent(QCloseEvent* evt);
+    void closeEvent(QCloseEvent* evt) override;
 };
 
 class QWinSound : public QCreatable {
@@ -103,7 +103,7 @@ protected:
 
 public:
     QWinSound(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 
 protected slots:
     void setSoftRegion();
@@ -126,7 +126,7 @@ protected:
 
 public:
     QWin32Sound(plCreatable* pCre, QWidget* parent = NULL);
-    virtual void saveDamage();
+    void saveDamage() override;
 };
 
 #endif

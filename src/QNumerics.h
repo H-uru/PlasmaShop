@@ -25,8 +25,8 @@ class QFloatEdit : public QLineEdit
 
 public:
     QFloatEdit(QWidget* parent = 0);
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
     void setRange(double minimum, double maximum, int decimals = 0);
     double value() const { return text().toDouble(); }
@@ -41,8 +41,8 @@ class QIntEdit : public QLineEdit
 
 public:
     QIntEdit(QWidget* parent = 0);
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
     void setRange(int minimum, int maximum);
     int value() const { return text().toInt(); }

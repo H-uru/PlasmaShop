@@ -46,7 +46,7 @@ protected slots:
     void activateKeyItem(QTreeWidgetItem* item, int column);
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 class QStringListWidget : public QListWidget
@@ -58,14 +58,14 @@ private:
 
 public:
     QStringListWidget(QWidget* parent = NULL) : QListWidget(parent) { }
-    virtual QSize sizeHint() const;
+    QSize sizeHint() const override;
 
     void addString(const QString& str);
     void delString(int idx);
     QStringList strings() const { return fStrings; }
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 class QIntListWidget : public QListWidget
@@ -80,14 +80,14 @@ public:
     QIntListWidget(int min, int max, QWidget* parent = NULL)
         : QListWidget(parent), fMin(min), fMax(max) { }
 
-    virtual QSize sizeHint() const;
+    QSize sizeHint() const override;
 
     void addValue(int value);
     void delValue(int idx);
     QList<int> values() const { return fValues; }
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 class QDoubleListWidget : public QListWidget
@@ -100,14 +100,14 @@ protected:
 public:
     QDoubleListWidget(QWidget* parent = NULL) : QListWidget(parent) { }
 
-    virtual QSize sizeHint() const;
+    QSize sizeHint() const override;
 
     void addValue(double value);
     void delValue(int idx);
     QList<double> values() const { return fValues; }
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent* evt);
+    void contextMenuEvent(QContextMenuEvent* evt) override;
 };
 
 #endif

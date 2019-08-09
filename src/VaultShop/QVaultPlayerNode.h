@@ -31,11 +31,11 @@ protected:
 
 public:
     QVaultPlayerNode(QWidget* parent);
-    virtual QString getEditorTitle() const { return "Player"; }
-    virtual plVaultNode saveNode();
+    QString getEditorTitle() const override { return "Player"; }
+    plVaultNode saveNode() override;
 
 protected:
-    virtual void IRefreshNode();
+    virtual void IRefreshNode() override;
 };
 
 #endif

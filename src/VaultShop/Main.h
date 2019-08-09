@@ -88,7 +88,7 @@ private:
 
 public:
     VaultShopMain();
-    virtual ~VaultShopMain();
+    ~VaultShopMain();
     void loadVault(QString filename, QString vaultName, QTreeWidgetItem* parent);
     QTreeWidgetItem* loadNode(const plVaultNode& node, QTreeWidgetItem* parent, VaultInfo* vault);
     void loadSaves(QString path, QTreeWidgetItem* parent);
@@ -98,7 +98,7 @@ signals:
     void nodeChanged(unsigned int nodeId);
 
 protected:
-    virtual void closeEvent(QCloseEvent* evt);
+    void closeEvent(QCloseEvent* evt) override;
     VaultInfo* findCurrentVault(QTreeWidgetItem* item = NULL);
     QList<QTreeWidgetItem*> findNodeItems(unsigned int nodeId, QTreeWidgetItem* parent);
     void saveNode(QTreeWidgetItem* nodeItem, int source);

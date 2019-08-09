@@ -103,9 +103,9 @@ public:
     QCreatable* editCreatable(plCreatable* pCre, int forceType = -1);
 
 protected:
-    virtual void closeEvent(QCloseEvent* evt);
-    virtual void dragEnterEvent(QDragEnterEvent* evt);
-    virtual void dropEvent(QDropEvent* evt);
+    void closeEvent(QCloseEvent* evt) override;
+    void dragEnterEvent(QDragEnterEvent* evt) override;
+    void dropEvent(QDropEvent* evt) override;
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
     QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
