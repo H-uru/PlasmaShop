@@ -82,7 +82,6 @@ private slots:
     void updateLineNumbers(const QRect& rect, int dy);
     void updateCursor();
     void updateTabMetrics();
-    void highlightCurrentLine();
 
 private:
     QWidget* fLineMargin;

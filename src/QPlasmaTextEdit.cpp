@@ -14,9 +14,6 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Not ready to depend on Qt 5.11+ yet
-#define QT_NO_DEPRECATED_WARNINGS
-
 #include "QPlasmaTextEdit.h"
 
 #include <QScrollBar>
@@ -99,7 +96,6 @@ QPlasmaTextEdit::QPlasmaTextEdit(QWidget* parent)
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, &QPlasmaTextEdit::updateCursor);
 
     updateMargins();
-    highlightCurrentLine();
 
     setTheme((palette().color(QPalette::Base).lightness() < 128)
              ? SyntaxRepo()->defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
@@ -123,7 +119,7 @@ int QPlasmaTextEdit::lineMarginWidth()
         maxLine /= 10;
         ++digits;
     }
-    return fontMetrics().width(QString(digits + 1, '0')) + 2;
+    return fontMetrics().boundingRect(QString(digits + 1, '0')).width() + 2;
 }
 
 void QPlasmaTextEdit::paintLineNumbers(QPaintEvent* e)
@@ -144,7 +140,7 @@ void QPlasmaTextEdit::paintLineNumbers(QPaintEvent* e)
     while (block.isValid() && top <= e->rect().bottom()) {
         if (block.isVisible() && bottom >= e->rect().top()) {
             const QString lineNum = QString::number(block.blockNumber() + 1);
-            if (block.blockNumber() == cursor.blockNumber() && !isReadOnly())
+            if (block.blockNumber() == cursor.blockNumber())
                 painter.setPen(fCursorLineNum);
             else
                 painter.setPen(fLineMarginFg);
@@ -202,6 +198,7 @@ void QPlasmaTextEdit::setMatchBraces(bool match)
         fEditorSettings |= kMatchBraces;
     else
         fEditorSettings &= ~kMatchBraces;
+    updateCursor();
 }
 
 void QPlasmaTextEdit::setTheme(const KSyntaxHighlighting::Theme& theme)
@@ -221,6 +218,7 @@ void QPlasmaTextEdit::setTheme(const KSyntaxHighlighting::Theme& theme)
     fErrorBg = theme.editorColor(KSyntaxHighlighting::Theme::MarkError);
 
     fHighlighter->setTheme(theme);
+    fHighlighter->rehighlight();
 }
 
 void QPlasmaTextEdit::setSyntax(const QString& name)
@@ -294,7 +292,7 @@ static BraceMatchResult findNextBrace(QTextBlock block, int position)
                 else
                     balance.push(ch);
             } else if (!balance.isEmpty() && isQuote(balance.top())) {
-                /* Don't look for matching parens until we exit the quote */
+                /* Don't look for matching braces until we exit the quote */
             } else if (ch == '(' || ch == '[' || ch == '{') {
                 balance.push(ch);
             } else if (ch == ')' || ch == ']' || ch == '}') {
@@ -329,7 +327,7 @@ static BraceMatchResult findPrevBrace(QTextBlock block, int position)
                 else
                     balance.push(ch);
             } else if (!balance.isEmpty() && isQuote(balance.top())) {
-                /* Don't look for matching parens until we exit the quote */
+                /* Don't look for matching braces until we exit the quote */
             } else if (ch == ')' || ch == ']' || ch == '}') {
                 balance.push(ch);
             } else if (ch == '(' || ch == '[' || ch == '{') {
@@ -351,9 +349,9 @@ static BraceMatchResult findPrevBrace(QTextBlock block, int position)
 
 void QPlasmaTextEdit::updateCursor()
 {
-    highlightCurrentLine();
+    QList<QTextEdit::ExtraSelection> selections;
 
-    if (matchBraces() && !isReadOnly()) {
+    if (matchBraces()) {
         QTextCursor cursor = textCursor();
         cursor.clearSelection();
         const QString blockText = cursor.block().text();
@@ -373,7 +371,6 @@ void QPlasmaTextEdit::updateCursor()
         }
 
         if (match.position >= 0) {
-            auto selections = extraSelections();
             QTextEdit::ExtraSelection selection;
             selection.format.setBackground(match.validMatch ? fBraceMatchBg : fErrorBg);
             selection.cursor = cursor;
@@ -383,9 +380,10 @@ void QPlasmaTextEdit::updateCursor()
             selection.cursor.setPosition(match.position);
             selection.cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             selections.append(selection);
-            setExtraSelections(selections);
         }
     }
+
+    setExtraSelections(selections);
 
     // Repaint both the viewport and the line margin to ensure both get
     // correctly rendered with the current line change.
@@ -399,24 +397,12 @@ void QPlasmaTextEdit::updateTabMetrics()
     // on many fonts.  Hack from QtCreator: Set it in the text option instead
     const qreal tabWidth = QFontMetricsF(font()).width(QString(fTabCharSize, ' '));
     QTextOption opt = document()->defaultTextOption();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    opt.setTabStopDistance(tabWidth);
+#else
     opt.setTabStop(tabWidth);
+#endif
     document()->setDefaultTextOption(opt);
-}
-
-void QPlasmaTextEdit::highlightCurrentLine()
-{
-    QList<QTextEdit::ExtraSelection> selections;
-
-    if (!isReadOnly()) {
-        QTextEdit::ExtraSelection selection;
-        selection.format.setBackground(fCursorLineBg);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        selections.append(selection);
-    }
-
-    setExtraSelections(selections);
 }
 
 void QPlasmaTextEdit::resizeEvent(QResizeEvent* e)
@@ -442,10 +428,10 @@ void QPlasmaTextEdit::indentSelection()
         int leadingIndent = 0;
         int startOfLine = 0;
         for (const auto ch : cursor.block().text()) {
-            if (ch == '\t') {
+            if (ch == QLatin1Char('\t')) {
                 leadingIndent += (fTabCharSize - (leadingIndent % fTabCharSize));
                 startOfLine += 1;
-            } else if (ch == ' ') {
+            } else if (ch == QLatin1Char(' ')) {
                 leadingIndent += 1;
                 startOfLine += 1;
             } else {
@@ -453,13 +439,23 @@ void QPlasmaTextEdit::indentSelection()
             }
         }
 
-        const int spaces = fTabCharSize - (leadingIndent % fTabCharSize);
         cursor.movePosition(QTextCursor::StartOfLine);
-        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
                             startOfLine);
-        cursor.insertText(QString(spaces, ' '));
+        cursor.removeSelectedText();
 
-        cursor.movePosition(QTextCursor::NextBlock);
+        const int indent = leadingIndent + fTabCharSize;
+        if (expandTabs()) {
+            cursor.insertText(QString(indent, ' '));
+        } else {
+            const int tabs = indent / fTabCharSize;
+            const int spaces = indent % fTabCharSize;
+            cursor.insertText(QString(tabs, '\t'));
+            cursor.insertText(QString(spaces, ' '));
+        }
+
+        if (!cursor.movePosition(QTextCursor::NextBlock))
+            break;
     } while (cursor.blockNumber() <= endBlock);
 
     cursor.endEditBlock();
@@ -479,31 +475,36 @@ void QPlasmaTextEdit::outdentSelection()
         int leadingIndent = 0;
         int startOfLine = 0;
         for (const auto ch : cursor.block().text()) {
-            if (ch == '\t') {
+            if (ch == QLatin1Char('\t')) {
                 leadingIndent += (fTabCharSize - (leadingIndent % fTabCharSize));
                 startOfLine += 1;
-            } else if (ch == ' ') {
+            } else if (ch == QLatin1Char(' ')) {
                 leadingIndent += 1;
                 startOfLine += 1;
             } else {
                 break;
             }
         }
-        if ((leadingIndent % fTabCharSize) != 0)
-            leadingIndent -= (leadingIndent % fTabCharSize);
-        else if (leadingIndent > 0)
-            leadingIndent -= fTabCharSize;
 
         cursor.movePosition(QTextCursor::StartOfLine);
         cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
                             startOfLine);
         cursor.removeSelectedText();
-        if (expandTabs())
-            cursor.insertText(QString(leadingIndent, ' '));
-        else
-            cursor.insertText(QString(leadingIndent / fTabCharSize, '\t'));
 
-        cursor.movePosition(QTextCursor::NextBlock);
+        const int indent = leadingIndent - fTabCharSize;
+        if (indent > 0) {
+            if (expandTabs()) {
+                cursor.insertText(QString(indent, ' '));
+            } else {
+                const int tabs = indent / fTabCharSize;
+                const int spaces = indent % fTabCharSize;
+                cursor.insertText(QString(tabs, '\t'));
+                cursor.insertText(QString(spaces, ' '));
+            }
+        }
+
+        if (!cursor.movePosition(QTextCursor::NextBlock))
+            break;
     } while (cursor.blockNumber() <= endBlock);
 
     cursor.endEditBlock();
@@ -517,10 +518,11 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
             indentSelection();
         } else if (expandTabs()) {
             QTextCursor cursor = textCursor();
-            const QString cursorText = cursor.block().text().left(cursor.positionInBlock());
+            const QString blockText = cursor.block().text();
+            const QStringRef cursorText = blockText.leftRef(cursor.positionInBlock());
             int vpos = 0;
             for (const auto ch : cursorText) {
-                if (ch == '\t')
+                if (ch == QLatin1Char('\t'))
                     vpos += (fTabCharSize - (vpos % fTabCharSize));
                 else
                     vpos += 1;
@@ -610,15 +612,31 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
 
 void QPlasmaTextEdit::paintEvent(QPaintEvent* e)
 {
+    const QRect eventRect = e->rect();
+    const QRect viewRect = viewport()->rect();
+    QRectF cursorBlockRect;
+
+    // Highlight current line first, so the long line marker will draw over it
+    // Unlike setExtraSelections(), we paint the entire line past even the
+    // document margins.
+    QTextCursor cursor = textCursor();
+    cursorBlockRect = blockBoundingGeometry(cursor.block());
+    cursorBlockRect.translate(contentOffset());
+    cursorBlockRect.setLeft(eventRect.left());
+    cursorBlockRect.setWidth(eventRect.width());
+    if (eventRect.intersects(cursorBlockRect.toAlignedRect())) {
+        QPainter p(viewport());
+        p.fillRect(cursorBlockRect, fCursorLineBg);
+    }
+
     if (fLongLineMarker > 0) {
         QFontMetricsF fm(font());
-        const QRect viewRect = viewport()->rect();
-        const int longLinePos = std::round(fm.width(QString(fLongLineMarker, 'x'))
-                                           + contentOffset().x() + document()->documentMargin());
+        const qreal longLinePos = fm.width(QString(fLongLineMarker, 'x'))
+                                  + contentOffset().x() + document()->documentMargin();
         if (longLinePos < viewRect.width()) {
             QPainter p(viewport());
             p.setPen(fLongLineColor);
-            p.drawLine(longLinePos, e->rect().top(), longLinePos, e->rect().bottom());
+            p.drawLine(longLinePos, eventRect.top(), longLinePos, eventRect.bottom());
         }
     }
 
