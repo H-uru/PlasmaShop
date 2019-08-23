@@ -60,7 +60,6 @@ protected:
 
 public:
     QMipmap_Preview(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 
     int level() const { return fLevel; }
 
@@ -85,7 +84,6 @@ protected:
 
 public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 
 private slots:
     void onExportDDS();

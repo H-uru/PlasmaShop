@@ -39,7 +39,6 @@ protected:
 
 public:
     QCubicEnvironmap(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 };
 
 #endif

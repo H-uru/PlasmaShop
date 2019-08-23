@@ -41,7 +41,6 @@ protected:
 
 public:
     QCollisionDetector(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 
 protected slots:
     void setSubworld();

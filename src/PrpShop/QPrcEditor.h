@@ -38,7 +38,6 @@ protected:
 
 public:
     explicit QPrcEditor(plCreatable* pCre, QWidget* parent = Q_NULLPTR);
-    void saveDamage() Q_DECL_OVERRIDE { }   // Handled in compilation
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
