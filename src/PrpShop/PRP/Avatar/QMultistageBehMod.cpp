@@ -162,6 +162,19 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fSmartSeek, 1, 0);
     layFlags->addWidget(fReverseControls, 2, 0);
 
+    connect(fFreezePhys, &QCheckBox::clicked, this, [this](bool checked) {
+        plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
+        obj->setFreezePhys(checked);
+    });
+    connect(fSmartSeek, &QCheckBox::clicked, this, [this](bool checked) {
+        plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
+        obj->setSmartSeek(checked);
+    });
+    connect(fReverseControls, &QCheckBox::clicked, this, [this](bool checked) {
+        plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
+        obj->setReverseFBControlsOnRelease(checked);
+    });
+
     QTabWidget* listTabs = new QTabWidget(this);
 
     fStages = new QTreeWidget(listTabs);
@@ -203,10 +216,6 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
 void QMultistageBehMod::saveDamage()
 {
     plMultistageBehMod* obj = plMultistageBehMod::Convert(fCreatable);
-
-    obj->setFreezePhys(fFreezePhys->isChecked());
-    obj->setSmartSeek(fSmartSeek->isChecked());
-    obj->setReverseFBControlsOnRelease(fReverseControls->isChecked());
 
     obj->clearReceivers();
     QList<plKey> keys = fReceivers->keys();

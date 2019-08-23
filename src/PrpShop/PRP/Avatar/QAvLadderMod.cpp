@@ -37,12 +37,15 @@ QAvLadderMod::QAvLadderMod(plCreatable* pCre, QWidget* parent)
     fGoingUp = new QButtonGroup(this);
     fLadderView = new QVector3(this);
 
-
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
 
     layout->addWidget(fEnabled, 1, 3, 1, 3, Qt::AlignRight);
     fEnabled->setChecked(mod->isEnabled());
+    connect(fEnabled, &QCheckBox::clicked, this, [this](bool checked) {
+        plAvLadderMod* mod = plAvLadderMod::Convert(fCreatable);
+        mod->setEnabled(checked);
+    });
 
     layout->addWidget(new QLabel(tr("Type:"), this), 1, 0);
     layout->addWidget(fType, 1, 1, 1, 2);
@@ -85,7 +88,6 @@ void QAvLadderMod::saveDamage()
 {
     plAvLadderMod* mod = plAvLadderMod::Convert(fCreatable);
 
-    mod->setEnabled(fEnabled->isChecked());
     mod->setGoingUp(fGoingUp->checkedId() == kDirectionUp);
     mod->setType(fType->currentData().toInt());
     mod->setLoops(fLoops->value());

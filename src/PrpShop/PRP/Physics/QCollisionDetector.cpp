@@ -82,6 +82,11 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         fBoolParam = new QCheckBox(tr("On Exit"), this);
         fBoolParam->setChecked(subDet->getOnExit());
 
+        connect(fBoolParam, &QCheckBox::clicked, this, [this](bool checked) {
+            plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
+            subDet->setOnExit(checked);
+        });
+
         layout->addWidget(new QLabel(tr("Subworld:"), this), 1, 0, 1, 1);
         layout->addWidget(fSubworld, 1, 1, 1, 1);
         layout->addWidget(fBoolParam, 2, 0, 1, 2);
@@ -95,21 +100,11 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         fBoolParam = new QCheckBox(tr("Play Link-Out Animation"), this);
         fBoolParam->setChecked(plRgn->getPlayLinkOutAnim());
         layout->addWidget(fBoolParam, 2, 0, 1, 2);
-    }
-}
 
-void QCollisionDetector::saveDamage()
-{
-    plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
-
-    if (obj->ClassInstance(kSubworldRegionDetector)) {
-        plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
-        subDet->setOnExit(fBoolParam->isChecked());
-    }
-
-    if (obj->ClassInstance(kPanicLinkRegion)) {
-        plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
-        plRgn->setPlayLinkOutAnim(fBoolParam->isChecked());
+        connect(fBoolParam, &QCheckBox::clicked, this, [this](bool checked) {
+            plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
+            plRgn->setPlayLinkOutAnim(checked);
+        });
     }
 }
 

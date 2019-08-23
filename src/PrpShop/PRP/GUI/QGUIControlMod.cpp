@@ -149,8 +149,14 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kTakesSpecialKeys], 2, 1);
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kHasProxy], 3, 0);
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kBetterHitTesting], 3, 1);
-    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
+
+    for (size_t i = 0; i <= pfGUIControlMod::kBetterHitTesting; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
+            ctrl->setFlag(i, checked);
+        });
+    }
 
     fColorSchemeGrp = new QGroupBox(tr("Color Scheme"), this);
     fColorScheme = new QGUIColorScheme(fColorSchemeGrp);
@@ -180,6 +186,11 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     fTagID->setValue(ctrl->getTagID());
     fVisible = new QCheckBox(tr("Visible"), guiProcTab);
     fVisible->setChecked(ctrl->isVisible());
+
+    connect(fVisible, &QCheckBox::clicked, this, [this](bool checked) {
+        pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
+        ctrl->setVisible(checked);
+    });
 
     fProcType = new QComboBox(guiProcTab);
     fProcType->addItems(QStringList() << "(NULL)" << tr("Console Command")
@@ -238,9 +249,6 @@ void QGUIControlMod::saveDamage()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 
-    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
-        ctrl->setFlag(i, fModFlags[i]->isChecked());
-
     if (fColorSchemeGrp->isChecked()) {
         if (ctrl->getColorScheme() == NULL)
             ctrl->setColorScheme(new pfGUIColorScheme());
@@ -250,7 +258,6 @@ void QGUIControlMod::saveDamage()
     }
 
     ctrl->setTagID(fTagID->value());
-    ctrl->setVisible(fVisible->isChecked());
 
     if (fProcType->currentIndex() == pfGUICtrlProcWriteableObject::kNull) {
         ctrl->setHandler(NULL);

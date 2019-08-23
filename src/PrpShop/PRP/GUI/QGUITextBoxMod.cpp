@@ -57,8 +57,14 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
     flagLayout->setHorizontalSpacing(8);
     flagLayout->addWidget(fModFlags[pfGUITextBoxMod::kCenterJustify - kModFlagStart], 0, 0);
     flagLayout->addWidget(fModFlags[pfGUITextBoxMod::kRightJustify - kModFlagStart], 1, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     fText = new QSmallTextEdit(this);
     fText->setPlainText(st2qstr(ctrl->getText()));
@@ -78,9 +84,6 @@ QGUITextBoxMod::QGUITextBoxMod(plCreatable* pCre, QWidget* parent)
 void QGUITextBoxMod::saveDamage()
 {
     pfGUITextBoxMod* ctrl = pfGUITextBoxMod::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setText(qstr2st(fText->toPlainText()));
     ctrl->setLocalizationPath(qstr2st(fLocalizationPath->text()));

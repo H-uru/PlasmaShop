@@ -44,8 +44,14 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIProgressCtrl::kMapToScreenRange - kModFlagStart], 2, 0);
     flagLayout->addWidget(fModFlags[pfGUIProgressCtrl::kTriggerOnlyOnMouseUp - kModFlagStart], 3, 0);
     flagLayout->addWidget(fModFlags[pfGUIProgressCtrl::kMapToAnimationRange - kModFlagStart], 4, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     fMin = new QFloatEdit(this);
     fMin->setRange(-2147483648.0, 2147483647.0, 3);
@@ -82,9 +88,6 @@ QGUIProgressCtrl::QGUIProgressCtrl(plCreatable* pCre, QWidget* parent)
 void QGUIProgressCtrl::saveDamage()
 {
     pfGUIProgressCtrl* ctrl = pfGUIProgressCtrl::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());

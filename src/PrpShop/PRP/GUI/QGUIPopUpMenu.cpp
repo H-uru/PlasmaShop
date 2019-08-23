@@ -116,8 +116,14 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIPopUpMenu::kModalOutsideMenus - kModFlagStart], 1, 0);
     flagLayout->addWidget(fModFlags[pfGUIPopUpMenu::kOpenSubMenusOnHover - kModFlagStart], 2, 0);
     flagLayout->addWidget(fModFlags[pfGUIPopUpMenu::kScaleWithResolution - kModFlagStart], 3, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     fAlignment = new QComboBox(this);
     fAlignment->addItems(QStringList() << tr("Upper Left") << tr("Upper Right")
@@ -173,9 +179,6 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
 void QGUIPopUpMenu::saveDamage()
 {
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setAlignment((pfGUIPopUpMenu::Alignment)fAlignment->currentIndex());
     ctrl->setMargin(fMargin->value());

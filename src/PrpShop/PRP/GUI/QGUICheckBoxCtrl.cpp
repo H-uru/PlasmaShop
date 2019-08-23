@@ -35,6 +35,10 @@ QGUICheckBoxCtrl::QGUICheckBoxCtrl(plCreatable* pCre, QWidget* parent)
 
     fValue = new QCheckBox(tr("Checked"), this);
     fValue->setChecked(ctrl->isChecked());
+    connect(fValue, &QCheckBox::clicked, this, [this](bool checked) {
+        pfGUICheckBoxCtrl* ctrl = pfGUICheckBoxCtrl::Convert(fCreatable);
+        ctrl->setChecked(checked);
+    });
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -56,6 +60,4 @@ void QGUICheckBoxCtrl::saveDamage()
     QList<plKey> animKeys = fAnimationKeys->keys();
     while (!animKeys.isEmpty())
         ctrl->addAnimKey(animKeys.takeFirst());
-
-    ctrl->setChecked(fValue->isChecked());
 }

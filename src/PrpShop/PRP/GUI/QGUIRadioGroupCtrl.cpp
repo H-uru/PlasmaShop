@@ -38,6 +38,11 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlagAllowNoSelection, 0, 0);
     fModFlagAllowNoSelection->setChecked(ctrl->getFlag(pfGUIRadioGroupCtrl::kAllowNoSelection));
 
+    connect(fModFlagAllowNoSelection, &QCheckBox::clicked, this, [this](bool checked) {
+        pfGUIRadioGroupCtrl* ctrl = pfGUIRadioGroupCtrl::Convert(fCreatable);
+        ctrl->setFlag(pfGUIRadioGroupCtrl::kAllowNoSelection, checked);
+    });
+
     fControls = new QKeyList(ctrl->getKey(), this);
     fDefaultValue = new QComboBox(this);
     for (size_t i=0; i<ctrl->getControls().size(); i++) {
@@ -65,9 +70,6 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
 void QGUIRadioGroupCtrl::saveDamage()
 {
     pfGUIRadioGroupCtrl* ctrl = pfGUIRadioGroupCtrl::Convert(fCreatable);
-
-    ctrl->setFlag(pfGUIRadioGroupCtrl::kAllowNoSelection,
-                  fModFlagAllowNoSelection->isChecked());
 
     ctrl->clearControls();
     QList<plKey> ctrlKeys = fControls->keys();

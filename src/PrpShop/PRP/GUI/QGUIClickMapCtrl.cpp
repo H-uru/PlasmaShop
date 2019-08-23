@@ -38,19 +38,16 @@ QGUIClickMapCtrl::QGUIClickMapCtrl(plCreatable* pCre, QWidget* parent)
     flagLayout->setHorizontalSpacing(8);
     flagLayout->addWidget(fModFlags[pfGUIClickMapCtrl::kReportDragging - kModFlagStart], 0, 0);
     flagLayout->addWidget(fModFlags[pfGUIClickMapCtrl::kReportHovering - kModFlagStart], 1, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIClickMapCtrl* ctrl = pfGUIClickMapCtrl::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fControlModLink, 0, 0, 1, 2);
     layout->addWidget(grpFlags, 1, 0, 1, 2);
-}
-
-void QGUIClickMapCtrl::saveDamage()
-{
-    pfGUIClickMapCtrl* ctrl = pfGUIClickMapCtrl::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 }

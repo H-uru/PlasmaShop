@@ -39,6 +39,11 @@ QFadeOpacityMod::QFadeOpacityMod(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fFlags[kBoundsCenter], 0, 0);
     fFlags[kBoundsCenter]->setChecked(mod->getFlag(plFadeOpacityMod::kBoundsCenter));
 
+    connect(fFlags[kBoundsCenter], &QCheckBox::clicked, this, [this](bool checked) {
+        plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
+        mod->setFlag(plFadeOpacityMod::kBoundsCenter, checked);
+    });
+
     fUp = new QFloatEdit(this);
     fUp->setValue(mod->getFadeUp());
 
@@ -59,7 +64,6 @@ void QFadeOpacityMod::saveDamage()
 {
     plFadeOpacityMod* mod = plFadeOpacityMod::Convert(fCreatable);
 
-    mod->setFlag(plFadeOpacityMod::kBoundsCenter, fFlags[kBoundsCenter]->isChecked());
     mod->setFadeUp(fUp->value());
     mod->setFadeDown(fDown->value());
 }

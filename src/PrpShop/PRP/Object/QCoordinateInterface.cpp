@@ -49,8 +49,14 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
     layProps->addWidget(fCBProperties[plCoordinateInterface::kDisable], 0, 0);
     layProps->addWidget(fCBProperties[plCoordinateInterface::kCanEverDelayTransform], 1, 0);
     layProps->addWidget(fCBProperties[plCoordinateInterface::kDelayedTransformEval], 2, 0);
-    for (size_t i=0; i<plCoordinateInterface::kNumProps; i++)
-        fCBProperties[i]->setChecked(intf->getProperty(i));
+
+    for (size_t prop = 0; prop < plCoordinateInterface::kNumProps; ++prop) {
+        fCBProperties[prop]->setChecked(intf->getProperty(prop));
+        connect(fCBProperties[prop], &QCheckBox::clicked, this, [this, prop](bool checked) {
+            plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
+            intf->setProperty(prop, checked);
+        });
+    }
 
     QTabWidget* xformTab = new QTabWidget(this);
     fLocalToParent = new QMatrix44(xformTab);
@@ -89,9 +95,6 @@ QCoordinateInterface::QCoordinateInterface(plCreatable* pCre, QWidget* parent)
 void QCoordinateInterface::saveDamage()
 {
     plCoordinateInterface* intf = plCoordinateInterface::Convert(fCreatable);
-
-    for (size_t i=0; i<plCoordinateInterface::kNumProps; i++)
-        intf->setProperty(i, fCBProperties[i]->isChecked());
 
     intf->setLocalToParent(fLocalToParent->value());
     intf->setParentToLocal(fParentToLocal->value());

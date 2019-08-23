@@ -137,12 +137,17 @@ QEaxSourceSettings::QEaxSourceSettings(plEAXSourceSettings* eax, QWidget* parent
     fSoftEnds.fRoomRatio->setValue(fEaxObject->getSoftEnds().getRoomRatio());
     fSoftEnds.fDirectRatio->setValue(fEaxObject->getSoftEnds().getDirectRatio());
     fEnabled->setChecked(fEaxObject->isEnabled());
+
+    connect(fRoomAuto, &QCheckBox::clicked, [this](bool checked) {
+        fEaxObject->setRoomAuto(checked);
+    });
+    connect(fRoomHFAuto, &QCheckBox::clicked, [this](bool checked) {
+        fEaxObject->setRoomHFAuto(checked);
+    });
 }
 
 void QEaxSourceSettings::saveDamage()
 {
-    fEaxObject->setRoomAuto(fRoomAuto->isChecked());
-    fEaxObject->setRoomHFAuto(fRoomHFAuto->isChecked());
     fEaxObject->setRoom(fRoom->value());
     fEaxObject->setRoomHF(fRoomHF->value());
     fEaxObject->setOutsideVolHF(fOutsideVolHF->value());
@@ -208,6 +213,11 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     fPriority->setValue(obj->getPriority());
     fPlaying->setChecked(obj->isPlaying());
     fSubtitleId->setText(st2qstr(obj->getSubtitleId()));
+
+    connect(fPlaying, &QCheckBox::clicked, [this](bool checked) {
+        plSound* obj = plSound::Convert(fCreatable);
+        obj->setPlaying(checked);
+    });
 
     QGroupBox* grpProperties = new QGroupBox(tr("Properties"), this);
     QGridLayout* layProperties = new QGridLayout(grpProperties);
@@ -284,6 +294,15 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layFadeIn->addWidget(fFadeInParams.fStopWhenDone, 5, 0, 1, 2);
     layFadeIn->addWidget(fFadeInParams.fFadeSoftVol, 6, 0, 1, 2);
 
+    connect(fFadeInParams.fStopWhenDone, &QCheckBox::clicked, [this](bool checked) {
+        plSound* obj = plSound::Convert(fCreatable);
+        obj->getFadeInParams().fStopWhenDone = checked;
+    });
+    connect(fFadeInParams.fFadeSoftVol, &QCheckBox::clicked, [this](bool checked) {
+        plSound* obj = plSound::Convert(fCreatable);
+        obj->getFadeInParams().fFadeSoftVol = checked;
+    });
+
     QGroupBox* grpFadeOut = new QGroupBox(tr("Fade Out Parameters"), this);
     QGridLayout* layFadeOut = new QGridLayout(grpFadeOut);
     layFadeOut->setVerticalSpacing(4);
@@ -315,6 +334,15 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layFadeOut->addWidget(fFadeOutParams.fCurrTime, 4, 1);
     layFadeOut->addWidget(fFadeOutParams.fStopWhenDone, 5, 0, 1, 2);
     layFadeOut->addWidget(fFadeOutParams.fFadeSoftVol, 6, 0, 1, 2);
+
+    connect(fFadeOutParams.fStopWhenDone, &QCheckBox::clicked, [this](bool checked) {
+        plSound* obj = plSound::Convert(fCreatable);
+        obj->getFadeOutParams().fStopWhenDone = checked;
+    });
+    connect(fFadeOutParams.fFadeSoftVol, &QCheckBox::clicked, [this](bool checked) {
+        plSound* obj = plSound::Convert(fCreatable);
+        obj->getFadeOutParams().fFadeSoftVol = checked;
+    });
 
     fSoftRegion = new QCreatableLink(this);
     fSoftRegion->setKey(obj->getSoftRegion());
@@ -395,22 +423,17 @@ void QWinSound::saveDamage()
     obj->setCone(fInnerCone->value(), fOuterCone->value());
     obj->setFadedVolume(fFadedVolume->value());
     obj->setPriority(fPriority->value());
-    obj->setPlaying(fPlaying->isChecked());
     obj->setSubtitleId(qstr2st(fSubtitleId->text()));
     obj->getFadeInParams().fLengthInSecs = fFadeInParams.fLength->value();
     obj->getFadeInParams().fVolStart = fFadeInParams.fVolStart->value();
     obj->getFadeInParams().fVolEnd = fFadeInParams.fVolEnd->value();
     obj->getFadeInParams().fType = fFadeInParams.fType->currentIndex();
     obj->getFadeInParams().fCurrTime = fFadeInParams.fCurrTime->value();
-    obj->getFadeInParams().fStopWhenDone = fFadeInParams.fStopWhenDone->isChecked();
-    obj->getFadeInParams().fFadeSoftVol = fFadeInParams.fFadeSoftVol->isChecked();
     obj->getFadeOutParams().fLengthInSecs = fFadeOutParams.fLength->value();
     obj->getFadeOutParams().fVolStart = fFadeOutParams.fVolStart->value();
     obj->getFadeOutParams().fVolEnd = fFadeOutParams.fVolEnd->value();
     obj->getFadeOutParams().fType = fFadeOutParams.fType->currentIndex();
     obj->getFadeOutParams().fCurrTime = fFadeOutParams.fCurrTime->value();
-    obj->getFadeOutParams().fStopWhenDone = fFadeOutParams.fStopWhenDone->isChecked();
-    obj->getFadeOutParams().fFadeSoftVol = fFadeOutParams.fFadeSoftVol->isChecked();
 }
 
 void QWinSound::setSoftRegion()

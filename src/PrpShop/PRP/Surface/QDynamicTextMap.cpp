@@ -102,6 +102,11 @@ QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
     fHasAlpha = new QCheckBox(tr("Has Alpha"), this);
     fHasAlpha->setChecked(tex->hasAlpha());
 
+    connect(fHasAlpha, &QCheckBox::clicked, this, [this](bool checked) {
+        plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
+        tex->setHasAlpha(checked);
+    });
+
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(grpFlags, 0, 0, 1, 4);
@@ -119,5 +124,4 @@ void QDynamicTextMap::saveDamage()
 
     tex->setVisWidth(fWidth->value());
     tex->setVisHeight(fHeight->value());
-    tex->setHasAlpha(fHasAlpha->isChecked());
 }

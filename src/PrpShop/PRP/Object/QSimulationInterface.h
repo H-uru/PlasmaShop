@@ -35,7 +35,7 @@ protected:
 
 public:
     QSimulationInterface(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
+    void saveDamage() override { }
 
 protected slots:
     void setOwner();
