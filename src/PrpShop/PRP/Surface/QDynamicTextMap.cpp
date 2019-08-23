@@ -31,22 +31,38 @@ QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
     QGridLayout* layFlags = new QGridLayout(grpFlags);
     layFlags->setVerticalSpacing(0);
     layFlags->setHorizontalSpacing(8);
-    fFlags[kAlphaChannelFlag] = new QCheckBox(tr("Alpha Channel"), grpFlags);
-    fFlags[kAlphaBitFlag] = new QCheckBox(tr("Alpha Bit"), grpFlags);
-    fFlags[kBumpEnvMap] = new QCheckBox(tr("Bump Env Map"), grpFlags);
-    fFlags[kForce32Bit] = new QCheckBox(tr("Force 32-bit"), grpFlags);
-    fFlags[kDontThrowAwayImage] = new QCheckBox(tr("Don't Throw Away"), grpFlags);
-    fFlags[kForceOneMipLevel] = new QCheckBox(tr("Force One Level"), grpFlags);
-    fFlags[kNoMaxSize] = new QCheckBox(tr("No Maximum Size"), grpFlags);
-    fFlags[kIntensityMap] = new QCheckBox(tr("Intensity Map"), grpFlags);
-    fFlags[kHalfSize] = new QCheckBox(tr("Half Size"), grpFlags);
-    fFlags[kUserOwnsBitmap] = new QCheckBox(tr("User Owned"), grpFlags);
-    fFlags[kForceRewrite] = new QCheckBox(tr("Force Rewrite"), grpFlags);
-    fFlags[kForceNonCompressed] = new QCheckBox(tr("Force Non-compressed"), grpFlags);
-    fFlags[kIsTexture] = new QCheckBox(tr("Is Texture"), grpFlags);
-    fFlags[kIsOffscreen] = new QCheckBox(tr("Is Offscreen"), grpFlags);
-    fFlags[kIsProjected] = new QCheckBox(tr("Is Projected"), grpFlags);
-    fFlags[kIsOrtho] = new QCheckBox(tr("Is Orthogonal"), grpFlags);
+    fFlags[kAlphaChannelFlag] = new QBitmaskCheckBox(plBitmap::kAlphaChannelFlag,
+                                                     tr("Alpha Channel"), grpFlags);
+    fFlags[kAlphaBitFlag] = new QBitmaskCheckBox(plBitmap::kAlphaBitFlag,
+                                                 tr("Alpha Bit"), grpFlags);
+    fFlags[kBumpEnvMap] = new QBitmaskCheckBox(plBitmap::kBumpEnvMap,
+                                               tr("Bump Env Map"), grpFlags);
+    fFlags[kForce32Bit] = new QBitmaskCheckBox(plBitmap::kForce32Bit,
+                                               tr("Force 32-bit"), grpFlags);
+    fFlags[kDontThrowAwayImage] = new QBitmaskCheckBox(plBitmap::kDontThrowAwayImage,
+                                                       tr("Don't Throw Away"), grpFlags);
+    fFlags[kForceOneMipLevel] = new QBitmaskCheckBox(plBitmap::kForceOneMipLevel,
+                                                     tr("Force One Level"), grpFlags);
+    fFlags[kNoMaxSize] = new QBitmaskCheckBox(plBitmap::kNoMaxSize,
+                                              tr("No Maximum Size"), grpFlags);
+    fFlags[kIntensityMap] = new QBitmaskCheckBox(plBitmap::kIntensityMap,
+                                                 tr("Intensity Map"), grpFlags);
+    fFlags[kHalfSize] = new QBitmaskCheckBox(plBitmap::kHalfSize,
+                                             tr("Half Size"), grpFlags);
+    fFlags[kUserOwnsBitmap] = new QBitmaskCheckBox(plBitmap::kUserOwnsBitmap,
+                                                   tr("User Owned"), grpFlags);
+    fFlags[kForceRewrite] = new QBitmaskCheckBox(plBitmap::kForceRewrite,
+                                                 tr("Force Rewrite"), grpFlags);
+    fFlags[kForceNonCompressed] = new QBitmaskCheckBox(plBitmap::kForceNonCompressed,
+                                                       tr("Force Non-compressed"), grpFlags);
+    fFlags[kIsTexture] = new QBitmaskCheckBox(plBitmap::kIsTexture,
+                                              tr("Is Texture"), grpFlags);
+    fFlags[kIsOffscreen] = new QBitmaskCheckBox(plBitmap::kIsOffscreen,
+                                                tr("Is Offscreen"), grpFlags);
+    fFlags[kIsProjected] = new QBitmaskCheckBox(plBitmap::kIsProjected,
+                                                tr("Is Projected"), grpFlags);
+    fFlags[kIsOrtho] = new QBitmaskCheckBox(plBitmap::kIsOrtho,
+                                            tr("Is Orthogonal"), grpFlags);
     layFlags->addWidget(fFlags[kAlphaChannelFlag], 0, 0);
     layFlags->addWidget(fFlags[kAlphaBitFlag], 1, 0);
     layFlags->addWidget(fFlags[kBumpEnvMap], 2, 0);
@@ -63,22 +79,18 @@ QDynamicTextMap::QDynamicTextMap(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fFlags[kIsOffscreen], 1, 3);
     layFlags->addWidget(fFlags[kIsProjected], 2, 3);
     layFlags->addWidget(fFlags[kIsOrtho], 3, 3);
-    fFlags[kAlphaChannelFlag]->setChecked(tex->getFlags() & plBitmap::kAlphaChannelFlag);
-    fFlags[kAlphaBitFlag]->setChecked(tex->getFlags() & plBitmap::kAlphaBitFlag);
-    fFlags[kBumpEnvMap]->setChecked(tex->getFlags() & plBitmap::kBumpEnvMap);
-    fFlags[kForce32Bit]->setChecked(tex->getFlags() & plBitmap::kForce32Bit);
-    fFlags[kDontThrowAwayImage]->setChecked(tex->getFlags() & plBitmap::kDontThrowAwayImage);
-    fFlags[kForceOneMipLevel]->setChecked(tex->getFlags() & plBitmap::kForceOneMipLevel);
-    fFlags[kNoMaxSize]->setChecked(tex->getFlags() & plBitmap::kNoMaxSize);
-    fFlags[kIntensityMap]->setChecked(tex->getFlags() & plBitmap::kIntensityMap);
-    fFlags[kHalfSize]->setChecked(tex->getFlags() & plBitmap::kHalfSize);
-    fFlags[kUserOwnsBitmap]->setChecked(tex->getFlags() & plBitmap::kUserOwnsBitmap);
-    fFlags[kForceRewrite]->setChecked(tex->getFlags() & plBitmap::kForceRewrite);
-    fFlags[kForceNonCompressed]->setChecked(tex->getFlags() & plBitmap::kForceNonCompressed);
-    fFlags[kIsTexture]->setChecked(tex->getFlags() & plBitmap::kIsTexture);
-    fFlags[kIsOffscreen]->setChecked(tex->getFlags() & plBitmap::kIsOffscreen);
-    fFlags[kIsProjected]->setChecked(tex->getFlags() & plBitmap::kIsProjected);
-    fFlags[kIsOrtho]->setChecked(tex->getFlags() & plBitmap::kIsOrtho);
+
+    for (auto cb : fFlags) {
+        cb->setFrom(tex->getFlags());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
+            tex->setFlags(tex->getFlags() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
+            tex->setFlags(tex->getFlags() & ~mask);
+        });
+    }
 
     fWidth = new QIntEdit(this);
     fWidth->setRange(0, 0x7FFFFFFF);
@@ -105,22 +117,6 @@ void QDynamicTextMap::saveDamage()
 {
     plDynamicTextMap* tex = plDynamicTextMap::Convert(fCreatable);
 
-    tex->setFlags((fFlags[kAlphaChannelFlag]->isChecked() ? plBitmap::kAlphaChannelFlag : 0)
-                | (fFlags[kAlphaBitFlag]->isChecked() ? plBitmap::kAlphaBitFlag : 0)
-                | (fFlags[kBumpEnvMap]->isChecked() ? plBitmap::kBumpEnvMap : 0)
-                | (fFlags[kForce32Bit]->isChecked() ? plBitmap::kForce32Bit : 0)
-                | (fFlags[kDontThrowAwayImage]->isChecked() ? plBitmap::kDontThrowAwayImage : 0)
-                | (fFlags[kForceOneMipLevel]->isChecked() ? plBitmap::kForceOneMipLevel : 0)
-                | (fFlags[kNoMaxSize]->isChecked() ? plBitmap::kNoMaxSize : 0)
-                | (fFlags[kIntensityMap]->isChecked() ? plBitmap::kIntensityMap : 0)
-                | (fFlags[kHalfSize]->isChecked() ? plBitmap::kHalfSize : 0)
-                | (fFlags[kUserOwnsBitmap]->isChecked() ? plBitmap::kUserOwnsBitmap : 0)
-                | (fFlags[kForceRewrite]->isChecked() ? plBitmap::kForceRewrite : 0)
-                | (fFlags[kForceNonCompressed]->isChecked() ? plBitmap::kForceNonCompressed : 0)
-                | (fFlags[kIsTexture]->isChecked() ? plBitmap::kIsTexture : 0)
-                | (fFlags[kIsOffscreen]->isChecked() ? plBitmap::kIsOffscreen : 0)
-                | (fFlags[kIsProjected]->isChecked() ? plBitmap::kIsProjected : 0)
-                | (fFlags[kIsOrtho]->isChecked() ? plBitmap::kIsOrtho : 0));
     tex->setVisWidth(fWidth->value());
     tex->setVisHeight(fHeight->value());
     tex->setHasAlpha(fHasAlpha->isChecked());

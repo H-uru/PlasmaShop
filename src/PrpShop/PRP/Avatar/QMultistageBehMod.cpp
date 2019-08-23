@@ -36,18 +36,30 @@ QAnimStage::QAnimStage(plCreatable* pCre, QWidget* parent)
     QGridLayout* layNotify = new QGridLayout(grpNotify);
     layNotify->setVerticalSpacing(0);
     layNotify->setHorizontalSpacing(8);
-    fNotify[kNotifyEnter] = new QCheckBox(tr("Enter"), grpNotify);
-    fNotify[kNotifyLoop] = new QCheckBox(tr("Loop"), grpNotify);
-    fNotify[kNotifyAdvance] = new QCheckBox(tr("Advance"), grpNotify);
-    fNotify[kNotifyRegress] = new QCheckBox(tr("Regress"), grpNotify);
-    fNotify[kNotifyEnter]->setChecked((obj->getNotify() & plAnimStage::kNotifyEnter) != 0);
-    fNotify[kNotifyLoop]->setChecked((obj->getNotify() & plAnimStage::kNotifyLoop) != 0);
-    fNotify[kNotifyAdvance]->setChecked((obj->getNotify() & plAnimStage::kNotifyAdvance) != 0);
-    fNotify[kNotifyRegress]->setChecked((obj->getNotify() & plAnimStage::kNotifyRegress) != 0);
+    fNotify[kNotifyEnter] = new QBitmaskCheckBox(plAnimStage::kNotifyEnter,
+                                                 tr("Enter"), grpNotify);
+    fNotify[kNotifyLoop] = new QBitmaskCheckBox(plAnimStage::kNotifyLoop,
+                                                tr("Loop"), grpNotify);
+    fNotify[kNotifyAdvance] = new QBitmaskCheckBox(plAnimStage::kNotifyAdvance,
+                                                   tr("Advance"), grpNotify);
+    fNotify[kNotifyRegress] = new QBitmaskCheckBox(plAnimStage::kNotifyRegress,
+                                                   tr("Regress"), grpNotify);
     layNotify->addWidget(fNotify[kNotifyEnter], 0, 0);
     layNotify->addWidget(fNotify[kNotifyLoop], 1, 0);
     layNotify->addWidget(fNotify[kNotifyAdvance], 0, 1);
     layNotify->addWidget(fNotify[kNotifyRegress], 1, 1);
+
+    for (auto cb : fNotify) {
+        cb->setFrom(obj->getNotify());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plAnimStage* obj = plAnimStage::Convert(fCreatable);
+            obj->setNotify(obj->getNotify() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plAnimStage* obj = plAnimStage::Convert(fCreatable);
+            obj->setNotify(obj->getNotify() & ~mask);
+        });
+    }
 
     fForwardType = new QComboBox(this);
     for (int i=0; i<plAnimStage::kPlayMax; i++)
@@ -113,11 +125,8 @@ QAnimStage::QAnimStage(plCreatable* pCre, QWidget* parent)
 
 void QAnimStage::saveDamage()
 {
-    plAnimStage* obj = (plAnimStage*)fCreatable;
-    obj->setNotify((fNotify[kNotifyEnter]->isChecked() ? plAnimStage::kNotifyEnter : 0)
-                 | (fNotify[kNotifyLoop]->isChecked() ? plAnimStage::kNotifyLoop : 0)
-                 | (fNotify[kNotifyAdvance]->isChecked() ? plAnimStage::kNotifyAdvance : 0)
-                 | (fNotify[kNotifyRegress]->isChecked() ? plAnimStage::kNotifyRegress : 0));
+    plAnimStage* obj = plAnimStage::Convert(fCreatable);
+
     obj->setForwardType((plAnimStage::PlayType)fForwardType->currentIndex());
     obj->setBackType((plAnimStage::PlayType)fBackType->currentIndex());
     obj->setAdvanceType((plAnimStage::AdvanceType)fAdvanceType->currentIndex());

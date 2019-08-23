@@ -20,12 +20,12 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Surface/plLayer.h>
-#include <QCheckBox>
 #include <QSpinBox>
 #include <QLineEdit>
 #include "PRP/QObjLink.h"
 #include "PRP/QMatrix44.h"
 #include "QColorEdit.h"
+#include "QBitmaskCheckBox.h"
 
 class QLayer : public QCreatable
 {
@@ -58,13 +58,13 @@ protected:
         kBlendInvertFinalColor, kBlendInvertFinalAlpha, kBlendEnvBumpNext,
         kBlendSubtract, kBlendRevSubtract, kBlendAlphaTestHigh, kNumBlendFlags
     };
-    QCheckBox* fBlendFlags[kNumBlendFlags];
+    QBitmaskCheckBox* fBlendFlags[kNumBlendFlags];
 
     enum
     {
         kClampTextureU, kClampTextureV, kNumClampFlags
     };
-    QCheckBox* fClampFlags[kNumClampFlags];
+    QBitmaskCheckBox* fClampFlags[kNumClampFlags];
 
     enum
     {
@@ -74,13 +74,13 @@ protected:
         kShadeSpecularHighlight, kShadeVertColShade, kShadeInherit,
         kShadeIgnoreVtxIllum, kShadeEmissive, kShadeReallyNoFog, kNumShadeFlags
     };
-    QCheckBox* fShadeFlags[kNumShadeFlags];
+    QBitmaskCheckBox* fShadeFlags[kNumShadeFlags];
 
     enum
     {
         kZIncLayer, kZClearZ, kZNoZRead, kZNoZWrite, kZLODBias, kNumZFlags
     };
-    QCheckBox* fZFlags[kNumZFlags];
+    QBitmaskCheckBox* fZFlags[kNumZFlags];
 
     enum
     {
@@ -92,15 +92,11 @@ protected:
         kMiscBumpDv, kMiscBumpDw, kMiscNoShadowAlpha, kMiscUseRefractionXform,
         kMiscCam2Screen, kNumMiscFlags
     };
-    QCheckBox* fMiscFlags[kNumMiscFlags];
+    QBitmaskCheckBox* fMiscFlags[kNumMiscFlags];
 
 public:
     QLayer(plCreatable* pCre, QWidget* parent = NULL);
     void saveDamage() override;
-
-protected:
-    void updateFlags(const hsGMatState& state);
-    void updateState(hsGMatState& state) const;
 
 protected slots:
     void setBaseLayer();

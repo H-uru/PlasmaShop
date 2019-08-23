@@ -26,6 +26,7 @@
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 #include "QColorEdit.h"
+#include "QBitmaskCheckBox.h"
 
 class QGUIColorScheme : public QWidget
 {
@@ -41,7 +42,8 @@ private:
     QLineEdit* fFontFace;
 
     enum { kCBBold, kCBItalic, kCBShadowed, kNumFontFlags };
-    QCheckBox* fFontFlags[kNumFontFlags];
+    QBitmaskCheckBox* fFontFlags[kNumFontFlags];
+    uint8_t fFontFlagsValue;
 
 public:
     QGUIColorScheme(QWidget* parent);

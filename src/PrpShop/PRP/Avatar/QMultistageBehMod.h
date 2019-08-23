@@ -20,9 +20,9 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Avatar/plMultistageBehMod.h>
-#include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
+#include "QBitmaskCheckBox.h"
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
@@ -36,7 +36,7 @@ protected:
         kNotifyEnter, kNotifyLoop, kNotifyAdvance, kNotifyRegress,
         kNumNotifyFlags
     };
-    QCheckBox* fNotify[kNumNotifyFlags];
+    QBitmaskCheckBox* fNotify[kNumNotifyFlags];
 
     QComboBox* fForwardType;
     QComboBox* fBackType;

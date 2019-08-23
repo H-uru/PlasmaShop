@@ -14,39 +14,29 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QSOUNDBUFFER_H
-#define _QSOUNDBUFFER_H
+#ifndef _QBITMASKCHECKBOX_H
+#define _QBITMASKCHECKBOX_H
 
-#include "PRP/QCreatable.h"
+#include <QCheckBox>
 
-#include <PRP/Audio/plSoundBuffer.h>
-#include <QComboBox>
-#include <QSpinBox>
-#include "QBitmaskCheckBox.h"
-
-class QSoundBuffer : public QCreatable
+class QBitmaskCheckBox : public QCheckBox
 {
     Q_OBJECT
 
-protected:
-    enum
-    {
-        kIsExternal, kAlwaysExternal, kOnlyLeftChannel, kOnlyRightChannel,
-        kStreamCompressed, kNumFlags
-    };
-    QBitmaskCheckBox* fFlags[kNumFlags];
-
-    QLineEdit* fFilename;
-    QComboBox* fFormat;
-    QSpinBox* fNumChannels;
-    QIntEdit* fBlockAlign;
-    QIntEdit* fBitRate;
-    QIntEdit* fSampleRate;
-    QIntEdit* fAvgBytesPerSec;
-
 public:
-    QSoundBuffer(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
+    QBitmaskCheckBox(unsigned int value, const QString& text, QWidget* parent = nullptr);
+
+    void setFrom(unsigned int value)
+    {
+        setChecked((value & fBitMask) == fBitMask);
+    }
+
+signals:
+    void setBits(unsigned int mask);
+    void unsetBits(unsigned int mask);
+
+private:
+    unsigned int fBitMask;
 };
 
-#endif
+#endif // _QBITMASKCHECKBOX_H

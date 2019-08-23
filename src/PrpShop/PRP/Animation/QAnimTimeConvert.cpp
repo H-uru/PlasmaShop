@@ -136,22 +136,22 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     QGridLayout* flagLayout = new QGridLayout(flagGroup);
     flagLayout->setVerticalSpacing(0);
     flagLayout->setHorizontalSpacing(8);
-    fFlags[kStopped] = new QCheckBox(tr("Stopped"), flagGroup);
-    fFlags[kLoop] = new QCheckBox(tr("Loop"), flagGroup);
-    fFlags[kBackwards] = new QCheckBox(tr("Backwards"), flagGroup);
-    fFlags[kWrap] = new QCheckBox(tr("Wrap"), flagGroup);
-    fFlags[kNeedsReset] = new QCheckBox(tr("Needs Reset"), flagGroup);
-    fFlags[kEasingIn] = new QCheckBox(tr("Easing In"), flagGroup);
-    fFlags[kForcedMove] = new QCheckBox(tr("Forced Move"), flagGroup);
-    fFlags[kNoCallbacks] = new QCheckBox(tr("No Callbacks"), flagGroup);
-    fFlags[kStopped]->setChecked((obj->getFlags() & plAnimTimeConvert::kStopped) != 0);
-    fFlags[kLoop]->setChecked((obj->getFlags() & plAnimTimeConvert::kLoop) != 0);
-    fFlags[kBackwards]->setChecked((obj->getFlags() & plAnimTimeConvert::kBackwards) != 0);
-    fFlags[kWrap]->setChecked((obj->getFlags() & plAnimTimeConvert::kWrap) != 0);
-    fFlags[kNeedsReset]->setChecked((obj->getFlags() & plAnimTimeConvert::kNeedsReset) != 0);
-    fFlags[kEasingIn]->setChecked((obj->getFlags() & plAnimTimeConvert::kEasingIn) != 0);
-    fFlags[kForcedMove]->setChecked((obj->getFlags() & plAnimTimeConvert::kForcedMove) != 0);
-    fFlags[kNoCallbacks]->setChecked((obj->getFlags() & plAnimTimeConvert::kNoCallbacks) != 0);
+    fFlags[kStopped] = new QBitmaskCheckBox(plAnimTimeConvert::kStopped,
+                                            tr("Stopped"), flagGroup);
+    fFlags[kLoop] = new QBitmaskCheckBox(plAnimTimeConvert::kLoop, tr("Loop"),
+                                         flagGroup);
+    fFlags[kBackwards] = new QBitmaskCheckBox(plAnimTimeConvert::kBackwards,
+                                              tr("Backwards"), flagGroup);
+    fFlags[kWrap] = new QBitmaskCheckBox(plAnimTimeConvert::kWrap, tr("Wrap"),
+                                         flagGroup);
+    fFlags[kNeedsReset] = new QBitmaskCheckBox(plAnimTimeConvert::kNeedsReset,
+                                               tr("Needs Reset"), flagGroup);
+    fFlags[kEasingIn] = new QBitmaskCheckBox(plAnimTimeConvert::kEasingIn,
+                                             tr("Easing In"), flagGroup);
+    fFlags[kForcedMove] = new QBitmaskCheckBox(plAnimTimeConvert::kForcedMove,
+                                               tr("Forced Move"), flagGroup);
+    fFlags[kNoCallbacks] = new QBitmaskCheckBox(plAnimTimeConvert::kNoCallbacks,
+                                                tr("No Callbacks"), flagGroup);
     flagLayout->addWidget(fFlags[kStopped], 0, 0);
     flagLayout->addWidget(fFlags[kLoop], 0, 1);
     flagLayout->addWidget(fFlags[kBackwards], 0, 2);
@@ -160,6 +160,17 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fFlags[kEasingIn], 1, 1);
     flagLayout->addWidget(fFlags[kForcedMove], 1, 2);
     flagLayout->addWidget(fFlags[kNoCallbacks], 1, 3);
+    for (auto cb : fFlags) {
+        cb->setFrom(obj->getFlags());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plAnimTimeConvert* obj = plAnimTimeConvert::Convert(fCreatable);
+            obj->setFlags(obj->getFlags() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plAnimTimeConvert* obj = plAnimTimeConvert::Convert(fCreatable);
+            obj->setFlags(obj->getFlags() & ~mask);
+        });
+    }
 
     QGroupBox* timeGroup = new QGroupBox(tr("Timing Parameters"), this);
     QGridLayout* timeLayout = new QGridLayout(timeGroup);
@@ -245,16 +256,8 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
 
 void QAnimTimeConvert::saveDamage()
 {
-    plAnimTimeConvert* obj = (plAnimTimeConvert*)fCreatable;
+    plAnimTimeConvert* obj = plAnimTimeConvert::Convert(fCreatable);
 
-    obj->setFlags((fFlags[kStopped]->isChecked() ? plAnimTimeConvert::kStopped : 0)
-                | (fFlags[kLoop]->isChecked() ? plAnimTimeConvert::kLoop : 0)
-                | (fFlags[kBackwards]->isChecked() ? plAnimTimeConvert::kBackwards : 0)
-                | (fFlags[kWrap]->isChecked() ? plAnimTimeConvert::kWrap : 0)
-                | (fFlags[kNeedsReset]->isChecked() ? plAnimTimeConvert::kNeedsReset : 0)
-                | (fFlags[kEasingIn]->isChecked() ? plAnimTimeConvert::kEasingIn : 0)
-                | (fFlags[kForcedMove]->isChecked() ? plAnimTimeConvert::kForcedMove : 0)
-                | (fFlags[kNoCallbacks]->isChecked() ? plAnimTimeConvert::kNoCallbacks : 0));
     obj->setRange(fBegin->value(), fEnd->value());
     obj->setLoop(fLoopBegin->value(), fLoopEnd->value());
     obj->setSpeed(fSpeed->value());

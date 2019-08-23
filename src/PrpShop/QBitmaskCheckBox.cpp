@@ -14,39 +14,16 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QSOUNDBUFFER_H
-#define _QSOUNDBUFFER_H
-
-#include "PRP/QCreatable.h"
-
-#include <PRP/Audio/plSoundBuffer.h>
-#include <QComboBox>
-#include <QSpinBox>
 #include "QBitmaskCheckBox.h"
 
-class QSoundBuffer : public QCreatable
+QBitmaskCheckBox::QBitmaskCheckBox(unsigned int value, const QString& text,
+                                   QWidget* parent)
+    : QCheckBox(text, parent), fBitMask(value)
 {
-    Q_OBJECT
-
-protected:
-    enum
-    {
-        kIsExternal, kAlwaysExternal, kOnlyLeftChannel, kOnlyRightChannel,
-        kStreamCompressed, kNumFlags
-    };
-    QBitmaskCheckBox* fFlags[kNumFlags];
-
-    QLineEdit* fFilename;
-    QComboBox* fFormat;
-    QSpinBox* fNumChannels;
-    QIntEdit* fBlockAlign;
-    QIntEdit* fBitRate;
-    QIntEdit* fSampleRate;
-    QIntEdit* fAvgBytesPerSec;
-
-public:
-    QSoundBuffer(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
-};
-
-#endif
+    connect(this, &QAbstractButton::clicked, this, [this](bool checked) {
+        if (checked)
+            emit setBits(fBitMask);
+        else
+            emit unsetBits(fBitMask);
+    });
+}

@@ -213,24 +213,24 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     QGridLayout* layProperties = new QGridLayout(grpProperties);
     layProperties->setVerticalSpacing(0);
     layProperties->setHorizontalSpacing(8);
-    fProperties[kPropIs3DSound] = new QCheckBox(tr("Is 3D Sound"), grpProperties);
-    fProperties[kPropDisableLOD] = new QCheckBox(tr("Disable LOD"), grpProperties);
-    fProperties[kPropLooping] = new QCheckBox(tr("Looping"), grpProperties);
-    fProperties[kPropAutoStart] = new QCheckBox(tr("Auto Start"), grpProperties);
-    fProperties[kPropLocalOnly] = new QCheckBox(tr("Local Only"), grpProperties);
-    fProperties[kPropLoadOnlyOnCall] = new QCheckBox(tr("Load Only on Call"), grpProperties);
-    fProperties[kPropFullyDisabled] = new QCheckBox(tr("Fully Disabled"), grpProperties);
-    fProperties[kPropDontFade] = new QCheckBox(tr("Don't Fade"), grpProperties);
-    fProperties[kPropIncidental] = new QCheckBox(tr("Incidental"), grpProperties);
-    fProperties[kPropIs3DSound]->setChecked((obj->getProperties() & plSound::kPropIs3DSound) != 0);
-    fProperties[kPropDisableLOD]->setChecked((obj->getProperties() & plSound::kPropDisableLOD) != 0);
-    fProperties[kPropLooping]->setChecked((obj->getProperties() & plSound::kPropLooping) != 0);
-    fProperties[kPropAutoStart]->setChecked((obj->getProperties() & plSound::kPropAutoStart) != 0);
-    fProperties[kPropLocalOnly]->setChecked((obj->getProperties() & plSound::kPropLocalOnly) != 0);
-    fProperties[kPropLoadOnlyOnCall]->setChecked((obj->getProperties() & plSound::kPropLoadOnlyOnCall) != 0);
-    fProperties[kPropFullyDisabled]->setChecked((obj->getProperties() & plSound::kPropFullyDisabled) != 0);
-    fProperties[kPropDontFade]->setChecked((obj->getProperties() & plSound::kPropDontFade) != 0);
-    fProperties[kPropIncidental]->setChecked((obj->getProperties() & plSound::kPropIncidental) != 0);
+    fProperties[kPropIs3DSound] = new QBitmaskCheckBox(plSound::kPropIs3DSound,
+            tr("Is 3D Sound"), grpProperties);
+    fProperties[kPropDisableLOD] = new QBitmaskCheckBox(plSound::kPropDisableLOD,
+            tr("Disable LOD"), grpProperties);
+    fProperties[kPropLooping] = new QBitmaskCheckBox(plSound::kPropLooping,
+            tr("Looping"), grpProperties);
+    fProperties[kPropAutoStart] = new QBitmaskCheckBox(plSound::kPropAutoStart,
+            tr("Auto Start"), grpProperties);
+    fProperties[kPropLocalOnly] = new QBitmaskCheckBox(plSound::kPropLocalOnly,
+            tr("Local Only"), grpProperties);
+    fProperties[kPropLoadOnlyOnCall] = new QBitmaskCheckBox(plSound::kPropLoadOnlyOnCall,
+            tr("Load Only on Call"), grpProperties);
+    fProperties[kPropFullyDisabled] = new QBitmaskCheckBox(plSound::kPropFullyDisabled,
+            tr("Fully Disabled"), grpProperties);
+    fProperties[kPropDontFade] = new QBitmaskCheckBox(plSound::kPropDontFade,
+            tr("Don't Fade"), grpProperties);
+    fProperties[kPropIncidental] = new QBitmaskCheckBox(plSound::kPropIncidental,
+            tr("Incidental"), grpProperties);
     layProperties->addWidget(fProperties[kPropIs3DSound], 0, 0);
     layProperties->addWidget(fProperties[kPropDisableLOD], 1, 0);
     layProperties->addWidget(fProperties[kPropLooping], 2, 0);
@@ -240,6 +240,17 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layProperties->addWidget(fProperties[kPropFullyDisabled], 0, 2);
     layProperties->addWidget(fProperties[kPropDontFade], 1, 2);
     layProperties->addWidget(fProperties[kPropIncidental], 2, 2);
+    for (auto prop : fProperties) {
+        prop->setFrom(obj->getProperties());
+        connect(prop, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plSound* obj = plSound::Convert(fCreatable);
+            obj->setProperties(obj->getProperties() | mask);
+        });
+        connect(prop, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plSound* obj = plSound::Convert(fCreatable);
+            obj->setProperties(obj->getProperties() & ~mask);
+        });
+    }
 
     QGroupBox* grpFadeIn = new QGroupBox(tr("Fade In Parameters"), this);
     QGridLayout* layFadeIn = new QGridLayout(grpFadeIn);
@@ -386,15 +397,6 @@ void QWinSound::saveDamage()
     obj->setPriority(fPriority->value());
     obj->setPlaying(fPlaying->isChecked());
     obj->setSubtitleId(qstr2st(fSubtitleId->text()));
-    obj->setProperties((fProperties[kPropIs3DSound]->isChecked() ? plSound::kPropIs3DSound : 0)
-                     | (fProperties[kPropDisableLOD]->isChecked() ? plSound::kPropDisableLOD : 0)
-                     | (fProperties[kPropLooping]->isChecked() ? plSound::kPropLooping : 0)
-                     | (fProperties[kPropAutoStart]->isChecked() ? plSound::kPropAutoStart : 0)
-                     | (fProperties[kPropLocalOnly]->isChecked() ? plSound::kPropLocalOnly : 0)
-                     | (fProperties[kPropLoadOnlyOnCall]->isChecked() ? plSound::kPropLoadOnlyOnCall : 0)
-                     | (fProperties[kPropFullyDisabled]->isChecked() ? plSound::kPropFullyDisabled : 0)
-                     | (fProperties[kPropDontFade]->isChecked() ? plSound::kPropDontFade : 0)
-                     | (fProperties[kPropIncidental]->isChecked() ? plSound::kPropIncidental : 0));
     obj->getFadeInParams().fLengthInSecs = fFadeInParams.fLength->value();
     obj->getFadeInParams().fVolStart = fFadeInParams.fVolStart->value();
     obj->getFadeInParams().fVolEnd = fFadeInParams.fVolEnd->value();

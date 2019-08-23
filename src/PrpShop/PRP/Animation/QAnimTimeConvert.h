@@ -21,7 +21,7 @@
 
 #include <PRP/Animation/plAnimTimeConvert.h>
 #include <QLineEdit>
-#include <QCheckBox>
+#include "QBitmaskCheckBox.h"
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
 
@@ -65,7 +65,7 @@ protected:
         kStopped, kLoop, kBackwards, kWrap, kNeedsReset, kEasingIn, kForcedMove,
         kNoCallbacks, kNumATCFlags
     };
-    QCheckBox* fFlags[kNumATCFlags];
+    QBitmaskCheckBox* fFlags[kNumATCFlags];
 
     QFloatEdit* fBegin;
     QFloatEdit* fEnd;

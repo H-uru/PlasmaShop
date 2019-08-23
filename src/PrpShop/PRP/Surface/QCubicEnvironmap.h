@@ -19,6 +19,7 @@
 
 #include "QMipmap.h"
 #include <PRP/Surface/plCubicEnvironmap.h>
+#include "QBitmaskCheckBox.h"
 
 class QCubicEnvironmap : public QCreatable
 {
@@ -32,13 +33,13 @@ protected:
         kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,
         kIsTexture, kIsOffscreen, kIsProjected, kIsOrtho, kNumBitmapFlags
     };
-    QCheckBox* fFlags[kNumBitmapFlags];
+    QBitmaskCheckBox* fFlags[kNumBitmapFlags];
     QCreatableLink* fFaces[plCubicEnvironmap::kNumFaces];
     QCreatableLink* fPreviewLink;
 
 public:
     QCubicEnvironmap(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
+    void saveDamage() override { }
 };
 
 #endif
