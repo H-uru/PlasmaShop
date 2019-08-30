@@ -68,6 +68,10 @@ public:
     void setTheme(const KSyntaxHighlighting::Theme& theme);
     void setSyntax(const QString& name);
 
+    void moveLines(QTextCursor::MoveOperation op);
+    void smartHome(QTextCursor::MoveMode mode);
+    void deleteLines();
+
 protected:
     void resizeEvent(QResizeEvent* e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* e) Q_DECL_OVERRIDE;

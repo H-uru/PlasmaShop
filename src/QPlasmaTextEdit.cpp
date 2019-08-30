@@ -207,6 +207,7 @@ void QPlasmaTextEdit::setTheme(const KSyntaxHighlighting::Theme& theme)
     pal.setColor(QPalette::Text, theme.textColor(KSyntaxHighlighting::Theme::Normal));
     pal.setColor(QPalette::Base, theme.editorColor(KSyntaxHighlighting::Theme::BackgroundColor));
     pal.setColor(QPalette::Highlight, theme.editorColor(KSyntaxHighlighting::Theme::TextSelection));
+    pal.setBrush(QPalette::HighlightedText, Qt::NoBrush);
     setPalette(pal);
 
     fLineMarginFg = theme.editorColor(KSyntaxHighlighting::Theme::LineNumbers);
@@ -227,6 +228,73 @@ void QPlasmaTextEdit::setSyntax(const QString& name)
     if (!syntaxDef.isValid() && !name.isEmpty())
         qDebug("Warning: Could not find syntax defintion for %s", name.toUtf8().constData());
     fHighlighter->setDefinition(syntaxDef);
+}
+
+void QPlasmaTextEdit::moveLines(QTextCursor::MoveOperation op)
+{
+    QTextCursor cursor = textCursor();
+
+    cursor.beginEditBlock();
+    int startPos = cursor.position();
+    int endPos = cursor.anchor();
+    cursor.setPosition(qMin(startPos, endPos));
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.setPosition(qMax(startPos, endPos), QTextCursor::KeepAnchor);
+    if (startPos == endPos || !cursor.atBlockStart())
+        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+
+    const auto moveText = cursor.selectedText();
+    cursor.removeSelectedText();
+    const int positionStart = cursor.position();
+    cursor.movePosition(op);
+    const int postionDelta = cursor.position() - positionStart;
+    cursor.insertText(moveText);
+
+    cursor.setPosition(endPos + postionDelta);
+    if (startPos != endPos)
+        cursor.setPosition(startPos + postionDelta, QTextCursor::KeepAnchor);
+    cursor.endEditBlock();
+
+    setTextCursor(cursor);
+}
+
+void QPlasmaTextEdit::smartHome(QTextCursor::MoveMode moveMode)
+{
+    QTextCursor cursor = textCursor();
+
+    int leadingIndent = 0;
+    const QString blockText = cursor.block().text();
+    for (const auto& ch : blockText) {
+        if (ch.isSpace())
+            leadingIndent += 1;
+        else
+            break;
+    }
+    int cursorPos = cursor.positionInBlock();
+    cursor.movePosition(QTextCursor::StartOfLine, moveMode);
+    if (cursor.positionInBlock() == 0 && cursorPos != leadingIndent)
+        cursor.movePosition(QTextCursor::NextCharacter, moveMode, leadingIndent);
+
+    setTextCursor(cursor);
+    updateCursor();
+}
+
+void QPlasmaTextEdit::deleteLines()
+{
+    QTextCursor cursor = textCursor();
+    if (haveSelection()) {
+        const int startPos = cursor.selectionStart();
+        const int endPos = cursor.selectionEnd();
+        cursor.setPosition(startPos);
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.setPosition(endPos, QTextCursor::KeepAnchor);
+        if (!cursor.atBlockStart())
+            cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+    } else {
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+    }
+    cursor.removeSelectedText();
 }
 
 void QPlasmaTextEdit::updateMargins()
@@ -512,6 +580,16 @@ void QPlasmaTextEdit::outdentSelection()
 
 void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
 {
+    // "Smart" home key
+    if (e->matches(QKeySequence::MoveToStartOfLine)) {
+        smartHome(QTextCursor::MoveAnchor);
+        return;
+    }
+    if (e->matches(QKeySequence::SelectStartOfLine)) {
+        smartHome(QTextCursor::KeepAnchor);
+        return;
+    }
+
     switch (e->key()) {
     case Qt::Key_Tab:
         if (haveSelection()) {
@@ -586,8 +664,12 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
 
     case Qt::Key_Up:
         if (e->modifiers() & Qt::ControlModifier) {
-            auto scrollBar = verticalScrollBar();
-            scrollBar->setValue(scrollBar->value() - 1);
+            if (e->modifiers() & Qt::ShiftModifier) {
+                moveLines(QTextCursor::PreviousBlock);
+            } else {
+                auto scrollBar = verticalScrollBar();
+                scrollBar->setValue(scrollBar->value() - 1);
+            }
         } else {
             QPlainTextEdit::keyPressEvent(e);
         }
@@ -595,8 +677,22 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
 
     case Qt::Key_Down:
         if (e->modifiers() & Qt::ControlModifier) {
-            auto scrollBar = verticalScrollBar();
-            scrollBar->setValue(scrollBar->value() + 1);
+            if (e->modifiers() & Qt::ShiftModifier) {
+                moveLines(QTextCursor::NextBlock);
+            } else {
+                auto scrollBar = verticalScrollBar();
+                scrollBar->setValue(scrollBar->value() + 1);
+            }
+        } else {
+            QPlainTextEdit::keyPressEvent(e);
+        }
+        break;
+
+    case Qt::Key_D:
+        if (e->modifiers() & Qt::ControlModifier) {
+            // Default of Ctrl+D is the same as "Del"; This means we can
+            // repurpose it for "Delete Line"
+            deleteLines();
         } else {
             QPlainTextEdit::keyPressEvent(e);
         }
