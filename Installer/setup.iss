@@ -24,7 +24,7 @@ Name: PrpShop; Description: PrpShop 1.0; Types: Custom Full
 Name: VaultShop; Description: VaultShop 1.1; Types: Custom Full
 
 [Files]
-Source: vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
+Source: vc_redist.x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
 Source: HSPlasma.dll; DestDir: {app}; Flags: ignoreversion
 Source: PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
 Source: PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
@@ -37,10 +37,7 @@ Source: Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: KF5SyntaxHighlighting.dll; DestDir: {app}; Flags: ignoreversion
 Source: NxCooking.dll; DestDir: {app}; Flags: ignoreversion
-Source: jpeg8.dll; DestDir: {app}; Flags: ignoreversion
-Source: libpng16.dll; DestDir: {app}; Flags: ignoreversion
-Source: string_theory.dll; DestDir: {app}; Flags: ignoreversion
-Source: zlib.dll; DestDir: {app}; Flags: ignoreversion
+Source: bearer\qgenericbearer.dll; DestDir: {app}\bearer; Flags: ignoreversion
 Source: iconengines\qsvgicon.dll; DestDir: {app}\iconengines; Flags: ignoreversion
 Source: imageformats\qico.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qjpeg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
@@ -48,6 +45,29 @@ Source: imageformats\qsvg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qtiff.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qwbmp.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
+Source: styles\qwindowsvistastyle.dll; DestDir: {app}\styles; Flags: ignoreversion
+Source: translations\qt_ar.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_bg.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_ca.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_cs.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_da.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_de.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_en.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_es.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_fi.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_fr.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_gd.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_he.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_hu.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_it.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_ja.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_ko.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_lv.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_pl.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_ru.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_sk.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_uk.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_zh_TW.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
 
 [InstallDelete]
@@ -58,7 +78,7 @@ Name: {app}\Qt5PrintSupport.dll; Type: files
 Name: {app}\platforms\qminimal.dll; Type: files
 
 [Run]
-Filename: {tmp}\vcredist_x86.exe; Parameters: /q
+Filename: {tmp}\vc_redist.x86.exe; Parameters: /q
 
 [UninstallDelete]
 Name: {app}\PlasmaShop.log; Type: files
