@@ -14,46 +14,53 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QPLASMASUMFILE_H
-#define _QPLASMASUMFILE_H
+#ifndef _QPLASMAFONT_H
+#define _QPLASMAFONT_H
 
 #include "QPlasmaDocument.h"
-#include <Stream/hsStream.h>
-#include <Util/hsSumFile.h>
-#include <QTreeWidget>
-#include <QAction>
-#include <vector>
+#include <PRP/Surface/plFont.h>
 
-class QPlasmaSumFile : public QPlasmaDocument
+#include <QAbstractScrollArea>
+
+class QLineEdit;
+class QSpinBox;
+class QCheckBox;
+
+class QPlasmaCharWidget : public QAbstractScrollArea
 {
     Q_OBJECT
 
 public:
-    QPlasmaSumFile(QWidget* parent);
+    explicit QPlasmaCharWidget(QWidget *parent);
+
+    void setRenderFont(plFont* font) { fFont = font; }
+    void reloadFont();
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+
+private:
+    plFont* fFont;
+};
+
+class QPlasmaFont : public QPlasmaDocument
+{
+    Q_OBJECT
+
+public:
+    explicit QPlasmaFont(QWidget* parent);
 
     bool loadFile(const QString& filename) override;
     bool saveTo(const QString& filename) override;
 
 private:
-    QTreeWidget* fFileList;
-    hsSumFile fSumData;
-
-    enum
-    {
-        kAUpdate, kAAdd, kADel, kANumActions
-    };
-    QAction* fActions[kANumActions];
-
-    bool loadSumData(hsStream* S);
-    bool saveSumData(hsStream* S);
-    void addToSumFile(const QString& filename);
-
-private slots:
-    void onContextMenu(QPoint pos);
-    void onItemChanged(QTreeWidgetItem* item, int column);
-    void onUpdate();
-    void onAdd();
-    void onDel();
+    plFont fFont;
+    QLineEdit* fFontName;
+    QSpinBox* fFontSize;
+    QCheckBox* fBold;
+    QCheckBox* fItalic;
+    QPlasmaCharWidget* fChars;
 };
 
 #endif

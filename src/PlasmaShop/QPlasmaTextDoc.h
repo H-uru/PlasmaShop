@@ -52,8 +52,8 @@ public:
     bool canUndo() const Q_DECL_OVERRIDE { return fEditor->document()->isUndoAvailable(); }
     bool canRedo() const Q_DECL_OVERRIDE { return fEditor->document()->isRedoAvailable(); }
 
-    bool loadFile(QString filename) Q_DECL_OVERRIDE;
-    bool saveTo(QString filename) Q_DECL_OVERRIDE;
+    bool loadFile(const QString& filename) Q_DECL_OVERRIDE;
+    bool saveTo(const QString& filename) Q_DECL_OVERRIDE;
 
     void setSyntax(SyntaxMode syn);
     void setEncoding(EncodingMode type);

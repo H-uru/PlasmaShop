@@ -37,7 +37,7 @@ public:
     };
 
 public:
-    static QIcon GetDocIcon(QString filename);
+    static QIcon GetDocIcon(const QString& filename);
     static QPlasmaDocument* GetEditor(DocumentType docType, QWidget* parent);
     static bool GetEncryptionKeyFromUser(QWidget* parent, unsigned int* key);
 
@@ -49,7 +49,7 @@ public:
     bool isDirty() const { return fDirty; }
 
     QString filename() const { return fFilename; }
-    void setFilename(QString filename) { fFilename = filename; }
+    void setFilename(QString filename) { fFilename = std::move(filename); }
 
     virtual bool canCut() const { return false; }
     virtual bool canCopy() const { return false; }
@@ -59,8 +59,8 @@ public:
     virtual bool canUndo() const { return false; }
     virtual bool canRedo() const { return false; }
 
-    virtual bool loadFile(QString filename);
-    virtual bool saveTo(QString filename);
+    virtual bool loadFile(const QString& filename);
+    virtual bool saveTo(const QString& filename);
     bool saveDefault() { return saveTo(fFilename); }
     bool revert() { return loadFile(fFilename); }
 
