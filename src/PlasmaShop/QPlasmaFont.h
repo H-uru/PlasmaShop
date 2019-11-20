@@ -24,7 +24,9 @@
 
 class QLineEdit;
 class QSpinBox;
+class QDoubleSpinBox;
 class QCheckBox;
+class QGroupBox;
 
 class QPlasmaCharWidget : public QAbstractScrollArea
 {
@@ -86,6 +88,7 @@ public:
 
 public slots:
     void showCharacter(int which);
+    void updateCharacter();
 
 private:
     plFont fFont;
@@ -94,7 +97,14 @@ private:
     QCheckBox* fBold;
     QCheckBox* fItalic;
     QPlasmaCharWidget* fChars;
+
+    int fCharacter;
+    QGroupBox* fCharDetail;
     QPlasmaCharRender* fRender;
+    QDoubleSpinBox* fLeftKern;
+    QDoubleSpinBox* fRightKern;
+    QSpinBox* fBaseLine;
+    bool fBlockSpinBoxes;
 };
 
 #endif

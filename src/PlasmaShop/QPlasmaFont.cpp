@@ -167,8 +167,7 @@ void QPlasmaCharRender::setCharacter(int which)
 void QPlasmaCharRender::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    QPalette pal = palette();
-    painter.fillRect(event->rect(), pal.brush(QPalette::Base));
+    painter.fillRect(event->rect(), QColor(255, 255, 224));
     if (!fFont)
         return;
 
@@ -179,10 +178,13 @@ void QPlasmaCharRender::paintEvent(QPaintEvent* event)
     const int basePos = fFont->getMaxCharHeight() * 2;
     painter.drawLine(0, basePos, width(), basePos);
 
+    if (ch.getHeight() == 0)
+        return;
+
     const qreal adjustedWidth = -ch.getLeftKern() + fFont->getWidth() + ch.getRightKern();
     const qreal startX = (width() - (adjustedWidth * 2)) / 2;
 
-    painter.setPen(QColor(127, 127, 255));
+    painter.setPen(QColor(128, 128, 255));
     painter.drawLine(QPointF(startX - ch.getLeftKern() * 2, 0),
                      QPointF(startX - ch.getLeftKern() * 2, height()));
     painter.drawLine(QPointF(startX + (fFont->getWidth() + ch.getRightKern()) * 2, 0),
@@ -198,7 +200,7 @@ void QPlasmaCharRender::paintEvent(QPaintEvent* event)
 
 /* QPlasmaFont */
 QPlasmaFont::QPlasmaFont(QWidget* parent)
-    : QPlasmaDocument(kDocFont, parent)
+    : QPlasmaDocument(kDocFont, parent), fCharacter(), fBlockSpinBoxes()
 {
     auto lblName = new QLabel(tr("&Face:"), this);
     fFontName = new QLineEdit(this);
@@ -206,8 +208,7 @@ QPlasmaFont::QPlasmaFont(QWidget* parent)
 
     auto lblSize = new QLabel(tr("&Size:"), this);
     fFontSize = new QSpinBox(this);
-    fFontSize->setMinimum(0);
-    fFontSize->setMaximum(255);
+    fFontSize->setRange(0, 255);
     lblSize->setBuddy(fFontSize);
 
     fBold = new QCheckBox(tr("&Bold"), this);
@@ -216,14 +217,37 @@ QPlasmaFont::QPlasmaFont(QWidget* parent)
     fChars = new QPlasmaCharWidget(this);
     fChars->setRenderFont(&fFont);
 
-    auto charGroup = new QGroupBox(tr("Character Details"), this);
+    fCharDetail = new QGroupBox(tr("Character Details"), this);
     fRender = new QPlasmaCharRender(this);
     fRender->setRenderFont(&fFont);
 
-    auto charGroupLayout = new QGridLayout(charGroup);
+    auto lblLeftKern = new QLabel(tr("&Left Kern:"), this);
+    fLeftKern = new QDoubleSpinBox(this);
+    fLeftKern->setDecimals(2);
+    fLeftKern->setRange(-1024.0, 1024.0);
+    lblLeftKern->setBuddy(fLeftKern);
+
+    auto lblRightKern = new QLabel(tr("&Right Kern:"), this);
+    fRightKern = new QDoubleSpinBox(this);
+    fRightKern->setDecimals(2);
+    fRightKern->setRange(-1024.0, 1024.0);
+    lblRightKern->setBuddy(fRightKern);
+
+    auto lblBaseLine = new QLabel(tr("Base &Height:"), this);
+    fBaseLine = new QSpinBox(this);
+    fBaseLine->setRange(-1024, 1024);
+    lblBaseLine->setBuddy(fBaseLine);
+
+    auto charGroupLayout = new QGridLayout(fCharDetail);
     charGroupLayout->setContentsMargins(4, 4, 4, 4);
-    charGroupLayout->addWidget(fRender, 0, 0);
-    charGroupLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 1);
+    charGroupLayout->addWidget(fRender, 0, 0, 3, 1);
+    charGroupLayout->addWidget(lblLeftKern, 0, 1);
+    charGroupLayout->addWidget(fLeftKern, 0, 2);
+    charGroupLayout->addWidget(lblRightKern, 1, 1);
+    charGroupLayout->addWidget(fRightKern, 1, 2);
+    charGroupLayout->addWidget(lblBaseLine, 2, 1);
+    charGroupLayout->addWidget(fBaseLine, 2, 2);
+    charGroupLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 3);
 
     auto layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
@@ -236,16 +260,23 @@ QPlasmaFont::QPlasmaFont(QWidget* parent)
     layout->addWidget(fItalic, 1, 4);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 1, 5);
     layout->addWidget(fChars, 2, 0, 1, 6);
-    layout->addWidget(charGroup, 3, 0, 1, 6);
+    layout->addWidget(fCharDetail, 3, 0, 1, 6);
 
     connect(fFontName, &QLineEdit::textEdited, this, &QPlasmaDocument::makeDirty);
     connect(fFontSize, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, [this] { makeDirty(); });
+            this, &QPlasmaDocument::makeDirty);
     connect(fBold, &QCheckBox::clicked, this, &QPlasmaDocument::makeDirty);
     connect(fItalic, &QCheckBox::clicked, this, &QPlasmaDocument::makeDirty);
 
     connect(fChars, &QPlasmaCharWidget::characterSelected,
             this, &QPlasmaFont::showCharacter);
+
+    connect(fLeftKern, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this, &QPlasmaFont::updateCharacter);
+    connect(fRightKern, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this, &QPlasmaFont::updateCharacter);
+    connect(fBaseLine, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &QPlasmaFont::updateCharacter);
 }
 
 bool QPlasmaFont::loadFile(const QString& filename)
@@ -288,6 +319,27 @@ bool QPlasmaFont::saveTo(const QString& filename)
 
 void QPlasmaFont::showCharacter(int which)
 {
+    fCharacter = which;
+    fCharDetail->setTitle(tr("Character Details: \'%1\' (U+%2)")
+            .arg(QChar(which)).arg(which, 4, 16, QLatin1Char('0')));
     fRender->setCharacter(which);
-    // TODO
+
+    const plFont::plCharacter& ch = fFont.getCharacter(which);
+    fBlockSpinBoxes = true;
+    fLeftKern->setValue(ch.getLeftKern());
+    fRightKern->setValue(ch.getRightKern());
+    fBaseLine->setValue(ch.getBaseline());
+    fBlockSpinBoxes = false;
+}
+
+void QPlasmaFont::updateCharacter()
+{
+    if (!fBlockSpinBoxes) {
+        plFont::plCharacter &ch = fFont.getCharacter(fCharacter);
+        ch.setLeftKern(fLeftKern->value());
+        ch.setRightKern(fRightKern->value());
+        ch.setBaseline(fBaseLine->value());
+        fRender->setCharacter(fCharacter);
+        makeDirty();
+    }
 }
