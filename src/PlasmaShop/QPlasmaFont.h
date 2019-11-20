@@ -36,12 +36,42 @@ public:
     void setRenderFont(plFont* font) { fFont = font; }
     void reloadFont();
 
+signals:
+    void characterSelected(int which);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+
+    void focusInEvent(QFocusEvent*) override { viewport()->update(); }
+    void focusOutEvent(QFocusEvent*) override { viewport()->update(); }
 
 private:
     plFont* fFont;
+    int fSelected;
+    int fCharsPerLine;
+};
+
+class QPlasmaCharRender : public QWidget
+{
+    Q_OBJECT
+
+public:
+    QPlasmaCharRender(QWidget* parent);
+
+    void setRenderFont(plFont* font) { fFont = font; }
+    void reloadFont();
+
+    void setCharacter(int which);
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+
+private:
+    plFont* fFont;
+    int fCharIdx;
 };
 
 class QPlasmaFont : public QPlasmaDocument
@@ -54,6 +84,9 @@ public:
     bool loadFile(const QString& filename) override;
     bool saveTo(const QString& filename) override;
 
+public slots:
+    void showCharacter(int which);
+
 private:
     plFont fFont;
     QLineEdit* fFontName;
@@ -61,6 +94,7 @@ private:
     QCheckBox* fBold;
     QCheckBox* fItalic;
     QPlasmaCharWidget* fChars;
+    QPlasmaCharRender* fRender;
 };
 
 #endif

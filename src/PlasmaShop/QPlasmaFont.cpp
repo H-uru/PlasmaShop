@@ -23,15 +23,20 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QScrollBar>
+#include <QGroupBox>
 #include <QGridLayout>
 #include <QPainter>
 #include <QPaintEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
 #include <QMessageBox>
+#include <algorithm>
 
 /* QPlasmaCharWidget */
 QPlasmaCharWidget::QPlasmaCharWidget(QWidget* parent)
-    : QAbstractScrollArea(parent), fFont()
+    : QAbstractScrollArea(parent), fFont(), fSelected(), fCharsPerLine(1)
 {
+    setFocusPolicy(Qt::StrongFocus);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
@@ -40,12 +45,26 @@ void QPlasmaCharWidget::reloadFont()
 {
     // Recompute layout
     const QSize viewportSize = viewport()->size();
-    const size_t charsPerLine = viewportSize.width() / (fFont->getWidth() + 1);
-    const size_t lines = (fFont->getNumCharacters() + (charsPerLine - 1)) / charsPerLine;
-    const size_t totalHeight = lines * (fFont->getMaxCharHeight() + 1);
+    fCharsPerLine = std::max<int>(viewportSize.width() / (fFont->getWidth() + 1), 1);
+    const int lines = (fFont->getNumCharacters() + (fCharsPerLine - 1)) / fCharsPerLine;
+    const int totalHeight = lines * (fFont->getMaxCharHeight() + 1);
     verticalScrollBar()->setRange(0, totalHeight - viewportSize.height());
     verticalScrollBar()->setPageStep(fFont->getMaxCharHeight() * 2);
     verticalScrollBar()->setSingleStep(fFont->getMaxCharHeight() / 2);
+}
+
+static QImage::Format fontImageFormat(plFont* font)
+{
+    switch (font->getBPP()) {
+    case 1:
+        return QImage::Format_Mono;
+    case 8:
+        return QImage::Format_Alpha8;
+    default:
+        QMessageBox::critical(nullptr, QObject::tr("Error"),
+                              QObject::tr("Unsupported bitmap format"));
+        return QImage::Format_Invalid;
+    }
 }
 
 void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
@@ -56,33 +75,21 @@ void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
     if (!fFont)
         return;
 
-    QImage::Format imgFormat;
-    switch (fFont->getBPP()) {
-    case 1:
-        imgFormat = QImage::Format_Mono;
-        break;
-    case 8:
-        imgFormat = QImage::Format_Alpha8;
-        break;
-    default:
-        QMessageBox::critical(this, tr("Error"), tr("Unsupported bitmap format"));
-        return;
-    }
-
     painter.setPen(pal.color(QPalette::Midlight));
 
-    const QSize viewportSize = viewport()->size();
-    const size_t charsPerLine = viewportSize.width() / (fFont->getWidth() + 1);
     const size_t stride = fFont->getStride();
     for (size_t c = 0; c < fFont->getNumCharacters(); ++c) {
-        QRect rGlyph((c % charsPerLine) * (fFont->getWidth() + 1),
-                     (c / charsPerLine) * (fFont->getMaxCharHeight() + 1),
+        QRect rGlyph((c % fCharsPerLine) * (fFont->getWidth() + 1),
+                     (c / fCharsPerLine) * (fFont->getMaxCharHeight() + 1),
                      fFont->getWidth(), fFont->getMaxCharHeight());
         rGlyph.translate(0, -verticalScrollBar()->value());
 
+        if (static_cast<int>(c) == fSelected && hasFocus())
+            painter.fillRect(rGlyph, pal.color(QPalette::Highlight));
+
         const plFont::plCharacter& ch = fFont->getCharacter(c);
         QImage cimg(fFont->getGlyph(c), fFont->getWidth(), ch.getHeight(),
-                    stride, imgFormat);
+                    stride, fontImageFormat(fFont));
         painter.drawImage(rGlyph.topLeft(), cimg);
         painter.drawLine(rGlyph.right() + 1, rGlyph.top(),
                          rGlyph.right() + 1, rGlyph.bottom() + 1);
@@ -91,10 +98,101 @@ void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
     }
 }
 
-void QPlasmaCharWidget::resizeEvent(QResizeEvent *event)
+void QPlasmaCharWidget::resizeEvent(QResizeEvent* event)
 {
     (void)event;
     reloadFont();
+}
+
+void QPlasmaCharWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        const int charX = event->x() / (fFont->getWidth() + 1);
+        const int charY = (event->y() + verticalScrollBar()->value())
+                          / (fFont->getMaxCharHeight() + 1);
+        if (charX >= fCharsPerLine
+                || size_t(charY * fCharsPerLine + charX) >= fFont->getNumCharacters())
+            return;
+
+        fSelected = charY * fCharsPerLine + charX;
+        viewport()->repaint();
+
+        emit characterSelected(fSelected);
+    }
+}
+
+void QPlasmaCharWidget::keyPressEvent(QKeyEvent* event)
+{
+    int newSelection = fSelected;
+    if (event->matches(QKeySequence::MoveToNextLine))
+        newSelection += fCharsPerLine;
+    else if (event->matches(QKeySequence::MoveToPreviousLine))
+        newSelection -= fCharsPerLine;
+    else if (event->matches(QKeySequence::MoveToNextChar))
+        newSelection += 1;
+    else if (event->matches(QKeySequence::MoveToPreviousChar))
+        newSelection -= 1;
+    else
+        QAbstractScrollArea::keyPressEvent(event);
+
+    if (newSelection != fSelected && newSelection >= 0
+            && size_t(newSelection) < fFont->getNumCharacters()) {
+        fSelected = newSelection;
+        // TODO: Scroll so the selected character is fully in view
+        viewport()->repaint();
+
+        emit characterSelected(fSelected);
+    }
+}
+
+
+/* QPlasmaCharRender */
+QPlasmaCharRender::QPlasmaCharRender(QWidget* parent)
+    : QWidget(parent), fFont(), fCharIdx()
+{
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+}
+
+void QPlasmaCharRender::reloadFont()
+{
+    setFixedSize(fFont->getWidth() * 3, fFont->getMaxCharHeight() * 3);
+}
+
+void QPlasmaCharRender::setCharacter(int which)
+{
+    fCharIdx = which;
+    update();
+}
+
+void QPlasmaCharRender::paintEvent(QPaintEvent* event)
+{
+    QPainter painter(this);
+    QPalette pal = palette();
+    painter.fillRect(event->rect(), pal.brush(QPalette::Base));
+    if (!fFont)
+        return;
+
+    const auto& ch = fFont->getCharacter(fCharIdx);
+    const size_t stride = fFont->getStride();
+
+    painter.setPen(QColor(255, 0, 0));
+    const int basePos = fFont->getMaxCharHeight() * 2;
+    painter.drawLine(0, basePos, width(), basePos);
+
+    const qreal adjustedWidth = -ch.getLeftKern() + fFont->getWidth() + ch.getRightKern();
+    const qreal startX = (width() - (adjustedWidth * 2)) / 2;
+
+    painter.setPen(QColor(127, 127, 255));
+    painter.drawLine(QPointF(startX - ch.getLeftKern() * 2, 0),
+                     QPointF(startX - ch.getLeftKern() * 2, height()));
+    painter.drawLine(QPointF(startX + (fFont->getWidth() + ch.getRightKern()) * 2, 0),
+                     QPointF(startX + (fFont->getWidth() + ch.getRightKern()) * 2, height()));
+
+    QImage cimg(fFont->getGlyph(fCharIdx), fFont->getWidth(), ch.getHeight(),
+                stride, fontImageFormat(fFont));
+    QRectF destRect(0, 0, fFont->getWidth() * 2, ch.getHeight() * 2);
+    destRect.translate(startX, basePos - ch.getBaseline() * 2);
+    painter.drawImage(destRect, cimg);
 }
 
 
@@ -118,6 +216,15 @@ QPlasmaFont::QPlasmaFont(QWidget* parent)
     fChars = new QPlasmaCharWidget(this);
     fChars->setRenderFont(&fFont);
 
+    auto charGroup = new QGroupBox(tr("Character Details"), this);
+    fRender = new QPlasmaCharRender(this);
+    fRender->setRenderFont(&fFont);
+
+    auto charGroupLayout = new QGridLayout(charGroup);
+    charGroupLayout->setContentsMargins(4, 4, 4, 4);
+    charGroupLayout->addWidget(fRender, 0, 0);
+    charGroupLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 1);
+
     auto layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
     layout->addWidget(lblName, 0, 0);
@@ -129,13 +236,16 @@ QPlasmaFont::QPlasmaFont(QWidget* parent)
     layout->addWidget(fItalic, 1, 4);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 1, 5);
     layout->addWidget(fChars, 2, 0, 1, 6);
-    setLayout(layout);
+    layout->addWidget(charGroup, 3, 0, 1, 6);
 
     connect(fFontName, &QLineEdit::textEdited, this, &QPlasmaDocument::makeDirty);
     connect(fFontSize, QOverload<int>::of(&QSpinBox::valueChanged),
             this, [this] { makeDirty(); });
     connect(fBold, &QCheckBox::clicked, this, &QPlasmaDocument::makeDirty);
     connect(fItalic, &QCheckBox::clicked, this, &QPlasmaDocument::makeDirty);
+
+    connect(fChars, &QPlasmaCharWidget::characterSelected,
+            this, &QPlasmaFont::showCharacter);
 }
 
 bool QPlasmaFont::loadFile(const QString& filename)
@@ -153,6 +263,7 @@ bool QPlasmaFont::loadFile(const QString& filename)
     fBold->setChecked(fFont.isBold());
     fItalic->setChecked(fFont.isItalic());
     fChars->reloadFont();
+    fRender->reloadFont();
 
     return QPlasmaDocument::loadFile(filename);
 }
@@ -173,4 +284,10 @@ bool QPlasmaFont::saveTo(const QString& filename)
     fFont.writeP2F(&S);
 
     return QPlasmaDocument::saveTo(filename);
+}
+
+void QPlasmaFont::showCharacter(int which)
+{
+    fRender->setCharacter(which);
+    // TODO
 }
