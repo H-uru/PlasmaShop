@@ -33,8 +33,8 @@ class QPlasmaDevModeDat : public QPlasmaDocument
 public:
     QPlasmaDevModeDat(QWidget* parent);
 
-    bool loadFile(QString filename) override;
-    bool saveTo(QString filename) override;
+    bool loadFile(const QString& filename) override;
+    bool saveTo(const QString& filename) override;
 
 private:
     enum //DeviceRecord Labels

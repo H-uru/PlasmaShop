@@ -6,6 +6,7 @@ set(PlasmaShop_Headers
     NewFile.h
     QPlasmaDevModeDat.h
     QPlasmaDocument.h
+    QPlasmaFont.h
     QPlasmaTextDoc.h
     QPlasmaSumFile.h
     QPlasmaPakFile.h
@@ -19,6 +20,7 @@ set(PlasmaShop_Sources
     NewFile.cpp
     QPlasmaDevModeDat.cpp
     QPlasmaDocument.cpp
+    QPlasmaFont.cpp
     QPlasmaTextDoc.cpp
     QPlasmaSumFile.cpp
     QPlasmaPakFile.cpp

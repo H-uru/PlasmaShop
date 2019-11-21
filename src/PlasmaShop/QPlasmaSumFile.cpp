@@ -113,7 +113,7 @@ QPlasmaSumFile::QPlasmaSumFile(QWidget* parent)
     connect(fActions[kADel], &QAction::triggered, this, &QPlasmaSumFile::onDel);
 }
 
-bool QPlasmaSumFile::loadFile(QString filename)
+bool QPlasmaSumFile::loadFile(const QString& filename)
 {
     ST::string st_filename = qstr2st(filename);
     if (plEncryptedStream::IsFileEncrypted(st_filename)) {
@@ -145,7 +145,7 @@ bool QPlasmaSumFile::loadFile(QString filename)
     return QPlasmaDocument::loadFile(filename);
 }
 
-bool QPlasmaSumFile::saveTo(QString filename)
+bool QPlasmaSumFile::saveTo(const QString& filename)
 {
     ST::string st_filename = qstr2st(filename);
     if (fEncryption == kEncNone) {

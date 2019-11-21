@@ -293,7 +293,7 @@ QPlasmaPakFile::QPlasmaPakFile(QWidget* parent)
     connect(fActions[kExtractAll], SIGNAL(triggered()), this, SLOT(onExtractAll()));
 }
 
-bool QPlasmaPakFile::loadFile(QString filename)
+bool QPlasmaPakFile::loadFile(const QString& filename)
 {
     if (plEncryptedStream::IsFileEncrypted(filename.toUtf8().data())) {
         plEncryptedStream S(PlasmaVer::pvPrime);
@@ -323,7 +323,7 @@ bool QPlasmaPakFile::loadFile(QString filename)
     return QPlasmaDocument::loadFile(filename);
 }
 
-bool QPlasmaPakFile::saveTo(QString filename)
+bool QPlasmaPakFile::saveTo(const QString& filename)
 {
     if (fEncryption == kEncNone) {
         hsFileStream S(PlasmaVer::pvMoul);

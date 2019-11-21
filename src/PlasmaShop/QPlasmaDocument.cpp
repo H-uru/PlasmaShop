@@ -16,6 +16,7 @@
 
 #include "QPlasmaDevModeDat.h"
 #include "QPlasmaDocument.h"
+#include "QPlasmaFont.h"
 #include "QPlasmaTextDoc.h"
 #include "QPlasmaSumFile.h"
 #include "QPlasmaPakFile.h"
@@ -23,7 +24,7 @@
 #include <QSettings>
 #include <QMessageBox>
 
-QIcon QPlasmaDocument::GetDocIcon(QString filename)
+QIcon QPlasmaDocument::GetDocIcon(const QString& filename)
 {
     // Check for special types first
     if (filename.startsWith('<')) {
@@ -100,7 +101,7 @@ QPlasmaDocument* QPlasmaDocument::GetEditor(DocumentType docType, QWidget* paren
     case kDocDevMode:
         return new QPlasmaDevModeDat(parent);
     case kDocFont:
-        // TODO: Implement
+        return new QPlasmaFont(parent);
     default:
         return NULL;
     }
@@ -147,7 +148,7 @@ bool QPlasmaDocument::GetEncryptionKeyFromUser(QWidget* parent, unsigned int* ke
     return true;
 }
 
-bool QPlasmaDocument::loadFile(QString filename)
+bool QPlasmaDocument::loadFile(const QString& filename)
 {
     fFilename = filename;
     fPersistDirty = false;
@@ -155,7 +156,7 @@ bool QPlasmaDocument::loadFile(QString filename)
     return true;
 }
 
-bool QPlasmaDocument::saveTo(QString filename)
+bool QPlasmaDocument::saveTo(const QString& filename)
 {
     fFilename = filename;
     fPersistDirty = false;

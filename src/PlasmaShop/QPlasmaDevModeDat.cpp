@@ -130,7 +130,7 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     setLayout(scrollLayout);
 }
 
-bool QPlasmaDevModeDat::loadFile(QString filename)
+bool QPlasmaDevModeDat::loadFile(const QString& filename)
 {
     hsFileStream S;
     if (!S.open(filename.toUtf8().data(), fmRead))
@@ -140,7 +140,7 @@ bool QPlasmaDevModeDat::loadFile(QString filename)
     return QPlasmaDocument::loadFile(filename);
 }
 
-bool QPlasmaDevModeDat::saveTo(QString filename)
+bool QPlasmaDevModeDat::saveTo(const QString& filename)
 {
     hsFileStream S;
     S.open(filename.toUtf8().data(), fmCreate);

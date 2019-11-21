@@ -445,7 +445,7 @@ bool QPlasmaTextDoc::onReplaceAll(const QString& text, bool regex, bool cs,
     return true;
 }
 
-bool QPlasmaTextDoc::loadFile(QString filename)
+bool QPlasmaTextDoc::loadFile(const QString& filename)
 {
     const ST::string stFilename = qstr2st(filename);
     if (filename.right(4).toLower() == ".elf") {
@@ -491,7 +491,7 @@ static QString unixToWindowsText(QString &&text)
     return text.replace("\n", "\r\n").replace("\r\r\n", "\r\n");
 }
 
-bool QPlasmaTextDoc::saveTo(QString filename)
+bool QPlasmaTextDoc::saveTo(const QString& filename)
 {
     const ST::string stFilename = qstr2st(filename);
     if (fEncryption == kEncNone) {
