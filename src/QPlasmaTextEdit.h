@@ -42,8 +42,6 @@ class QPlasmaTextEdit : public QPlainTextEdit
 public:
     explicit QPlasmaTextEdit(QWidget* parent);
 
-    bool haveSelection() const;
-
     int lineMarginWidth();
     void paintLineNumbers(QPaintEvent* e);
     bool showLineNumbers() const { return (fEditorSettings & kShowLineNumbers) != 0; }
@@ -70,6 +68,7 @@ public:
 
     void moveLines(QTextCursor::MoveOperation op);
     void smartHome(QTextCursor::MoveMode mode);
+    void smartEnd(QTextCursor::MoveMode mode);
     void deleteLines();
 
 protected:

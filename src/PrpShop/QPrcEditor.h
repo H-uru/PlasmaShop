@@ -42,10 +42,10 @@ public:
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
-    virtual bool canCut() const { return fEditor->haveSelection(); }
-    virtual bool canCopy() const { return fEditor->haveSelection(); }
+    virtual bool canCut() const { return fEditor->textCursor().hasSelection(); }
+    virtual bool canCopy() const { return fEditor->textCursor().hasSelection(); }
     virtual bool canPaste() const { return fEditor->canPaste(); }
-    virtual bool canDelete() const { return fEditor->haveSelection(); }
+    virtual bool canDelete() const { return fEditor->textCursor().hasSelection(); }
     virtual bool canSelectAll() const { return true; }
     virtual bool canUndo() const { return fEditor->document()->isUndoAvailable(); }
     virtual bool canRedo() const { return fEditor->document()->isRedoAvailable(); }

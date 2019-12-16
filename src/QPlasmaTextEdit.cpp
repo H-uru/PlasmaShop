@@ -102,12 +102,6 @@ QPlasmaTextEdit::QPlasmaTextEdit(QWidget* parent)
              : SyntaxRepo()->defaultTheme(KSyntaxHighlighting::Repository::LightTheme));
 }
 
-bool QPlasmaTextEdit::haveSelection() const
-{
-    const QTextCursor cursor = textCursor();
-    return cursor.anchor() != cursor.position();
-}
-
 int QPlasmaTextEdit::lineMarginWidth()
 {
     if (!showLineNumbers())
@@ -234,33 +228,56 @@ void QPlasmaTextEdit::moveLines(QTextCursor::MoveOperation op)
 {
     QTextCursor cursor = textCursor();
 
-    cursor.beginEditBlock();
     int startPos = cursor.position();
     int endPos = cursor.anchor();
     cursor.setPosition(qMin(startPos, endPos));
     cursor.movePosition(QTextCursor::StartOfBlock);
     cursor.setPosition(qMax(startPos, endPos), QTextCursor::KeepAnchor);
-    if (startPos == endPos || !cursor.atBlockStart())
-        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+    bool moveFromEndOfDocument = false;
+    bool moveToEndOfDocument = false;
+    if (startPos == endPos || !cursor.atBlockStart()) {
+        if (!cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor)) {
+            moveFromEndOfDocument = true;
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        }
+    }
 
+    if (cursor.anchor() == 0 && op == QTextCursor::PreviousBlock)
+        return;
+    if (moveFromEndOfDocument && cursor.atEnd() && op == QTextCursor::NextBlock)
+        return;
+
+    cursor.beginEditBlock();
     const auto moveText = cursor.selectedText();
     cursor.removeSelectedText();
     const int positionStart = cursor.position();
-    cursor.movePosition(op);
+    if ((!cursor.movePosition(op) && op == QTextCursor::NextBlock) || cursor.atEnd()) {
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertBlock();
+        moveToEndOfDocument = true;
+    }
     const int postionDelta = cursor.position() - positionStart;
+
     cursor.insertText(moveText);
+    if (moveFromEndOfDocument)
+        cursor.insertBlock();
+    if (moveFromEndOfDocument || moveToEndOfDocument) {
+        // Remove the extra newline from the displaced line
+        cursor.movePosition(QTextCursor::End);
+        cursor.deletePreviousChar();
+    }
+    cursor.endEditBlock();
 
     cursor.setPosition(endPos + postionDelta);
     if (startPos != endPos)
         cursor.setPosition(startPos + postionDelta, QTextCursor::KeepAnchor);
-    cursor.endEditBlock();
 
     setTextCursor(cursor);
 }
 
 void QPlasmaTextEdit::smartHome(QTextCursor::MoveMode moveMode)
 {
-    QTextCursor cursor = textCursor();
+    auto cursor = textCursor();
 
     int leadingIndent = 0;
     const QString blockText = cursor.block().text();
@@ -278,11 +295,31 @@ void QPlasmaTextEdit::smartHome(QTextCursor::MoveMode moveMode)
     setTextCursor(cursor);
     updateCursor();
 }
+void QPlasmaTextEdit::smartEnd(QTextCursor::MoveMode moveMode)
+{
+    auto cursor = textCursor();
+
+    const QString blockText = cursor.block().text();
+    int trailingEnd = 0;
+    for (auto it = blockText.crbegin(); it != blockText.crend(); ++it) {
+        if (it->isSpace())
+            trailingEnd += 1;
+        else
+            break;
+    }
+    int cursorPos = cursor.positionInBlock();
+    cursor.movePosition(QTextCursor::EndOfLine, moveMode);
+    if (cursor.positionInBlock() == cursorPos)
+        cursor.movePosition(QTextCursor::PreviousCharacter, moveMode, trailingEnd);
+
+    setTextCursor(cursor);
+    updateCursor();
+}
 
 void QPlasmaTextEdit::deleteLines()
 {
     QTextCursor cursor = textCursor();
-    if (haveSelection()) {
+    if (cursor.hasSelection()) {
         const int startPos = cursor.selectionStart();
         const int endPos = cursor.selectionEnd();
         cursor.setPosition(startPos);
@@ -295,6 +332,8 @@ void QPlasmaTextEdit::deleteLines()
         cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
     }
     cursor.removeSelectedText();
+    cursor.setVerticalMovementX(-1);
+    setTextCursor(cursor);
 }
 
 void QPlasmaTextEdit::updateMargins()
@@ -495,7 +534,8 @@ void QPlasmaTextEdit::indentSelection()
     do {
         int leadingIndent = 0;
         int startOfLine = 0;
-        for (const auto ch : cursor.block().text()) {
+        const auto blockText = cursor.block().text();
+        for (const auto ch : blockText) {
             if (ch == QLatin1Char('\t')) {
                 leadingIndent += (fTabCharSize - (leadingIndent % fTabCharSize));
                 startOfLine += 1;
@@ -507,19 +547,21 @@ void QPlasmaTextEdit::indentSelection()
             }
         }
 
-        cursor.movePosition(QTextCursor::StartOfLine);
-        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
-                            startOfLine);
-        cursor.removeSelectedText();
+        if (!blockText.isEmpty()) {
+            cursor.movePosition(QTextCursor::StartOfLine);
+            cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
+                                startOfLine);
+            cursor.removeSelectedText();
 
-        const int indent = leadingIndent + fTabCharSize;
-        if (expandTabs()) {
-            cursor.insertText(QString(indent, ' '));
-        } else {
-            const int tabs = indent / fTabCharSize;
-            const int spaces = indent % fTabCharSize;
-            cursor.insertText(QString(tabs, '\t'));
-            cursor.insertText(QString(spaces, ' '));
+            const int indent = leadingIndent + fTabCharSize;
+            if (expandTabs()) {
+                cursor.insertText(QString(indent, ' '));
+            } else {
+                const int tabs = indent / fTabCharSize;
+                const int spaces = indent % fTabCharSize;
+                cursor.insertText(QString(tabs, '\t'));
+                cursor.insertText(QString(spaces, ' '));
+            }
         }
 
         if (!cursor.movePosition(QTextCursor::NextBlock))
@@ -580,7 +622,7 @@ void QPlasmaTextEdit::outdentSelection()
 
 void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
 {
-    // "Smart" home key
+    // "Smart" home/end key
     if (e->matches(QKeySequence::MoveToStartOfLine)) {
         smartHome(QTextCursor::MoveAnchor);
         return;
@@ -589,10 +631,79 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
         smartHome(QTextCursor::KeepAnchor);
         return;
     }
+    if (e->matches(QKeySequence::MoveToEndOfLine)) {
+        smartEnd(QTextCursor::MoveAnchor);
+        return;
+    }
+    if (e->matches(QKeySequence::SelectEndOfLine)) {
+        smartEnd(QTextCursor::KeepAnchor);
+        return;
+    }
+
+    // Handle newline insertion
+    if (e->matches(QKeySequence::InsertParagraphSeparator)) {
+        QTextCursor undoCursor = textCursor();
+        undoCursor.beginEditBlock();
+
+        QPlainTextEdit::keyPressEvent(e);
+
+        // Simple auto-indent: Just copy the previous non-empty line's
+        // leading whitespace
+        if (autoIndent()) {
+            QTextCursor scanCursor = textCursor();
+            int startOfLine = 0;
+            while (scanCursor.blockNumber() > 0 && startOfLine == 0) {
+                scanCursor.movePosition(QTextCursor::PreviousBlock);
+
+                const QString blockText = scanCursor.block().text();
+                for (const auto ch : blockText) {
+                    if (ch.isSpace())
+                        startOfLine += 1;
+                    else
+                        break;
+                }
+                if (startOfLine == 0 && !blockText.isEmpty()) {
+                    // No leading whitespace, but line is not empty.
+                    // Therefore, current leading indent level is 0.
+                    break;
+                }
+            }
+            if (startOfLine != 0) {
+                const QString indentLine = scanCursor.block().text();
+                const QString leadingIndent = indentLine.left(startOfLine);
+                textCursor().insertText(leadingIndent);
+                if (indentLine.size() == startOfLine
+                        && scanCursor.blockNumber() == textCursor().blockNumber() - 1) {
+                    // We copied the previous blank (whitespace-only) line...
+                    // Now we can clear out that line to clean up unnecessary
+                    // trailing whitespace
+                    scanCursor.movePosition(QTextCursor::StartOfBlock);
+                    scanCursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+                    scanCursor.removeSelectedText();
+                }
+            }
+        }
+        undoCursor.endEditBlock();
+
+        updateCursor();
+        return;
+    }
+    if (e->matches(QKeySequence::InsertLineSeparator)) {
+        // Don't allow QPlainTextEdit to insert a soft break :(
+        QKeyEvent retnEvent(e->type(), e->key(),
+                            e->modifiers() & ~Qt::ShiftModifier,
+                            e->nativeScanCode(), e->nativeVirtualKey(),
+                            e->nativeModifiers(), e->text(),
+                            e->isAutoRepeat(), e->count());
+        QPlainTextEdit::keyPressEvent(&retnEvent);
+
+        updateCursor();
+        return;
+    }
 
     switch (e->key()) {
     case Qt::Key_Tab:
-        if (haveSelection()) {
+        if (textCursor().hasSelection()) {
             indentSelection();
         } else if (expandTabs()) {
             QTextCursor cursor = textCursor();
@@ -616,50 +727,6 @@ void QPlasmaTextEdit::keyPressEvent(QKeyEvent* e)
     case Qt::Key_Backtab:
         outdentSelection();
         e->accept();
-        break;
-
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-        {
-            QTextCursor undoCursor = textCursor();
-            undoCursor.beginEditBlock();
-
-            // Don't allow QPlainTextEdit to insert a soft break :(
-            QKeyEvent retnEvent(e->type(), e->key(),
-                                e->modifiers() & ~Qt::ShiftModifier,
-                                e->nativeScanCode(), e->nativeVirtualKey(),
-                                e->nativeModifiers(), e->text(),
-                                e->isAutoRepeat(), e->count());
-            QPlainTextEdit::keyPressEvent(&retnEvent);
-
-            // Simple auto-indent: Just copy the previous non-empty line's
-            // leading whitespace
-            if ((e->modifiers() & Qt::ShiftModifier) == 0 && autoIndent()) {
-                QTextCursor scanCursor = textCursor();
-                int startOfLine = 0;
-                while (scanCursor.blockNumber() > 0 && startOfLine == 0) {
-                    scanCursor.movePosition(QTextCursor::PreviousBlock);
-
-                    const QString blockText = scanCursor.block().text();
-                    for (const auto ch : blockText) {
-                        if (ch.isSpace())
-                            startOfLine += 1;
-                        else
-                            break;
-                    }
-                    if (startOfLine == 0 && !blockText.isEmpty()) {
-                        // No leading whitespace, but line is not empty.
-                        // Therefore, current leading indent level is 0.
-                        break;
-                    }
-                }
-                if (startOfLine != 0) {
-                    const QString leadingIndent = scanCursor.block().text().left(startOfLine);
-                    textCursor().insertText(leadingIndent);
-                }
-            }
-            undoCursor.endEditBlock();
-        }
         break;
 
     case Qt::Key_Up:

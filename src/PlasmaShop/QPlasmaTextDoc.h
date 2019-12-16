@@ -44,10 +44,10 @@ public:
 public:
     explicit QPlasmaTextDoc(QWidget* parent);
 
-    bool canCut() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
-    bool canCopy() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
+    bool canCut() const Q_DECL_OVERRIDE { return fEditor->textCursor().hasSelection(); }
+    bool canCopy() const Q_DECL_OVERRIDE { return fEditor->textCursor().hasSelection(); }
     bool canPaste() const Q_DECL_OVERRIDE { return fEditor->canPaste(); }
-    bool canDelete() const Q_DECL_OVERRIDE { return fEditor->haveSelection(); }
+    bool canDelete() const Q_DECL_OVERRIDE { return fEditor->textCursor().hasSelection(); }
     bool canSelectAll() const Q_DECL_OVERRIDE { return true; }
     bool canUndo() const Q_DECL_OVERRIDE { return fEditor->document()->isUndoAvailable(); }
     bool canRedo() const Q_DECL_OVERRIDE { return fEditor->document()->isRedoAvailable(); }
