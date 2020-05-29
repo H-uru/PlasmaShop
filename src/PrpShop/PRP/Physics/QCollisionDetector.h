@@ -20,8 +20,8 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Physics/plCollisionDetector.h>
-#include <QCheckBox>
 #include "PRP/QObjLink.h"
+#include "QBitmaskCheckBox.h"
 
 class QCollisionDetector : public QCreatable
 {
@@ -37,11 +37,10 @@ protected:
         kCBTypeEnter, kCBTypeExit, kCBTypeAny, kCBTypeUnEnter, kCBTypeUnExit,
         kCBTypeBump, kNumTypeFlags
     };
-    QCheckBox* fTypeFlags[kNumTypeFlags];
+    QBitmaskCheckBox* fTypeFlags[kNumTypeFlags];
 
 public:
     QCollisionDetector(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
 
 protected slots:
     void setSubworld();

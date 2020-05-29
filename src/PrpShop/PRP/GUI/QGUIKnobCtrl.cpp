@@ -44,8 +44,14 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIKnobCtrl::kMapToScreenRange - kModFlagStart], 2, 0);
     flagLayout->addWidget(fModFlags[pfGUIKnobCtrl::kTriggerOnlyOnMouseUp - kModFlagStart], 3, 0);
     flagLayout->addWidget(fModFlags[pfGUIKnobCtrl::kMapToAnimationRange - kModFlagStart], 4, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     fMin = new QFloatEdit(this);
     fMin->setRange(-2147483648.0, 2147483647.0, 3);
@@ -106,9 +112,6 @@ QGUIKnobCtrl::QGUIKnobCtrl(plCreatable* pCre, QWidget* parent)
 void QGUIKnobCtrl::saveDamage()
 {
     pfGUIKnobCtrl* ctrl = pfGUIKnobCtrl::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 
     ctrl->setRange(fMin->value(), fMax->value());
     ctrl->setStep(fStep->value());

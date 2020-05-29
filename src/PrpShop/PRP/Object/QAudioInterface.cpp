@@ -42,6 +42,11 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     layProps->addWidget(fDisabled, 0, 0);
     fDisabled->setChecked(intf->getProperty(plAudioInterface::kDisable));
 
+    connect(fDisabled, &QCheckBox::clicked, this, [this](bool checked) {
+        plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
+        intf->setProperty(plAudioInterface::kDisable, checked);
+    });
+
     fAudibleLink = new QCreatableLink(this);
     fAudibleLink->setKey(intf->getAudible());
 
@@ -57,12 +62,6 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
     connect(fAudibleLink, SIGNAL(addObject()), this, SLOT(setAudible()));
     connect(fAudibleLink, SIGNAL(delObject()), this, SLOT(unsetAudible()));
-}
-
-void QAudioInterface::saveDamage()
-{
-    plAudioInterface* intf = plAudioInterface::Convert(fCreatable);
-    intf->setProperty(plAudioInterface::kDisable, fDisabled->isChecked());
 }
 
 void QAudioInterface::setOwner()

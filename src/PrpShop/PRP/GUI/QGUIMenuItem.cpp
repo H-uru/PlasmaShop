@@ -38,19 +38,17 @@ QGUIMenuItem::QGUIMenuItem(plCreatable* pCre, QWidget* parent)
     flagLayout->setHorizontalSpacing(8);
     flagLayout->addWidget(fModFlags[pfGUIMenuItem::kDrawSubMenuArrow - kModFlagStart], 0, 0);
     flagLayout->addWidget(fModFlags[pfGUIMenuItem::kReportHovers - kModFlagStart], 1, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fButtonModLink, 0, 0, 1, 2);
     layout->addWidget(grpFlags, 1, 0, 1, 2);
-}
-
-void QGUIMenuItem::saveDamage()
-{
-    pfGUIMenuItem* ctrl = pfGUIMenuItem::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 }

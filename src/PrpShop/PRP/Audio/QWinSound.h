@@ -21,7 +21,7 @@
 
 #include <PRP/Audio/plEAXEffects.h>
 #include <QComboBox>
-#include <QCheckBox>
+#include "QBitmaskCheckBox.h"
 #include "PRP/QObjLink.h"
 
 class QEaxSourceSettings : public QWidget
@@ -87,7 +87,7 @@ protected:
         kPropLocalOnly, kPropLoadOnlyOnCall, kPropFullyDisabled, kPropDontFade,
         kPropIncidental, kNumProps
     };
-    QCheckBox* fProperties[kNumProps];
+    QBitmaskCheckBox* fProperties[kNumProps];
 
     // Fade Params
     struct

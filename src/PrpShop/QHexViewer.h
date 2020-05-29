@@ -41,7 +41,6 @@ protected:
 
 public:
     QHexViewer(plCreatable* pCre, QWidget* parent = Q_NULLPTR);
-    void saveDamage() Q_DECL_OVERRIDE { }   // Read-only viewer
 
     void loadObject(const QString& filename, uint32_t offset, uint32_t size);
 

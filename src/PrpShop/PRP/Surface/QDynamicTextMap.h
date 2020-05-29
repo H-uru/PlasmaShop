@@ -19,6 +19,7 @@
 
 #include "QMipmap.h"
 #include <PRP/Surface/plDynamicTextMap.h>
+#include "QBitmaskCheckBox.h"
 
 class QDynamicTextMap : public QCreatable
 {
@@ -32,7 +33,7 @@ protected:
         kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,
         kIsTexture, kIsOffscreen, kIsProjected, kIsOrtho, kNumBitmapFlags
     };
-    QCheckBox* fFlags[kNumBitmapFlags];
+    QBitmaskCheckBox* fFlags[kNumBitmapFlags];
     QIntEdit* fWidth;
     QIntEdit* fHeight;
     QCheckBox* fHasAlpha;

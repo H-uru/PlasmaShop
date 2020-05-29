@@ -27,11 +27,16 @@ QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
     plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
 
     QGroupBox* flagGroup = new QGroupBox(tr("Flags"), this);
-    fFlags[kIsExternal] = new QCheckBox(tr("External"), flagGroup);
-    fFlags[kAlwaysExternal] = new QCheckBox(tr("Always External"), flagGroup);
-    fFlags[kStreamCompressed] = new QCheckBox(tr("Stream Compressed"), flagGroup);
-    fFlags[kOnlyLeftChannel] = new QCheckBox(tr("Left Channel Only"), flagGroup);
-    fFlags[kOnlyRightChannel] = new QCheckBox(tr("Right Channel Only"), flagGroup);
+    fFlags[kIsExternal] = new QBitmaskCheckBox(plSoundBuffer::kIsExternal,
+            tr("External"), flagGroup);
+    fFlags[kAlwaysExternal] = new QBitmaskCheckBox(plSoundBuffer::kAlwaysExternal,
+            tr("Always External"), flagGroup);
+    fFlags[kStreamCompressed] = new QBitmaskCheckBox(plSoundBuffer::kStreamCompressed,
+            tr("Stream Compressed"), flagGroup);
+    fFlags[kOnlyLeftChannel] = new QBitmaskCheckBox(plSoundBuffer::kOnlyLeftChannel,
+            tr("Left Channel Only"), flagGroup);
+    fFlags[kOnlyRightChannel] = new QBitmaskCheckBox(plSoundBuffer::kOnlyRightChannel,
+            tr("Right Channel Only"), flagGroup);
     QGridLayout* flagLayout = new QGridLayout(flagGroup);
     flagLayout->setVerticalSpacing(0);
     flagLayout->setHorizontalSpacing(8);
@@ -41,11 +46,17 @@ QSoundBuffer::QSoundBuffer(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fFlags[kOnlyLeftChannel], 0, 1);
     flagLayout->addWidget(fFlags[kOnlyRightChannel], 1, 1);
 
-    fFlags[kIsExternal]->setChecked((obj->getFlags() & plSoundBuffer::kIsExternal) != 0);
-    fFlags[kAlwaysExternal]->setChecked((obj->getFlags() & plSoundBuffer::kAlwaysExternal) != 0);
-    fFlags[kStreamCompressed]->setChecked((obj->getFlags() & plSoundBuffer::kStreamCompressed) != 0);
-    fFlags[kOnlyLeftChannel]->setChecked((obj->getFlags() & plSoundBuffer::kOnlyLeftChannel) != 0);
-    fFlags[kOnlyRightChannel]->setChecked((obj->getFlags() & plSoundBuffer::kOnlyRightChannel) != 0);
+    for (auto cb : fFlags) {
+        cb->setFrom(obj->getFlags());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
+            obj->setFlags(obj->getFlags() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
+            obj->setFlags(obj->getFlags() & ~mask);
+        });
+    }
 
     QGroupBox* headerGroup = new QGroupBox(tr("Header"), this);
     fFormat = new QComboBox(headerGroup);
@@ -99,11 +110,6 @@ void QSoundBuffer::saveDamage()
 {
     plSoundBuffer* obj = plSoundBuffer::Convert(fCreatable);
 
-    obj->setFlags((fFlags[kIsExternal]->isChecked() ? plSoundBuffer::kIsExternal : 0)
-                | (fFlags[kAlwaysExternal]->isChecked() ? plSoundBuffer::kAlwaysExternal : 0)
-                | (fFlags[kStreamCompressed]->isChecked() ? plSoundBuffer::kStreamCompressed : 0)
-                | (fFlags[kOnlyLeftChannel]->isChecked() ? plSoundBuffer::kOnlyLeftChannel : 0)
-                | (fFlags[kOnlyRightChannel]->isChecked() ? plSoundBuffer::kOnlyRightChannel : 0));
     obj->getHeader().setFormatTag(fFormat->currentIndex());
     obj->getHeader().setBlockAlign(fBlockAlign->value());
     obj->getHeader().setNumChannels(fNumChannels->value());

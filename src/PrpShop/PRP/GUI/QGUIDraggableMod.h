@@ -40,7 +40,6 @@ protected:
 
 public:
     QGUIDraggableMod(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
 };
 
 #endif

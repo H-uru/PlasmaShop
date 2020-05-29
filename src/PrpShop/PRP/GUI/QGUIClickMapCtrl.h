@@ -40,7 +40,6 @@ protected:
 
 public:
     QGUIClickMapCtrl(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
 };
 
 #endif

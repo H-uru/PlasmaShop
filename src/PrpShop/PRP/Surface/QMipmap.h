@@ -18,11 +18,12 @@
 #define _QMIPMAP_H
 
 #include "PRP/QCreatable.h"
-#include "PRP/QObjLink.h"
-#include <QImage>
-#include <QCheckBox>
-#include <QSpinBox>
+
 #include <PRP/Surface/plMipmap.h>
+#include <QImage>
+#include <QSpinBox>
+#include "PRP/QObjLink.h"
+#include "QBitmaskCheckBox.h"
 
 class QTextureBox : public QWidget
 {
@@ -59,7 +60,6 @@ protected:
 
 public:
     QMipmap_Preview(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 
     int level() const { return fLevel; }
 
@@ -79,12 +79,11 @@ protected:
         kHalfSize, kUserOwnsBitmap, kForceRewrite, kForceNonCompressed,
         kIsTexture, kIsOffscreen, kIsProjected, kIsOrtho, kNumBitmapFlags
     };
-    QCheckBox* fFlags[kNumBitmapFlags];
+    QBitmaskCheckBox* fFlags[kNumBitmapFlags];
     QCreatableLink* fPreviewLink;
 
 public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
 
 private slots:
     void onExportDDS();

@@ -38,6 +38,11 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlagModal, 0, 0);
     fModFlagModal->setChecked(dlg->getFlag(pfGUIDialogMod::kModal));
 
+    connect(fModFlagModal, &QCheckBox::clicked, this, [this](bool checked) {
+        pfGUIDialogMod* dlg = pfGUIDialogMod::Convert(fCreatable);
+        dlg->setFlag(pfGUIDialogMod::kModal, checked);
+    });
+
     QGroupBox* colorSchemeGrp = new QGroupBox(tr("Color Scheme"), this);
     fColorScheme = new QGUIColorScheme(colorSchemeGrp);
     fColorScheme->setColorScheme(&dlg->getColorScheme());
@@ -101,7 +106,6 @@ void QGUIDialogMod::saveDamage()
 {
     pfGUIDialogMod* dlg = pfGUIDialogMod::Convert(fCreatable);
 
-    dlg->setFlag(pfGUIDialogMod::kModal, fModFlagModal->isChecked());
     fColorScheme->saveColorScheme(&dlg->getColorScheme());
     dlg->setName(fName->text().toUtf8().constData());
     dlg->setTagID(fTagID->value());

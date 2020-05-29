@@ -36,6 +36,11 @@ QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
     fLeavingAge = new QCheckBox(tr("Leaving Age"));
     fLeavingAge->setChecked(lay->getLeavingAge());
 
+    connect(fLeavingAge, &QCheckBox::clicked, this, [this](bool checked) {
+        plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
+        lay->setLeavingAge(checked);
+    });
+
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fLayerAnimLink, 0, 0, 1, 2);
@@ -45,12 +50,6 @@ QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
 
     connect(fLinkKey, SIGNAL(addObject()), this, SLOT(setLinkKey()));
     connect(fLinkKey, SIGNAL(delObject()), this, SLOT(unsetLinkKey()));
-}
-
-void QLayerLinkAnimation::saveDamage()
-{
-    plLayerLinkAnimation* lay = plLayerLinkAnimation::Convert(fCreatable);
-    lay->setLeavingAge(fLeavingAge->isChecked());
 }
 
 void QLayerLinkAnimation::setLinkKey()

@@ -50,33 +50,60 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     QGridLayout* blendLayout = new QGridLayout(blendWidget);
     blendLayout->setVerticalSpacing(0);
     blendLayout->setHorizontalSpacing(8);
-    fBlendFlags[kBlendTest] = new QCheckBox(tr("Test"), blendWidget);
-    fBlendFlags[kBlendAlpha] = new QCheckBox(tr("Alpha"), blendWidget);
-    fBlendFlags[kBlendMult] = new QCheckBox(tr("Mult"), blendWidget);
-    fBlendFlags[kBlendAdd] = new QCheckBox(tr("Add"), blendWidget);
-    fBlendFlags[kBlendAddColorTimesAlpha] = new QCheckBox(tr("Add Color × Alpha"), blendWidget);
-    fBlendFlags[kBlendAntiAlias] = new QCheckBox(tr("Anti-Alias"), blendWidget);
-    fBlendFlags[kBlendDetail] = new QCheckBox(tr("Detail"), blendWidget);
-    fBlendFlags[kBlendNoColor] = new QCheckBox(tr("No Color"), blendWidget);
-    fBlendFlags[kBlendMADD] = new QCheckBox(tr("MADD"), blendWidget);
-    fBlendFlags[kBlendDot3] = new QCheckBox(tr("Dot3"), blendWidget);
-    fBlendFlags[kBlendAddSigned] = new QCheckBox(tr("Add Signed"), blendWidget);
-    fBlendFlags[kBlendAddSigned2X] = new QCheckBox(tr("Add Signed 2X"), blendWidget);
-    fBlendFlags[kBlendInvertAlpha] = new QCheckBox(tr("Invert Alpha"), blendWidget);
-    fBlendFlags[kBlendInvertColor] = new QCheckBox(tr("Invert Color"), blendWidget);
-    fBlendFlags[kBlendAlphaMult] = new QCheckBox(tr("Alpha Mult"), blendWidget);
-    fBlendFlags[kBlendAlphaAdd] = new QCheckBox(tr("Alpha Add"), blendWidget);
-    fBlendFlags[kBlendNoVtxAlpha] = new QCheckBox(tr("No Vertex Alpha"), blendWidget);
-    fBlendFlags[kBlendNoTexColor] = new QCheckBox(tr("No Texture Color"), blendWidget);
-    fBlendFlags[kBlendNoTexAlpha] = new QCheckBox(tr("No Texture Alpha"), blendWidget);
-    fBlendFlags[kBlendInvertVtxAlpha] = new QCheckBox(tr("Invert Vertex Alpha"), blendWidget);
-    fBlendFlags[kBlendAlphaAlways] = new QCheckBox(tr("Alpha Always"), blendWidget);
-    fBlendFlags[kBlendInvertFinalColor] = new QCheckBox(tr("Invert Final Color"), blendWidget);
-    fBlendFlags[kBlendInvertFinalAlpha] = new QCheckBox(tr("Invert Final Alpha"), blendWidget);
-    fBlendFlags[kBlendEnvBumpNext] = new QCheckBox(tr("Env Bump Next"), blendWidget);
-    fBlendFlags[kBlendSubtract] = new QCheckBox(tr("Subtract"), blendWidget);
-    fBlendFlags[kBlendRevSubtract] = new QCheckBox(tr("Rev Subtract"), blendWidget);
-    fBlendFlags[kBlendAlphaTestHigh] = new QCheckBox(tr("Alpha Test High"), blendWidget);
+    fBlendFlags[kBlendTest] = new QBitmaskCheckBox(hsGMatState::kBlendTest,
+            tr("Test"), blendWidget);
+    fBlendFlags[kBlendAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendAlpha,
+            tr("Alpha"), blendWidget);
+    fBlendFlags[kBlendMult] = new QBitmaskCheckBox(hsGMatState::kBlendMult,
+            tr("Mult"), blendWidget);
+    fBlendFlags[kBlendAdd] = new QBitmaskCheckBox(hsGMatState::kBlendAdd,
+            tr("Add"), blendWidget);
+    fBlendFlags[kBlendAddColorTimesAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendAddColorTimesAlpha,
+            tr("Add Color × Alpha"), blendWidget);
+    fBlendFlags[kBlendAntiAlias] = new QBitmaskCheckBox(hsGMatState::kBlendAntiAlias,
+            tr("Anti-Alias"), blendWidget);
+    fBlendFlags[kBlendDetail] = new QBitmaskCheckBox(hsGMatState::kBlendDetail,
+            tr("Detail"), blendWidget);
+    fBlendFlags[kBlendNoColor] = new QBitmaskCheckBox(hsGMatState::kBlendNoColor,
+            tr("No Color"), blendWidget);
+    fBlendFlags[kBlendMADD] = new QBitmaskCheckBox(hsGMatState::kBlendMADD,
+            tr("MADD"), blendWidget);
+    fBlendFlags[kBlendDot3] = new QBitmaskCheckBox(hsGMatState::kBlendDot3,
+            tr("Dot3"), blendWidget);
+    fBlendFlags[kBlendAddSigned] = new QBitmaskCheckBox(hsGMatState::kBlendAddSigned,
+            tr("Add Signed"), blendWidget);
+    fBlendFlags[kBlendAddSigned2X] = new QBitmaskCheckBox(hsGMatState::kBlendAddSigned2X,
+            tr("Add Signed 2X"), blendWidget);
+    fBlendFlags[kBlendInvertAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendInvertAlpha,
+            tr("Invert Alpha"), blendWidget);
+    fBlendFlags[kBlendInvertColor] = new QBitmaskCheckBox(hsGMatState::kBlendInvertColor,
+            tr("Invert Color"), blendWidget);
+    fBlendFlags[kBlendAlphaMult] = new QBitmaskCheckBox(hsGMatState::kBlendAlphaMult,
+            tr("Alpha Mult"), blendWidget);
+    fBlendFlags[kBlendAlphaAdd] = new QBitmaskCheckBox(hsGMatState::kBlendAlphaAdd,
+            tr("Alpha Add"), blendWidget);
+    fBlendFlags[kBlendNoVtxAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendNoVtxAlpha,
+            tr("No Vertex Alpha"), blendWidget);
+    fBlendFlags[kBlendNoTexColor] = new QBitmaskCheckBox(hsGMatState::kBlendNoTexColor,
+            tr("No Texture Color"), blendWidget);
+    fBlendFlags[kBlendNoTexAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendNoTexAlpha,
+            tr("No Texture Alpha"), blendWidget);
+    fBlendFlags[kBlendInvertVtxAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendInvertVtxAlpha,
+            tr("Invert Vertex Alpha"), blendWidget);
+    fBlendFlags[kBlendAlphaAlways] = new QBitmaskCheckBox(hsGMatState::kBlendAlphaAlways,
+            tr("Alpha Always"), blendWidget);
+    fBlendFlags[kBlendInvertFinalColor] = new QBitmaskCheckBox(hsGMatState::kBlendInvertFinalColor,
+            tr("Invert Final Color"), blendWidget);
+    fBlendFlags[kBlendInvertFinalAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendInvertFinalAlpha,
+            tr("Invert Final Alpha"), blendWidget);
+    fBlendFlags[kBlendEnvBumpNext] = new QBitmaskCheckBox(hsGMatState::kBlendEnvBumpNext,
+            tr("Env Bump Next"), blendWidget);
+    fBlendFlags[kBlendSubtract] = new QBitmaskCheckBox(hsGMatState::kBlendSubtract,
+            tr("Subtract"), blendWidget);
+    fBlendFlags[kBlendRevSubtract] = new QBitmaskCheckBox(hsGMatState::kBlendRevSubtract,
+            tr("Rev Subtract"), blendWidget);
+    fBlendFlags[kBlendAlphaTestHigh] = new QBitmaskCheckBox(hsGMatState::kBlendAlphaTestHigh,
+            tr("Alpha Test High"), blendWidget);
     blendLayout->addWidget(fBlendFlags[kBlendTest], 0, 0);
     blendLayout->addWidget(fBlendFlags[kBlendAddColorTimesAlpha], 0, 1);
     blendLayout->addWidget(fBlendFlags[kBlendInvertAlpha], 0, 2);
@@ -106,17 +133,37 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     blendLayout->addWidget(fBlendFlags[kBlendEnvBumpNext], 6, 3);
     blendLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 7, 0, 1, 4);
 
+    const hsGMatState &state = lay->getState();
+    for (auto cb : fBlendFlags) {
+        cb->setFrom(state.fBlendFlags);
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fBlendFlags |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fBlendFlags &= ~mask;
+        });
+    }
+
     QWidget* clampZWidget = new QWidget(flagTab);
     QGridLayout* clampZLayout = new QGridLayout(clampZWidget);
     clampZLayout->setVerticalSpacing(0);
     clampZLayout->setHorizontalSpacing(8);
-    fClampFlags[kClampTextureU] = new QCheckBox(tr("Clamp Texture U"), clampZWidget);
-    fClampFlags[kClampTextureV] = new QCheckBox(tr("Clamp Texture V"), clampZWidget);
-    fZFlags[kZIncLayer] = new QCheckBox(tr("Increment Z Layer"), clampZWidget);
-    fZFlags[kZClearZ] = new QCheckBox(tr("Clear Z"), clampZWidget);
-    fZFlags[kZNoZRead] = new QCheckBox(tr("No Z Read"), clampZWidget);
-    fZFlags[kZNoZWrite] = new QCheckBox(tr("No Z Write"), clampZWidget);
-    fZFlags[kZLODBias] = new QCheckBox(tr("LOD Bias"), clampZWidget);
+    fClampFlags[kClampTextureU] = new QBitmaskCheckBox(hsGMatState::kClampTextureU,
+            tr("Clamp Texture U"), clampZWidget);
+    fClampFlags[kClampTextureV] = new QBitmaskCheckBox(hsGMatState::kClampTextureV,
+            tr("Clamp Texture V"), clampZWidget);
+    fZFlags[kZIncLayer] = new QBitmaskCheckBox(hsGMatState::kZIncLayer,
+            tr("Increment Z Layer"), clampZWidget);
+    fZFlags[kZClearZ] = new QBitmaskCheckBox(hsGMatState::kZClearZ,
+            tr("Clear Z"), clampZWidget);
+    fZFlags[kZNoZRead] = new QBitmaskCheckBox(hsGMatState::kZNoZRead,
+            tr("No Z Read"), clampZWidget);
+    fZFlags[kZNoZWrite] = new QBitmaskCheckBox(hsGMatState::kZNoZWrite,
+            tr("No Z Write"), clampZWidget);
+    fZFlags[kZLODBias] = new QBitmaskCheckBox(hsGMatState::kZLODBias,
+            tr("LOD Bias"), clampZWidget);
     clampZLayout->addWidget(fClampFlags[kClampTextureU], 0, 0);
     clampZLayout->addWidget(fClampFlags[kClampTextureV], 0, 1);
     clampZLayout->addItem(new QSpacerItem(0, 16), 1, 0, 1, 2);
@@ -127,26 +174,66 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     clampZLayout->addWidget(fZFlags[kZLODBias], 4, 0);
     clampZLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0, 1, 2);
 
+    for (auto cb : fClampFlags) {
+        cb->setFrom(state.fClampFlags);
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fClampFlags |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fClampFlags &= ~mask;
+        });
+    }
+
+    for (auto cb : fZFlags) {
+        cb->setFrom(state.fZFlags);
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fZFlags |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fZFlags &= ~mask;
+        });
+    }
+
     QWidget* shadeWidget = new QWidget(flagTab);
     QGridLayout* shadeLayout = new QGridLayout(shadeWidget);
     shadeLayout->setVerticalSpacing(0);
     shadeLayout->setHorizontalSpacing(8);
-    fShadeFlags[kShadeSoftShadow] = new QCheckBox(tr("Soft Shadow"), shadeWidget);
-    fShadeFlags[kShadeNoProjectors] = new QCheckBox(tr("No Projectors"), shadeWidget);
-    fShadeFlags[kShadeEnvironMap] = new QCheckBox(tr("EnvironMap"), shadeWidget);
-    fShadeFlags[kShadeVertexShade] = new QCheckBox(tr("Vertex Shade"), shadeWidget);
-    fShadeFlags[kShadeBlack] = new QCheckBox(tr("Black"), shadeWidget);
-    fShadeFlags[kShadeSpecular] = new QCheckBox(tr("Specular"), shadeWidget);
-    fShadeFlags[kShadeNoFog] = new QCheckBox(tr("No Fog"), shadeWidget);
-    fShadeFlags[kShadeWhite] = new QCheckBox(tr("White"), shadeWidget);
-    fShadeFlags[kShadeSpecularAlpha] = new QCheckBox(tr("Specular Alpha"), shadeWidget);
-    fShadeFlags[kShadeSpecularColor] = new QCheckBox(tr("Specular Color"), shadeWidget);
-    fShadeFlags[kShadeSpecularHighlight] = new QCheckBox(tr("Specular Highlight"), shadeWidget);
-    fShadeFlags[kShadeVertColShade] = new QCheckBox(tr("Vtx Color Shade"), shadeWidget);
-    fShadeFlags[kShadeInherit] = new QCheckBox(tr("Inherit"), shadeWidget);
-    fShadeFlags[kShadeIgnoreVtxIllum] = new QCheckBox(tr("Ignore Vtx Illum"), shadeWidget);
-    fShadeFlags[kShadeEmissive] = new QCheckBox(tr("Emissive"), shadeWidget);
-    fShadeFlags[kShadeReallyNoFog] = new QCheckBox(tr("Really No Fog"), shadeWidget);
+    fShadeFlags[kShadeSoftShadow] = new QBitmaskCheckBox(hsGMatState::kShadeSoftShadow,
+            tr("Soft Shadow"), shadeWidget);
+    fShadeFlags[kShadeNoProjectors] = new QBitmaskCheckBox(hsGMatState::kShadeNoProjectors,
+            tr("No Projectors"), shadeWidget);
+    fShadeFlags[kShadeEnvironMap] = new QBitmaskCheckBox(hsGMatState::kShadeEnvironMap,
+            tr("EnvironMap"), shadeWidget);
+    fShadeFlags[kShadeVertexShade] = new QBitmaskCheckBox(hsGMatState::kShadeVertexShade,
+            tr("Vertex Shade"), shadeWidget);
+    fShadeFlags[kShadeBlack] = new QBitmaskCheckBox(hsGMatState::kShadeBlack,
+            tr("Black"), shadeWidget);
+    fShadeFlags[kShadeSpecular] = new QBitmaskCheckBox(hsGMatState::kShadeSpecular,
+            tr("Specular"), shadeWidget);
+    fShadeFlags[kShadeNoFog] = new QBitmaskCheckBox(hsGMatState::kShadeNoFog,
+            tr("No Fog"), shadeWidget);
+    fShadeFlags[kShadeWhite] = new QBitmaskCheckBox(hsGMatState::kShadeWhite,
+            tr("White"), shadeWidget);
+    fShadeFlags[kShadeSpecularAlpha] = new QBitmaskCheckBox(hsGMatState::kShadeSpecularAlpha,
+            tr("Specular Alpha"), shadeWidget);
+    fShadeFlags[kShadeSpecularColor] = new QBitmaskCheckBox(hsGMatState::kShadeSpecularColor,
+            tr("Specular Color"), shadeWidget);
+    fShadeFlags[kShadeSpecularHighlight] = new QBitmaskCheckBox(hsGMatState::kShadeSpecularHighlight,
+            tr("Specular Highlight"), shadeWidget);
+    fShadeFlags[kShadeVertColShade] = new QBitmaskCheckBox(hsGMatState::kShadeVertColShade,
+            tr("Vtx Color Shade"), shadeWidget);
+    fShadeFlags[kShadeInherit] = new QBitmaskCheckBox(hsGMatState::kShadeInherit,
+            tr("Inherit"), shadeWidget);
+    fShadeFlags[kShadeIgnoreVtxIllum] = new QBitmaskCheckBox(hsGMatState::kShadeIgnoreVtxIllum,
+            tr("Ignore Vtx Illum"), shadeWidget);
+    fShadeFlags[kShadeEmissive] = new QBitmaskCheckBox(hsGMatState::kShadeEmissive,
+            tr("Emissive"), shadeWidget);
+    fShadeFlags[kShadeReallyNoFog] = new QBitmaskCheckBox(hsGMatState::kShadeReallyNoFog,
+            tr("Really No Fog"), shadeWidget);
     shadeLayout->addWidget(fShadeFlags[kShadeSoftShadow], 0, 0);
     shadeLayout->addWidget(fShadeFlags[kShadeBlack], 0, 1);
     shadeLayout->addWidget(fShadeFlags[kShadeSpecularAlpha], 0, 2);
@@ -165,33 +252,68 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     shadeLayout->addWidget(fShadeFlags[kShadeReallyNoFog], 3, 3);
     shadeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 4, 0, 1, 4);
 
+    for (auto cb : fShadeFlags) {
+        cb->setFrom(state.fShadeFlags);
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fShadeFlags |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fShadeFlags &= ~mask;
+        });
+    }
+
     QWidget* miscWidget = new QWidget(flagTab);
     QGridLayout* miscLayout = new QGridLayout(miscWidget);
     miscLayout->setVerticalSpacing(0);
     miscLayout->setHorizontalSpacing(8);
-    fMiscFlags[kMiscWireFrame] = new QCheckBox(tr("Wire Frame"), miscWidget);
-    fMiscFlags[kMiscDrawMeshOutlines] = new QCheckBox(tr("Mesh Outlines"), miscWidget);
-    fMiscFlags[kMiscTwoSided] = new QCheckBox(tr("Two-Sided"), miscWidget);
-    fMiscFlags[kMiscDrawAsSplats] = new QCheckBox(tr("Draw as Splats"), miscWidget);
-    fMiscFlags[kMiscAdjustPlane] = new QCheckBox(tr("Adjust Plane"), miscWidget);
-    fMiscFlags[kMiscAdjustCylinder] = new QCheckBox(tr("Adjust Cylinder"), miscWidget);
-    fMiscFlags[kMiscAdjustSphere] = new QCheckBox(tr("Adjust Sphere"), miscWidget);
-    fMiscFlags[kMiscTroubledLoner] = new QCheckBox(tr("Troubled Loner"), miscWidget);
-    fMiscFlags[kMiscBindSkip] = new QCheckBox(tr("Bind Skip"), miscWidget);
-    fMiscFlags[kMiscBindMask] = new QCheckBox(tr("Bind Mask"), miscWidget);
-    fMiscFlags[kMiscBindNext] = new QCheckBox(tr("Bind Next"), miscWidget);
-    fMiscFlags[kMiscLightMap] = new QCheckBox(tr("Light Map"), miscWidget);
-    fMiscFlags[kMiscUseReflectionXform] = new QCheckBox(tr("Use Reflec Xform"), miscWidget);
-    fMiscFlags[kMiscPerspProjection] = new QCheckBox(tr("Persp Projection"), miscWidget);
-    fMiscFlags[kMiscOrthoProjection] = new QCheckBox(tr("Ortho Projection"), miscWidget);
-    fMiscFlags[kMiscRestartPassHere] = new QCheckBox(tr("Restart Pass Here"), miscWidget);
-    fMiscFlags[kMiscBumpLayer] = new QCheckBox(tr("Bump Layer"), miscWidget);
-    fMiscFlags[kMiscBumpDu] = new QCheckBox(tr("Bump DU"), miscWidget);
-    fMiscFlags[kMiscBumpDv] = new QCheckBox(tr("Bump DV"), miscWidget);
-    fMiscFlags[kMiscBumpDw] = new QCheckBox(tr("Bump DW"), miscWidget);
-    fMiscFlags[kMiscNoShadowAlpha] = new QCheckBox(tr("No Shadow Alpha"), miscWidget);
-    fMiscFlags[kMiscUseRefractionXform] = new QCheckBox(tr("Use Refrac Xform"), miscWidget);
-    fMiscFlags[kMiscCam2Screen] = new QCheckBox(tr("Cam 2 Screen"), miscWidget);
+    fMiscFlags[kMiscWireFrame] = new QBitmaskCheckBox(hsGMatState::kMiscWireFrame,
+            tr("Wire Frame"), miscWidget);
+    fMiscFlags[kMiscDrawMeshOutlines] = new QBitmaskCheckBox(hsGMatState::kMiscDrawMeshOutlines,
+            tr("Mesh Outlines"), miscWidget);
+    fMiscFlags[kMiscTwoSided] = new QBitmaskCheckBox(hsGMatState::kMiscTwoSided,
+            tr("Two-Sided"), miscWidget);
+    fMiscFlags[kMiscDrawAsSplats] = new QBitmaskCheckBox(hsGMatState::kMiscDrawAsSplats,
+            tr("Draw as Splats"), miscWidget);
+    fMiscFlags[kMiscAdjustPlane] = new QBitmaskCheckBox(hsGMatState::kMiscAdjustPlane,
+            tr("Adjust Plane"), miscWidget);
+    fMiscFlags[kMiscAdjustCylinder] = new QBitmaskCheckBox(hsGMatState::kMiscAdjustCylinder,
+            tr("Adjust Cylinder"), miscWidget);
+    fMiscFlags[kMiscAdjustSphere] = new QBitmaskCheckBox(hsGMatState::kMiscAdjustSphere,
+            tr("Adjust Sphere"), miscWidget);
+    fMiscFlags[kMiscTroubledLoner] = new QBitmaskCheckBox(hsGMatState::kMiscTroubledLoner,
+            tr("Troubled Loner"), miscWidget);
+    fMiscFlags[kMiscBindSkip] = new QBitmaskCheckBox(hsGMatState::kMiscBindSkip,
+            tr("Bind Skip"), miscWidget);
+    fMiscFlags[kMiscBindMask] = new QBitmaskCheckBox(hsGMatState::kMiscBindMask,
+            tr("Bind Mask"), miscWidget);
+    fMiscFlags[kMiscBindNext] = new QBitmaskCheckBox(hsGMatState::kMiscBindNext,
+            tr("Bind Next"), miscWidget);
+    fMiscFlags[kMiscLightMap] = new QBitmaskCheckBox(hsGMatState::kMiscLightMap,
+            tr("Light Map"), miscWidget);
+    fMiscFlags[kMiscUseReflectionXform] = new QBitmaskCheckBox(hsGMatState::kMiscUseReflectionXform,
+            tr("Use Reflec Xform"), miscWidget);
+    fMiscFlags[kMiscPerspProjection] = new QBitmaskCheckBox(hsGMatState::kMiscPerspProjection,
+            tr("Persp Projection"), miscWidget);
+    fMiscFlags[kMiscOrthoProjection] = new QBitmaskCheckBox(hsGMatState::kMiscOrthoProjection,
+            tr("Ortho Projection"), miscWidget);
+    fMiscFlags[kMiscRestartPassHere] = new QBitmaskCheckBox(hsGMatState::kMiscRestartPassHere,
+            tr("Restart Pass Here"), miscWidget);
+    fMiscFlags[kMiscBumpLayer] = new QBitmaskCheckBox(hsGMatState::kMiscBumpLayer,
+            tr("Bump Layer"), miscWidget);
+    fMiscFlags[kMiscBumpDu] = new QBitmaskCheckBox(hsGMatState::kMiscBumpDu,
+            tr("Bump DU"), miscWidget);
+    fMiscFlags[kMiscBumpDv] = new QBitmaskCheckBox(hsGMatState::kMiscBumpDv,
+            tr("Bump DV"), miscWidget);
+    fMiscFlags[kMiscBumpDw] = new QBitmaskCheckBox(hsGMatState::kMiscBumpDw,
+            tr("Bump DW"), miscWidget);
+    fMiscFlags[kMiscNoShadowAlpha] = new QBitmaskCheckBox(hsGMatState::kMiscNoShadowAlpha,
+            tr("No Shadow Alpha"), miscWidget);
+    fMiscFlags[kMiscUseRefractionXform] = new QBitmaskCheckBox(hsGMatState::kMiscUseRefractionXform,
+            tr("Use Refrac Xform"), miscWidget);
+    fMiscFlags[kMiscCam2Screen] = new QBitmaskCheckBox(hsGMatState::kMiscCam2Screen,
+            tr("Cam 2 Screen"), miscWidget);
     miscLayout->addWidget(fMiscFlags[kMiscWireFrame], 0, 0);
     miscLayout->addWidget(fMiscFlags[kMiscDrawAsSplats], 0, 1);
     miscLayout->addWidget(fMiscFlags[kMiscBumpLayer], 0, 2);
@@ -217,11 +339,22 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     miscLayout->addWidget(fMiscFlags[kMiscNoShadowAlpha], 5, 2, 1, 2);
     miscLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 6, 0, 1, 4);
 
+    for (auto cb : fMiscFlags) {
+        cb->setFrom(state.fMiscFlags);
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fMiscFlags |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plLayer* lay = plLayer::Convert(fCreatable);
+            lay->getState().fMiscFlags &= ~mask;
+        });
+    }
+
     flagTab->addTab(blendWidget, tr("Blend Flags"));
     flagTab->addTab(clampZWidget, tr("Clamp/Z Flags"));
     flagTab->addTab(shadeWidget, tr("Shade Flags"));
     flagTab->addTab(miscWidget, tr("Misc Flags"));
-    updateFlags(lay->getState());
 
     QTabWidget* xformTab = new QTabWidget(this);
     fUvwTransform = new QMatrix44(xformTab);
@@ -316,165 +449,6 @@ void QLayer::saveDamage()
     lay->setOpacity(fOpacity->value());
     lay->setLODBias(fLodBias->value());
     lay->setSpecularPower(fSpecPower->value());
-    updateState(lay->getState());
-}
-
-void QLayer::updateFlags(const hsGMatState& state)
-{
-    fBlendFlags[kBlendTest]->setChecked((state.fBlendFlags & hsGMatState::kBlendTest) != 0);
-    fBlendFlags[kBlendAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendAlpha) != 0);
-    fBlendFlags[kBlendMult]->setChecked((state.fBlendFlags & hsGMatState::kBlendMult) != 0);
-    fBlendFlags[kBlendAdd]->setChecked((state.fBlendFlags & hsGMatState::kBlendAdd) != 0);
-    fBlendFlags[kBlendAddColorTimesAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendAddColorTimesAlpha) != 0);
-    fBlendFlags[kBlendAntiAlias]->setChecked((state.fBlendFlags & hsGMatState::kBlendAntiAlias) != 0);
-    fBlendFlags[kBlendDetail]->setChecked((state.fBlendFlags & hsGMatState::kBlendDetail) != 0);
-    fBlendFlags[kBlendNoColor]->setChecked((state.fBlendFlags & hsGMatState::kBlendNoColor) != 0);
-    fBlendFlags[kBlendMADD]->setChecked((state.fBlendFlags & hsGMatState::kBlendMADD) != 0);
-    fBlendFlags[kBlendDot3]->setChecked((state.fBlendFlags & hsGMatState::kBlendDot3) != 0);
-    fBlendFlags[kBlendAddSigned]->setChecked((state.fBlendFlags & hsGMatState::kBlendAddSigned) != 0);
-    fBlendFlags[kBlendAddSigned2X]->setChecked((state.fBlendFlags & hsGMatState::kBlendAddSigned2X) != 0);
-    fBlendFlags[kBlendInvertAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendInvertAlpha) != 0);
-    fBlendFlags[kBlendInvertColor]->setChecked((state.fBlendFlags & hsGMatState::kBlendInvertColor) != 0);
-    fBlendFlags[kBlendAlphaMult]->setChecked((state.fBlendFlags & hsGMatState::kBlendAlphaMult) != 0);
-    fBlendFlags[kBlendAlphaAdd]->setChecked((state.fBlendFlags & hsGMatState::kBlendAlphaAdd) != 0);
-    fBlendFlags[kBlendNoVtxAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendNoVtxAlpha) != 0);
-    fBlendFlags[kBlendNoTexColor]->setChecked((state.fBlendFlags & hsGMatState::kBlendNoTexColor) != 0);
-    fBlendFlags[kBlendNoTexAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendNoTexAlpha) != 0);
-    fBlendFlags[kBlendInvertVtxAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendInvertVtxAlpha) != 0);
-    fBlendFlags[kBlendAlphaAlways]->setChecked((state.fBlendFlags & hsGMatState::kBlendAlphaAlways) != 0);
-    fBlendFlags[kBlendInvertFinalColor]->setChecked((state.fBlendFlags & hsGMatState::kBlendInvertFinalColor) != 0);
-    fBlendFlags[kBlendInvertFinalAlpha]->setChecked((state.fBlendFlags & hsGMatState::kBlendInvertFinalAlpha) != 0);
-    fBlendFlags[kBlendEnvBumpNext]->setChecked((state.fBlendFlags & hsGMatState::kBlendEnvBumpNext) != 0);
-    fBlendFlags[kBlendSubtract]->setChecked((state.fBlendFlags & hsGMatState::kBlendSubtract) != 0);
-    fBlendFlags[kBlendRevSubtract]->setChecked((state.fBlendFlags & hsGMatState::kBlendRevSubtract) != 0);
-    fBlendFlags[kBlendAlphaTestHigh]->setChecked((state.fBlendFlags & hsGMatState::kBlendAlphaTestHigh) != 0);
-
-    fClampFlags[kClampTextureU]->setChecked((state.fClampFlags & hsGMatState::kClampTextureU) != 0);
-    fClampFlags[kClampTextureV]->setChecked((state.fClampFlags & hsGMatState::kClampTextureV) != 0);
-
-    fZFlags[kZIncLayer]->setChecked((state.fZFlags & hsGMatState::kZIncLayer) != 0);
-    fZFlags[kZClearZ]->setChecked((state.fZFlags & hsGMatState::kZClearZ) != 0);
-    fZFlags[kZNoZRead]->setChecked((state.fZFlags & hsGMatState::kZNoZRead) != 0);
-    fZFlags[kZNoZWrite]->setChecked((state.fZFlags & hsGMatState::kZNoZWrite) != 0);
-    fZFlags[kZLODBias]->setChecked((state.fZFlags & hsGMatState::kZLODBias) != 0);
-
-    fShadeFlags[kShadeSoftShadow]->setChecked((state.fShadeFlags & hsGMatState::kShadeSoftShadow) != 0);
-    fShadeFlags[kShadeNoProjectors]->setChecked((state.fShadeFlags & hsGMatState::kShadeNoProjectors) != 0);
-    fShadeFlags[kShadeEnvironMap]->setChecked((state.fShadeFlags & hsGMatState::kShadeEnvironMap) != 0);
-    fShadeFlags[kShadeVertexShade]->setChecked((state.fShadeFlags & hsGMatState::kShadeVertexShade) != 0);
-    fShadeFlags[kShadeBlack]->setChecked((state.fShadeFlags & hsGMatState::kShadeBlack) != 0);
-    fShadeFlags[kShadeSpecular]->setChecked((state.fShadeFlags & hsGMatState::kShadeSpecular) != 0);
-    fShadeFlags[kShadeNoFog]->setChecked((state.fShadeFlags & hsGMatState::kShadeNoFog) != 0);
-    fShadeFlags[kShadeWhite]->setChecked((state.fShadeFlags & hsGMatState::kShadeWhite) != 0);
-    fShadeFlags[kShadeSpecularAlpha]->setChecked((state.fShadeFlags & hsGMatState::kShadeSpecularAlpha) != 0);
-    fShadeFlags[kShadeSpecularColor]->setChecked((state.fShadeFlags & hsGMatState::kShadeSpecularColor) != 0);
-    fShadeFlags[kShadeSpecularHighlight]->setChecked((state.fShadeFlags & hsGMatState::kShadeSpecularHighlight) != 0);
-    fShadeFlags[kShadeVertColShade]->setChecked((state.fShadeFlags & hsGMatState::kShadeVertColShade) != 0);
-    fShadeFlags[kShadeInherit]->setChecked((state.fShadeFlags & hsGMatState::kShadeInherit) != 0);
-    fShadeFlags[kShadeIgnoreVtxIllum]->setChecked((state.fShadeFlags & hsGMatState::kShadeIgnoreVtxIllum) != 0);
-    fShadeFlags[kShadeEmissive]->setChecked((state.fShadeFlags & hsGMatState::kShadeEmissive) != 0);
-    fShadeFlags[kShadeReallyNoFog]->setChecked((state.fShadeFlags & hsGMatState::kShadeReallyNoFog) != 0);
-
-    fMiscFlags[kMiscWireFrame]->setChecked((state.fMiscFlags & hsGMatState::kMiscWireFrame) != 0);
-    fMiscFlags[kMiscDrawMeshOutlines]->setChecked((state.fMiscFlags & hsGMatState::kMiscDrawMeshOutlines) != 0);
-    fMiscFlags[kMiscTwoSided]->setChecked((state.fMiscFlags & hsGMatState::kMiscTwoSided) != 0);
-    fMiscFlags[kMiscDrawAsSplats]->setChecked((state.fMiscFlags & hsGMatState::kMiscDrawAsSplats) != 0);
-    fMiscFlags[kMiscAdjustPlane]->setChecked((state.fMiscFlags & hsGMatState::kMiscAdjustPlane) != 0);
-    fMiscFlags[kMiscAdjustCylinder]->setChecked((state.fMiscFlags & hsGMatState::kMiscAdjustCylinder) != 0);
-    fMiscFlags[kMiscAdjustSphere]->setChecked((state.fMiscFlags & hsGMatState::kMiscAdjustSphere) != 0);
-    fMiscFlags[kMiscTroubledLoner]->setChecked((state.fMiscFlags & hsGMatState::kMiscTroubledLoner) != 0);
-    fMiscFlags[kMiscBindSkip]->setChecked((state.fMiscFlags & hsGMatState::kMiscBindSkip) != 0);
-    fMiscFlags[kMiscBindMask]->setChecked((state.fMiscFlags & hsGMatState::kMiscBindMask) != 0);
-    fMiscFlags[kMiscBindNext]->setChecked((state.fMiscFlags & hsGMatState::kMiscBindNext) != 0);
-    fMiscFlags[kMiscLightMap]->setChecked((state.fMiscFlags & hsGMatState::kMiscLightMap) != 0);
-    fMiscFlags[kMiscUseReflectionXform]->setChecked((state.fMiscFlags & hsGMatState::kMiscUseReflectionXform) != 0);
-    fMiscFlags[kMiscPerspProjection]->setChecked((state.fMiscFlags & hsGMatState::kMiscPerspProjection) != 0);
-    fMiscFlags[kMiscOrthoProjection]->setChecked((state.fMiscFlags & hsGMatState::kMiscOrthoProjection) != 0);
-    fMiscFlags[kMiscRestartPassHere]->setChecked((state.fMiscFlags & hsGMatState::kMiscRestartPassHere) != 0);
-    fMiscFlags[kMiscBumpLayer]->setChecked((state.fMiscFlags & hsGMatState::kMiscBumpLayer) != 0);
-    fMiscFlags[kMiscBumpDu]->setChecked((state.fMiscFlags & hsGMatState::kMiscBumpDu) != 0);
-    fMiscFlags[kMiscBumpDv]->setChecked((state.fMiscFlags & hsGMatState::kMiscBumpDv) != 0);
-    fMiscFlags[kMiscBumpDw]->setChecked((state.fMiscFlags & hsGMatState::kMiscBumpDw) != 0);
-    fMiscFlags[kMiscNoShadowAlpha]->setChecked((state.fMiscFlags & hsGMatState::kMiscNoShadowAlpha) != 0);
-    fMiscFlags[kMiscUseRefractionXform]->setChecked((state.fMiscFlags & hsGMatState::kMiscUseRefractionXform) != 0);
-    fMiscFlags[kMiscCam2Screen]->setChecked((state.fMiscFlags & hsGMatState::kMiscCam2Screen) != 0);
-}
-
-void QLayer::updateState(hsGMatState& state) const
-{
-    state.fBlendFlags = (fBlendFlags[kBlendTest]->isChecked() ? hsGMatState::kBlendTest : 0)
-                      | (fBlendFlags[kBlendAlpha]->isChecked() ? hsGMatState::kBlendAlpha : 0)
-                      | (fBlendFlags[kBlendMult]->isChecked() ? hsGMatState::kBlendMult : 0)
-                      | (fBlendFlags[kBlendAdd]->isChecked() ? hsGMatState::kBlendAdd : 0)
-                      | (fBlendFlags[kBlendAddColorTimesAlpha]->isChecked() ? hsGMatState::kBlendAddColorTimesAlpha : 0)
-                      | (fBlendFlags[kBlendAntiAlias]->isChecked() ? hsGMatState::kBlendAntiAlias : 0)
-                      | (fBlendFlags[kBlendDetail]->isChecked() ? hsGMatState::kBlendDetail : 0)
-                      | (fBlendFlags[kBlendNoColor]->isChecked() ? hsGMatState::kBlendNoColor : 0)
-                      | (fBlendFlags[kBlendMADD]->isChecked() ? hsGMatState::kBlendMADD : 0)
-                      | (fBlendFlags[kBlendDot3]->isChecked() ? hsGMatState::kBlendDot3 : 0)
-                      | (fBlendFlags[kBlendAddSigned]->isChecked() ? hsGMatState::kBlendAddSigned : 0)
-                      | (fBlendFlags[kBlendAddSigned2X]->isChecked() ? hsGMatState::kBlendAddSigned2X : 0)
-                      | (fBlendFlags[kBlendInvertAlpha]->isChecked() ? hsGMatState::kBlendInvertAlpha : 0)
-                      | (fBlendFlags[kBlendInvertColor]->isChecked() ? hsGMatState::kBlendInvertColor : 0)
-                      | (fBlendFlags[kBlendAlphaMult]->isChecked() ? hsGMatState::kBlendAlphaMult : 0)
-                      | (fBlendFlags[kBlendAlphaAdd]->isChecked() ? hsGMatState::kBlendAlphaAdd : 0)
-                      | (fBlendFlags[kBlendNoVtxAlpha]->isChecked() ? hsGMatState::kBlendNoVtxAlpha : 0)
-                      | (fBlendFlags[kBlendNoTexColor]->isChecked() ? hsGMatState::kBlendNoTexColor : 0)
-                      | (fBlendFlags[kBlendNoTexAlpha]->isChecked() ? hsGMatState::kBlendNoTexAlpha : 0)
-                      | (fBlendFlags[kBlendInvertVtxAlpha]->isChecked() ? hsGMatState::kBlendInvertVtxAlpha : 0)
-                      | (fBlendFlags[kBlendAlphaAlways]->isChecked() ? hsGMatState::kBlendAlphaAlways : 0)
-                      | (fBlendFlags[kBlendInvertFinalColor]->isChecked() ? hsGMatState::kBlendInvertFinalColor : 0)
-                      | (fBlendFlags[kBlendInvertFinalAlpha]->isChecked() ? hsGMatState::kBlendInvertFinalAlpha : 0)
-                      | (fBlendFlags[kBlendEnvBumpNext]->isChecked() ? hsGMatState::kBlendEnvBumpNext : 0)
-                      | (fBlendFlags[kBlendSubtract]->isChecked() ? hsGMatState::kBlendSubtract : 0)
-                      | (fBlendFlags[kBlendRevSubtract]->isChecked() ? hsGMatState::kBlendRevSubtract : 0)
-                      | (fBlendFlags[kBlendAlphaTestHigh]->isChecked() ? hsGMatState::kBlendAlphaTestHigh : 0);
-    state.fClampFlags = (fClampFlags[kClampTextureU]->isChecked() ? hsGMatState::kClampTextureU : 0)
-                      | (fClampFlags[kClampTextureV]->isChecked() ? hsGMatState::kClampTextureV : 0);
-    state.fZFlags = (fZFlags[kZIncLayer]->isChecked() ? hsGMatState::kZIncLayer : 0)
-                  | (fZFlags[kZClearZ]->isChecked() ? hsGMatState::kZClearZ : 0)
-                  | (fZFlags[kZNoZRead]->isChecked() ? hsGMatState::kZNoZRead : 0)
-                  | (fZFlags[kZNoZWrite]->isChecked() ? hsGMatState::kZNoZWrite : 0)
-                  | (fZFlags[kZLODBias]->isChecked() ? hsGMatState::kZLODBias : 0);
-    state.fShadeFlags = (fShadeFlags[kShadeSoftShadow]->isChecked() ? hsGMatState::kShadeSoftShadow : 0)
-                      | (fShadeFlags[kShadeNoProjectors]->isChecked() ? hsGMatState::kShadeNoProjectors : 0)
-                      | (fShadeFlags[kShadeEnvironMap]->isChecked() ? hsGMatState::kShadeEnvironMap : 0)
-                      | (fShadeFlags[kShadeVertexShade]->isChecked() ? hsGMatState::kShadeVertexShade : 0)
-                      | (fShadeFlags[kShadeBlack]->isChecked() ? hsGMatState::kShadeBlack : 0)
-                      | (fShadeFlags[kShadeSpecular]->isChecked() ? hsGMatState::kShadeSpecular : 0)
-                      | (fShadeFlags[kShadeNoFog]->isChecked() ? hsGMatState::kShadeNoFog : 0)
-                      | (fShadeFlags[kShadeWhite]->isChecked() ? hsGMatState::kShadeWhite : 0)
-                      | (fShadeFlags[kShadeSpecularAlpha]->isChecked() ? hsGMatState::kShadeSpecularAlpha : 0)
-                      | (fShadeFlags[kShadeSpecularColor]->isChecked() ? hsGMatState::kShadeSpecularColor : 0)
-                      | (fShadeFlags[kShadeSpecularHighlight]->isChecked() ? hsGMatState::kShadeSpecularHighlight : 0)
-                      | (fShadeFlags[kShadeVertColShade]->isChecked() ? hsGMatState::kShadeVertColShade : 0)
-                      | (fShadeFlags[kShadeInherit]->isChecked() ? hsGMatState::kShadeInherit : 0)
-                      | (fShadeFlags[kShadeIgnoreVtxIllum]->isChecked() ? hsGMatState::kShadeIgnoreVtxIllum : 0)
-                      | (fShadeFlags[kShadeEmissive]->isChecked() ? hsGMatState::kShadeEmissive : 0)
-                      | (fShadeFlags[kShadeReallyNoFog]->isChecked() ? hsGMatState::kShadeReallyNoFog : 0);
-    state.fMiscFlags = (fMiscFlags[kMiscWireFrame]->isChecked() ? hsGMatState::kMiscWireFrame : 0)
-                     | (fMiscFlags[kMiscDrawMeshOutlines]->isChecked() ? hsGMatState::kMiscDrawMeshOutlines : 0)
-                     | (fMiscFlags[kMiscTwoSided]->isChecked() ? hsGMatState::kMiscTwoSided : 0)
-                     | (fMiscFlags[kMiscDrawAsSplats]->isChecked() ? hsGMatState::kMiscDrawAsSplats : 0)
-                     | (fMiscFlags[kMiscAdjustPlane]->isChecked() ? hsGMatState::kMiscAdjustPlane : 0)
-                     | (fMiscFlags[kMiscAdjustCylinder]->isChecked() ? hsGMatState::kMiscAdjustCylinder : 0)
-                     | (fMiscFlags[kMiscAdjustSphere]->isChecked() ? hsGMatState::kMiscAdjustSphere : 0)
-                     | (fMiscFlags[kMiscTroubledLoner]->isChecked() ? hsGMatState::kMiscTroubledLoner : 0)
-                     | (fMiscFlags[kMiscBindSkip]->isChecked() ? hsGMatState::kMiscBindSkip : 0)
-                     | (fMiscFlags[kMiscBindMask]->isChecked() ? hsGMatState::kMiscBindMask : 0)
-                     | (fMiscFlags[kMiscBindNext]->isChecked() ? hsGMatState::kMiscBindNext : 0)
-                     | (fMiscFlags[kMiscLightMap]->isChecked() ? hsGMatState::kMiscLightMap : 0)
-                     | (fMiscFlags[kMiscUseReflectionXform]->isChecked() ? hsGMatState::kMiscUseReflectionXform : 0)
-                     | (fMiscFlags[kMiscPerspProjection]->isChecked() ? hsGMatState::kMiscPerspProjection : 0)
-                     | (fMiscFlags[kMiscOrthoProjection]->isChecked() ? hsGMatState::kMiscOrthoProjection : 0)
-                     | (fMiscFlags[kMiscRestartPassHere]->isChecked() ? hsGMatState::kMiscRestartPassHere : 0)
-                     | (fMiscFlags[kMiscBumpLayer]->isChecked() ? hsGMatState::kMiscBumpLayer : 0)
-                     | (fMiscFlags[kMiscBumpDu]->isChecked() ? hsGMatState::kMiscBumpDu : 0)
-                     | (fMiscFlags[kMiscBumpDv]->isChecked() ? hsGMatState::kMiscBumpDv : 0)
-                     | (fMiscFlags[kMiscBumpDw]->isChecked() ? hsGMatState::kMiscBumpDw : 0)
-                     | (fMiscFlags[kMiscNoShadowAlpha]->isChecked() ? hsGMatState::kMiscNoShadowAlpha : 0)
-                     | (fMiscFlags[kMiscUseRefractionXform]->isChecked() ? hsGMatState::kMiscUseRefractionXform : 0)
-                     | (fMiscFlags[kMiscCam2Screen]->isChecked() ? hsGMatState::kMiscCam2Screen : 0);
 }
 
 void QLayer::setBaseLayer()

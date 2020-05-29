@@ -20,7 +20,7 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Object/plCoordinateInterface.h>
-#include <QCheckBox>
+#include "QBitmaskCheckBox.h"
 #include "PRP/QKeyList.h"
 
 class QSynchedObject : public QCreatable
@@ -36,7 +36,7 @@ protected:
         kCbAllStateIsVolatile, kNumCbFlags
     };
 
-    QCheckBox* fCBFlags[kNumCbFlags];
+    QBitmaskCheckBox* fCBFlags[kNumCbFlags];
     QStringListWidget* fExcludeList;
     QStringListWidget* fVolatileList;
 

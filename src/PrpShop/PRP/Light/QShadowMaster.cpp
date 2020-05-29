@@ -43,8 +43,14 @@ QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
     fProperties[plShadowMaster::kSelfShadow] = new QCheckBox(tr("Self Shadow"), grpProps);
     layProps->addWidget(fProperties[plShadowMaster::kDisable], 0, 0);
     layProps->addWidget(fProperties[plShadowMaster::kSelfShadow], 0, 1);
-    for (size_t i=0; i<plShadowMaster::kNumProps; i++)
+
+    for (size_t i = 0; i < plShadowMaster::kNumProps; ++i) {
         fProperties[i]->setChecked(obj->getProperty(i));
+        connect(fProperties[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
+            obj->setProperty(i, checked);
+        });
+    }
 
     fMinDist = new QFloatEdit(this);
     fMinDist->setValue(obj->getMinDist());
@@ -92,8 +98,6 @@ void QShadowMaster::saveDamage()
 {
     plShadowMaster* obj = plShadowMaster::Convert(fCreatable);
 
-    for (size_t i=0; i<plShadowMaster::kNumProps; i++)
-        obj->setProperty(i, fProperties[i]->isChecked());
     obj->setAttenDist(fAttenDist->value());
     obj->setDist(fMinDist->value(), fMaxDist->value());
     obj->setSize(fMinSize->value(), fMaxSize->value());

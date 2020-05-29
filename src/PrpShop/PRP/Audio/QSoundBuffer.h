@@ -19,10 +19,10 @@
 
 #include "PRP/QCreatable.h"
 
-#include <QCheckBox>
+#include <PRP/Audio/plSoundBuffer.h>
 #include <QComboBox>
 #include <QSpinBox>
-#include <PRP/Audio/plSoundBuffer.h>
+#include "QBitmaskCheckBox.h"
 
 class QSoundBuffer : public QCreatable
 {
@@ -34,7 +34,7 @@ protected:
         kIsExternal, kAlwaysExternal, kOnlyLeftChannel, kOnlyRightChannel,
         kStreamCompressed, kNumFlags
     };
-    QCheckBox* fFlags[kNumFlags];
+    QBitmaskCheckBox* fFlags[kNumFlags];
 
     QLineEdit* fFilename;
     QComboBox* fFormat;

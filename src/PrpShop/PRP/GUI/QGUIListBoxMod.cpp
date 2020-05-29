@@ -56,8 +56,14 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIListBoxMod::kGrowLeavesAndProcessOxygen - kModFlagStart], 2, 1);
     flagLayout->addWidget(fModFlags[pfGUIListBoxMod::kHandsOffMultiSelect - kModFlagStart], 3, 1);
     flagLayout->addWidget(fModFlags[pfGUIListBoxMod::kForbidNoSelection - kModFlagStart], 4, 1);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     fScrollCtrl = new QCreatableLink(this);
     fScrollCtrl->setKey(ctrl->getScrollCtrl());
@@ -71,14 +77,6 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
 
     connect(fScrollCtrl, SIGNAL(addObject()), this, SLOT(setScrollCtrl()));
     connect(fScrollCtrl, SIGNAL(delObject()), this, SLOT(unsetScrollCtrl()));
-}
-
-void QGUIListBoxMod::saveDamage()
-{
-    pfGUIListBoxMod* ctrl = pfGUIListBoxMod::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 }
 
 void QGUIListBoxMod::setScrollCtrl()

@@ -31,7 +31,6 @@ protected:
 
 public:
     QTargetList(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 };
 
 #endif

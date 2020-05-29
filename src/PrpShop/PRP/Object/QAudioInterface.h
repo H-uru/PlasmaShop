@@ -35,7 +35,6 @@ protected:
 
 public:
     QAudioInterface(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override;
 
 protected slots:
     void setOwner();

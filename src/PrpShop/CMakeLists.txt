@@ -1,5 +1,6 @@
 set(PrpShop_Headers
     Main.h
+    QBitmaskCheckBox.h
     QKeyDialog.h
     QPrcEditor.h
     QHexViewer.h
@@ -66,6 +67,7 @@ set(PrpShop_Headers
 
 set(PrpShop_Sources
     Main.cpp
+    QBitmaskCheckBox.cpp
     QKeyDialog.cpp
     QPlasmaUtils.cpp
     QPlasmaTreeItem.cpp

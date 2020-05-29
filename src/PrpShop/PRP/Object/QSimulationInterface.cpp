@@ -66,8 +66,14 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
     layProps->addWidget(fCBProperties[plSimulationInterface::kNoOwnershipChange], 5, 1);
     layProps->addWidget(fCBProperties[plSimulationInterface::kSuppressed], 6, 0);
     layProps->addWidget(fCBProperties[plSimulationInterface::kAvAnimPushable], 6, 1);
-    for (size_t i=0; i<plSimulationInterface::kNumProps; i++)
-        fCBProperties[i]->setChecked(intf->getProperty(i));
+
+    for (size_t prop = 0; prop < plSimulationInterface::kNumProps; ++prop) {
+        fCBProperties[prop]->setChecked(intf->getProperty(prop));
+        connect(fCBProperties[prop], &QCheckBox::clicked, this, [this, prop](bool checked) {
+            plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
+            intf->setProperty(prop, checked);
+        });
+    }
 
     fPhysicalLink = new QCreatableLink(this);
     fPhysicalLink->setKey(intf->getPhysical());
@@ -84,13 +90,6 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
     connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
     connect(fPhysicalLink, SIGNAL(addObject()), this, SLOT(setPhysical()));
     connect(fPhysicalLink, SIGNAL(delObject()), this, SLOT(unsetPhysical()));
-}
-
-void QSimulationInterface::saveDamage()
-{
-    plSimulationInterface* intf = plSimulationInterface::Convert(fCreatable);
-    for (size_t i=0; i<plSimulationInterface::kNumProps; i++)
-        intf->setProperty(i, fCBProperties[i]->isChecked());
 }
 
 void QSimulationInterface::setOwner()

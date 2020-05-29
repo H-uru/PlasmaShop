@@ -29,7 +29,6 @@ protected:
 
 public:
     QSpawnModifier(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 };
 
 #endif

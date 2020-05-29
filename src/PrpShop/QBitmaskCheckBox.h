@@ -14,21 +14,29 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QSCENEOBJ_PREVIEW_H
-#define _QSCENEOBJ_PREVIEW_H
+#ifndef _QBITMASKCHECKBOX_H
+#define _QBITMASKCHECKBOX_H
 
-#include "PRP/QCreatable.h"
-#include "QPlasmaRender.h"
+#include <QCheckBox>
 
-class QSceneObj_Preview : public QCreatable
+class QBitmaskCheckBox : public QCheckBox
 {
     Q_OBJECT
 
-protected:
-    QPlasmaRender* fRender;
-
 public:
-    QSceneObj_Preview(plCreatable* pCre, QWidget* parent = NULL);
+    QBitmaskCheckBox(unsigned int value, const QString& text, QWidget* parent = nullptr);
+
+    void setFrom(unsigned int value)
+    {
+        setChecked((value & fBitMask) == fBitMask);
+    }
+
+signals:
+    void setBits(unsigned int mask);
+    void unsetBits(unsigned int mask);
+
+private:
+    unsigned int fBitMask;
 };
 
-#endif
+#endif // _QBITMASKCHECKBOX_H

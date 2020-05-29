@@ -27,7 +27,6 @@ class QAudible : public QCreatable
 
 public:
     QAudible(plCreatable* pCre, QWidget* parent = NULL);
-    void saveDamage() override { }
 };
 
 class QWinAudible : public QCreatable

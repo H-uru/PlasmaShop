@@ -41,25 +41,37 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         QGridLayout* layType = new QGridLayout(grpType);
         layType->setVerticalSpacing(0);
         layType->setHorizontalSpacing(8);
-        fTypeFlags[kCBTypeEnter] = new QCheckBox(tr("Enter"), grpType);
-        fTypeFlags[kCBTypeExit] = new QCheckBox(tr("Exit"), grpType);
-        fTypeFlags[kCBTypeAny] = new QCheckBox(tr("Any"), grpType);
-        fTypeFlags[kCBTypeUnEnter] = new QCheckBox(tr("Un-Enter"), grpType);
-        fTypeFlags[kCBTypeUnExit] = new QCheckBox(tr("Un-Exit"), grpType);
-        fTypeFlags[kCBTypeBump] = new QCheckBox(tr("Bump"), grpType);
+        fTypeFlags[kCBTypeEnter] = new QBitmaskCheckBox(plCollisionDetector::kTypeEnter,
+                                                        tr("Enter"), grpType);
+        fTypeFlags[kCBTypeExit] = new QBitmaskCheckBox(plCollisionDetector::kTypeExit,
+                                                       tr("Exit"), grpType);
+        fTypeFlags[kCBTypeAny] = new QBitmaskCheckBox(plCollisionDetector::kTypeAny,
+                                                      tr("Any"), grpType);
+        fTypeFlags[kCBTypeUnEnter] = new QBitmaskCheckBox(plCollisionDetector::kTypeUnEnter,
+                                                          tr("Un-Enter"), grpType);
+        fTypeFlags[kCBTypeUnExit] = new QBitmaskCheckBox(plCollisionDetector::kTypeUnExit,
+                                                         tr("Un-Exit"), grpType);
+        fTypeFlags[kCBTypeBump] = new QBitmaskCheckBox(plCollisionDetector::kTypeBump,
+                                                       tr("Bump"), grpType);
         layType->addWidget(fTypeFlags[kCBTypeEnter], 0, 0);
         layType->addWidget(fTypeFlags[kCBTypeExit], 0, 1);
         layType->addWidget(fTypeFlags[kCBTypeAny], 0, 2);
         layType->addWidget(fTypeFlags[kCBTypeUnEnter], 1, 0);
         layType->addWidget(fTypeFlags[kCBTypeUnExit], 1, 1);
         layType->addWidget(fTypeFlags[kCBTypeBump], 1, 2);
-        fTypeFlags[kCBTypeEnter]->setChecked(obj->getType() & plCollisionDetector::kTypeEnter);
-        fTypeFlags[kCBTypeExit]->setChecked(obj->getType() & plCollisionDetector::kTypeExit);
-        fTypeFlags[kCBTypeAny]->setChecked(obj->getType() & plCollisionDetector::kTypeAny);
-        fTypeFlags[kCBTypeUnEnter]->setChecked(obj->getType() & plCollisionDetector::kTypeUnEnter);
-        fTypeFlags[kCBTypeUnExit]->setChecked(obj->getType() & plCollisionDetector::kTypeUnExit);
-        fTypeFlags[kCBTypeBump]->setChecked(obj->getType() & plCollisionDetector::kTypeBump);
         layout->addWidget(grpType, 1, 0, 1, 2);
+
+        for (auto cb : fTypeFlags) {
+            cb->setFrom(obj->getType());
+            connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+                plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
+                obj->setType(obj->getType() | mask);
+            });
+            connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+                plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
+                obj->setType(obj->getType() & ~mask);
+            });
+        }
     }
 
     if (obj->ClassInstance(kSubworldRegionDetector)) {
@@ -69,6 +81,11 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         fSubworld->setKey(subDet->getSubworld());
         fBoolParam = new QCheckBox(tr("On Exit"), this);
         fBoolParam->setChecked(subDet->getOnExit());
+
+        connect(fBoolParam, &QCheckBox::clicked, this, [this](bool checked) {
+            plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
+            subDet->setOnExit(checked);
+        });
 
         layout->addWidget(new QLabel(tr("Subworld:"), this), 1, 0, 1, 1);
         layout->addWidget(fSubworld, 1, 1, 1, 1);
@@ -83,29 +100,11 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         fBoolParam = new QCheckBox(tr("Play Link-Out Animation"), this);
         fBoolParam->setChecked(plRgn->getPlayLinkOutAnim());
         layout->addWidget(fBoolParam, 2, 0, 1, 2);
-    }
-}
 
-void QCollisionDetector::saveDamage()
-{
-    plCollisionDetector* obj = plCollisionDetector::Convert(fCreatable);
-
-    if (!obj->ClassInstance(kSubworldRegionDetector))
-        obj->setType((fTypeFlags[kCBTypeEnter]->isChecked() ? plCollisionDetector::kTypeEnter : 0)
-                   | (fTypeFlags[kCBTypeExit]->isChecked() ? plCollisionDetector::kTypeExit : 0)
-                   | (fTypeFlags[kCBTypeAny]->isChecked() ? plCollisionDetector::kTypeAny : 0)
-                   | (fTypeFlags[kCBTypeUnEnter]->isChecked() ? plCollisionDetector::kTypeUnEnter : 0)
-                   | (fTypeFlags[kCBTypeUnExit]->isChecked() ? plCollisionDetector::kTypeUnExit : 0)
-                   | (fTypeFlags[kCBTypeBump]->isChecked() ? plCollisionDetector::kTypeBump : 0));
-
-    if (obj->ClassInstance(kSubworldRegionDetector)) {
-        plSubworldRegionDetector* subDet = plSubworldRegionDetector::Convert(fCreatable);
-        subDet->setOnExit(fBoolParam->isChecked());
-    }
-
-    if (obj->ClassInstance(kPanicLinkRegion)) {
-        plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
-        plRgn->setPlayLinkOutAnim(fBoolParam->isChecked());
+        connect(fBoolParam, &QCheckBox::clicked, this, [this](bool checked) {
+            plPanicLinkRegion* plRgn = plPanicLinkRegion::Convert(fCreatable);
+            plRgn->setPlayLinkOutAnim(checked);
+        });
     }
 }
 

@@ -23,7 +23,7 @@
 
 /* QGUIColorScheme */
 QGUIColorScheme::QGUIColorScheme(QWidget* parent)
-    : QWidget(parent)
+    : QWidget(parent), fFontFlagsValue()
 {
     fForeColor = new QColorEdit(true, this);
     fBackColor = new QColorEdit(true, this);
@@ -36,15 +36,27 @@ QGUIColorScheme::QGUIColorScheme(QWidget* parent)
     fFontSize->setRange(0, 255);
 
     QWidget* grpFlags = new QWidget(this);
-    fFontFlags[kCBBold] = new QCheckBox(tr("Bold"), grpFlags);
-    fFontFlags[kCBItalic] = new QCheckBox(tr("Italic"), grpFlags);
-    fFontFlags[kCBShadowed] = new QCheckBox(tr("Shadowed"), grpFlags);
+    fFontFlags[kCBBold] = new QBitmaskCheckBox(pfGUIColorScheme::kFontBold,
+                                               tr("Bold"), grpFlags);
+    fFontFlags[kCBItalic] = new QBitmaskCheckBox(pfGUIColorScheme::kFontItalic,
+                                                 tr("Italic"), grpFlags);
+    fFontFlags[kCBShadowed] = new QBitmaskCheckBox(pfGUIColorScheme::kFontShadowed,
+                                                   tr("Shadowed"), grpFlags);
     QGridLayout* layFlags = new QGridLayout(grpFlags);
     layFlags->setContentsMargins(0, 0, 0, 0);
     layFlags->addWidget(fFontFlags[kCBBold], 0, 0);
     layFlags->addWidget(fFontFlags[kCBItalic], 0, 1);
     layFlags->addWidget(fFontFlags[kCBShadowed], 0, 2);
     layFlags->addItem(new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum), 0, 3);
+
+    for (auto cb : fFontFlags) {
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            fFontFlagsValue |= mask;
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            fFontFlagsValue &= ~mask;
+        });
+    }
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -77,9 +89,7 @@ void QGUIColorScheme::setColorScheme(pfGUIColorScheme* scheme)
         fTransparent->setChecked(false);
         fFontFace->setText("Times New Roman");
         fFontSize->setValue(10);
-        fFontFlags[kCBBold]->setChecked(false);
-        fFontFlags[kCBItalic]->setChecked(false);
-        fFontFlags[kCBShadowed]->setChecked(false);
+        fFontFlagsValue = 0;
     } else {
         fForeColor->setColor(scheme->getForeColor());
         fBackColor->setColor(scheme->getBackColor());
@@ -88,10 +98,11 @@ void QGUIColorScheme::setColorScheme(pfGUIColorScheme* scheme)
         fTransparent->setChecked(scheme->getTransparent() != 0);
         fFontFace->setText(st2qstr(scheme->getFontFace()));
         fFontSize->setValue(scheme->getFontSize());
-        fFontFlags[kCBBold]->setChecked((scheme->getFontFlags() & pfGUIColorScheme::kFontBold) != 0);
-        fFontFlags[kCBItalic]->setChecked((scheme->getFontFlags() & pfGUIColorScheme::kFontItalic) != 0);
-        fFontFlags[kCBShadowed]->setChecked((scheme->getFontFlags() & pfGUIColorScheme::kFontShadowed) != 0);
+        fFontFlagsValue = scheme->getFontFlags();
     }
+
+    for (auto cb : fFontFlags)
+        cb->setFrom(fFontFlagsValue);
 }
 
 void QGUIColorScheme::saveColorScheme(pfGUIColorScheme* scheme)
@@ -103,9 +114,7 @@ void QGUIColorScheme::saveColorScheme(pfGUIColorScheme* scheme)
     scheme->setTransparent(fTransparent->isChecked() ? 1 : 0);
     scheme->setFontFace(qstr2st(fFontFace->text()));
     scheme->setFontSize(fFontSize->value());
-    scheme->setFontFlags((fFontFlags[kCBBold]->isChecked() ? pfGUIColorScheme::kFontBold : 0)
-                       | (fFontFlags[kCBItalic]->isChecked() ? pfGUIColorScheme::kFontItalic : 0)
-                       | (fFontFlags[kCBShadowed]->isChecked() ? pfGUIColorScheme::kFontShadowed : 0));
+    scheme->setFontFlags(fFontFlagsValue);
 }
 
 
@@ -140,8 +149,14 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kTakesSpecialKeys], 2, 1);
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kHasProxy], 3, 0);
     flagLayout->addWidget(fModFlags[pfGUIControlMod::kBetterHitTesting], 3, 1);
-    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
+
+    for (size_t i = 0; i <= pfGUIControlMod::kBetterHitTesting; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
+            ctrl->setFlag(i, checked);
+        });
+    }
 
     fColorSchemeGrp = new QGroupBox(tr("Color Scheme"), this);
     fColorScheme = new QGUIColorScheme(fColorSchemeGrp);
@@ -171,6 +186,11 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     fTagID->setValue(ctrl->getTagID());
     fVisible = new QCheckBox(tr("Visible"), guiProcTab);
     fVisible->setChecked(ctrl->isVisible());
+
+    connect(fVisible, &QCheckBox::clicked, this, [this](bool checked) {
+        pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
+        ctrl->setVisible(checked);
+    });
 
     fProcType = new QComboBox(guiProcTab);
     fProcType->addItems(QStringList() << "(NULL)" << tr("Console Command")
@@ -229,9 +249,6 @@ void QGUIControlMod::saveDamage()
 {
     pfGUIControlMod* ctrl = pfGUIControlMod::Convert(fCreatable);
 
-    for (size_t i=0; i<=pfGUIControlMod::kBetterHitTesting; i++)
-        ctrl->setFlag(i, fModFlags[i]->isChecked());
-
     if (fColorSchemeGrp->isChecked()) {
         if (ctrl->getColorScheme() == NULL)
             ctrl->setColorScheme(new pfGUIColorScheme());
@@ -241,7 +258,6 @@ void QGUIControlMod::saveDamage()
     }
 
     ctrl->setTagID(fTagID->value());
-    ctrl->setVisible(fVisible->isChecked());
 
     if (fProcType->currentIndex() == pfGUICtrlProcWriteableObject::kNull) {
         ctrl->setHandler(NULL);

@@ -40,19 +40,17 @@ QGUIDraggableMod::QGUIDraggableMod(plCreatable* pCre, QWidget* parent)
     flagLayout->addWidget(fModFlags[pfGUIDraggableMod::kReportDragging - kModFlagStart], 0, 0);
     flagLayout->addWidget(fModFlags[pfGUIDraggableMod::kHideCursorWhileDragging - kModFlagStart], 1, 0);
     flagLayout->addWidget(fModFlags[pfGUIDraggableMod::kAlwaysSnapBackToStart - kModFlagStart], 2, 0);
-    for (size_t i=0; i<kModFlagCount; i++)
+
+    for (size_t i = 0; i < kModFlagCount; ++i) {
         fModFlags[i]->setChecked(ctrl->getFlag(i + kModFlagStart));
+        connect(fModFlags[i], &QCheckBox::clicked, this, [this, i](bool checked) {
+            pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
+            ctrl->setFlag(i + kModFlagStart, checked);
+        });
+    }
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->addWidget(fControlModLink, 0, 0, 1, 2);
     layout->addWidget(grpFlags, 1, 0, 1, 2);
-}
-
-void QGUIDraggableMod::saveDamage()
-{
-    pfGUIDraggableMod* ctrl = pfGUIDraggableMod::Convert(fCreatable);
-
-    for (size_t i=0; i<kModFlagCount; i++)
-        ctrl->setFlag(i + kModFlagStart, fModFlags[i]->isChecked());
 }

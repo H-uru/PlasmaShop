@@ -20,9 +20,9 @@
 #include "PRP/QCreatable.h"
 
 #include <PRP/Surface/hsGMaterial.h>
-#include <QCheckBox>
 #include "PRP/QObjLink.h"
 #include "PRP/QKeyList.h"
+#include "QBitmaskCheckBox.h"
 
 class QMaterial : public QCreatable
 {
@@ -38,7 +38,7 @@ protected:
     };
 
     QCreatableLink* fSynchObjLink;
-    QCheckBox* fCBFlags[kNumCompFlags];
+    QBitmaskCheckBox* fCBFlags[kNumCompFlags];
     QKeyList* fLayers;
     QKeyList* fPiggyBacks;
 

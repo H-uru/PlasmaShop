@@ -140,6 +140,11 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
     layProps->addWidget(fDisabled, 0, 0);
     fDisabled->setChecked(intf->getProperty(plDrawInterface::kDisable));
 
+    connect(fDisabled, &QCheckBox::clicked, this, [this](bool checked) {
+        plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
+        intf->setProperty(plDrawInterface::kDisable, checked);
+    });
+
     QTabWidget* childTab = new QTabWidget(this);
 
     fDrawKeys = new QDrawableList(intf->getKey(), childTab);
@@ -169,7 +174,6 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
 void QDrawInterface::saveDamage()
 {
     plDrawInterface* intf = plDrawInterface::Convert(fCreatable);
-    intf->setProperty(plDrawInterface::kDisable, fDisabled->isChecked());
 
     intf->clearDrawables();
     QList<plKey> drawables = fDrawKeys->keys();

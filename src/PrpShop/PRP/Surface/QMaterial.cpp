@@ -34,20 +34,34 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
     QGridLayout* layCompFlags = new QGridLayout(grpCompFlags);
     layCompFlags->setVerticalSpacing(0);
     layCompFlags->setHorizontalSpacing(8);
-    fCBFlags[kCbShaded] = new QCheckBox(tr("Shaded"), grpCompFlags);
-    fCBFlags[kCbEnvironMap] = new QCheckBox(tr("EnvironMap"), grpCompFlags);
-    fCBFlags[kCbProjectOnto] = new QCheckBox(tr("Project Onto"), grpCompFlags);
-    fCBFlags[kCbSoftShadow] = new QCheckBox(tr("Soft Shadow"), grpCompFlags);
-    fCBFlags[kCbSpecular] = new QCheckBox(tr("Specular"), grpCompFlags);
-    fCBFlags[kCbTwoSided] = new QCheckBox(tr("Two-Sided"), grpCompFlags);
-    fCBFlags[kCbDrawAsSplats] = new QCheckBox(tr("Draw as Splats"), grpCompFlags);
-    fCBFlags[kCbAdjusted] = new QCheckBox(tr("Adjusted"), grpCompFlags);
-    fCBFlags[kCbNoSoftShadow] = new QCheckBox(tr("No Soft Shadow"), grpCompFlags);
-    fCBFlags[kCbDynamic] = new QCheckBox(tr("Dynamic"), grpCompFlags);
-    fCBFlags[kCbDecal] = new QCheckBox(tr("Decal"), grpCompFlags);
-    fCBFlags[kCbIsEmissive] = new QCheckBox(tr("Is Emissive"), grpCompFlags);
-    fCBFlags[kCbIsLightMapped] = new QCheckBox(tr("Is Light Mapped"), grpCompFlags);
-    fCBFlags[kCbNeedsBlendChannel] = new QCheckBox(tr("Needs Blend Channel"), grpCompFlags);
+    fCBFlags[kCbShaded] = new QBitmaskCheckBox(hsGMaterial::kCompShaded,
+            tr("Shaded"), grpCompFlags);
+    fCBFlags[kCbEnvironMap] = new QBitmaskCheckBox(hsGMaterial::kCompEnvironMap,
+            tr("EnvironMap"), grpCompFlags);
+    fCBFlags[kCbProjectOnto] = new QBitmaskCheckBox(hsGMaterial::kCompProjectOnto,
+            tr("Project Onto"), grpCompFlags);
+    fCBFlags[kCbSoftShadow] = new QBitmaskCheckBox(hsGMaterial::kCompSoftShadow,
+            tr("Soft Shadow"), grpCompFlags);
+    fCBFlags[kCbSpecular] = new QBitmaskCheckBox(hsGMaterial::kCompSpecular,
+            tr("Specular"), grpCompFlags);
+    fCBFlags[kCbTwoSided] = new QBitmaskCheckBox(hsGMaterial::kCompTwoSided,
+            tr("Two-Sided"), grpCompFlags);
+    fCBFlags[kCbDrawAsSplats] = new QBitmaskCheckBox(hsGMaterial::kCompDrawAsSplats,
+            tr("Draw as Splats"), grpCompFlags);
+    fCBFlags[kCbAdjusted] = new QBitmaskCheckBox(hsGMaterial::kCompAdjusted,
+            tr("Adjusted"), grpCompFlags);
+    fCBFlags[kCbNoSoftShadow] = new QBitmaskCheckBox(hsGMaterial::kCompNoSoftShadow,
+            tr("No Soft Shadow"), grpCompFlags);
+    fCBFlags[kCbDynamic] = new QBitmaskCheckBox(hsGMaterial::kCompDynamic,
+            tr("Dynamic"), grpCompFlags);
+    fCBFlags[kCbDecal] = new QBitmaskCheckBox(hsGMaterial::kCompDecal,
+            tr("Decal"), grpCompFlags);
+    fCBFlags[kCbIsEmissive] = new QBitmaskCheckBox(hsGMaterial::kCompIsEmissive,
+            tr("Is Emissive"), grpCompFlags);
+    fCBFlags[kCbIsLightMapped] = new QBitmaskCheckBox(hsGMaterial::kCompIsLightMapped,
+            tr("Is Light Mapped"), grpCompFlags);
+    fCBFlags[kCbNeedsBlendChannel] = new QBitmaskCheckBox(hsGMaterial::kCompNeedsBlendChannel,
+            tr("Needs Blend Channel"), grpCompFlags);
     layCompFlags->addWidget(fCBFlags[kCbShaded], 0, 0);
     layCompFlags->addWidget(fCBFlags[kCbTwoSided], 0, 1);
     layCompFlags->addWidget(fCBFlags[kCbDrawAsSplats], 0, 2);
@@ -62,20 +76,18 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
     layCompFlags->addWidget(fCBFlags[kCbNeedsBlendChannel], 3, 2);
     layCompFlags->addWidget(fCBFlags[kCbSpecular], 4, 0);
     layCompFlags->addWidget(fCBFlags[kCbIsEmissive], 4, 1);
-    fCBFlags[kCbShaded]->setChecked(mat->getCompFlags() & hsGMaterial::kCompShaded);
-    fCBFlags[kCbEnvironMap]->setChecked(mat->getCompFlags() & hsGMaterial::kCompEnvironMap);
-    fCBFlags[kCbProjectOnto]->setChecked(mat->getCompFlags() & hsGMaterial::kCompProjectOnto);
-    fCBFlags[kCbSoftShadow]->setChecked(mat->getCompFlags() & hsGMaterial::kCompSoftShadow);
-    fCBFlags[kCbSpecular]->setChecked(mat->getCompFlags() & hsGMaterial::kCompSpecular);
-    fCBFlags[kCbTwoSided]->setChecked(mat->getCompFlags() & hsGMaterial::kCompTwoSided);
-    fCBFlags[kCbDrawAsSplats]->setChecked(mat->getCompFlags() & hsGMaterial::kCompDrawAsSplats);
-    fCBFlags[kCbAdjusted]->setChecked(mat->getCompFlags() & hsGMaterial::kCompAdjusted);
-    fCBFlags[kCbNoSoftShadow]->setChecked(mat->getCompFlags() & hsGMaterial::kCompNoSoftShadow);
-    fCBFlags[kCbDynamic]->setChecked(mat->getCompFlags() & hsGMaterial::kCompDynamic);
-    fCBFlags[kCbDecal]->setChecked(mat->getCompFlags() & hsGMaterial::kCompDecal);
-    fCBFlags[kCbIsEmissive]->setChecked(mat->getCompFlags() & hsGMaterial::kCompIsEmissive);
-    fCBFlags[kCbIsLightMapped]->setChecked(mat->getCompFlags() & hsGMaterial::kCompIsLightMapped);
-    fCBFlags[kCbNeedsBlendChannel]->setChecked(mat->getCompFlags() & hsGMaterial::kCompNeedsBlendChannel);
+
+    for (auto cb : fCBFlags) {
+        cb->setFrom(mat->getCompFlags());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
+            mat->setCompFlags(mat->getCompFlags() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
+            mat->setCompFlags(mat->getCompFlags() & ~mask);
+        });
+    }
 
     QTabWidget* objTab = new QTabWidget(this);
     fLayers = new QKeyList(mat->getKey(), objTab);
@@ -99,21 +111,6 @@ QMaterial::QMaterial(plCreatable* pCre, QWidget* parent)
 void QMaterial::saveDamage()
 {
     hsGMaterial* mat = hsGMaterial::Convert(fCreatable);
-
-    mat->setCompFlags((fCBFlags[kCbShaded]->isChecked() ? hsGMaterial::kCompShaded : 0)
-                    | (fCBFlags[kCbEnvironMap]->isChecked() ? hsGMaterial::kCompEnvironMap : 0)
-                    | (fCBFlags[kCbProjectOnto]->isChecked() ? hsGMaterial::kCompProjectOnto : 0)
-                    | (fCBFlags[kCbSoftShadow]->isChecked() ? hsGMaterial::kCompSoftShadow : 0)
-                    | (fCBFlags[kCbSpecular]->isChecked() ? hsGMaterial::kCompSpecular : 0)
-                    | (fCBFlags[kCbTwoSided]->isChecked() ? hsGMaterial::kCompTwoSided : 0)
-                    | (fCBFlags[kCbDrawAsSplats]->isChecked() ? hsGMaterial::kCompDrawAsSplats : 0)
-                    | (fCBFlags[kCbAdjusted]->isChecked() ? hsGMaterial::kCompAdjusted : 0)
-                    | (fCBFlags[kCbNoSoftShadow]->isChecked() ? hsGMaterial::kCompNoSoftShadow : 0)
-                    | (fCBFlags[kCbDynamic]->isChecked() ? hsGMaterial::kCompDynamic : 0)
-                    | (fCBFlags[kCbDecal]->isChecked() ? hsGMaterial::kCompDecal : 0)
-                    | (fCBFlags[kCbIsEmissive]->isChecked() ? hsGMaterial::kCompIsEmissive : 0)
-                    | (fCBFlags[kCbIsLightMapped]->isChecked() ? hsGMaterial::kCompIsLightMapped : 0)
-                    | (fCBFlags[kCbNeedsBlendChannel]->isChecked() ? hsGMaterial::kCompNeedsBlendChannel : 0));
 
     mat->clearLayers();
     QList<plKey> layers = fLayers->keys();

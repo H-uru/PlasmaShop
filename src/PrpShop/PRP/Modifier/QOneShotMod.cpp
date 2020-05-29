@@ -47,6 +47,23 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fSmartSeek, 0, 1);
     layFlags->addWidget(fNoSeek, 1, 1);
 
+    connect(fDrivable, &QCheckBox::clicked, this, [this](bool checked) {
+        plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
+        obj->setDrivable(checked);
+    });
+    connect(fReversable, &QCheckBox::clicked, this, [this](bool checked) {
+        plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
+        obj->setReversable(checked);
+    });
+    connect(fSmartSeek, &QCheckBox::clicked, this, [this](bool checked) {
+        plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
+        obj->setSmartSeek(checked);
+    });
+    connect(fNoSeek, &QCheckBox::clicked, this, [this](bool checked) {
+        plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
+        obj->setNoSeek(checked);
+    });
+
     fAnimName = new QLineEdit(this);
     fAnimName->setText(st2qstr(obj->getAnimName()));
     fSeekDuration = new QFloatEdit(this);
@@ -65,11 +82,6 @@ QOneShotMod::QOneShotMod(plCreatable* pCre, QWidget* parent)
 void QOneShotMod::saveDamage()
 {
     plOneShotMod* obj = plOneShotMod::Convert(fCreatable);
-
-    obj->setDrivable(fDrivable->isChecked());
-    obj->setReversable(fReversable->isChecked());
-    obj->setSmartSeek(fSmartSeek->isChecked());
-    obj->setNoSeek(fNoSeek->isChecked());
 
     obj->setAnimName(qstr2st(fAnimName->text()));
     obj->setSeekDuration(fSeekDuration->value());

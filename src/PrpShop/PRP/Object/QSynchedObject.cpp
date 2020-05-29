@@ -31,14 +31,22 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     QGridLayout* layFlags = new QGridLayout(grpFlags);
     layFlags->setVerticalSpacing(0);
     layFlags->setHorizontalSpacing(8);
-    fCBFlags[kCbDontDirty] = new QCheckBox(tr("Don't Dirty"), grpFlags);
-    fCBFlags[kCbSendReliably] = new QCheckBox(tr("Send Reliably"), grpFlags);
-    fCBFlags[kCbHasConstantNetGroup] = new QCheckBox(tr("Has Constant Net Group"), grpFlags);
-    fCBFlags[kCbDontSynchGameMessages] = new QCheckBox(tr("Don't Synch Game Messages"), grpFlags);
-    fCBFlags[kCbExcludePersistentState] = new QCheckBox(tr("Exclude Persistent States"), grpFlags);
-    fCBFlags[kCbExcludeAllPersistentState] = new QCheckBox(tr("Exclude All Persistent States"), grpFlags);
-    fCBFlags[kCbHasVolatileState] = new QCheckBox(tr("Has Volatile States"), grpFlags);
-    fCBFlags[kCbAllStateIsVolatile] = new QCheckBox(tr("All States Volatile"), grpFlags);
+    fCBFlags[kCbDontDirty] = new QBitmaskCheckBox(plSynchedObject::kDontDirty,
+            tr("Don't Dirty"), grpFlags);
+    fCBFlags[kCbSendReliably] = new QBitmaskCheckBox(plSynchedObject::kSendReliably,
+            tr("Send Reliably"), grpFlags);
+    fCBFlags[kCbHasConstantNetGroup] = new QBitmaskCheckBox(plSynchedObject::kHasConstantNetGroup,
+            tr("Has Constant Net Group"), grpFlags);
+    fCBFlags[kCbDontSynchGameMessages] = new QBitmaskCheckBox(plSynchedObject::kDontSynchGameMessages,
+            tr("Don't Synch Game Messages"), grpFlags);
+    fCBFlags[kCbExcludePersistentState] = new QBitmaskCheckBox(plSynchedObject::kExcludePersistentState,
+            tr("Exclude Persistent States"), grpFlags);
+    fCBFlags[kCbExcludeAllPersistentState] = new QBitmaskCheckBox(plSynchedObject::kExcludeAllPersistentState,
+            tr("Exclude All Persistent States"), grpFlags);
+    fCBFlags[kCbHasVolatileState] = new QBitmaskCheckBox(plSynchedObject::kHasVolatileState,
+            tr("Has Volatile States"), grpFlags);
+    fCBFlags[kCbAllStateIsVolatile] = new QBitmaskCheckBox(plSynchedObject::kAllStateIsVolatile,
+            tr("All States Volatile"), grpFlags);
     layFlags->addWidget(fCBFlags[kCbDontDirty], 0, 0);
     layFlags->addWidget(fCBFlags[kCbDontSynchGameMessages], 0, 1);
     layFlags->addWidget(fCBFlags[kCbSendReliably], 1, 0);
@@ -47,14 +55,17 @@ QSynchedObject::QSynchedObject(plCreatable* pCre, QWidget* parent)
     layFlags->addWidget(fCBFlags[kCbExcludePersistentState], 2, 1);
     layFlags->addWidget(fCBFlags[kCbAllStateIsVolatile], 3, 0);
     layFlags->addWidget(fCBFlags[kCbExcludeAllPersistentState], 3, 1);
-    fCBFlags[kCbDontDirty]->setChecked((obj->getSynchFlags() & plSynchedObject::kDontDirty) != 0);
-    fCBFlags[kCbSendReliably]->setChecked((obj->getSynchFlags() & plSynchedObject::kSendReliably) != 0);
-    fCBFlags[kCbHasConstantNetGroup]->setChecked((obj->getSynchFlags() & plSynchedObject::kHasConstantNetGroup) != 0);
-    fCBFlags[kCbDontSynchGameMessages]->setChecked((obj->getSynchFlags() & plSynchedObject::kDontSynchGameMessages) != 0);
-    fCBFlags[kCbExcludePersistentState]->setChecked((obj->getSynchFlags() & plSynchedObject::kExcludePersistentState) != 0);
-    fCBFlags[kCbExcludeAllPersistentState]->setChecked((obj->getSynchFlags() & plSynchedObject::kExcludeAllPersistentState) != 0);
-    fCBFlags[kCbHasVolatileState]->setChecked((obj->getSynchFlags() & plSynchedObject::kHasVolatileState) != 0);
-    fCBFlags[kCbAllStateIsVolatile]->setChecked((obj->getSynchFlags() & plSynchedObject::kAllStateIsVolatile) != 0);
+    for (auto cb : fCBFlags) {
+        cb->setFrom(obj->getSynchFlags());
+        connect(cb, &QBitmaskCheckBox::setBits, this, [this](unsigned int mask) {
+            plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
+            obj->setSynchFlags(obj->getSynchFlags() | mask);
+        });
+        connect(cb, &QBitmaskCheckBox::unsetBits, this, [this](unsigned int mask) {
+            plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
+            obj->setSynchFlags(obj->getSynchFlags() & ~mask);
+        });
+    }
 
     QTabWidget* sdlTab = new QTabWidget(this);
     fExcludeList = new QStringListWidget(sdlTab);
@@ -77,14 +88,6 @@ void QSynchedObject::saveDamage()
 {
     plSynchedObject* obj = plSynchedObject::Convert(fCreatable);
 
-    obj->setSynchFlags((fCBFlags[kCbDontDirty]->isChecked() ? plSynchedObject::kDontDirty : 0)
-                     | (fCBFlags[kCbSendReliably]->isChecked() ? plSynchedObject::kSendReliably : 0)
-                     | (fCBFlags[kCbHasConstantNetGroup]->isChecked() ? plSynchedObject::kHasConstantNetGroup : 0)
-                     | (fCBFlags[kCbDontSynchGameMessages]->isChecked() ? plSynchedObject::kDontSynchGameMessages : 0)
-                     | (fCBFlags[kCbExcludePersistentState]->isChecked() ? plSynchedObject::kExcludePersistentState : 0)
-                     | (fCBFlags[kCbExcludeAllPersistentState]->isChecked() ? plSynchedObject::kExcludeAllPersistentState : 0)
-                     | (fCBFlags[kCbHasVolatileState]->isChecked() ? plSynchedObject::kHasVolatileState : 0)
-                     | (fCBFlags[kCbAllStateIsVolatile]->isChecked() ? plSynchedObject::kAllStateIsVolatile : 0));
     obj->clearExcludes();
     obj->clearVolatiles();
     QStringList excludes = fExcludeList->strings();

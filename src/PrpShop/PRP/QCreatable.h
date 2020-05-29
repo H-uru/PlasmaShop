@@ -33,7 +33,7 @@ public:
     QCreatable(plCreatable* pCre, int type, QWidget* parent = NULL);
     bool isMatch(plCreatable* pCre, int type);
     bool compareLocation(const plLocation& loc);
-    virtual void saveDamage() = 0;
+    virtual void saveDamage() { }
 
 protected:
     void closeEvent(QCloseEvent* evt) override;
