@@ -189,12 +189,13 @@ bool QPlasmaSumFile::loadSumData(hsStream* S)
     }
 
     TreeSignalBlocker block(fFileList);
+    auto locale = QLocale::system();
     for (const hsSumFile::FileInfo& file : fSumData.getFiles()) {
         QTreeWidgetItem* ent = new QTreeWidgetItem(fFileList);
         QString qpath = st2qstr(file.fPath);
         ent->setText(0, qpath);
-        ent->setText(1, QDateTime::fromTime_t(file.fTimestamp)
-                                  .toString(Qt::SystemLocaleShortDate));
+        QDateTime dateTime(QDateTime::fromSecsSinceEpoch(file.fTimestamp));
+        ent->setText(1, locale.toString(dateTime, QLocale::ShortFormat));
         ent->setText(2, st2qstr(file.fHash.toHex()));
         ent->setIcon(0, QPlasmaDocument::GetDocIcon(qpath));
         ent->setFlags(ent->flags() | Qt::ItemIsEditable);
@@ -248,13 +249,14 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
         break;
     case 1:
         {
-            QDateTime ts = QDateTime::fromString(item->text(1), Qt::SystemLocaleShortDate);
+            QLocale locale = QLocale::system();
+            QDateTime ts = locale.toDateTime(item->text(1), QLocale::ShortFormat);
             if (!ts.isValid()) {
                 QMessageBox::critical(this, tr("Error"),
                                       tr("Invalid date/time: %1").arg(item->text(1)),
                                       QMessageBox::Ok);
-                item->setText(1, QDateTime::fromTime_t(file.fTimestamp)
-                                           .toString(Qt::SystemLocaleShortDate));
+                QDateTime dateTime(QDateTime::fromSecsSinceEpoch(file.fTimestamp));
+                item->setText(1, locale.toString(dateTime, QLocale::ShortFormat));
                 break;
             }
             file.fTimestamp = ts.toTime_t();

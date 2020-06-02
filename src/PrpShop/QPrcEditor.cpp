@@ -77,7 +77,8 @@ QSize QPrcEditor::sizeHint() const
                    settings.value("SciFontItalic", false).toBool());
 
     QFontMetrics fm(textFont);
-    return QSize(fm.width(QChar('_')) * 82, fm.height() * 25 + 50);
+    return QSize(fm.boundingRect(QString(82, QChar('_'))).width(),
+                 fm.height() * 25 + 50);
 }
 
 void QPrcEditor::loadPrcData()

@@ -59,7 +59,7 @@ QLayer::QLayer(plCreatable* pCre, QWidget* parent)
     fBlendFlags[kBlendAdd] = new QBitmaskCheckBox(hsGMatState::kBlendAdd,
             tr("Add"), blendWidget);
     fBlendFlags[kBlendAddColorTimesAlpha] = new QBitmaskCheckBox(hsGMatState::kBlendAddColorTimesAlpha,
-            tr("Add Color × Alpha"), blendWidget);
+            tr("Add Color \xc3\x97 Alpha"), blendWidget);
     fBlendFlags[kBlendAntiAlias] = new QBitmaskCheckBox(hsGMatState::kBlendAntiAlias,
             tr("Anti-Alias"), blendWidget);
     fBlendFlags[kBlendDetail] = new QBitmaskCheckBox(hsGMatState::kBlendDetail,

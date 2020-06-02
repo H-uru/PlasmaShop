@@ -398,7 +398,7 @@ void QPlasmaTextDoc::textReplace()
 bool QPlasmaTextDoc::onFind(const QString& text, bool regex, bool cs,
                             bool wo, bool reverse)
 {
-    QTextDocument::FindFlags options = 0;
+    QTextDocument::FindFlags options;
     if (cs)
         options |= QTextDocument::FindCaseSensitively;
     if (wo)

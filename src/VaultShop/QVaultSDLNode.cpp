@@ -168,9 +168,10 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
         case plVarDescriptor::kAgeTimeOfDay:
             {
                 QDateTime dt;
+                QLocale locale = QLocale::system();
                 if (!((plSimpleStateVariable*)var)->getTimeStamp().atEpoch()) {
                     dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
-                    result += dt.toString(Qt::SystemLocaleShortDate);
+                    result += locale.toString(dt, QLocale::ShortFormat);
                 } else {
                     result += "N/A";
                 }
@@ -179,9 +180,10 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
         case plVarDescriptor::kTime:
             {
                 QDateTime dt;
+                QLocale locale = QLocale::system();
                 if (!((plSimpleStateVariable*)var)->Time(i).atEpoch()) {
                     dt.setTime_t(((plSimpleStateVariable*)var)->Time(i).getSecs());
-                    result += dt.toString(Qt::SystemLocaleShortDate);
+                    result += locale.toString(dt, QLocale::ShortFormat);
                 } else {
                     result += "N/A";
                 }

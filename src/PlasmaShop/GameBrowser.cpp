@@ -24,7 +24,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QCompleter>
-#include <QDirModel>
+#include <QFileSystemModel>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 
@@ -200,10 +200,10 @@ void GameListDialog::onEditGame(QTreeWidgetItem* item, int)
 GameConfigDialog::GameConfigDialog(const GameInfo& info, QWidget* parent)
     : QDialog(parent)
 {
-    QDirModel* dirModel = new QDirModel(QStringList("*"),
-                                        QDir::Dirs | QDir::NoDotAndDotDot,
-                                        QDir::Name | QDir::IgnoreCase,
-                                        this);
+    auto dirModel = new QFileSystemModel(this);
+    dirModel->setRootPath(QStringLiteral(""));
+    dirModel->setNameFilters(QStringList("*"));
+    dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     fGameTitle = new QLineEdit(info.fGameTitle, this);
     fGameType = new QComboBox(this);
