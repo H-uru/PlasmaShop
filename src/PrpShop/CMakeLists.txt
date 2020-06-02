@@ -169,10 +169,6 @@ if(APPLE)
     install(TARGETS PrpShop
             BUNDLE DESTINATION .
     )
-elseif(WIN32)
-    install(TARGETS PrpShop
-            DESTINATION .
-    )
 else()
     install(TARGETS PrpShop
             DESTINATION bin

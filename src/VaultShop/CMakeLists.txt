@@ -56,10 +56,6 @@ if(APPLE)
     install(TARGETS VaultShop
             BUNDLE DESTINATION .
     )
-elseif(WIN32)
-    install(TARGETS VaultShop
-            DESTINATION .
-    )
 else()
     install(TARGETS VaultShop
             DESTINATION bin

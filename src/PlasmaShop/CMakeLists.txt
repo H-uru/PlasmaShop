@@ -143,10 +143,6 @@ if(APPLE)
     install(TARGETS PlasmaShop
             BUNDLE DESTINATION .
     )
-elseif(WIN32)
-    install(TARGETS PlasmaShop
-            DESTINATION .
-    )
 else()
     install(TARGETS PlasmaShop
             DESTINATION bin
