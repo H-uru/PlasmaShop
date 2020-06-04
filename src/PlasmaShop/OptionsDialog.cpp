@@ -16,7 +16,7 @@
 
 #include "OptionsDialog.h"
 #include <QCompleter>
-#include <QDirModel>
+#include <QFileSystemModel>
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QTabWidget>
@@ -43,10 +43,10 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     : QDialog(parent)
 {
     QTabWidget* tabs = new QTabWidget(this);
-    QDirModel* dirModel = new QDirModel(QStringList("*"),
-                                        QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Executable,
-                                        QDir::Name | QDir::DirsLast | QDir::IgnoreCase,
-                                        this);
+    auto dirModel = new QFileSystemModel(this);
+    dirModel->setRootPath(QStringLiteral(""));
+    dirModel->setNameFilters(QStringList("*"));
+    dirModel->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
 
     // "General" (programs) tab
     QWidget* tabProgs = new QWidget(tabs);

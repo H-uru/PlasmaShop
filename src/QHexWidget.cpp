@@ -242,12 +242,12 @@ void QHexWidget::getRenderMetrics(const QFontMetrics& fm, int maxAddress,
                                   int& rightMargin) const
 {
     if (maxAddress >= 0x10000)
-        byteOffset = fm.width("0000 0000") + (HEX_PADDING * 2);
+        byteOffset = fm.boundingRect("0000 0000").width() + (HEX_PADDING * 2);
     else
-        byteOffset = fm.width("0000") + (HEX_PADDING * 2);
+        byteOffset = fm.boundingRect("0000").width() + (HEX_PADDING * 2);
 
-    const int bwidth = fm.width("00_");
-    const int swidth = fm.width(QChar('_'));
+    const int bwidth = fm.boundingRect("00_").width();
+    const int swidth = fm.boundingRect(QChar('_')).width();
     charOffset = byteOffset + HEX_PADDING + (bwidth * BYTES_PER_LINE)
                             + (swidth * ((BYTES_PER_LINE / 4) + 1));
     rightMargin = charOffset + (swidth * (BYTES_PER_LINE + 1));
@@ -301,8 +301,8 @@ void QHexWidget::render(QPainter* painter)
     int maxAddress = fData.size();
     int byteOffset, charOffset, rightMargin;
     getRenderMetrics(fm, maxAddress, byteOffset, charOffset, rightMargin);
-    const int bwidth = fm.width("00_");
-    const int swidth = fm.width(QChar('_'));
+    const int bwidth = fm.boundingRect("00_").width();
+    const int swidth = fm.boundingRect(QChar('_')).width();
 
     painter->fillRect(0, 0, byteOffset, viewport()->height(),
                       pal.color(QPalette::Window));
@@ -413,8 +413,8 @@ void QHexWidget::render(QPainter* painter)
 int QHexWidget::addressAt(int x, int y) const
 {
     QFontMetrics fm(font());
-    const int bwidth = fm.width("00_");
-    const int cwidth = fm.width(QChar('0'));
+    const int bwidth = fm.boundingRect("00_").width();
+    const int cwidth = fm.boundingRect(QChar('0')).width();
 
     int byteOffset, charOffset, rightMargin;
     getRenderMetrics(fm, fData.size(), byteOffset, charOffset, rightMargin);

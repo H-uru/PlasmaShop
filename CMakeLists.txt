@@ -14,7 +14,7 @@ endif()
 
 find_package(HSPlasma REQUIRED)
 find_package(string_theory 2.0 REQUIRED)
-find_package(Qt5 5.5 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt5 5.8 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(KF5SyntaxHighlighting REQUIRED)
 find_package(PythonInterp REQUIRED)
 
