@@ -1,0 +1,170 @@
+name: Windows-CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        arch: ["x86", "x64"]
+        kf5: ["v5.70.0"]
+        qt: ["5.15.0"]
+
+    env:
+      CMAKE_GENERATOR: Visual Studio 16 2019
+      vcpkg-triplet: ${{ matrix.arch }}-windows-static-md
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Bootstrap vcpkg
+        id: bootstrap-vcpkg
+        run: |
+          cd C:\vcpkg
+          git pull
+          Write-Host "::set-output name=vcpkg-rev::$(git rev-parse HEAD)"
+          ./bootstrap-vcpkg.bat
+
+      - name: Restore Dependency Cache
+        id: cache-vcpkg
+        uses: actions/cache@v1
+        with:
+          path: C:\vcpkg\installed
+          key: |
+            vcpkg-triplet=${{ env.vcpkg-triplet }} vcpkg-response=${{ hashFiles('vcpkg.txt') }} vcpkg-rev=${{ steps.bootstrap-vcpkg.outputs.vcpkg-rev }}
+          restore-keys: |
+            vcpkg-triplet=${{ env.vcpkg-triplet }} vcpkg-response=${{ hashFiles('vcpkg.txt') }}
+            vcpkg-triplet=${{ env.vcpkg-triplet }}
+
+      - name: Upgrade Dependencies
+        if: steps.cache-vcpkg.outputs.cache-hit == 'true'
+        run: |
+          vcpkg upgrade --no-dry-run --triplet ${{ env.vcpkg-triplet }}
+
+      - name: Build Dependencies
+        run: |
+          vcpkg install `@vcpkg.txt --triplet ${{ env.vcpkg-triplet }}
+          vcpkg list --x-full-desc
+
+      - name: Configure Platform Arch
+        run: |
+          # Qt started providing both x86 and x64 builds for only MSVC 2019 as of 5.15. This was
+          # true only for MSVC 2017 before then.
+          [int[]]$qt_ver = "${{ matrix.qt }}".split('.')
+          if (($qt_ver[0] -eq 5) -and ($qt_ver[1] -lt 15)) {
+            $qt_compiler = "msvc2017"
+          } else {
+            $qt_compiler = "msvc2019"
+          }
+
+          if ("${{ matrix.arch }}" -eq "x86") {
+            $cmake_arch = "Win32"
+            $qt_arch = "win32_$($qt_compiler)"
+          } else {
+            $cmake_arch = "${{ matrix.arch }}"
+            $qt_arch = "win64_$($qt_compiler)_64"
+          }
+          Write-Host "::set-env name=CMAKE_GENERATOR_PLATFORM::$cmake_arch"
+          Write-Host "::set-env name=QT_ARCH::$qt_arch"
+
+      # Qt5 takes roughly a thousand years to build, so we download it from elsehwere...
+      - name: Restore Qt Cache
+        id: cache-qt
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}\qt
+          key: os=${{ runner.os }} qt=${{ matrix.qt }} arch=${{ env.qt_arch }}
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          arch: ${{ env.QT_ARCH }}
+          version: ${{ matrix.qt }}
+          dir: ${{ github.workspace }}\qt
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          aqtversion: ==0.9.*
+
+      # KF5SyntaxHighlighting and ecm release in lock-step
+      - name: Checkout ECM
+        uses: actions/checkout@v2
+        with:
+          repository: KDE/extra-cmake-modules
+          path: ecm
+          ref: ${{ matrix.kf5 }}
+      - name: Build ECM
+        run: |
+          cd ecm
+          mkdir build && cd build
+          cmake `
+            -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
+            -DBUILD_HTML_DOCS=OFF -DBUILD_MAN_DOCS=OFF -DBUILD_QTHELP_DOCS=OFF -DBUILD_TESTING=OFF `
+            ..
+          cmake --build . --config Release -j 2
+          cmake --build . --config Release --target INSTALL
+
+      # Build KF5SyntaxHighlighting manually due to Qt dependency...
+      - name: Checkout KF5SyntaxHighlighting
+        uses: actions/checkout@v2
+        with:
+          repository: KDE/syntax-highlighting
+          path: syntax-highlighting
+          ref: ${{ matrix.kf5 }}
+
+      - uses: shogo82148/actions-setup-perl@v1
+      - name: Build KF5SyntaxHighlighting
+        run: |
+          cd syntax-highlighting
+          mkdir build && cd build
+          cmake `
+            -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
+            -DBUILD_HTML_DOCS=OFF -DBUILD_MAN_DOCS=OFF -DBUILD_QTHELP_DOCS=OFF -DBUILD_TESTING=OFF `
+            ..
+          cmake --build . --config Release -j 2
+          cmake --build . --config Release --target INSTALL
+
+      - name: Checkout HSPlasma
+        uses: actions/checkout@v2
+        with:
+          repository: H-uru/libhsplasma
+          path: libhsplasma
+
+      - name: Build libHSPlasma
+        run: |
+          cd libhsplasma
+          mkdir build && cd build
+          cmake `
+            -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=${{ env.vcpkg-triplet }} `
+            -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
+            -DENABLE_PYTHON=OFF -DENABLE_TOOLS=OFF -DENABLE_NET=OFF -DENABLE_PHYSX=OFF ..
+          cmake --build . --config Release -j 2
+          cmake --build . --config Release --target INSTALL
+
+      - name: Build PlasmaShop
+        run: |
+          mkdir build && cd build
+          cmake `
+            -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=${{ env.vcpkg-triplet }} `
+            -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
+            ..
+          cmake --build . --config Release -j 2
+          cmake --build . --config Release --target INSTALL
+
+      - name: Deploy Qt
+        run: |
+          cd ${{ env.Qt5_Dir }}\bin
+          $ExeFiles = Get-ChildItem "${{ github.workspace }}\install\bin" -Filter *.exe
+          $DllFiles = Get-ChildItem "${{ github.workspace }}\install\bin" -Filter *.dll
+          ForEach-Object -InputObject ($ExeFiles + $DllFiles) {
+            ./windeployqt.exe --release $_.FullName
+          }
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ runner.os }}-${{ matrix.arch }}-qt${{ matrix.qt }}
+          path: install\bin
