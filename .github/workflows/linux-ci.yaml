@@ -1,0 +1,46 @@
+name: Linux-CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install -y libkf5syntaxhighlighting-dev ninja-build qtbase5-dev
+
+      - name: Checkout string_theory
+        uses: actions/checkout@v2
+        with:
+          repository: zrax/string_theory
+          path: string_theory
+      - name: Build string_theory
+        run: |
+          mkdir -p string_theory/build && cd string_theory/build
+          cmake -GNinja -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}/build_deps/prefix" \
+            -DCMAKE_BUILD_TYPE=Release -DST_BUILD_TESTS=OFF ..
+          cmake --build .
+          cmake --build . --target install
+
+      - name: Checkout HSPlasma
+        uses: actions/checkout@v2
+        with:
+          repository: H-uru/libhsplasma
+          path: libhsplasma
+      - name: Build HSPlasma
+        run: |
+          mkdir -p libhsplasma/build && cd libhsplasma/build
+          cmake -GNinja -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}/build_deps/prefix" \
+            -DENABLE_PYTHON=OFF -DENABLE_TOOLS=OFF -DENABLE_NET=OFF -DENABLE_PHYSX=OFF ..
+          cmake --build .
+          cmake --build . --target install
+
+      - name: Build PlasmaShop
+        run: |
+          mkdir build && cd build
+          cmake -GNinja -DCMAKE_PREFIX_PATH="${GITHUB_WORKSPACE}/build_deps/prefix" ..
+          cmake --build .
