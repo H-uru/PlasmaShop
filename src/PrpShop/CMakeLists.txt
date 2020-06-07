@@ -153,7 +153,7 @@ set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_RCC})
-target_link_libraries(PrpShop PSCommon Qt5::Widgets Qt5::OpenGL)
+target_link_libraries(PrpShop PSCommon Qt5::Core Qt5::Widgets Qt5::OpenGL)
 target_link_libraries(PrpShop KF5::SyntaxHighlighting HSPlasma)
 target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
 
