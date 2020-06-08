@@ -17,86 +17,22 @@
 #ifndef _QPLASMATEXTEDIT_H
 #define _QPLASMATEXTEDIT_H
 
-#include <QPlainTextEdit>
-#include <SyntaxHighlighter>
+#include "syntaxtextedit.h"
 
-namespace KSyntaxHighlighting
-{
-    class Theme;
-    class Repository;
-}
-class WhitespaceKSyntaxHighlighter;
-
-class QPlasmaTextEdit : public QPlainTextEdit
+class QPlasmaTextEdit : public SyntaxTextEdit
 {
     Q_OBJECT
-
-    enum EditorSettings
-    {
-        kShowLineNumbers = (1<<0),
-        kExpandTabs = (1<<1),
-        kAutoIndent = (1<<2),
-        kMatchBraces = (1<<3),
-    };
 
 public:
     explicit QPlasmaTextEdit(QWidget* parent);
 
-    int lineMarginWidth();
-    void paintLineNumbers(QPaintEvent* e);
-    bool showLineNumbers() const { return (fEditorSettings & kShowLineNumbers) != 0; }
-    void setShowLineNumbers(bool show);
-
-    void setTabWidth(int width);
-    int tabWidth() const { return fTabCharSize; }
-    void setExpandTabs(bool expand);
-    bool expandTabs() const { return (fEditorSettings & kExpandTabs) != 0; }
-
-    void setAutoIndent(bool ai);
-    bool autoIndent() const { return (fEditorSettings & kAutoIndent) != 0; }
-
-    void setLongLineMarker(int pos);
-    int longLineMarker() const { return fLongLineMarker; }
-
-    void setMatchBraces(bool match);
-    bool matchBraces() const { return (fEditorSettings & kMatchBraces) != 0; }
-
     static KSyntaxHighlighting::Repository* SyntaxRepo();
 
-    void setTheme(const KSyntaxHighlighting::Theme& theme);
+    // Override to provide a syntax by name
     void setSyntax(const QString& name);
 
-    void moveLines(QTextCursor::MoveOperation op);
-    void smartHome(QTextCursor::MoveMode mode);
-    void smartEnd(QTextCursor::MoveMode mode);
-    void deleteLines();
-
 protected:
-    void resizeEvent(QResizeEvent* e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* e) Q_DECL_OVERRIDE;
-    void paintEvent(QPaintEvent* e) Q_DECL_OVERRIDE;
-
-public slots:
-    void indentSelection();
-    void outdentSelection();
-
-private slots:
-    void updateMargins();
-    void updateLineNumbers(const QRect& rect, int dy);
-    void updateCursor();
-    void updateTabMetrics();
-
-private:
-    QWidget* fLineMargin;
-    WhitespaceKSyntaxHighlighter* fHighlighter;
-    QColor fLineMarginBg, fLineMarginFg;
-    QColor fCursorLineBg, fCursorLineNum;
-    QColor fLongLineColor;
-    QColor fBraceMatchBg;
-    QColor fErrorBg;
-    int fTabCharSize;
-    int fLongLineMarker;
-    unsigned int fEditorSettings;
 };
 
 #endif

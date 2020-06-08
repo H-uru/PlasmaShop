@@ -1,3 +1,6 @@
 [submodule "pycdc"]
 	path = pycdc
 	url = https://github.com/zrax/pycdc
+[submodule "qtextpad"]
+	path = qtextpad
+	url = https://github.com/zrax/qtextpad

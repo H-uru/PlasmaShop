@@ -36,6 +36,7 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
       fLexersInited(false)
 {
     fEditor = new QPlasmaTextEdit(this);
+    fEditor->setIndentationMode(SyntaxTextEdit::IndentTabs);
 
     QToolBar* tbar = new QToolBar(this);
     tbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
