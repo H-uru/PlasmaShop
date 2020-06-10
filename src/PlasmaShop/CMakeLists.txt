@@ -124,7 +124,7 @@ add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_Headers} ${PlasmaShop_Sources}
                ${pycdc_Headers} ${pycdc_Sources} ${pycdc_GeneratedSources}
                ${PlasmaShop_RCC})
-target_link_libraries(PlasmaShop PSCommon Qt5::Widgets KF5::SyntaxHighlighting)
+target_link_libraries(PlasmaShop PSCommon Qt5::Core Qt5::Widgets KF5::SyntaxHighlighting)
 target_link_libraries(PlasmaShop HSPlasma)
 
 if(WIN32)
