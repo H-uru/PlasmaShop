@@ -21,7 +21,7 @@ set(PSCommon_Sources
 )
 
 add_library(PSCommon STATIC ${PSCommon_Headers} ${PSCommon_Sources})
-target_link_libraries(PSCommon HSPlasma Qt5::Widgets KF5::SyntaxHighlighting)
+target_link_libraries(PSCommon PUBLIC HSPlasma Qt5::Widgets qtextpad)
 
 add_subdirectory(PlasmaShop)
 add_subdirectory(PrpShop)

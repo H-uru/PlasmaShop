@@ -18,6 +18,7 @@
 #include <QGridLayout>
 #include <QSettings>
 #include <QMessageBox>
+#include <QTextBlock>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "QPlasma.h"
@@ -341,7 +342,8 @@ void QPlasmaTextDoc::updateSettings()
     fEditor->setMatchBraces(true);
 
     fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
-    fEditor->setExpandTabs(settings.value("SciUseSpaces", true).toBool());
+    fEditor->setIndentationMode(settings.value("SciUseSpaces", true).toBool()
+                ? SyntaxTextEdit::IndentSpaces : SyntaxTextEdit::IndentTabs);
     fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
 
     if (settings.value("SciMargin", true).toBool())
@@ -357,13 +359,11 @@ void QPlasmaTextDoc::updateSettings()
     opt.setFlags(opt.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
     fEditor->document()->setDefaultTextOption(opt);
 
-    if (settings.value("SciLongLineMark", false).toBool())
-        fEditor->setLongLineMarker(settings.value("SciLongLineSize", 80).toInt());
-    else
-        fEditor->setLongLineMarker(0);
+    fEditor->setShowLongLineEdge(settings.value("SciLongLineMark", false).toBool());
+    fEditor->setLongLineWidth(settings.value("SciLongLineSize", 80).toInt());
+    fEditor->setShowIndentGuides(settings.value("SciIndentGuides", false).toBool());
 
     /* TODO if necessary:
-    fEditor->setIndentationGuides(settings.value("SciIndentGuides", false).toBool());
     if (settings.value("SciMargin", true).toBool())
         fEditor->setFoldingEnabled(settings.value("SciFoldMargin", true).toBool());
     */

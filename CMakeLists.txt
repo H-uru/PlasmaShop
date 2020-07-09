@@ -15,7 +15,6 @@ endif()
 find_package(HSPlasma REQUIRED)
 find_package(string_theory 2.0 REQUIRED)
 find_package(Qt5 5.8 REQUIRED COMPONENTS Core Gui Widgets)
-find_package(KF5SyntaxHighlighting REQUIRED)
 find_package(PythonInterp REQUIRED)
 
 if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
@@ -39,7 +38,6 @@ else()
     add_definitions(-DPLAT_FONT="Monospace")
 endif()
 
-# do this after QScintilla - it generates tons of warnings
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR
         CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     set(WARNING_FLAGS "-Wall -Wextra")
@@ -61,7 +59,9 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
 endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
-include_directories(${STRING_THEORY_INCLUDE_DIRS})
+set(QTEXTPAD_WIDGET_ONLY ON)
+add_subdirectory(qtextpad)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qtextpad")
 
 add_subdirectory(src)
 
