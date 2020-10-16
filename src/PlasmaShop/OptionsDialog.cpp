@@ -90,6 +90,7 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     // Editor tab
     QWidget* tabEditor = new QWidget(tabs);
     fSciLineNumbers = new QCheckBox(tr("&Line numbers"), tabEditor);
+    fSciFolding = new QCheckBox(tr("Code f&olding"), tabEditor);
     fSciUseSpaces = new QCheckBox(tr("Use &spaces instead of tabs"), tabEditor);
     fSciAutoIndent = new QCheckBox(tr("&Auto-indent"), tabEditor);
     fSciIndentGuides = new QCheckBox(tr("Show in&dentation guides"), tabEditor);
@@ -110,10 +111,11 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     layEditor->setContentsMargins(8, 8, 8, 8);
     layEditor->setVerticalSpacing(4);
     layEditor->addWidget(fSciLineNumbers, 0, 0);
-    layEditor->addWidget(fSciUseSpaces, 1, 0);
-    layEditor->addWidget(fSciAutoIndent, 2, 0);
-    layEditor->addWidget(fSciIndentGuides, 3, 0);
-    layEditor->addWidget(fSciShowWhitespace, 4, 0);
+    layEditor->addWidget(fSciFolding, 1, 0);
+    layEditor->addWidget(fSciUseSpaces, 2, 0);
+    layEditor->addWidget(fSciAutoIndent, 3, 0);
+    layEditor->addWidget(fSciIndentGuides, 4, 0);
+    layEditor->addWidget(fSciShowWhitespace, 5, 0);
     layEditor->addItem(new QSpacerItem(32, 0, QSizePolicy::Minimum, QSizePolicy::Minimum), 0, 1);
     layEditor->addWidget(fSciFont, 0, 2, 1, 2);
     layEditor->addItem(new QSpacerItem(0, 16, QSizePolicy::Minimum, QSizePolicy::Minimum), 1, 2, 1, 2);
@@ -143,6 +145,7 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     fVaultEditorPath->setText(settings.value("VaultEditorPath", DEFAULT_VAULT_EDITOR).toString());
     fImageEditorPath->setText(settings.value("ImageEditorPath", "").toString());
     fSciLineNumbers->setChecked(settings.value("SciLineNumberMargin", true).toBool());
+    fSciFolding->setChecked(settings.value("SciFoldMargin", false).toBool());
     fSciUseSpaces->setChecked(settings.value("SciUseSpaces", true).toBool());
     fSciAutoIndent->setChecked(settings.value("SciAutoIndent", true).toBool());
     fSciIndentGuides->setChecked(settings.value("SciIndentGuides", false).toBool());
@@ -198,6 +201,7 @@ void OptionsDialog::onSave()
     settings.setValue("VaultEditorPath", fVaultEditorPath->text());
     settings.setValue("ImageEditorPath", fImageEditorPath->text());
     settings.setValue("SciLineNumberMargin", fSciLineNumbers->isChecked());
+    settings.setValue("SciFoldMargin", fSciFolding->isChecked());
     settings.setValue("SciUseSpaces", fSciUseSpaces->isChecked());
     settings.setValue("SciAutoIndent", fSciAutoIndent->isChecked());
     settings.setValue("SciIndentGuides", fSciIndentGuides->isChecked());

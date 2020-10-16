@@ -43,6 +43,7 @@ private:
     QLineEdit* fImageEditorPath;
 
     QCheckBox* fSciLineNumbers;
+    QCheckBox* fSciFolding;
     QCheckBox* fSciUseSpaces;
     QCheckBox* fSciAutoIndent;
     QCheckBox* fSciIndentGuides;

@@ -38,10 +38,6 @@ QPlasmaTextEdit::QPlasmaTextEdit(QWidget* parent)
 {
     setTabWidth(8);
     setHighlightCurrentLine(true);
-
-    setTheme((palette().color(QPalette::Base).lightness() < 128)
-             ? SyntaxRepo()->defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
-             : SyntaxRepo()->defaultTheme(KSyntaxHighlighting::Repository::LightTheme));
 }
 
 void QPlasmaTextEdit::setSyntax(const QString& name)
