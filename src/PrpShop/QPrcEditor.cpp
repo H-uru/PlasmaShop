@@ -114,16 +114,8 @@ void QPrcEditor::updateSettings()
     fEditor->setTabWidth(settings.value("SciTabWidth", 4).toInt());
     fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
 
-    if (settings.value("SciMargin", true).toBool())
-        fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
-    else
-        fEditor->setShowLineNumbers(false);
-
-    /* TODO if necessary:
-    fEditor->setIndentationGuides(settings.value("SciIndentGuides", false).toBool());
-    if (settings.value("SciMargin", true).toBool())
-        fEditor->setFoldingEnabled(settings.value("SciFoldMargin", true).toBool());
-    */
+    fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
+    fEditor->setShowFolding(settings.value("SciFoldMargin", false).toBool());
 }
 
 void QPrcEditor::showCursorPosition()

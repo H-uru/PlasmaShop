@@ -346,10 +346,8 @@ void QPlasmaTextDoc::updateSettings()
                 ? SyntaxTextEdit::IndentSpaces : SyntaxTextEdit::IndentTabs);
     fEditor->setAutoIndent(settings.value("SciAutoIndent", true).toBool());
 
-    if (settings.value("SciMargin", true).toBool())
-        fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
-    else
-        fEditor->setShowLineNumbers(false);
+    fEditor->setShowLineNumbers(settings.value("SciLineNumberMargin", true).toBool());
+    fEditor->setShowFolding(settings.value("SciFoldMargin", false).toBool());
 
     QTextOption opt = fEditor->document()->defaultTextOption();
     if (settings.value("SciShowWhitespace", false).toBool())
@@ -362,11 +360,6 @@ void QPlasmaTextDoc::updateSettings()
     fEditor->setShowLongLineEdge(settings.value("SciLongLineMark", false).toBool());
     fEditor->setLongLineWidth(settings.value("SciLongLineSize", 80).toInt());
     fEditor->setShowIndentGuides(settings.value("SciIndentGuides", false).toBool());
-
-    /* TODO if necessary:
-    if (settings.value("SciMargin", true).toBool())
-        fEditor->setFoldingEnabled(settings.value("SciFoldMargin", true).toBool());
-    */
 }
 
 void QPlasmaTextDoc::textFind()
