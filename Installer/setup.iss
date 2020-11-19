@@ -6,7 +6,6 @@ AppVerName=PlasmaShop 3.0
 AppPublisher=Michael Hansen
 AppVersion=3.0
 AppID={{BF6C4F27-8C68-4DE7-8D65-C637CABD259B}
-LicenseFile=..\COPYING
 ChangesAssociations=true
 DefaultDirName={pf}\PlasmaShop
 AllowNoIcons=true
