@@ -24,9 +24,20 @@ Name: VaultShop; Description: VaultShop 1.1; Types: Custom Full
 
 [Files]
 Source: vc_redist.x86.exe; DestDir: {tmp}; Flags: deleteafterinstall ignoreversion
+Source: brotlicommon.dll; DestDir: {app}; Flags: ignoreversion
+Source: brotlidec.dll; DestDir: {app}; Flags: ignoreversion
+Source: bz2.dll; DestDir: {app}; Flags: ignoreversion
+Source: freetype.dll; DestDir: {app}; Flags: ignoreversion
+Source: harfbuzz.dll; DestDir: {app}; Flags: ignoreversion
 Source: HSPlasma.dll; DestDir: {app}; Flags: ignoreversion
+Source: icuin69.dll; DestDir: {app}; Flags: ignoreversion
+Source: icuuc69.dll; DestDir: {app}; Flags: ignoreversion
+Source: icudt69.dll; DestDir: {app}; Flags: ignoreversion
+Source: jpeg62.dll; DestDir: {app}; Flags: ignoreversion
+Source: libpng16.dll; DestDir: {app}; Flags: ignoreversion
 Source: PlasmaShell.dll; DestDir: {app}; Flags: ignoreversion
 Source: PlasmaShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PlasmaShop
+Source: pcre2-16.dll; DestDir: {app}; Flags: ignoreversion
 Source: PrpShop.exe; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultShop
 Source: Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
@@ -36,6 +47,8 @@ Source: Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: KF5SyntaxHighlighting.dll; DestDir: {app}; Flags: ignoreversion
 Source: NxCooking.dll; DestDir: {app}; Flags: ignoreversion
+Source: zlib1.dll; DestDir: {app}; Flags: ignoreversion
+Source: zstd.dll; DestDir: {app}; Flags: ignoreversion
 Source: bearer\qgenericbearer.dll; DestDir: {app}\bearer; Flags: ignoreversion
 Source: iconengines\qsvgicon.dll; DestDir: {app}\iconengines; Flags: ignoreversion
 Source: imageformats\qico.dll; DestDir: {app}\imageformats; Flags: ignoreversion
