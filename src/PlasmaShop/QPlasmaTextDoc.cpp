@@ -105,7 +105,7 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
     connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
     if (replace) {
         connect(btnReplaceAll, &QPushButton::clicked, this, &TextFindDialog::handleReplaceAll);
-        connect(fBtnSkip, SIGNAL(clicked()), this, SLOT(handleSkip()));
+        connect(fBtnSkip, &QPushButton::clicked, this, [this] { performSearch(); });
     }
 
     resize(sizeHint().width() * 1.5, sizeHint().height());
