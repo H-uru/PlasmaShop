@@ -105,18 +105,21 @@ QEaxSourceSettings::QEaxSourceSettings(plEAXSourceSettings* eax, QWidget* parent
     layout->addWidget(grpSoftStarts, 6, 0, 1, 2);
     layout->addWidget(grpSoftEnds, 6, 2, 1, 2);
 
-    connect(fEnabled, SIGNAL(toggled(bool)), fRoomAuto, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fRoomHFAuto, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fRoom, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fRoomHF, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fOutsideVolHF, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fAirAbsorptionFactor, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fRoomRolloffFactor, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fDopplerFactor, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fRolloffFactor, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), fOcclusionSoftValue, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), grpSoftStarts, SLOT(setEnabled(bool)));
-    connect(fEnabled, SIGNAL(toggled(bool)), grpSoftEnds, SLOT(setEnabled(bool)));
+    connect(fEnabled, &QCheckBox::toggled, this,
+            [this, grpSoftStarts, grpSoftEnds](bool enabled) {
+        fRoomAuto->setEnabled(enabled);
+        fRoomHFAuto->setEnabled(enabled);
+        fRoom->setEnabled(enabled);
+        fRoomHF->setEnabled(enabled);
+        fOutsideVolHF->setEnabled(enabled);
+        fAirAbsorptionFactor->setEnabled(enabled);
+        fRoomRolloffFactor->setEnabled(enabled);
+        fDopplerFactor->setEnabled(enabled);
+        fRolloffFactor->setEnabled(enabled);
+        fOcclusionSoftValue->setEnabled(enabled);
+        grpSoftStarts->setEnabled(enabled);
+        grpSoftEnds->setEnabled(enabled);
+    });
 
     fRoomAuto->setChecked(fEaxObject->getRoomAuto());
     fRoomHFAuto->setChecked(fEaxObject->getRoomHFAuto());
@@ -361,7 +364,7 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     linkEaxSettings->setText(tr("EAX Settings"));
     eaxLayout->addWidget(linkEaxSettings);
     eaxLayout->addStretch();
-    connect(linkEaxSettings, SIGNAL(activated()), this, SLOT(editEaxSettings()));
+    connect(linkEaxSettings, &QLinkLabel::activated, this, &QWinSound::editEaxSettings);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -402,12 +405,12 @@ QWinSound::QWinSound(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fSoftOcclusionRegion, 12, 1, 1, 3);
     layout->addWidget(eaxWidget, 13, 0, 1, 4);
 
-    connect(fSoftRegion, SIGNAL(addObject()), this, SLOT(setSoftRegion()));
-    connect(fSoftRegion, SIGNAL(delObject()), this, SLOT(unsetSoftRegion()));
-    connect(fDataBuffer, SIGNAL(addObject()), this, SLOT(setDataBuffer()));
-    connect(fDataBuffer, SIGNAL(delObject()), this, SLOT(unsetDataBuffer()));
-    connect(fSoftOcclusionRegion, SIGNAL(addObject()), this, SLOT(setSoftOcclusionRegion()));
-    connect(fSoftOcclusionRegion, SIGNAL(delObject()), this, SLOT(unsetSoftOcclusionRegion()));
+    connect(fSoftRegion, &QCreatableLink::addObject, this, &QWinSound::setSoftRegion);
+    connect(fSoftRegion, &QCreatableLink::delObject, this, &QWinSound::unsetSoftRegion);
+    connect(fDataBuffer, &QCreatableLink::addObject, this, &QWinSound::setDataBuffer);
+    connect(fDataBuffer, &QCreatableLink::delObject, this, &QWinSound::unsetDataBuffer);
+    connect(fSoftOcclusionRegion, &QCreatableLink::addObject, this, &QWinSound::setSoftOcclusionRegion);
+    connect(fSoftOcclusionRegion, &QCreatableLink::delObject, this, &QWinSound::unsetSoftOcclusionRegion);
 }
 
 void QWinSound::saveDamage()

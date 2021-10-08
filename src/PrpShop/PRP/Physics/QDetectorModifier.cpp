@@ -51,10 +51,10 @@ QDetectorModifier::QDetectorModifier(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fProxy, 4, 1, 1, 1);
     fReceivers->adjustColumns();
 
-    connect(fRemoteMod, SIGNAL(addObject()), this, SLOT(setRemoteMod()));
-    connect(fRemoteMod, SIGNAL(delObject()), this, SLOT(unsetRemoteMod()));
-    connect(fProxy, SIGNAL(addObject()), this, SLOT(setProxy()));
-    connect(fProxy, SIGNAL(delObject()), this, SLOT(unsetProxy()));
+    connect(fRemoteMod, &QCreatableLink::addObject, this, &QDetectorModifier::setRemoteMod);
+    connect(fRemoteMod, &QCreatableLink::delObject, this, &QDetectorModifier::unsetRemoteMod);
+    connect(fProxy, &QCreatableLink::addObject, this, &QDetectorModifier::setProxy);
+    connect(fProxy, &QCreatableLink::delObject, this, &QDetectorModifier::unsetProxy);
 }
 
 void QDetectorModifier::saveDamage()

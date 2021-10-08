@@ -93,12 +93,12 @@ QGUIDialogMod::QGUIDialogMod(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Scene Node:"), this), 9, 0);
     layout->addWidget(fSceneNode, 9, 1, 1, 4);
 
-    connect(fRenderMod, SIGNAL(addObject()), this, SLOT(setRenderMod()));
-    connect(fRenderMod, SIGNAL(delObject()), this, SLOT(unsetRenderMod()));
-    connect(fProcReceiver, SIGNAL(addObject()), this, SLOT(setProcReceiver()));
-    connect(fProcReceiver, SIGNAL(delObject()), this, SLOT(unsetProcReceiver()));
-    connect(fSceneNode, SIGNAL(addObject()), this, SLOT(setSceneNode()));
-    connect(fSceneNode, SIGNAL(delObject()), this, SLOT(unsetSceneNode()));
+    connect(fRenderMod, &QCreatableLink::addObject, this, &QGUIDialogMod::setRenderMod);
+    connect(fRenderMod, &QCreatableLink::delObject, this, &QGUIDialogMod::unsetRenderMod);
+    connect(fProcReceiver, &QCreatableLink::addObject, this, &QGUIDialogMod::setProcReceiver);
+    connect(fProcReceiver, &QCreatableLink::delObject, this, &QGUIDialogMod::unsetProcReceiver);
+    connect(fSceneNode, &QCreatableLink::addObject, this, &QGUIDialogMod::setSceneNode);
+    connect(fSceneNode, &QCreatableLink::delObject, this, &QGUIDialogMod::unsetSceneNode);
     fControls->adjustColumns();
 }
 

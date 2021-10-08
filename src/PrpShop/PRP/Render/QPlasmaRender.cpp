@@ -112,7 +112,7 @@ QActionGroup* QPlasmaRender::createViewActions()
             action->setChecked(true);
     }
 
-    connect(group, SIGNAL(triggered(QAction*)), SLOT(selectDrawMode(QAction*)));
+    connect(group, &QActionGroup::triggered, this, &QPlasmaRender::selectDrawMode);
     return group;
 }
 

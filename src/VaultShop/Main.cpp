@@ -163,23 +163,23 @@ VaultShopMain::VaultShopMain()
     splitter->setSizes(QList<int>() << 160 << 320);
 
     // Global UI Signals
-    connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
-    connect(fActions[kFileOpenVault], SIGNAL(triggered()), this, SLOT(openGame()));
-    connect(fActions[kFileSaveVault], SIGNAL(triggered()), this, SLOT(performSave()));
-    connect(fActions[kVaultOpenNode], SIGNAL(triggered()), this, SLOT(openNode()));
-    connect(fActions[kNodeUnLink], SIGNAL(triggered()), this, SLOT(unlinkNode()));
-    connect(fActions[kNodeLink], SIGNAL(triggered()), this, SLOT(linkNode()));
-    connect(fActions[kNodeCreate], SIGNAL(triggered()), this, SLOT(createNode()));
-    connect(fActions[kNodeUnsubscribe], SIGNAL(triggered()), this, SLOT(closeNode()));
-    //connect(fActions[kNodeRenameVault], SIGNAL(triggered()), this, SLOT(renameVault()));
+    connect(fActions[kFileExit], &QAction::triggered, this, &VaultShopMain::close);
+    connect(fActions[kFileOpenVault], &QAction::triggered, this, &VaultShopMain::openGame);
+    connect(fActions[kFileSaveVault], &QAction::triggered, this, &VaultShopMain::performSave);
+    connect(fActions[kVaultOpenNode], &QAction::triggered, this, &VaultShopMain::openNode);
+    connect(fActions[kNodeUnLink], &QAction::triggered, this, &VaultShopMain::unlinkNode);
+    connect(fActions[kNodeLink], &QAction::triggered, this, &VaultShopMain::linkNode);
+    connect(fActions[kNodeCreate], &QAction::triggered, this, &VaultShopMain::createNode);
+    connect(fActions[kNodeUnsubscribe], &QAction::triggered, this, &VaultShopMain::closeNode);
+    //connect(fActions[kNodeRenameVault], &QAction::triggered, this, &VaultShopMain::renameVault);
 
-    connect(fVaultTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-            this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(fVaultTree, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(treeContextMenu(const QPoint&)));
-    connect(fNodeTab, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
-    connect(fGenericEditor, SIGNAL(typeModified()), this, SLOT(typeModified()));
-    connect(this, SIGNAL(nodeChanged(unsigned int)), this, SLOT(refreshNode(unsigned int)));
+    connect(fVaultTree, &QTreeWidget::currentItemChanged,
+            this, &VaultShopMain::treeItemChanged);
+    connect(fVaultTree, &QTreeWidget::customContextMenuRequested,
+            this, &VaultShopMain::treeContextMenu);
+    connect(fNodeTab, &QTabWidget::currentChanged, this, &VaultShopMain::tabChanged);
+    connect(fGenericEditor, &QVaultNode::typeModified, this, &VaultShopMain::typeModified);
+    connect(this, &VaultShopMain::nodeChanged, this, &VaultShopMain::refreshNode);
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "VaultShop");
@@ -307,8 +307,8 @@ void VaultShopMain::typeModified()
         if (fCustomEditor != NULL) {
             fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
             fNodeTab->setCurrentIndex(fEditorTabPreference);
-            connect(fCustomEditor, SIGNAL(subscribe(unsigned int)),
-                    this, SLOT(subscribe(unsigned int)));
+            connect(fCustomEditor, &QVaultNodeEdit::subscribe,
+                    this, &VaultShopMain::subscribe);
         }
     }
 }
@@ -346,8 +346,8 @@ void VaultShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* p
             if (fCustomEditor != NULL) {
                 fNodeTab->insertTab(0, fCustomEditor, fCustomEditor->getEditorTitle());
                 fNodeTab->setCurrentIndex(fEditorTabPreference);
-                connect(fCustomEditor, SIGNAL(subscribe(unsigned int)),
-                        this, SLOT(subscribe(unsigned int)));
+                connect(fCustomEditor, &QVaultNodeEdit::subscribe,
+                        this, &VaultShopMain::subscribe);
             }
         }
     } else {

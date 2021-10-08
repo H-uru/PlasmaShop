@@ -62,8 +62,8 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Default:"), this), 5, 0);
     layout->addWidget(fDefaultValue, 5, 1);
 
-    connect(fControls, SIGNAL(itemAdded(plKey)), this, SLOT(controlAdded(plKey)));
-    connect(fControls, SIGNAL(itemRemoved(int)), this, SLOT(controlRemoved(int)));
+    connect(fControls, &QKeyList::itemAdded, this, &QGUIRadioGroupCtrl::controlAdded);
+    connect(fControls, &QKeyList::itemRemoved, this, &QGUIRadioGroupCtrl::controlRemoved);
     fControls->adjustColumns();
 }
 

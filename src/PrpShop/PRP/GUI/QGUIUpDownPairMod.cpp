@@ -59,10 +59,10 @@ QGUIUpDownPairMod::QGUIUpDownPairMod(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Down Control:"), this), 4, 0);
     layout->addWidget(fDownCtrl, 4, 1, 1, 2);
 
-    connect(fUpCtrl, SIGNAL(addObject()), this, SLOT(setUpCtrl()));
-    connect(fUpCtrl, SIGNAL(delObject()), this, SLOT(unsetUpCtrl()));
-    connect(fDownCtrl, SIGNAL(addObject()), this, SLOT(setDownCtrl()));
-    connect(fDownCtrl, SIGNAL(delObject()), this, SLOT(unsetDownCtrl()));
+    connect(fUpCtrl, &QCreatableLink::addObject, this, &QGUIUpDownPairMod::setUpCtrl);
+    connect(fUpCtrl, &QCreatableLink::delObject, this, &QGUIUpDownPairMod::unsetUpCtrl);
+    connect(fDownCtrl, &QCreatableLink::addObject, this, &QGUIUpDownPairMod::setDownCtrl);
+    connect(fDownCtrl, &QCreatableLink::delObject, this, &QGUIUpDownPairMod::unsetDownCtrl);
 }
 
 void QGUIUpDownPairMod::saveDamage()

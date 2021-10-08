@@ -166,50 +166,50 @@ PrpShopMain::PrpShopMain()
     addDockWidget(Qt::LeftDockWidgetArea, fPropertyDock);
 
     // Global UI Signals
-    connect(fActions[kFileNewPage], SIGNAL(triggered()), this, SLOT(newPage()));
-    connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
-    connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(openFiles()));
-    connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(performSave()));
-    connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(performSaveAs()));
+    connect(fActions[kFileNewPage], &QAction::triggered, this, &PrpShopMain::newPage);
+    connect(fActions[kFileExit], &QAction::triggered, this, &PrpShopMain::close);
+    connect(fActions[kFileOpen], &QAction::triggered, this, &PrpShopMain::openFiles);
+    connect(fActions[kFileSave], &QAction::triggered, this, &PrpShopMain::performSave);
+    connect(fActions[kFileSaveAs], &QAction::triggered, this, &PrpShopMain::performSaveAs);
 
-    connect(fActions[kToolsProperties], SIGNAL(toggled(bool)),
-            fPropertyDock, SLOT(setVisible(bool)));
-    connect(fPropertyDock, SIGNAL(visibilityChanged(bool)),
-            fActions[kToolsProperties], SLOT(setChecked(bool)));
-    connect(fActions[kToolsShowTypeIDs], SIGNAL(toggled(bool)),
-            this, SLOT(showTypeIDs(bool)));
-    connect(fActions[kToolsNewObject], SIGNAL(triggered()),
-            this, SLOT(createNewObject()));
+    connect(fActions[kToolsProperties], &QAction::toggled,
+            fPropertyDock, &QWidget::setVisible);
+    connect(fPropertyDock, &QDockWidget::visibilityChanged,
+            fActions[kToolsProperties], &QAction::setChecked);
+    connect(fActions[kToolsShowTypeIDs], &QAction::toggled,
+            this, &PrpShopMain::showTypeIDs);
+    connect(fActions[kToolsNewObject], &QAction::triggered,
+            this, &PrpShopMain::createNewObject);
 
-    connect(fActions[kWindowPrev], SIGNAL(triggered()),
-            fMdiArea, SLOT(activatePreviousSubWindow()));
-    connect(fActions[kWindowNext], SIGNAL(triggered()),
-            fMdiArea, SLOT(activateNextSubWindow()));
-    connect(fActions[kWindowTile], SIGNAL(triggered()),
-            fMdiArea, SLOT(tileSubWindows()));
-    connect(fActions[kWindowCascade], SIGNAL(triggered()),
-            fMdiArea, SLOT(cascadeSubWindows()));
-    connect(fActions[kWindowClose], SIGNAL(triggered()),
-            fMdiArea, SLOT(closeActiveSubWindow()));
-    connect(fActions[kWindowCloseAll], SIGNAL(triggered()),
-            fMdiArea, SLOT(closeAllSubWindows()));
+    connect(fActions[kWindowPrev], &QAction::triggered,
+            fMdiArea, &QMdiArea::activatePreviousSubWindow);
+    connect(fActions[kWindowNext], &QAction::triggered,
+            fMdiArea, &QMdiArea::activateNextSubWindow);
+    connect(fActions[kWindowTile], &QAction::triggered,
+            fMdiArea, &QMdiArea::tileSubWindows);
+    connect(fActions[kWindowCascade], &QAction::triggered,
+            fMdiArea, &QMdiArea::cascadeSubWindows);
+    connect(fActions[kWindowClose], &QAction::triggered,
+            fMdiArea, &QMdiArea::closeActiveSubWindow);
+    connect(fActions[kWindowCloseAll], &QAction::triggered,
+            fMdiArea, &QMdiArea::closeAllSubWindows);
 
-    connect(fActions[kTreeClose], SIGNAL(triggered()), this, SLOT(treeClose()));
-    connect(fActions[kTreeEdit], SIGNAL(triggered()), this, SLOT(treeEdit()));
-    connect(fActions[kTreeEditPRC], SIGNAL(triggered()), this, SLOT(treeEditPRC()));
-    connect(fActions[kTreeEditHex], SIGNAL(triggered()), this, SLOT(treeEditHex()));
-    connect(fActions[kTreeViewTargets], SIGNAL(triggered()), this, SLOT(treeShowTargets()));
-    connect(fActions[kTreePreview], SIGNAL(triggered()), this, SLOT(treePreview()));
-    connect(fActions[kTreeDelete], SIGNAL(triggered()), this, SLOT(treeDelete()));
-    connect(fActions[kTreeImport], SIGNAL(triggered()), this, SLOT(treeImport()));
-    connect(fActions[kTreeExport], SIGNAL(triggered()), this, SLOT(treeExport()));
+    connect(fActions[kTreeClose], &QAction::triggered, this, &PrpShopMain::treeClose);
+    connect(fActions[kTreeEdit], &QAction::triggered, this, &PrpShopMain::treeEdit);
+    connect(fActions[kTreeEditPRC], &QAction::triggered, this, &PrpShopMain::treeEditPRC);
+    connect(fActions[kTreeEditHex], &QAction::triggered, this, &PrpShopMain::treeEditHex);
+    connect(fActions[kTreeViewTargets], &QAction::triggered, this, &PrpShopMain::treeShowTargets);
+    connect(fActions[kTreePreview], &QAction::triggered, this, &PrpShopMain::treePreview);
+    connect(fActions[kTreeDelete], &QAction::triggered, this, &PrpShopMain::treeDelete);
+    connect(fActions[kTreeImport], &QAction::triggered, this, &PrpShopMain::treeImport);
+    connect(fActions[kTreeExport], &QAction::triggered, this, &PrpShopMain::treeExport);
 
-    connect(fBrowserTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-            this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(treeItemActivated(QTreeWidgetItem*, int)));
-    connect(fBrowserTree, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(treeContextMenu(const QPoint&)));
+    connect(fBrowserTree, &QTreeWidget::currentItemChanged,
+            this, &PrpShopMain::treeItemChanged);
+    connect(fBrowserTree, &QTreeWidget::itemActivated,
+            this, &PrpShopMain::treeItemActivated);
+    connect(fBrowserTree, &QTreeWidget::customContextMenuRequested,
+            this, &PrpShopMain::treeContextMenu);
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -726,8 +726,8 @@ void PrpShopMain::newPage()
 
     QDialogButtonBox* btnBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                                     Qt::Horizontal, &dlg);
-    dlg.connect(btnBox, SIGNAL(accepted()), &dlg, SLOT(accept()));
-    dlg.connect(btnBox, SIGNAL(rejected()), &dlg, SLOT(reject()));
+    dlg.connect(btnBox, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+    dlg.connect(btnBox, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
 
     QGridLayout* layout = new QGridLayout(&dlg);
     layout->addWidget(new QLabel(tr("Version:"), &dlg), 0, 0);

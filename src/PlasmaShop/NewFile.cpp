@@ -56,10 +56,11 @@ NewFileDialog::NewFileDialog(QWidget* parent) : QDialog(parent)
     layout->addWidget(fFileTypeList, 1, 0, 1, 2);
     layout->addWidget(buttonBox, 2, 0, 1, 2);
 
-    connect(buttonBox, SIGNAL(accepted()), SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), SLOT(reject()));
-    connect(fFileTypeFilter, SIGNAL(currentIndexChanged(int)), SLOT(populateFileList(int)));
-    connect(fFileTypeList, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(onItemActivated(QListWidgetItem*)));
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    connect(fFileTypeFilter, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &NewFileDialog::populateFileList);
+    connect(fFileTypeList, &QListWidget::itemActivated, this, &NewFileDialog::onItemActivated);
 
     QSettings settings("PlasmaShop", "PlasmaShop");
     fFileTypeFilter->setCurrentIndex(settings.value("NewFileFilter", kGameAny).toInt());

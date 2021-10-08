@@ -91,8 +91,8 @@ QCollisionDetector::QCollisionDetector(plCreatable* pCre, QWidget* parent)
         layout->addWidget(fSubworld, 1, 1, 1, 1);
         layout->addWidget(fBoolParam, 2, 0, 1, 2);
 
-        connect(fSubworld, SIGNAL(addObject()), this, SLOT(setSubworld()));
-        connect(fSubworld, SIGNAL(delObject()), this, SLOT(unsetSubworld()));
+        connect(fSubworld, &QCreatableLink::addObject, this, &QCollisionDetector::setSubworld);
+        connect(fSubworld, &QCreatableLink::delObject, this, &QCollisionDetector::unsetSubworld);
     }
 
     if (obj->ClassInstance(kPanicLinkRegion)) {

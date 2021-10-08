@@ -59,7 +59,6 @@ public:
 
 protected slots:
     void selectColor();
-    void setAlpha(double alpha) { fColor.a = alpha; }
 };
 
 #endif

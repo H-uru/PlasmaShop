@@ -110,11 +110,10 @@ GameListDialog::GameListDialog(QWidget* parent)
     layout->addWidget(btnDel, 1, 1);
     layout->addWidget(btnClose, 1, 2);
 
-    connect(btnAdd, SIGNAL(clicked()), this, SLOT(onAddGame()));
-    connect(btnDel, SIGNAL(clicked()), this, SLOT(onDelGame()));
-    connect(btnClose, SIGNAL(clicked()), this, SLOT(onSave()));
-    connect(fGameTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(onEditGame(QTreeWidgetItem*, int)));
+    connect(btnAdd, &QPushButton::clicked, this, &GameListDialog::onAddGame);
+    connect(btnDel, &QPushButton::clicked, this, &GameListDialog::onDelGame);
+    connect(btnClose, &QPushButton::clicked, this, &GameListDialog::onSave);
+    connect(fGameTree, &QTreeWidget::itemActivated, this, &GameListDialog::onEditGame);
 
     // Adjust the list headers to fit the games list
     fGameTree->resizeColumnToContents(2);
@@ -232,9 +231,9 @@ GameConfigDialog::GameConfigDialog(const GameInfo& info, QWidget* parent)
     layout->addWidget(btnBrowse, 2, 2);
     layout->addWidget(buttons, 3, 0, 1, 3);
 
-    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(btnBrowse, SIGNAL(clicked()), this, SLOT(onBrowseLocation()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    connect(btnBrowse, &QToolButton::clicked, this, &GameConfigDialog::onBrowseLocation);
 
     setWindowTitle(tr("Game Properties"));
 }

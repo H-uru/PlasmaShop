@@ -59,8 +59,8 @@ QVaultAgeInfoNode::QVaultAgeInfoNode(QWidget* parent)
     layout->addWidget(fAgeInstanceGuid, 6, 1, 1, 2);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 7, 0, 1, 2);
 
-    connect(fAgeLink, SIGNAL(activated()), this, SLOT(subscribeAge()));
-    connect(fAgeCzarLink, SIGNAL(activated()), this, SLOT(subscribeAgeCzar()));
+    connect(fAgeLink, &QLinkLabel::activated, this, &QVaultAgeInfoNode::subscribeAge);
+    connect(fAgeCzarLink, &QLinkLabel::activated, this, &QVaultAgeInfoNode::subscribeAgeCzar);
 }
 
 plVaultNode QVaultAgeInfoNode::saveNode()

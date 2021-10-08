@@ -58,10 +58,10 @@ QAudioInterface::QAudioInterface(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Audible Object: "), this), 3, 0, 1, 1);
     layout->addWidget(fAudibleLink, 3, 1, 1, 1);
 
-    connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
-    connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
-    connect(fAudibleLink, SIGNAL(addObject()), this, SLOT(setAudible()));
-    connect(fAudibleLink, SIGNAL(delObject()), this, SLOT(unsetAudible()));
+    connect(fOwnerLink, &QCreatableLink::addObject, this, &QAudioInterface::setOwner);
+    connect(fOwnerLink, &QCreatableLink::delObject, this, &QAudioInterface::unsetOwner);
+    connect(fAudibleLink, &QCreatableLink::addObject, this, &QAudioInterface::setAudible);
+    connect(fAudibleLink, &QCreatableLink::delObject, this, &QAudioInterface::unsetAudible);
 }
 
 void QAudioInterface::setOwner()

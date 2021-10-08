@@ -164,13 +164,13 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     fSciLongLineSize->setEnabled(fSciLongLineMark->isChecked());
 
     // Set up signals for the buttons
-    connect(buttons, SIGNAL(accepted()), this, SLOT(onSave()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(browsePrpEditor, SIGNAL(clicked()), this, SLOT(onBrowsePrpEditor()));
-    connect(browseVaultEditor, SIGNAL(clicked()), this, SLOT(onBrowseVaultEditor()));
-    connect(browseImageEditor, SIGNAL(clicked()), this, SLOT(onBrowseImageEditor()));
-    connect(fSciLongLineMark, SIGNAL(clicked(bool)), fSciLongLineSize, SLOT(setEnabled(bool)));
-    connect(fSciFont, SIGNAL(clicked()), this, SLOT(onSetFont()));
+    connect(buttons, &QDialogButtonBox::accepted, this, &OptionsDialog::onSave);
+    connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    connect(browsePrpEditor, &QToolButton::clicked, this, &OptionsDialog::onBrowsePrpEditor);
+    connect(browseVaultEditor, &QToolButton::clicked, this, &OptionsDialog::onBrowseVaultEditor);
+    connect(browseImageEditor, &QToolButton::clicked, this, &OptionsDialog::onBrowseImageEditor);
+    connect(fSciLongLineMark, &QCheckBox::clicked, fSciLongLineSize, &QWidget::setEnabled);
+    connect(fSciFont, &QPushButton::clicked, this, &OptionsDialog::onSetFont);
 }
 
 void OptionsDialog::onSave()

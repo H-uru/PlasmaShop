@@ -52,8 +52,8 @@ QWinAudible::QWinAudible(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fSceneNode, 2, 0);
     fSoundKeys->adjustColumns();
 
-    connect(fSceneNode, SIGNAL(addObject()), this, SLOT(setSceneNode()));
-    connect(fSceneNode, SIGNAL(delObject()), this, SLOT(unsetSceneNode()));
+    connect(fSceneNode, &QCreatableLink::addObject, this, &QWinAudible::setSceneNode);
+    connect(fSceneNode, &QCreatableLink::delObject, this, &QWinAudible::unsetSceneNode);
 }
 
 void QWinAudible::saveDamage()

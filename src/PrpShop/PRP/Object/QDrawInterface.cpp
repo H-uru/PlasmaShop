@@ -102,8 +102,8 @@ QFindDrawKeyDialog::QFindDrawKeyDialog(QWidget* parent)
     layout->addWidget(fDrawKey, 1, 1);
     layout->addWidget(buttonBox, 2, 0, 1, 2);
 
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 void QFindDrawKeyDialog::init(plResManager* mgr, const plLocation& loc)
@@ -167,8 +167,8 @@ QDrawInterface::QDrawInterface(plCreatable* pCre, QWidget* parent)
     fDrawKeys->adjustColumns();
     fRegions->adjustColumns();
 
-    connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
-    connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
+    connect(fOwnerLink, &QCreatableLink::addObject, this, &QDrawInterface::setOwner);
+    connect(fOwnerLink, &QCreatableLink::delObject, this, &QDrawInterface::unsetOwner);
 }
 
 void QDrawInterface::saveDamage()

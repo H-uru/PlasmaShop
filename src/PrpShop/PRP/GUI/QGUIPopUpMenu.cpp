@@ -32,8 +32,8 @@ QPopupMenuItemList::QPopupMenuItemList(QWidget* parent)
     headerItem()->setText(0, tr("Name"));
     headerItem()->setText(1, tr("SubMenu"));
 
-    connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(handleActivate(QTreeWidgetItem*, int)));
+    connect(this, &QTreeWidget::itemActivated,
+            this, &QPopupMenuItemList::handleActivate);
 }
 
 QSize QPopupMenuItemList::sizeHint() const
@@ -165,15 +165,15 @@ QGUIPopUpMenu::QGUIPopUpMenu(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Menu Items:"), this), 6, 0, 1, 5);
     layout->addWidget(fMenuItems, 7, 0, 1, 5);
 
-    connect(fSkin, SIGNAL(addObject()), this, SLOT(setSkin()));
-    connect(fSkin, SIGNAL(delObject()), this, SLOT(unsetSkin()));
-    connect(fOriginContext, SIGNAL(addObject()), this, SLOT(setOriginContext()));
-    connect(fOriginContext, SIGNAL(delObject()), this, SLOT(unsetOriginContext()));
-    connect(fOriginAnchor, SIGNAL(addObject()), this, SLOT(setOriginAnchor()));
-    connect(fOriginAnchor, SIGNAL(delObject()), this, SLOT(unsetOriginAnchor()));
-    connect(fMenuItems, SIGNAL(requestNewItem()), this, SLOT(addMenuItem()));
-    connect(fMenuItems, SIGNAL(requestEditItem(int)), this, SLOT(editMenuItem(int)));
-    connect(fMenuItems, SIGNAL(requestDelItem(int)), this, SLOT(delMenuItem(int)));
+    connect(fSkin, &QCreatableLink::addObject, this, &QGUIPopUpMenu::setSkin);
+    connect(fSkin, &QCreatableLink::delObject, this, &QGUIPopUpMenu::unsetSkin);
+    connect(fOriginContext, &QCreatableLink::addObject, this, &QGUIPopUpMenu::setOriginContext);
+    connect(fOriginContext, &QCreatableLink::delObject, this, &QGUIPopUpMenu::unsetOriginContext);
+    connect(fOriginAnchor, &QCreatableLink::addObject, this, &QGUIPopUpMenu::setOriginAnchor);
+    connect(fOriginAnchor, &QCreatableLink::delObject, this, &QGUIPopUpMenu::unsetOriginAnchor);
+    connect(fMenuItems, &QPopupMenuItemList::requestNewItem, this, &QGUIPopUpMenu::addMenuItem);
+    connect(fMenuItems, &QPopupMenuItemList::requestEditItem, this, &QGUIPopUpMenu::editMenuItem);
+    connect(fMenuItems, &QPopupMenuItemList::requestDelItem, this, &QGUIPopUpMenu::delMenuItem);
 }
 
 void QGUIPopUpMenu::saveDamage()
@@ -255,8 +255,8 @@ void QGUIPopUpMenu::addMenuItem()
     fMenuItems->addItem(item);
     QPopUpMenuItemDialog dlg(this);
     dlg.init(&item, ctrl->getNumItems() - 1);
-    connect(&dlg, SIGNAL(updateItem(int, QString, bool)),
-            fMenuItems, SLOT(handleUpdate(int, QString, bool)));
+    connect(&dlg, &QPopUpMenuItemDialog::updateItem,
+            fMenuItems, &QPopupMenuItemList::handleUpdate);
     dlg.exec();
 }
 
@@ -265,8 +265,8 @@ void QGUIPopUpMenu::editMenuItem(int idx)
     pfGUIPopUpMenu* ctrl = pfGUIPopUpMenu::Convert(fCreatable);
     QPopUpMenuItemDialog dlg(this);
     dlg.init(&ctrl->getItem(idx), idx);
-    connect(&dlg, SIGNAL(updateItem(int, QString, bool)),
-            fMenuItems, SLOT(handleUpdate(int, QString, bool)));
+    connect(&dlg, &QPopUpMenuItemDialog::updateItem,
+            fMenuItems, &QPopupMenuItemList::handleUpdate);
     dlg.exec();
 }
 
@@ -306,11 +306,12 @@ QPopUpMenuItemDialog::QPopUpMenuItemDialog(QWidget* parent)
     layout->addWidget(new QLabel(tr("Height Offset:"), this), 5, 0);
     layout->addWidget(fYOffsetToNext, 5, 1);
 
-    connect(fProcType, SIGNAL(currentIndexChanged(int)), this, SLOT(setProcType(int)));
-    connect(fSubMenuKey, SIGNAL(activated()), this, SLOT(selectKey()));
-    connect(fName, SIGNAL(textChanged(QString)), this, SLOT(nameChanged(QString)));
-    connect(fProcCommand, SIGNAL(textChanged(QString)), this, SLOT(cmdChanged(QString)));
-    connect(fYOffsetToNext, SIGNAL(textChanged(QString)), this, SLOT(offsetChanged(QString)));
+    connect(fProcType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QPopUpMenuItemDialog::setProcType);
+    connect(fSubMenuKey, &QLinkLabel::activated, this, &QPopUpMenuItemDialog::selectKey);
+    connect(fName, &QLineEdit::textChanged, this, &QPopUpMenuItemDialog::nameChanged);
+    connect(fProcCommand, &QLineEdit::textChanged, this, &QPopUpMenuItemDialog::cmdChanged);
+    connect(fYOffsetToNext, &QLineEdit::textChanged, this, &QPopUpMenuItemDialog::offsetChanged);
 }
 
 void QPopUpMenuItemDialog::init(pfGUIPopUpMenu::pfMenuItem* item, int idx)

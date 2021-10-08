@@ -242,16 +242,16 @@ QAnimTimeConvert::QAnimTimeConvert(plCreatable* pCre, QWidget* parent)
     fCallbackList->resizeColumnToContents(1);
     fCallbackList->resizeColumnToContents(0);
 
-    connect(fCallbackList, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(callbackContextMenu(const QPoint&)));
-    connect(fCallbackList, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(activateCallbackItem(QTreeWidgetItem*, int)));
-    connect(fEaseInCurve, SIGNAL(createObject(short)), this, SLOT(newEaseIn(short)));
-    connect(fEaseInCurve, SIGNAL(delObject()), this, SLOT(delEaseIn()));
-    connect(fEaseOutCurve, SIGNAL(createObject(short)), this, SLOT(newEaseOut(short)));
-    connect(fEaseOutCurve, SIGNAL(delObject()), this, SLOT(delEaseOut()));
-    connect(fSpeedEaseCurve, SIGNAL(createObject(short)), this, SLOT(newSpeedEase(short)));
-    connect(fSpeedEaseCurve, SIGNAL(delObject()), this, SLOT(delSpeedEase()));
+    connect(fCallbackList, &QTreeWidget::customContextMenuRequested,
+            this, &QAnimTimeConvert::callbackContextMenu);
+    connect(fCallbackList, &QTreeWidget::itemActivated,
+            this, &QAnimTimeConvert::activateCallbackItem);
+    connect(fEaseInCurve, &QATCCurveLink::createObject, this, &QAnimTimeConvert::newEaseIn);
+    connect(fEaseInCurve, &QATCCurveLink::delObject, this, &QAnimTimeConvert::delEaseIn);
+    connect(fEaseOutCurve, &QATCCurveLink::createObject, this, &QAnimTimeConvert::newEaseOut);
+    connect(fEaseOutCurve, &QATCCurveLink::delObject, this, &QAnimTimeConvert::delEaseOut);
+    connect(fSpeedEaseCurve, &QATCCurveLink::createObject, this, &QAnimTimeConvert::newSpeedEase);
+    connect(fSpeedEaseCurve, &QATCCurveLink::delObject, this, &QAnimTimeConvert::delSpeedEase);
 }
 
 void QAnimTimeConvert::saveDamage()

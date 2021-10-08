@@ -241,51 +241,53 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kFileShowBrowser]->setChecked(fBrowserDock->isVisible());
 
     // Signals
-    connect(fActions[kFileNew], SIGNAL(triggered()), this, SLOT(onNewFile()));
-    connect(fActions[kFileOpen], SIGNAL(triggered()), this, SLOT(onOpenFile()));
-    connect(fActions[kFileSave], SIGNAL(triggered()), this, SLOT(onSaveFile()));
-    connect(fActions[kFileSaveAs], SIGNAL(triggered()), this, SLOT(onSaveAs()));
-    connect(fActions[kFileRevert], SIGNAL(triggered()), this, SLOT(onRevert()));
-    connect(fActions[kFileOptions], SIGNAL(triggered()), this, SLOT(onOptions()));
-    connect(fActions[kFileShowBrowser], SIGNAL(triggered(bool)), fBrowserDock, SLOT(setVisible(bool)));
-    connect(fActions[kFileExit], SIGNAL(triggered()), this, SLOT(close()));
+    connect(fActions[kFileNew], &QAction::triggered, this, &PlasmaShopMain::onNewFile);
+    connect(fActions[kFileOpen], &QAction::triggered, this, &PlasmaShopMain::onOpenFile);
+    connect(fActions[kFileSave], &QAction::triggered, this, &PlasmaShopMain::onSaveFile);
+    connect(fActions[kFileSaveAs], &QAction::triggered, this, &PlasmaShopMain::onSaveAs);
+    connect(fActions[kFileRevert], &QAction::triggered, this, &PlasmaShopMain::onRevert);
+    connect(fActions[kFileOptions], &QAction::triggered, this, &PlasmaShopMain::onOptions);
+    connect(fActions[kFileShowBrowser], &QAction::triggered, fBrowserDock, &QWidget::setVisible);
+    connect(fActions[kFileExit], &QAction::triggered, this, &PlasmaShopMain::close);
 
-    connect(fActions[kEditCut], SIGNAL(triggered()), this, SLOT(onCut()));
-    connect(fActions[kEditCopy], SIGNAL(triggered()), this, SLOT(onCopy()));
-    connect(fActions[kEditPaste], SIGNAL(triggered()), this, SLOT(onPaste()));
-    connect(fActions[kEditDelete], SIGNAL(triggered()), this, SLOT(onDelete()));
-    connect(fActions[kEditSelectAll], SIGNAL(triggered()), this, SLOT(onSelectAll()));
-    connect(fActions[kEditUndo], SIGNAL(triggered()), this, SLOT(onUndo()));
-    connect(fActions[kEditRedo], SIGNAL(triggered()), this, SLOT(onRedo()));
+    connect(fActions[kEditCut], &QAction::triggered, this, &PlasmaShopMain::onCut);
+    connect(fActions[kEditCopy], &QAction::triggered, this, &PlasmaShopMain::onCopy);
+    connect(fActions[kEditPaste], &QAction::triggered, this, &PlasmaShopMain::onPaste);
+    connect(fActions[kEditDelete], &QAction::triggered, this, &PlasmaShopMain::onDelete);
+    connect(fActions[kEditSelectAll], &QAction::triggered, this, &PlasmaShopMain::onSelectAll);
+    connect(fActions[kEditUndo], &QAction::triggered, this, &PlasmaShopMain::onUndo);
+    connect(fActions[kEditRedo], &QAction::triggered, this, &PlasmaShopMain::onRedo);
 
-    connect(fActions[kTextFind], SIGNAL(triggered()), this, SLOT(onTextFind()));
-    connect(fActions[kTextFindNext], SIGNAL(triggered()), this, SLOT(onTextFindNext()));
-    connect(fActions[kTextReplace], SIGNAL(triggered()), this, SLOT(onTextReplace()));
-    connect(fActions[kTextStxNone], SIGNAL(triggered()), this, SLOT(onTextStxNone()));
-    connect(fActions[kTextStxPython], SIGNAL(triggered()), this, SLOT(onTextStxPython()));
-    connect(fActions[kTextStxSDL], SIGNAL(triggered()), this, SLOT(onTextStxSDL()));
-    connect(fActions[kTextStxIni], SIGNAL(triggered()), this, SLOT(onTextStxIni()));
-    connect(fActions[kTextStxConsole], SIGNAL(triggered()), this, SLOT(onTextStxConsole()));
-    connect(fActions[kTextStxXML], SIGNAL(triggered()), this, SLOT(onTextStxXML()));
-    connect(fActions[kTextStxHex], SIGNAL(triggered()), this, SLOT(onTextStxHex()));
-    connect(fActions[kTextStxFX], SIGNAL(triggered()), this, SLOT(onTextStxFX()));
-    connect(fActions[kTextTypeAnsi], SIGNAL(triggered()), this, SLOT(onTextTypeAnsi()));
-    connect(fActions[kTextTypeUTF8], SIGNAL(triggered()), this, SLOT(onTextTypeUTF8()));
-    connect(fActions[kTextTypeUTF16], SIGNAL(triggered()), this, SLOT(onTextTypeUTF16()));
-    connect(fActions[kTextTypeUTF32], SIGNAL(triggered()), this, SLOT(onTextTypeUTF32()));
-    connect(fActions[kGenEncNone], SIGNAL(triggered()), this, SLOT(onGenEncNone()));
-    connect(fActions[kGenEncXtea], SIGNAL(triggered()), this, SLOT(onGenEncXtea()));
-    connect(fActions[kGenEncAes], SIGNAL(triggered()), this, SLOT(onGenEncAes()));
-    connect(fActions[kGenEncDroid], SIGNAL(triggered()), this, SLOT(onGenEncDroid()));
+    connect(fActions[kTextFind], &QAction::triggered, this, &PlasmaShopMain::onTextFind);
+    connect(fActions[kTextFindNext], &QAction::triggered, this, &PlasmaShopMain::onTextFindNext);
+    connect(fActions[kTextReplace], &QAction::triggered, this, &PlasmaShopMain::onTextReplace);
+    connect(fActions[kTextStxNone], &QAction::triggered, this, &PlasmaShopMain::onTextStxNone);
+    connect(fActions[kTextStxPython], &QAction::triggered, this, &PlasmaShopMain::onTextStxPython);
+    connect(fActions[kTextStxSDL], &QAction::triggered, this, &PlasmaShopMain::onTextStxSDL);
+    connect(fActions[kTextStxIni], &QAction::triggered, this, &PlasmaShopMain::onTextStxIni);
+    connect(fActions[kTextStxConsole], &QAction::triggered, this, &PlasmaShopMain::onTextStxConsole);
+    connect(fActions[kTextStxXML], &QAction::triggered, this, &PlasmaShopMain::onTextStxXML);
+    connect(fActions[kTextStxHex], &QAction::triggered, this, &PlasmaShopMain::onTextStxHex);
+    connect(fActions[kTextStxFX], &QAction::triggered, this, &PlasmaShopMain::onTextStxFX);
+    connect(fActions[kTextTypeAnsi], &QAction::triggered, this, &PlasmaShopMain::onTextTypeAnsi);
+    connect(fActions[kTextTypeUTF8], &QAction::triggered, this, &PlasmaShopMain::onTextTypeUTF8);
+    connect(fActions[kTextTypeUTF16], &QAction::triggered, this, &PlasmaShopMain::onTextTypeUTF16);
+    connect(fActions[kTextTypeUTF32], &QAction::triggered, this, &PlasmaShopMain::onTextTypeUTF32);
+    connect(fActions[kGenEncNone], &QAction::triggered, this, &PlasmaShopMain::onGenEncNone);
+    connect(fActions[kGenEncXtea], &QAction::triggered, this, &PlasmaShopMain::onGenEncXtea);
+    connect(fActions[kGenEncAes], &QAction::triggered, this, &PlasmaShopMain::onGenEncAes);
+    connect(fActions[kGenEncDroid], &QAction::triggered, this, &PlasmaShopMain::onGenEncDroid);
 
-    connect(fActions[kHelpAbout], SIGNAL(triggered()), this, SLOT(onShowAbout()));
+    connect(fActions[kHelpAbout], &QAction::triggered, this, &PlasmaShopMain::onShowAbout);
 
-    connect(fGameSelector, SIGNAL(activated(int)), this, SLOT(onSelectGame(int)));
-    connect(fBrowserTree, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(onBrowserItemActivated(QTreeWidgetItem*, int)));
-    connect(fEditorPane, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseTab(int)));
-    connect(fEditorPane, SIGNAL(currentChanged(int)), this, SLOT(onChangeTab(int)));
-    connect(fBrowserDock, SIGNAL(visibilityChanged(bool)), fActions[kFileShowBrowser], SLOT(setChecked(bool)));
+    connect(fGameSelector, QOverload<int>::of(&QComboBox::activated),
+            this, &PlasmaShopMain::onSelectGame);
+    connect(fBrowserTree, &QTreeWidget::itemActivated,
+            this, &PlasmaShopMain::onBrowserItemActivated);
+    connect(fEditorPane, &QTabWidget::tabCloseRequested, this, &PlasmaShopMain::onCloseTab);
+    connect(fEditorPane, &QTabWidget::currentChanged, this, &PlasmaShopMain::onChangeTab);
+    connect(fBrowserDock, &QDockWidget::visibilityChanged,
+            fActions[kFileShowBrowser], &QAction::setChecked);
 
     // Set up menus, etc
     onChangeTab(-1);
@@ -410,9 +412,9 @@ void PlasmaShopMain::loadFile(QString filename)
             QPlasmaTextDoc *textDoc = reinterpret_cast<QPlasmaTextDoc*>(plDoc);
             textDoc->setSyntax(textDoc->GuessIniType());
         }
-        connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
-        connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
-        connect(plDoc, SIGNAL(becameClean()), this, SLOT(onDocClean()));
+        connect(plDoc, &QPlasmaDocument::statusChanged, this, &PlasmaShopMain::updateMenuStatus);
+        connect(plDoc, &QPlasmaDocument::becameDirty, this, &PlasmaShopMain::onDocDirty);
+        connect(plDoc, &QPlasmaDocument::becameClean, this, &PlasmaShopMain::onDocClean);
 
         // Update menus
         onChangeTab(fEditorPane->currentIndex());
@@ -603,9 +605,9 @@ void PlasmaShopMain::onNewFile()
                 ((QPlasmaPakFile*)plDoc)->setPackageType(PlasmaPackage::kFontsPfp);
         }
         plDoc->makeClean();
-        connect(plDoc, SIGNAL(statusChanged()), this, SLOT(updateMenuStatus()));
-        connect(plDoc, SIGNAL(becameDirty()), this, SLOT(onDocDirty()));
-        connect(plDoc, SIGNAL(becameClean()), this, SLOT(onDocClean()));
+        connect(plDoc, &QPlasmaDocument::statusChanged, this, &PlasmaShopMain::updateMenuStatus);
+        connect(plDoc, &QPlasmaDocument::becameDirty, this, &PlasmaShopMain::onDocDirty);
+        connect(plDoc, &QPlasmaDocument::becameClean, this, &PlasmaShopMain::onDocClean);
 
         // Update menus
         onChangeTab(fEditorPane->currentIndex());
@@ -849,8 +851,8 @@ void PlasmaShopMain::onShowAbout()
     connect(aboutQt, &QAbstractButton::clicked, [this](bool) {
         QMessageBox::aboutQt(this, tr("About Qt"));
     });
-    connect(buttons, SIGNAL(accepted()), &aboutDialog, SLOT(accept()));
-    connect(buttons, SIGNAL(rejected()), &aboutDialog, SLOT(reject()));
+    connect(buttons, &QDialogButtonBox::accepted, &aboutDialog, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, &aboutDialog, &QDialog::reject);
     buttons->button(QDialogButtonBox::Close)->setDefault(true);
 
     QVBoxLayout* layout = new QVBoxLayout(&aboutDialog);

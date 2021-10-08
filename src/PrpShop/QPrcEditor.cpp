@@ -41,7 +41,7 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
     QToolBar* tbar = new QToolBar(this);
     tbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     fSaveAction = tbar->addAction(qStdIcon("document-save"),
-            tr("Compile and &Save"), this, SLOT(compilePrc()));
+            tr("Compile and &Save"), this, &QPrcEditor::compilePrc);
 
     fStatusBar = new QStatusBar(this);
     fStatusBar->setSizeGripEnabled(true);
