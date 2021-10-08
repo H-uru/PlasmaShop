@@ -8,8 +8,8 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: Win32, triplet: x86-windows-static-md, kf5: v5.70.0, qt: 5.15.0, qt-arch: win32_msvc2019 }
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.70.0, qt: 5.15.0, qt_arch: win64_msvc2019_64 }
+          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: Win32, triplet: x86-windows-static-md, kf5: v5.86.0, qt: 5.15.2, qt-arch: win32_msvc2019 }
+          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.86.0, qt: 5.15.2, qt_arch: win64_msvc2019_64 }
 
     steps:
       - uses: actions/checkout@v2
