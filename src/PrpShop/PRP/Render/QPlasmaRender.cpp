@@ -192,7 +192,7 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
             if (fRotX > 90.0f)
                 fRotX = 90.0f;
         }
-    } else if (evt->buttons() & Qt::MidButton) {
+    } else if (evt->buttons() & Qt::MiddleButton) {
         if (fNavMode == kNavScene) {
             fViewPos.Z += (fMouseFrom.y() - evt->pos().y());
             fViewPos.X += sinf((fRotZ + 90.0f) * RADS) * (evt->pos().x() - fMouseFrom.x());
