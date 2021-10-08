@@ -446,9 +446,11 @@ bool QPlasmaTextDoc::loadFile(const QString& filename)
         hsElfStream S;
         if (!S.open(stFilename, fmRead))
             return false;
-        fEditor->clear();
+        QString logAccum;
+        logAccum.reserve(static_cast<int>(S.size()));
         while (!S.eof())
-            fEditor->appendPlainText(st2qstr(S.readLine() + "\n"));
+            logAccum.append(st2qstr(S.readLine() + '\n'));
+        fEditor->setPlainText(logAccum);
         fEditor->setReadOnly(true);
     } else if (plEncryptedStream::IsFileEncrypted(stFilename)) {
         plEncryptedStream S(PlasmaVer::pvUnknown);
