@@ -39,7 +39,7 @@ QVaultPlayerInfoNode::QVaultPlayerInfoNode(QWidget* parent)
     layout->addWidget(fPlayerLink, 1, 2);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 2, 0, 1, 2);
 
-    connect(fPlayerLink, SIGNAL(activated()), this, SLOT(subscribePlayer()));
+    connect(fPlayerLink, &QLinkLabel::activated, this, &QVaultPlayerInfoNode::subscribePlayer);
 }
 
 plVaultNode QVaultPlayerInfoNode::saveNode()

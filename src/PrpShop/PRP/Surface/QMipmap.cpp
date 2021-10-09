@@ -142,14 +142,15 @@ QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
         levelSel->setRange(0, 0);
     else
         levelSel->setRange(0, tex->getNumLevels() - 1);
-    connect(levelSel, SIGNAL(valueChanged(int)), this, SLOT(setLevel(int)));
+    connect(levelSel, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &QMipmap_Preview::setLevel);
     levelLayout->addWidget(new QLabel(tr("Level:"), levelWidget), 0, 0);
     levelLayout->addWidget(levelSel, 0, 1);
     levelSel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     QLinkLabel* saveAsLink = new QLinkLabel(tr("Save As..."), levelWidget);
     levelLayout->addWidget(saveAsLink, 1, 0, 1, 2);
-    connect(fTexture, SIGNAL(textureChanged(bool)), saveAsLink, SLOT(setEnabled(bool)));
-    connect(saveAsLink, SIGNAL(activated()), fTexture, SLOT(saveAs()));
+    connect(fTexture, &QTextureBox::textureChanged, saveAsLink, &QWidget::setEnabled);
+    connect(saveAsLink, &QLinkLabel::activated, fTexture, &QTextureBox::saveAs);
     fTexture->setTexture(tex);
 
     QGridLayout* layout = new QGridLayout(this);
@@ -320,10 +321,10 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
         xJPGLink->setEnabled(false);
     }
 
-    connect(xDDSLink, SIGNAL(activated()), this, SLOT(onExportDDS()));
-    connect(xJPGLink, SIGNAL(activated()), this, SLOT(onExportJPEG()));
-    connect(iDDSLink, SIGNAL(activated()), this, SLOT(onImportDDS()));
-    connect(iJPGLink, SIGNAL(activated()), this, SLOT(onImportJPEG()));
+    connect(xDDSLink, &QLinkLabel::activated, this, &QMipmap::onExportDDS);
+    connect(xJPGLink, &QLinkLabel::activated, this, &QMipmap::onExportJPEG);
+    connect(iDDSLink, &QLinkLabel::activated, this, &QMipmap::onImportDDS);
+    connect(iJPGLink, &QLinkLabel::activated, this, &QMipmap::onImportJPEG);
 }
 
 static void makeJColorSurface(const plMipmap* tex, hsStream* S)

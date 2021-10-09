@@ -48,8 +48,8 @@ QLayerLinkAnimation::QLayerLinkAnimation(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fLinkKey, 3, 1);
     layout->addWidget(fLeavingAge, 4, 0, 1, 2);
 
-    connect(fLinkKey, SIGNAL(addObject()), this, SLOT(setLinkKey()));
-    connect(fLinkKey, SIGNAL(delObject()), this, SLOT(unsetLinkKey()));
+    connect(fLinkKey, &QCreatableLink::addObject, this, &QLayerLinkAnimation::setLinkKey);
+    connect(fLinkKey, &QCreatableLink::delObject, this, &QLayerLinkAnimation::unsetLinkKey);
 }
 
 void QLayerLinkAnimation::setLinkKey()

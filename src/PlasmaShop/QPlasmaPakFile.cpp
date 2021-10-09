@@ -285,12 +285,12 @@ QPlasmaPakFile::QPlasmaPakFile(QWidget* parent)
     toolbar->addAction(fActions[kExtract]);
     toolbar->addAction(fActions[kExtractAll]);
 
-    connect(fFileList, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(onContextMenu(QPoint)));
-    connect(fActions[kAdd], SIGNAL(triggered()), this, SLOT(onAdd()));
-    connect(fActions[kDel], SIGNAL(triggered()), this, SLOT(onDel()));
-    connect(fActions[kExtract], SIGNAL(triggered()), this, SLOT(onExtract()));
-    connect(fActions[kExtractAll], SIGNAL(triggered()), this, SLOT(onExtractAll()));
+    connect(fFileList, &QWidget::customContextMenuRequested,
+            this, &QPlasmaPakFile::onContextMenu);
+    connect(fActions[kAdd], &QAction::triggered, this, &QPlasmaPakFile::onAdd);
+    connect(fActions[kDel], &QAction::triggered, this, &QPlasmaPakFile::onDel);
+    connect(fActions[kExtract], &QAction::triggered, this, &QPlasmaPakFile::onExtract);
+    connect(fActions[kExtractAll], &QAction::triggered, this, &QPlasmaPakFile::onExtractAll);
 }
 
 bool QPlasmaPakFile::loadFile(const QString& filename)

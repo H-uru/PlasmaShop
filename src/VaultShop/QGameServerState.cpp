@@ -18,7 +18,7 @@
 #include <QLabel>
 
 QGameServerState::QGameServerState(QWidget* parent)
-    : QWidget(parent)
+    : QWidget(parent), fState()
 {
     fObjectSel = new QComboBox(this);
     fSDLEditor = new QSDLEditor(this);
@@ -31,8 +31,8 @@ QGameServerState::QGameServerState(QWidget* parent)
     layout->addWidget(fObjectSel, 0, 1);
     layout->addWidget(fSDLEditor, 1, 1);
 
-    connect(fObjectSel, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(objectChanged(int)));
+    connect(fObjectSel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QGameServerState::objectChanged);
 }
 
 void QGameServerState::loadSav(plNetGameServerState* state)
@@ -53,7 +53,7 @@ void QGameServerState::loadSav(plNetGameServerState* state)
     if (fObjectSel->count() > 0) {
         fObjectSel->setEnabled(true);
         fSDLEditor->setEnabled(true);
-        fSDLEditor->setMgrs(NULL, &fState->getSDLMgr());
+        fSDLEditor->setMgrs(nullptr, &fState->getSDLMgr());
         fObjectSel->setCurrentIndex(selId);
     } else {
         // No SDL records, so disable everything

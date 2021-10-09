@@ -39,8 +39,8 @@ QGUIMultiLineEditCtrl::QGUIMultiLineEditCtrl(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Scroll Ctrl:"), this), 1, 0);
     layout->addWidget(fScrollCtrl, 1, 1);
 
-    connect(fScrollCtrl, SIGNAL(addObject()), this, SLOT(setScrollCtrl()));
-    connect(fScrollCtrl, SIGNAL(delObject()), this, SLOT(unsetScrollCtrl()));
+    connect(fScrollCtrl, &QCreatableLink::addObject, this, &QGUIMultiLineEditCtrl::setScrollCtrl);
+    connect(fScrollCtrl, &QCreatableLink::delObject, this, &QGUIMultiLineEditCtrl::unsetScrollCtrl);
 }
 
 void QGUIMultiLineEditCtrl::setScrollCtrl()

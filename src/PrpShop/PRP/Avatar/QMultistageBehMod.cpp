@@ -119,8 +119,8 @@ QAnimStage::QAnimStage(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fDoRegress, 6, 0);
     layout->addWidget(fRegressTo, 6, 1, 1, 4);
 
-    connect(fDoAdvance, SIGNAL(toggled(bool)), fAdvanceTo, SLOT(setEnabled(bool)));
-    connect(fDoRegress, SIGNAL(toggled(bool)), fRegressTo, SLOT(setEnabled(bool)));
+    connect(fDoAdvance, &QCheckBox::toggled, fAdvanceTo, &QWidget::setEnabled);
+    connect(fDoRegress, &QCheckBox::toggled, fRegressTo, &QWidget::setEnabled);
 }
 
 void QAnimStage::saveDamage()
@@ -207,10 +207,10 @@ QMultistageBehMod::QMultistageBehMod(plCreatable* pCre, QWidget* parent)
     fStages->resizeColumnToContents(0);
     fReceivers->adjustColumns();
 
-    connect(fStages, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(stageContextMenu(const QPoint&)));
-    connect(fStages, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(activateStageItem(QTreeWidgetItem*, int)));
+    connect(fStages, &QTreeWidget::customContextMenuRequested,
+            this, &QMultistageBehMod::stageContextMenu);
+    connect(fStages, &QTreeWidget::itemActivated,
+            this, &QMultistageBehMod::activateStageItem);
 }
 
 void QMultistageBehMod::saveDamage()

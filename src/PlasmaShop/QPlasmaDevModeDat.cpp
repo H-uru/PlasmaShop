@@ -61,8 +61,10 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layRecord->addWidget(fRecordSliderMaxAniso, kNumDevRecordLabels + 1, 1);
     layRecord->addWidget(AASettingLabel, kNumDevRecordLabels, 2);
     layRecord->addWidget(MaxAnisoLabel, kNumDevRecordLabels + 1, 2);
-    connect(fRecordSliderAASetting, SIGNAL(valueChanged(int)), AASettingLabel, SLOT(setNum(int)));
-    connect(fRecordSliderMaxAniso, SIGNAL(valueChanged(int)), MaxAnisoLabel, SLOT(setNum(int)));
+    connect(fRecordSliderAASetting, &QSlider::valueChanged,
+            AASettingLabel, QOverload<int>::of(&QLabel::setNum));
+    connect(fRecordSliderMaxAniso, &QSlider::valueChanged,
+            MaxAnisoLabel, QOverload<int>::of(&QLabel::setNum));
 
     //Capabilities SubGroup
     QGroupBox* grpCaps = new QGroupBox(tr("Capabilities"), grpRecord);
@@ -98,7 +100,7 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layMode->addWidget(fModeComboBoxDepth, 3, 1);
     layMode->addWidget(fModeCheckBoxWindowed, 4, 1);
     layMode->addWidget(fModeLabelCanRenderToCubics, 5, 1);
-    connect(fModeCheckBoxWindowed, SIGNAL(toggled(bool)), fModeComboBoxDepth, SLOT(setDisabled(bool)));
+    connect(fModeCheckBoxWindowed, &QCheckBox::toggled, fModeComboBoxDepth, &QWidget::setDisabled);
 
     //TextureQuality Group
     QGroupBox* grpTexQuality = new QGroupBox(tr("Texture Quality"), this);
@@ -109,7 +111,8 @@ QPlasmaDevModeDat::QPlasmaDevModeDat(QWidget* parent)
     layTexQuality->addWidget(new QLabel(tr("Quality:"), grpTexQuality), 0, 0);
     layTexQuality->addWidget(fSliderTextureQuality, 0, 1);
     layTexQuality->addWidget(textureQualityValueLabel, 0, 2);
-    connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), textureQualityValueLabel, SLOT(setNum(int)));
+    connect(fSliderTextureQuality, &QSlider::valueChanged, textureQualityValueLabel,
+            QOverload<int>::of(&QLabel::setNum));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(4, 4, 4, 4);
@@ -195,13 +198,14 @@ bool QPlasmaDevModeDat::loadDeviceModeData(hsStream* S)
             fSliderTextureQuality->setValue(fModeRecord.getTextureQuality());
 
             //When to mark the file as dirty?
-            connect(fRecordSliderAASetting, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
-            connect(fRecordSliderMaxAniso, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
-            connect(fModeLineEditWidth, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
-            connect(fModeLineEditHeight, SIGNAL(textEdited(QString)), this, SLOT(makeDirty()));
-            connect(fModeComboBoxDepth, SIGNAL(currentIndexChanged(int)), this, SLOT(makeDirty()));
-            connect(fModeCheckBoxWindowed, SIGNAL(stateChanged(int)), this, SLOT(makeDirty()));
-            connect(fSliderTextureQuality, SIGNAL(valueChanged(int)), this, SLOT(makeDirty()));
+            connect(fRecordSliderAASetting, &QSlider::valueChanged, this, &QPlasmaDocument::makeDirty);
+            connect(fRecordSliderMaxAniso, &QSlider::valueChanged, this, &QPlasmaDocument::makeDirty);
+            connect(fModeLineEditWidth, &QLineEdit::textEdited, this, &QPlasmaDocument::makeDirty);
+            connect(fModeLineEditHeight, &QLineEdit::textEdited, this, &QPlasmaDocument::makeDirty);
+            connect(fModeComboBoxDepth, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                    this, &QPlasmaDocument::makeDirty);
+            connect(fModeCheckBoxWindowed, &QCheckBox::stateChanged, this, &QPlasmaDocument::makeDirty);
+            connect(fSliderTextureQuality, &QSlider::valueChanged, this, &QPlasmaDocument::makeDirty);
         } catch (std::exception &e) {
             plDebug::Error("Error reading dev_mode.dat file {}: {}", fFilename.toUtf8().data(), e.what());
             return false;

@@ -71,20 +71,20 @@ QLayerAnimation::QLayerAnimation(plCreatable* pCre, QWidget* parent)
     layout->addWidget(controllerGroup, 2, 0, 1, 2);
     layout->addWidget(fAnimTimeConvert, 3, 0, 1, 2);
 
-    connect(fBaseLayer, SIGNAL(addObject()), this, SLOT(setBaseLayer()));
-    connect(fBaseLayer, SIGNAL(delObject()), this, SLOT(unsetBaseLayer()));
-    connect(fPreshade, SIGNAL(createObject(short)), this, SLOT(newPreshade(short)));
-    connect(fPreshade, SIGNAL(delObject()), this, SLOT(delPreshade()));
-    connect(fRuntime, SIGNAL(createObject(short)), this, SLOT(newRuntime(short)));
-    connect(fRuntime, SIGNAL(delObject()), this, SLOT(delRuntime()));
-    connect(fAmbient, SIGNAL(createObject(short)), this, SLOT(newAmbient(short)));
-    connect(fAmbient, SIGNAL(delObject()), this, SLOT(delAmbient()));
-    connect(fSpecular, SIGNAL(createObject(short)), this, SLOT(newSpecular(short)));
-    connect(fSpecular, SIGNAL(delObject()), this, SLOT(delSpecular()));
-    connect(fOpacity, SIGNAL(createObject(short)), this, SLOT(newOpacity(short)));
-    connect(fOpacity, SIGNAL(delObject()), this, SLOT(delOpacity()));
-    connect(fTransform, SIGNAL(createObject(short)), this, SLOT(newTransform(short)));
-    connect(fTransform, SIGNAL(delObject()), this, SLOT(delTransform()));
+    connect(fBaseLayer, &QCreatableLink::addObject, this, &QLayerAnimation::setBaseLayer);
+    connect(fBaseLayer, &QCreatableLink::delObject, this, &QLayerAnimation::unsetBaseLayer);
+    connect(fPreshade, &QControllerLink::createObject, this, &QLayerAnimation::newPreshade);
+    connect(fPreshade, &QControllerLink::delObject, this, &QLayerAnimation::delPreshade);
+    connect(fRuntime, &QControllerLink::createObject, this, &QLayerAnimation::newRuntime);
+    connect(fRuntime, &QControllerLink::delObject, this, &QLayerAnimation::delRuntime);
+    connect(fAmbient, &QControllerLink::createObject, this, &QLayerAnimation::newAmbient);
+    connect(fAmbient, &QControllerLink::delObject, this, &QLayerAnimation::delAmbient);
+    connect(fSpecular, &QControllerLink::createObject, this, &QLayerAnimation::newSpecular);
+    connect(fSpecular, &QControllerLink::delObject, this, &QLayerAnimation::delSpecular);
+    connect(fOpacity, &QControllerLink::createObject, this, &QLayerAnimation::newOpacity);
+    connect(fOpacity, &QControllerLink::delObject, this, &QLayerAnimation::delOpacity);
+    connect(fTransform, &QControllerLink::createObject, this, &QLayerAnimation::newTransform);
+    connect(fTransform, &QControllerLink::delObject, this, &QLayerAnimation::delTransform);
 }
 
 void QLayerAnimation::setBaseLayer()

@@ -72,7 +72,7 @@ QColorEdit::QColorEdit(bool doAlpha, QWidget* parent)
     fColorBox->setMinimumSize(24, 24);
     //fColorBox->setMaximumSize(24, 24);
     layout->addWidget(fColorBox);
-    connect(fColorBox, SIGNAL(activated()), this, SLOT(selectColor()));
+    connect(fColorBox, &QColorBox::activated, this, &QColorEdit::selectColor);
 
     if (doAlpha) {
         fAlphaBox = new QDoubleSpinBox(this);
@@ -81,7 +81,8 @@ QColorEdit::QColorEdit(bool doAlpha, QWidget* parent)
         fAlphaBox->setSingleStep(0.005);
         layout->addWidget(new QLabel(tr("A:"), this));
         layout->addWidget(fAlphaBox);
-        connect(fAlphaBox, SIGNAL(valueChanged(double)), this, SLOT(setAlpha(double)));
+        connect(fAlphaBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this,
+                [this](double alpha) { fColor.a = alpha; });
     } else {
         fAlphaBox = NULL;
     }

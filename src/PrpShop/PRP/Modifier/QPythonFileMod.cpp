@@ -67,8 +67,8 @@ QPythonParamList::QPythonParamList(QWidget* parent)
     headerItem()->setText(1, tr("Type"));
     headerItem()->setText(2, tr("Value"));
 
-    connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-            this, SLOT(handleActivate(QTreeWidgetItem*, int)));
+    connect(this, &QTreeWidget::itemActivated,
+            this, &QPythonParamList::handleActivate);
 }
 
 QSize QPythonParamList::sizeHint() const
@@ -232,10 +232,11 @@ QPythonParamDialog::QPythonParamDialog(QWidget* parent)
     layout->addWidget(fLabelNull, 2, 1, 1, 2);
     layout->addWidget(buttonBox, 3, 0, 1, 3);
 
-    connect(fTypeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
-    connect(fKeyValue, SIGNAL(activated()), this, SLOT(selectKey()));
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(fTypeBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QPythonParamDialog::typeChanged);
+    connect(fKeyValue, &QLinkLabel::activated, this, &QPythonParamDialog::selectKey);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     fTypeBox->setCurrentIndex(plPythonParameter::kNone-1);
 }
 

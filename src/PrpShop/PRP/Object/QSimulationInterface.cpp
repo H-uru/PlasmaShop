@@ -86,10 +86,10 @@ QSimulationInterface::QSimulationInterface(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Physical Object: "), this), 3, 0, 1, 1);
     layout->addWidget(fPhysicalLink, 3, 1, 1, 1);
 
-    connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
-    connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
-    connect(fPhysicalLink, SIGNAL(addObject()), this, SLOT(setPhysical()));
-    connect(fPhysicalLink, SIGNAL(delObject()), this, SLOT(unsetPhysical()));
+    connect(fOwnerLink, &QCreatableLink::addObject, this, &QSimulationInterface::setOwner);
+    connect(fOwnerLink, &QCreatableLink::delObject, this, &QSimulationInterface::unsetOwner);
+    connect(fPhysicalLink, &QCreatableLink::addObject, this, &QSimulationInterface::setPhysical);
+    connect(fPhysicalLink, &QCreatableLink::delObject, this, &QSimulationInterface::unsetPhysical);
 }
 
 void QSimulationInterface::setOwner()

@@ -257,7 +257,8 @@ QVaultNode::QVaultNode(QWidget* parent)
     layout->addWidget(new QLabel("Blob 2:", this), 3, 3);
     layout->addWidget(fBlob2_Info, 3, 4);
 
-    connect(fNodeType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(fNodeType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QVaultNode::typeChanged);
 }
 
 void QVaultNode::typeChanged(int)

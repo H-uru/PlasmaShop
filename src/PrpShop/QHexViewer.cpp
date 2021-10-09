@@ -39,8 +39,8 @@ QHexViewer::QHexViewer(plCreatable* pCre, QWidget* parent)
     : QCreatable(pCre, kHex_Type | pCre->ClassIndex(), parent)
 {
     fViewer = new QHexWidget(this);
-    connect(fViewer, SIGNAL(currentAddressChanged(int)),
-            this, SLOT(cursorChanged(int)));
+    connect(fViewer, &QHexWidget::currentAddressChanged,
+            this, &QHexViewer::cursorChanged);
 
     QLabel* i32Label = new QLabel(tr("32-bit int: "), this);
     fI32Val = new SelectableLabel(this);
@@ -54,7 +54,7 @@ QHexViewer::QHexViewer(plCreatable* pCre, QWidget* parent)
     fFloatVal = new SelectableLabel(this);
     QLabel* f64Label = new QLabel(tr("double: "), this);
     fDoubleVal = new SelectableLabel(this);
-    connect(fSigned, SIGNAL(toggled(bool)), this, SLOT(signedChanged(bool)));
+    connect(fSigned, &QCheckBox::toggled, this, &QHexViewer::signedChanged);
     QLabel* stringLabel = new QLabel(tr("Encoded string:"), this);
     fStringVal = new SelectableLabel(this);
 

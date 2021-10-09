@@ -75,8 +75,8 @@ QGUIListBoxMod::QGUIListBoxMod(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Scroll Ctrl:"), this), 2, 0);
     layout->addWidget(fScrollCtrl, 2, 1);
 
-    connect(fScrollCtrl, SIGNAL(addObject()), this, SLOT(setScrollCtrl()));
-    connect(fScrollCtrl, SIGNAL(delObject()), this, SLOT(unsetScrollCtrl()));
+    connect(fScrollCtrl, &QCreatableLink::addObject, this, &QGUIListBoxMod::setScrollCtrl);
+    connect(fScrollCtrl, &QCreatableLink::delObject, this, &QGUIListBoxMod::unsetScrollCtrl);
 }
 
 void QGUIListBoxMod::setScrollCtrl()

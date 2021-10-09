@@ -101,11 +101,11 @@ TextFindDialog::TextFindDialog(QPlasmaTextDoc* parent, bool replace)
     layout->addWidget(fReverse, idx++, 1);
     layout->addWidget(buttonPanel, 0, 2, idx, 1);
 
-    connect(btnFind, SIGNAL(clicked()), this, SLOT(handleFind()));
-    connect(btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(btnFind, &QPushButton::clicked, this, &TextFindDialog::handleFind);
+    connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
     if (replace) {
-        connect(btnReplaceAll, SIGNAL(clicked()), this, SLOT(handleReplaceAll()));
-        connect(fBtnSkip, SIGNAL(clicked()), this, SLOT(handleSkip()));
+        connect(btnReplaceAll, &QPushButton::clicked, this, &TextFindDialog::handleReplaceAll);
+        connect(fBtnSkip, &QPushButton::clicked, this, [this] { performSearch(); });
     }
 
     resize(sizeHint().width() * 1.5, sizeHint().height());

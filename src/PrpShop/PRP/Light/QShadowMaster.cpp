@@ -90,8 +90,8 @@ QShadowMaster::QShadowMaster(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Power:"), this), 7, 0);
     layout->addWidget(fPower, 7, 1, 1, 2);
 
-    connect(fOwnerLink, SIGNAL(addObject()), this, SLOT(setOwner()));
-    connect(fOwnerLink, SIGNAL(delObject()), this, SLOT(unsetOwner()));
+    connect(fOwnerLink, &QCreatableLink::addObject, this, &QShadowMaster::setOwner);
+    connect(fOwnerLink, &QCreatableLink::delObject, this, &QShadowMaster::unsetOwner);
 }
 
 void QShadowMaster::saveDamage()

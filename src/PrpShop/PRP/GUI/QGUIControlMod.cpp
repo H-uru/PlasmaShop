@@ -234,15 +234,16 @@ QGUIControlMod::QGUIControlMod(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fSkin, 6, 1);
     layout->addWidget(xTabs, 7, 0, 1, 2);
 
-    connect(fDynTextMap, SIGNAL(addObject()), this, SLOT(setDynTextMap()));
-    connect(fDynTextMap, SIGNAL(delObject()), this, SLOT(unsetDynTextMap()));
-    connect(fDynTextLayer, SIGNAL(addObject()), this, SLOT(setDynTextLayer()));
-    connect(fDynTextLayer, SIGNAL(delObject()), this, SLOT(unsetDynTextLayer()));
-    connect(fProxy, SIGNAL(addObject()), this, SLOT(setProxy()));
-    connect(fProxy, SIGNAL(delObject()), this, SLOT(unsetProxy()));
-    connect(fSkin, SIGNAL(addObject()), this, SLOT(setSkin()));
-    connect(fSkin, SIGNAL(delObject()), this, SLOT(unsetSkin()));
-    connect(fProcType, SIGNAL(currentIndexChanged(int)), this, SLOT(setProcType(int)));
+    connect(fDynTextMap, &QCreatableLink::addObject, this, &QGUIControlMod::setDynTextMap);
+    connect(fDynTextMap, &QCreatableLink::delObject, this, &QGUIControlMod::unsetDynTextMap);
+    connect(fDynTextLayer, &QCreatableLink::addObject, this, &QGUIControlMod::setDynTextLayer);
+    connect(fDynTextLayer, &QCreatableLink::delObject, this, &QGUIControlMod::unsetDynTextLayer);
+    connect(fProxy, &QCreatableLink::addObject, this, &QGUIControlMod::setProxy);
+    connect(fProxy, &QCreatableLink::delObject, this, &QGUIControlMod::unsetProxy);
+    connect(fSkin, &QCreatableLink::addObject, this, &QGUIControlMod::setSkin);
+    connect(fSkin, &QCreatableLink::delObject, this, &QGUIControlMod::unsetSkin);
+    connect(fProcType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QGUIControlMod::setProcType);
 }
 
 void QGUIControlMod::saveDamage()

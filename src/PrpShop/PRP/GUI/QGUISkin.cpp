@@ -83,9 +83,10 @@ QGUISkin::QGUISkin(plCreatable* pCre, QWidget* parent)
     layout->addWidget(fElements, 4, 1);
     layout->addWidget(grpElement, 5, 0, 1, 2);
 
-    connect(fTexture, SIGNAL(addObject()), this, SLOT(setTexture()));
-    connect(fTexture, SIGNAL(delObject()), this, SLOT(unsetTexture()));
-    connect(fElements, SIGNAL(currentIndexChanged(int)), this, SLOT(setElement(int)));
+    connect(fTexture, &QCreatableLink::addObject, this, &QGUISkin::setTexture);
+    connect(fTexture, &QCreatableLink::delObject, this, &QGUISkin::unsetTexture);
+    connect(fElements, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QGUISkin::setElement);
 }
 
 void QGUISkin::saveDamage()

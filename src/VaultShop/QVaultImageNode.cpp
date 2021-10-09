@@ -107,8 +107,8 @@ QVaultImageNode::QVaultImageNode(QWidget* parent)
     layout->addWidget(fImgType, 1, 1);
     layout->addWidget(imgPanel, 2, 0, 1, 2);
 
-    connect(btnSave, SIGNAL(clicked()), this, SLOT(IExportImage()));
-    connect(btnLoad, SIGNAL(clicked()), this, SLOT(IImportImage()));
+    connect(btnSave, &QPushButton::clicked, this, &QVaultImageNode::IExportImage);
+    connect(btnLoad, &QPushButton::clicked, this, &QVaultImageNode::IImportImage);
 }
 
 plVaultNode QVaultImageNode::saveNode()

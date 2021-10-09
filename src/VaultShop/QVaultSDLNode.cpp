@@ -236,8 +236,7 @@ QSDLEditor::QSDLEditor(QWidget* parent)
     layout->addWidget(fSDLList, 0, 0);
     layout->addWidget(fEditorPanel, 1, 0);
 
-    connect(fSDLList, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-            this, SLOT(itemSelected(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(fSDLList, &QTreeWidget::currentItemChanged, this, &QSDLEditor::itemSelected);
 }
 
 QSDLEditor::~QSDLEditor()
@@ -340,7 +339,8 @@ void QSDLEditor::setupVarEditorCommon(plStateVariable* var)
         .arg(var->getCount()), fEditorPanel), 0, 0);
     fEditorLayout->addWidget(fEditorWhich, 0, 1, 1, 4);
 
-    connect(fEditorWhich, SIGNAL(valueChanged(int)), this, SLOT(indexChanged(int)));
+    connect(fEditorWhich, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &QSDLEditor::indexChanged);
 }
 
 void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)

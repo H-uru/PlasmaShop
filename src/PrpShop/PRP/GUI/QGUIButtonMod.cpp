@@ -73,8 +73,8 @@ QGUIButtonMod::QGUIButtonMod(plCreatable* pCre, QWidget* parent)
     layout->addWidget(new QLabel(tr("Draggable:"), this), 3, 0);
     layout->addWidget(fDraggable, 3, 1);
 
-    connect(fDraggable, SIGNAL(addObject()), this, SLOT(setDraggable()));
-    connect(fDraggable, SIGNAL(delObject()), this, SLOT(unsetDraggable()));
+    connect(fDraggable, &QCreatableLink::addObject, this, &QGUIButtonMod::setDraggable);
+    connect(fDraggable, &QCreatableLink::delObject, this, &QGUIButtonMod::unsetDraggable);
 
     fAnimationKeys->adjustColumns();
     fMouseOverAnimKeys->adjustColumns();
