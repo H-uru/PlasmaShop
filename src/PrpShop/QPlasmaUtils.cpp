@@ -17,6 +17,7 @@
 #include <algorithm>
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
+#include <PRP/Object/plCoordinateInterface.h>
 #include <PRP/Object/plSceneObject.h>
 
 bool s_showTypeIDs = false;
@@ -613,6 +614,25 @@ bool pqIsValidKOType(short objType)
     return std::find(valid_types.begin(), valid_types.end(), objType) != valid_types.end();
 }
 
+static bool pqCanPreviewSceneObject(plSceneObject* sceneObj)
+{
+    if (sceneObj->getDrawInterface().Exists()) {
+        return true;
+    }
+
+    plCoordinateInterface* coord = GET_KEY_OBJECT(sceneObj->getCoordInterface(), plCoordinateInterface);
+    if (coord == nullptr) {
+        return false;
+    }
+    for (const auto& childKey : coord->getChildren()) {
+        plSceneObject* child = GET_KEY_OBJECT(childKey, plSceneObject);
+        if (child != nullptr && pqCanPreviewSceneObject(child)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool pqCanPreviewType(plCreatable* pCre)
 {
     short type = pCre->ClassIndex();
@@ -624,7 +644,7 @@ bool pqCanPreviewType(plCreatable* pCre)
 
     if (type == kSceneObject) {
         plSceneObject* tmp = plSceneObject::Convert(pCre);
-        return tmp->getDrawInterface().Exists();
+        return pqCanPreviewSceneObject(tmp);
     }
 
     for (size_t i=0; i<s_numTypes; i++) {
