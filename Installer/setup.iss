@@ -32,6 +32,7 @@ Source: VaultShop.exe; DestDir: {app}; Flags: ignoreversion; Components: VaultSh
 Source: Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5Network.dll; DestDir: {app}; Flags: ignoreversion
+Source: Qt5Svg.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
 Source: Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion; Components: PrpShop
 Source: KF5SyntaxHighlighting.dll; DestDir: {app}; Flags: ignoreversion
@@ -41,6 +42,7 @@ Source: iconengines\qsvgicon.dll; DestDir: {app}\iconengines; Flags: ignoreversi
 Source: imageformats\qico.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qjpeg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qsvg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+Source: imageformats\qtga.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qtiff.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: imageformats\qwbmp.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 Source: platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
@@ -65,6 +67,7 @@ Source: translations\qt_lv.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: translations\qt_pl.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: translations\qt_ru.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: translations\qt_sk.qm; DestDir: {app}\translations; Flags: ignoreversion
+Source: translations\qt_tr.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: translations\qt_uk.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: translations\qt_zh_TW.qm; DestDir: {app}\translations; Flags: ignoreversion
 Source: ..\COPYING; DestDir: {app}
