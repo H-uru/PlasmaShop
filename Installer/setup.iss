@@ -80,7 +80,7 @@ Name: {app}\Qt5PrintSupport.dll; Type: files
 Name: {app}\platforms\qminimal.dll; Type: files
 
 [Run]
-Filename: {tmp}\vc_redist.x86.exe; Parameters: /q
+Filename: {tmp}\vc_redist.x86.exe; Parameters: /install /quiet /norestart
 
 [UninstallDelete]
 Name: {app}\PlasmaShop.log; Type: files
