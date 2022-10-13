@@ -120,6 +120,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QMipmap.h"
 #include "PRP/Render/QSceneNode_Preview.h"
 #include "PRP/Render/QSceneObj_Preview.h"
+#include "PRP/Render/QCEMap_Preview.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceType)
 {
@@ -290,6 +291,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QSceneNode_Preview(pCre, parent);
     case kPreviewSceneObject:
         return new QSceneObj_Preview(pCre, parent);
+    case kPreviewCubicEnvironmap:
+        return new QCEMap_Preview(pCre, parent);
 
     default:
         if ((type & 0x1000) == 0) {

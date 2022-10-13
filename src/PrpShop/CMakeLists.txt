@@ -61,9 +61,11 @@ set(PrpShop_Headers
     PRP/Surface/QLayerSDLAnimation.h
     PRP/Surface/QMaterial.h
     PRP/Surface/QMipmap.h
+    PRP/Render/QCEMap_Preview.h
+    PRP/Render/QPlasmaCubicRender.h
+    PRP/Render/QPlasmaRender.h
     PRP/Render/QSceneNode_Preview.h
     PRP/Render/QSceneObj_Preview.h
-    PRP/Render/QPlasmaRender.h
 )
 
 set(PrpShop_Sources
@@ -131,6 +133,8 @@ set(PrpShop_Sources
     PRP/Surface/QLayerSDLAnimation.cpp
     PRP/Surface/QMaterial.cpp
     PRP/Surface/QMipmap.cpp
+    PRP/Render/QCEMap_Preview.cpp
+    PRP/Render/QPlasmaCubicRender.cpp
     PRP/Render/QPlasmaRender.cpp
     PRP/Render/QSceneNode_Preview.cpp
     PRP/Render/QSceneObj_Preview.cpp

@@ -46,5 +46,6 @@
     <file>img/view-wire.png</file>
     <file>img/view-flat.png</file>
     <file>img/view-textured.png</file>
+    <file>img/view-facelabels.png</file>
 </qresource>
 </RCC>
