@@ -84,6 +84,7 @@ PrpShopMain::PrpShopMain()
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
     fActions[kTreeImport] = new QAction(tr("&Import..."), this);
     fActions[kTreeExport] = new QAction(tr("E&xport..."), this);
+    fActions[kTreeNewObject] = new QAction(tr("&New Object..."), this);
 
     fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
     fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -203,6 +204,7 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeDelete], &QAction::triggered, this, &PrpShopMain::treeDelete);
     connect(fActions[kTreeImport], &QAction::triggered, this, &PrpShopMain::treeImport);
     connect(fActions[kTreeExport], &QAction::triggered, this, &PrpShopMain::treeExport);
+    connect(fActions[kTreeNewObject], &QAction::triggered, this, &PrpShopMain::createNewObject);
 
     connect(fBrowserTree, &QTreeWidget::currentItemChanged,
             this, &PrpShopMain::treeItemChanged);
@@ -446,6 +448,18 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         fActions[kTreeViewTargets]->setEnabled(pqHasTargets(item->obj()));
     } else {
         menu.addAction(fActions[kTreeImport]);
+        if (item->childCount() != 0) {
+            QPlasmaTreeItem* child = (QPlasmaTreeItem*)item->child(0);
+            if (child->type() == QPlasmaTreeItem::kTypeKO) {
+                auto obj_type = child->obj()->getKey()->getType();
+                
+                menu.addAction(fActions[kTreeNewObject]);
+                fActions[kTreeNewObject]->setText(tr("New %1...").arg(
+                    pqGetFriendlyClassName(obj_type))
+                );
+                fActions[kTreeNewObject]->setEnabled(pqIsValidKOType(obj_type));
+            }
+        }
     }
     menu.exec(fBrowserTree->viewport()->mapToGlobal(pos));
 }

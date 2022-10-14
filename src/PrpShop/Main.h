@@ -78,7 +78,7 @@ private:
 
         // Tree Context Menu
         kTreeClose, kTreeEdit, kTreeEditPRC, kTreeEditHex, kTreePreview,
-        kTreeViewTargets, kTreeDelete, kTreeImport, kTreeExport,
+        kTreeViewTargets, kTreeDelete, kTreeImport, kTreeExport, kTreeNewObject,
 
         kNumActions
     };

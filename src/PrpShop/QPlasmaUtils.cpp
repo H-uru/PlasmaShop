@@ -14,6 +14,7 @@
  * along with PlasmaShop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/Object/plSceneObject.h>
@@ -604,6 +605,12 @@ std::vector<short> pqGetValidKOTypes()
     static size_t s_numTypes = sizeof(s_typeList) / sizeof(s_typeList[0]);
 
     return std::vector<short>(s_typeList, s_typeList + s_numTypes);
+}
+
+bool pqIsValidKOType(short objType)
+{
+    const auto valid_types = pqGetValidKOTypes();
+    return std::find(valid_types.begin(), valid_types.end(), objType) != valid_types.end();
 }
 
 bool pqCanPreviewType(plCreatable* pCre)

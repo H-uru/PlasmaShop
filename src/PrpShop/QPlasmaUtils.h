@@ -46,6 +46,7 @@ QIcon pqGetTypeIcon(int);
 QString pqGetFriendlyClassName(int);
 
 std::vector<short> pqGetValidKOTypes();
+bool pqIsValidKOType(short);
 bool pqCanPreviewType(plCreatable* pCre);
 bool pqHasTargets(plCreatable* c);
 
