@@ -91,6 +91,7 @@ PrpShopMain::PrpShopMain()
     fActions[kFileSaveAs]->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
     fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
     fActions[kWindowClose]->setShortcut(Qt::CTRL + Qt::Key_W);
+    fActions[kWindowClose]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     fActions[kToolsProperties]->setCheckable(true);
     fActions[kToolsProperties]->setChecked(true);
     fActions[kToolsShowTypeIDs]->setCheckable(true);
@@ -151,6 +152,7 @@ PrpShopMain::PrpShopMain()
     fBrowserTree->setUniformRowHeights(true);
     fBrowserTree->setHeaderHidden(true);
     fBrowserTree->setContextMenuPolicy(Qt::CustomContextMenu);
+    fBrowserTree->addAction(fActions[kWindowClose]);
     addDockWidget(Qt::LeftDockWidgetArea, fBrowserDock);
 
     // Property Pane
