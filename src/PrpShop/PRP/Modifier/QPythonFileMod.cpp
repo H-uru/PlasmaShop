@@ -29,7 +29,7 @@ static const QString s_PythonParamTypes[] = {
     "Exclude Region", "Animation", "Animation Name", "Behavior", "Material",
     "GUI Pop-Up Menu", "GUI Skin", "Water Component", "Swim Current Interface",
     "Cluster Component", "Material Animation", "Grass Shader Component",
-    "Global SDL Variable", "Subtitle", "Blower Component", "None"
+    "Global SDL Variable", "Subtitle", "Blower Component", "Layer", "None"
 };
 
 static QStringList makeParamItem(const plPythonParameter& param)
