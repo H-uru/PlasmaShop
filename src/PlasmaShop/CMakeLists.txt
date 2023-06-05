@@ -79,6 +79,7 @@ set(pycdc_Maps
     ${pycdc_SOURCE_DIR}/bytes/python_38.map
     ${pycdc_SOURCE_DIR}/bytes/python_39.map
     ${pycdc_SOURCE_DIR}/bytes/python_310.map
+    ${pycdc_SOURCE_DIR}/bytes/python_311.map
 )
 set(pycdc_GeneratedSources
     ${pycdc_BINARY_DIR}/bytes/python_10.cpp
@@ -106,6 +107,7 @@ set(pycdc_GeneratedSources
     ${pycdc_BINARY_DIR}/bytes/python_38.cpp
     ${pycdc_BINARY_DIR}/bytes/python_39.cpp
     ${pycdc_BINARY_DIR}/bytes/python_310.cpp
+    ${pycdc_BINARY_DIR}/bytes/python_311.cpp
 )
 # run "comp_map.py" in the pycdc folder to generate the source code
 add_custom_target(create-bytes-source-dir ALL

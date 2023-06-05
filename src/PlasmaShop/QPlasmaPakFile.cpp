@@ -27,7 +27,7 @@
 
 #include <ASTree.h>
 #include <data.h>
-#include <cstdio>
+#include <fstream>
 #include "Main.h"
 
 #define PYC_MAGIC_22  (0x0A0DED2D)
@@ -551,12 +551,18 @@ bool QPlasmaPakFile::decompylePyc(QWidget *parent, QString filename, Overwriting
         return false;
     }
 
-    pyc_output = fopen(output.toUtf8().data(), "w");
-    fprintf(pyc_output, "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n");
-    fprintf(pyc_output, "# Powered by Decompyle++\n");
-    fprintf(pyc_output, "# File: %s (Python %d.%d%s)\n\n", QFileInfo(output).fileName().toUtf8().data(),
-            mod.majorVer(), mod.minorVer(), (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
-    decompyle(mod.code(), &mod);
-    fclose(pyc_output);
+    std::ofstream pyc_output(output.toUtf8().data(), std::ios_base::out);
+    if (pyc_output.fail()) {
+        QMessageBox::critical(parent, QObject::tr("Decompyle Error"),
+                              QObject::tr("Could not open file %1 for writing").arg(output));
+        return false;
+    }
+    pyc_output << "# Source generated with PlasmaShop " PLASMASHOP_VERSION "\n";
+    pyc_output << "# Powered by Decompyle++\n";
+    formatted_print(pyc_output, "# File: %s (Python %d.%d%s)\n\n",
+                    QFileInfo(output).fileName().toUtf8().data(),
+                    mod.majorVer(), mod.minorVer(),
+                    (mod.majorVer() < 3 && mod.isUnicode()) ? " Unicode" : "");
+    decompyle(mod.code(), &mod, pyc_output);
     return true;
 }

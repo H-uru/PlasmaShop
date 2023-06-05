@@ -8,8 +8,8 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: Win32, triplet: x86-windows-static-md, kf5: v5.86.0, qt: 5.15.2, qt-arch: win32_msvc2019 }
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.86.0, qt: 5.15.2, qt_arch: win64_msvc2019_64 }
+          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: Win32, triplet: x86-windows-static-md, kf5: v5.106.0, qt: 5.15.2, qt-arch: win32_msvc2019 }
+          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.106.0, qt: 5.15.2, qt_arch: win64_msvc2019_64 }
 
     steps:
       - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
           vcpkg install `@vcpkg.txt --triplet ${{ matrix.cfg.triplet }}
           vcpkg list --x-full-desc
 
-      # Qt5 takes roughly a thousand years to build, so we download it from elsehwere...
+      # Qt5 takes roughly a thousand years to build, so we download it from elsewhere...
       - name: Restore Qt Cache
         id: cache-qt
         uses: actions/cache@v1
