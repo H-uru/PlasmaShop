@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "plasmashop",
+  "version-string": "3.0",
+  "description": "Swiss army knife for Plasma file hacking",
+  "dependencies": [
+    "libjpeg-turbo",
+    "libpng",
+    "string-theory",
+    "zlib"
+  ]
+}

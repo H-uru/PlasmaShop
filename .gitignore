@@ -14,3 +14,4 @@ bin/VaultShop
 /build64
 /Dist
 /Dist64
+/vcpkg_installed
