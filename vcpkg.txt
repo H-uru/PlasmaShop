@@ -1,4 +1,0 @@
-libjpeg-turbo
-libpng
-string-theory
-zlib

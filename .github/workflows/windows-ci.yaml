@@ -12,7 +12,7 @@ jobs:
           - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.106.0, qt: 5.15.2, qt_arch: win64_msvc2019_64 }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -26,7 +26,7 @@ jobs:
 
       - name: Restore Dependency Cache
         id: cache-vcpkg
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: C:\vcpkg\installed
           key: |
@@ -42,29 +42,28 @@ jobs:
 
       - name: Build Dependencies
         run: |
-          vcpkg install `@vcpkg.txt --triplet ${{ matrix.cfg.triplet }}
+          vcpkg install --triplet ${{ matrix.cfg.triplet }}
           vcpkg list --x-full-desc
 
       # Qt5 takes roughly a thousand years to build, so we download it from elsewhere...
       - name: Restore Qt Cache
         id: cache-qt
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}\qt
           key: os=${{ runner.os }} qt=${{ matrix.cfg.qt }} arch=${{ matrix.cfg.qt-arch }}
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           arch: ${{ matrix.cfg.qt-arch }}
           version: ${{ matrix.cfg.qt }}
           dir: ${{ github.workspace }}\qt
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-          aqtversion: ==0.9.*
 
       # KF5SyntaxHighlighting and ecm release in lock-step
       - name: Checkout ECM
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: KDE/extra-cmake-modules
           path: ecm
@@ -83,7 +82,7 @@ jobs:
 
       # Build KF5SyntaxHighlighting manually due to Qt dependency...
       - name: Checkout KF5SyntaxHighlighting
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: KDE/syntax-highlighting
           path: syntax-highlighting
@@ -103,7 +102,7 @@ jobs:
           cmake --build . --config Release --target INSTALL
 
       - name: Checkout HSPlasma
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: H-uru/libhsplasma
           path: libhsplasma
@@ -143,7 +142,7 @@ jobs:
           }
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ runner.os }}-${{ matrix.cfg.cmake-arch }}-qt${{ matrix.cfg.qt }}
           path: install\bin

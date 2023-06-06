@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -14,7 +14,7 @@ jobs:
           sudo apt-get install -y libkf5syntaxhighlighting-dev ninja-build qtbase5-dev
 
       - name: Checkout string_theory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: zrax/string_theory
           path: string_theory
@@ -27,7 +27,7 @@ jobs:
           cmake --build . --target install
 
       - name: Checkout HSPlasma
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: H-uru/libhsplasma
           path: libhsplasma
