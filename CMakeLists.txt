@@ -61,6 +61,7 @@ endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 set(QTEXTPAD_WIDGET_ONLY ON)
+set(QT_VERSION_MAJOR 5)
 add_subdirectory(qtextpad)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qtextpad/lib")
 
