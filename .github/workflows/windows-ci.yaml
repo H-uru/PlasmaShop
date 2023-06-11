@@ -8,8 +8,22 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: Win32, triplet: x86-windows-static-md, kf5: v5.106.0, qt: 5.15.2, qt-arch: win32_msvc2019 }
-          - { os: windows-2019, generator: Visual Studio 16 2019, cmake-arch: x64, triplet: x64-windows-static-md, kf5: v5.106.0, qt: 5.15.2, qt_arch: win64_msvc2019_64 }
+          - os: windows-2019
+            generator: Visual Studio 16 2019
+            cmake-arch: Win32
+            triplet: x86-windows-static-md
+            kf5: v5.106.0
+            qt: 5.15.2
+            kf5_cmake_args: ""
+            qt-arch: win32_msvc2019
+          - os: windows-2019
+            generator: Visual Studio 16 2019
+            cmake-arch: x64
+            triplet: x64-windows-static-md
+            kf5: v5.106.0
+            kf5_cmake_args: "-DBUILD_WITH_QT6=ON"
+            qt: 6.5.1
+            qt_arch: win64_msvc2019_64
 
     steps:
       - uses: actions/checkout@v3
@@ -76,7 +90,7 @@ jobs:
             -G "${{ matrix.cfg.generator }}" -A ${{ matrix.cfg.cmake-arch }} `
             -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
             -DBUILD_HTML_DOCS=OFF -DBUILD_MAN_DOCS=OFF -DBUILD_QTHELP_DOCS=OFF -DBUILD_TESTING=OFF `
-            ..
+            ${{ matrix.cfg.kf5_cmake_args }} ..
           cmake --build . --config Release -j 2
           cmake --build . --config Release --target INSTALL
 
@@ -97,7 +111,7 @@ jobs:
             -G "${{ matrix.cfg.generator }}" -A ${{ matrix.cfg.cmake-arch }} `
             -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
             -DBUILD_HTML_DOCS=OFF -DBUILD_MAN_DOCS=OFF -DBUILD_QTHELP_DOCS=OFF -DBUILD_TESTING=OFF `
-            ..
+            ${{ matrix.cfg.kf5_cmake_args }} ..
           cmake --build . --config Release -j 2
           cmake --build . --config Release --target INSTALL
 
@@ -134,11 +148,10 @@ jobs:
 
       - name: Deploy Qt
         run: |
-          cd ${{ env.Qt5_Dir }}\bin
           $ExeFiles = Get-ChildItem "${{ github.workspace }}\install\bin" -Filter *.exe
           $DllFiles = Get-ChildItem "${{ github.workspace }}\install\bin" -Filter *.dll
           ForEach-Object -InputObject ($ExeFiles + $DllFiles) {
-            ./windeployqt.exe --release $_.FullName
+            windeployqt.exe --release $_.FullName
           }
 
       - name: Upload Artifacts
