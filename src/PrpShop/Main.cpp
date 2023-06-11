@@ -31,6 +31,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QStandardPaths>
+#include <QRegularExpression>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 #include <PRP/Surface/plMipmap.h>
@@ -86,12 +87,12 @@ PrpShopMain::PrpShopMain()
     fActions[kTreeExport] = new QAction(tr("E&xport..."), this);
     fActions[kTreeNewObject] = new QAction(tr("&New Object..."), this);
 
-    fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
-    fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
+    fActions[kFileOpen]->setShortcut(Qt::CTRL | Qt::Key_O);
+    fActions[kFileSave]->setShortcut(Qt::CTRL | Qt::Key_S);
     fActions[kFileSaveAs]->setEnabled(false); //Enable if a page is selected
-    fActions[kFileSaveAs]->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
-    fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
-    fActions[kWindowClose]->setShortcut(Qt::CTRL + Qt::Key_W);
+    fActions[kFileSaveAs]->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_S);
+    fActions[kFileExit]->setShortcut(Qt::ALT | Qt::Key_F4);
+    fActions[kWindowClose]->setShortcut(Qt::CTRL | Qt::Key_W);
     fActions[kWindowClose]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     fActions[kToolsProperties]->setCheckable(true);
     fActions[kToolsProperties]->setChecked(true);
@@ -658,7 +659,8 @@ void PrpShopMain::treeExport()
     if (item == NULL || item->obj() == NULL)
         return;
 
-    QString fnfix = st2qstr(item->obj()->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
+    QString fnfix = st2qstr(item->obj()->getKey()->getName())
+                    .replace(QRegularExpression("[?:/\\*\"<>|]"), "_");
     QString genPath = tr("%1/[%2]%3.po").arg(fDialogDir)
                                         .arg(item->obj()->ClassName())
                                         .arg(fnfix);
@@ -1193,7 +1195,7 @@ void PrpShopMain::showTypeIDs(bool show)
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PrpShop.log
-    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PrpShop.log";

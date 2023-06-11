@@ -32,7 +32,7 @@ void QPlasmaSumFile::addToSumFile(const QString& filename)
     QFileInfo finfo(filename);
 
     ST::string sumPath;
-    uint32_t timestamp = finfo.lastModified().toTime_t();
+    uint32_t timestamp = finfo.lastModified().toSecsSinceEpoch();
 
     // Construct a default path based on the file extension
     if (finfo.suffix() == "prp" || finfo.suffix() == "fni" || finfo.suffix() == "age" ||
@@ -259,7 +259,7 @@ void QPlasmaSumFile::onItemChanged(QTreeWidgetItem* item, int column)
                 item->setText(1, locale.toString(dateTime, QLocale::ShortFormat));
                 break;
             }
-            file.fTimestamp = ts.toTime_t();
+            file.fTimestamp = ts.toSecsSinceEpoch();
             makeDirty();
         }
         break;

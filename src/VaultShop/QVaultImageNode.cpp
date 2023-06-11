@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <Vault/plVaultNodeTypes.h>
 
 /* QStaticImage */
@@ -192,7 +193,7 @@ void QVaultImageNode::IExportImage()
     plVaultBlob blob = img->getImageData();
 
     QString fname = fImgTitle->text() + ".jpg";
-    fname.replace(QRegExp("[\\\\/:*?\"<>|]"), "_");
+    fname.replace(QRegularExpression("[\\\\/:*?\"<>|]"), "_");
     if (!ieDir.isEmpty())
         fname = ieDir + "/" + fname;
     fname = QFileDialog::getSaveFileName(this, tr("Export JPEG"), fname,

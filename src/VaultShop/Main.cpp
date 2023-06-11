@@ -116,9 +116,9 @@ VaultShopMain::VaultShopMain()
     fActions[kNodeUnsubscribe] = new QAction(tr("Un-subscribe"), this);
     //fActions[kNodeRenameVault] = new QAction(tr("Rename Vault..."), this);
 
-    fActions[kFileOpenVault]->setShortcut(Qt::CTRL + Qt::Key_O);
-    fActions[kFileSaveVault]->setShortcut(Qt::CTRL + Qt::Key_S);
-    fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
+    fActions[kFileOpenVault]->setShortcut(Qt::CTRL | Qt::Key_O);
+    fActions[kFileSaveVault]->setShortcut(Qt::CTRL | Qt::Key_S);
+    fActions[kFileExit]->setShortcut(Qt::ALT | Qt::Key_F4);
     fActions[kVaultOpenNode]->setShortcut(Qt::Key_F2);
 
     // Main Menus
@@ -763,7 +763,7 @@ void VaultShopMain::renameVault()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to VaultShop.log
-    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/VaultShop.log";

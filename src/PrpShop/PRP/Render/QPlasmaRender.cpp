@@ -26,7 +26,6 @@
 #include <PRP/Object/plDrawInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
 #include <PRP/Geometry/plDrawableSpans.h>
-#include <QGLFormat>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <cmath>
@@ -68,13 +67,12 @@ int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode)
 }
 
 const float RADS = 0.0174532925f;
-static QGLFormat s_format = QGL::DepthBuffer | QGL::StencilBuffer
-                          | QGL::Rgba | QGL::AlphaChannel | QGL::DoubleBuffer;
 
 QPlasmaRender::QPlasmaRender(QWidget* parent)
-    : QGLWidget(s_format, parent), fDrawMode(kDrawTextured),
+    : QOpenGLWidget(parent), fDrawMode(kDrawTextured),
       fNavMode(kNavModel), fRotZ(), fRotX(), fModelDist(), fTexList()
 {
+    // TODO: Do we need to adjust the default surface format?
 }
 
 QPlasmaRender::~QPlasmaRender()
@@ -199,7 +197,7 @@ void QPlasmaRender::mouseMoveEvent(QMouseEvent* evt)
             fViewPos.Y += cosf((fRotZ + 90.0f) * RADS) * (evt->pos().x() - fMouseFrom.x());
         }
     }
-    updateGL();
+    update();
 }
 
 QPointF QPlasmaRender::pixelPosToViewPos(const QPoint& p)
@@ -234,7 +232,7 @@ void QPlasmaRender::setView(const hsVector3& view, float angle)
     fViewPos = view;
     fRotZ = angle;
     fRotX = 0.0f;
-    updateGL();
+    update();
 }
 
 void QPlasmaRender::center(plKey obj, bool world)
@@ -767,5 +765,5 @@ void QPlasmaRender::changeMode(DrawMode mode)
 
     fDrawMode = mode;
     buildNewMode(fDrawMode);
-    updateGL();
+    update();
 }

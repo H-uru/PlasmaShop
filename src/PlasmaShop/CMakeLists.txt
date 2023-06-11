@@ -124,15 +124,15 @@ if(WIN32)
 endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(PlasmaShop_RCC images.qrc PlasmaSyntax.qrc)
+set(PlasmaShop_QRC images.qrc PlasmaSyntax.qrc)
 
 include_directories("${pycdc_SOURCE_DIR}")
 
 add_executable(PlasmaShop WIN32 MACOSX_BUNDLE
                ${PlasmaShop_Headers} ${PlasmaShop_Sources}
                ${pycdc_Headers} ${pycdc_Sources} ${pycdc_GeneratedSources}
-               ${PlasmaShop_RCC})
-target_link_libraries(PlasmaShop PSCommon Qt5::Core Qt5::Widgets)
+               ${PlasmaShop_QRC})
+target_link_libraries(PlasmaShop PSCommon Qt::Core Qt::Widgets)
 target_link_libraries(PlasmaShop HSPlasma)
 
 if(WIN32)

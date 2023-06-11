@@ -19,6 +19,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QTextBlock>
+#include <QRegularExpression>
 #include <Stream/plEncryptedStream.h>
 #include <Stream/hsElfStream.h>
 #include "QPlasma.h"
@@ -332,9 +333,14 @@ QPlasmaTextDoc::QPlasmaTextDoc(QWidget* parent)
 void QPlasmaTextDoc::updateSettings()
 {
     QSettings settings("PlasmaShop", "PlasmaShop");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 changed the values for this enum...
+    QFont::Weight weight = static_cast<QFont::Weight>(settings.value("SciFontWeight-qt6", QFont::Normal).toInt());
+#else
+    int weight = static_cast<QFont::Weight>(settings.value("SciFontWeight", QFont::Normal).toInt());
+#endif
     QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
-                   settings.value("SciFontSize", 10).toInt(),
-                   settings.value("SciFontWeight", QFont::Normal).toInt(),
+                   settings.value("SciFontSize", 10).toInt(), weight,
                    settings.value("SciFontItalic", false).toBool());
 
     fEditor->setFont(textFont);
@@ -392,15 +398,18 @@ bool QPlasmaTextDoc::onFind(const QString& text, bool regex, bool cs,
                             bool wo, bool reverse)
 {
     QTextDocument::FindFlags options;
+    QRegularExpression::PatternOptions regex_options;
     if (cs)
         options |= QTextDocument::FindCaseSensitively;
+    else
+        regex_options |= QRegularExpression::CaseInsensitiveOption;
     if (wo)
         options |= QTextDocument::FindWholeWords;
     if (reverse)
         options |= QTextDocument::FindBackward;
 
     if (regex)
-        return fEditor->find(QRegExp(text, cs ? Qt::CaseSensitive : Qt::CaseInsensitive), options);
+        return fEditor->find(QRegularExpression(text, regex_options), options);
     else
         return fEditor->find(text, options);
 }

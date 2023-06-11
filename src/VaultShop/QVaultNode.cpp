@@ -19,7 +19,7 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QIntValidator>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 #include <QDateTime>
 #include <Vault/plVaultNodeTypes.h>
 #include "QVaultSDLNode.h"
@@ -106,7 +106,8 @@ QVaultNode::QVaultNode(QWidget* parent)
     fAgeTime = new QLabel("N/A", top);
     fAgeName = new QLineEdit(top);
     fAgeGUID = new QLineEdit("0000000000000000", top);
-    fAgeGUID->setValidator(new QRegExpValidator(QRegExp("[0-9A-Fa-f]{16}"), fAgeGUID));
+    fAgeGUID->setValidator(new QRegularExpressionValidator(
+            QRegularExpression("[0-9A-Fa-f]{16}"), fAgeGUID));
 
     fCreatorID = new QLineEdit("0", top);
     fOwnerID = new QLineEdit("0", top);
@@ -274,19 +275,19 @@ void QVaultNode::setNode(const plVaultNode& node)
 
     QDateTime dt;
     if (!fNode.getAutoTime().atEpoch()) {
-        dt.setTime_t(fNode.getAutoTime().getSecs());
+        dt.setSecsSinceEpoch(fNode.getAutoTime().getSecs());
         fAutoTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
         fAutoTime->setText("N/A");
     }
     if (!fNode.getAutoTime().atEpoch()) {
-        dt.setTime_t(fNode.getModifyTime().getSecs());
+        dt.setSecsSinceEpoch(fNode.getModifyTime().getSecs());
         fModifyTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
         fModifyTime->setText("N/A");
     }
     if (!fNode.getAutoTime().atEpoch()) {
-        dt.setTime_t(fNode.getCreateAgeTime().getSecs());
+        dt.setSecsSinceEpoch(fNode.getCreateAgeTime().getSecs());
         fAgeTime->setText(dt.toString("yyyy/MM/dd hh:mm:ss"));
     } else {
         fAgeTime->setText("N/A");

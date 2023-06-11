@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QStandardPaths>
+#include <QRegularExpression>
 #include <Debug/plDebug.h>
 
 #include "Main.h"
@@ -89,22 +90,22 @@ PlasmaShopMain::PlasmaShopMain()
     fActions[kTreeRename] = new QAction(tr("&Rename"), this);
     fActions[kTreeDelete] = new QAction(tr("&Delete"), this);
 
-    fActions[kFileNew]->setShortcut(Qt::CTRL + Qt::Key_N);
-    fActions[kFileOpen]->setShortcut(Qt::CTRL + Qt::Key_O);
-    fActions[kFileSave]->setShortcut(Qt::CTRL + Qt::Key_S);
-    fActions[kFileSaveAs]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_S);
+    fActions[kFileNew]->setShortcut(Qt::CTRL | Qt::Key_N);
+    fActions[kFileOpen]->setShortcut(Qt::CTRL | Qt::Key_O);
+    fActions[kFileSave]->setShortcut(Qt::CTRL | Qt::Key_S);
+    fActions[kFileSaveAs]->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_S);
     fActions[kFileRevert]->setShortcut(Qt::Key_F5);
-    fActions[kFileExit]->setShortcut(Qt::ALT + Qt::Key_F4);
-    fActions[kEditUndo]->setShortcut(Qt::CTRL + Qt::Key_Z);
-    fActions[kEditRedo]->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_Z);
-    fActions[kEditCut]->setShortcut(Qt::CTRL + Qt::Key_X);
-    fActions[kEditCopy]->setShortcut(Qt::CTRL + Qt::Key_C);
-    fActions[kEditPaste]->setShortcut(Qt::CTRL + Qt::Key_V);
+    fActions[kFileExit]->setShortcut(Qt::ALT | Qt::Key_F4);
+    fActions[kEditUndo]->setShortcut(Qt::CTRL | Qt::Key_Z);
+    fActions[kEditRedo]->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
+    fActions[kEditCut]->setShortcut(Qt::CTRL | Qt::Key_X);
+    fActions[kEditCopy]->setShortcut(Qt::CTRL | Qt::Key_C);
+    fActions[kEditPaste]->setShortcut(Qt::CTRL | Qt::Key_V);
     fActions[kEditDelete]->setShortcut(Qt::Key_Delete);
-    fActions[kEditSelectAll]->setShortcut(Qt::CTRL + Qt::Key_A);
-    fActions[kTextFind]->setShortcut(Qt::CTRL + Qt::Key_F);
+    fActions[kEditSelectAll]->setShortcut(Qt::CTRL | Qt::Key_A);
+    fActions[kTextFind]->setShortcut(Qt::CTRL | Qt::Key_F);
     fActions[kTextFindNext]->setShortcut(Qt::Key_F3);
-    fActions[kTextReplace]->setShortcut(Qt::CTRL + Qt::Key_R);
+    fActions[kTextReplace]->setShortcut(Qt::CTRL | Qt::Key_R);
 
     fActions[kFileShowBrowser]->setCheckable(true);
     fActions[kTextStxNone]->setCheckable(true);
@@ -313,14 +314,15 @@ void PlasmaShopMain::loadFile(QString filename)
 
     // Guess the filetype based on its extension
     QString ext, fnameNoPath, fnameDisplay = filename;
-    QRegExp re;
+    QRegularExpression re;
+    QRegularExpressionMatch match;
     re.setPattern(".*\\.([^\\.]*)");
-    if (re.indexIn(filename) >= 0)
-        ext = re.cap(1).toLower();
+    if (filename.indexOf(re, 0, &match) >= 0)
+        ext = match.captured(1).toLower();
     re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
-    if (re.indexIn(filename) >= 0) {
-        fnameNoPath = re.cap(2).toLower();
-        fnameDisplay = re.cap(2);
+    if (filename.indexOf(re, 0, &match) >= 0) {
+        fnameNoPath = match.captured(2).toLower();
+        fnameDisplay = match.captured(2);
     }
 
     DocumentType dtype = kDocUnknown;
@@ -677,13 +679,14 @@ void PlasmaShopMain::onSaveAs()
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
 
     QString ext, fnameNoPath;
-    QRegExp re;
+    QRegularExpression re;
+    QRegularExpressionMatch match;
     re.setPattern(".*\\.([^.]*)");
-    if (re.indexIn(doc->filename()) >= 0)
-        ext = re.cap(1).toLower();
+    if (doc->filename().indexOf(re, 0, &match) >= 0)
+        ext = match.captured(1).toLower();
     re.setPattern(".*[\\/]([^\\/]*)");
-    if (re.indexIn(doc->filename()) >= 0)
-        fnameNoPath = re.cap(1).toLower();
+    if (doc->filename().indexOf(re, 0, &match) >= 0)
+        fnameNoPath = match.captured(1).toLower();
 
     QString typeList;
     QString curFilter;
@@ -776,10 +779,11 @@ void PlasmaShopMain::onSaveAs()
 
         // Update the displayed filename for the file
         QString fnameDisplay = filename;
-        QRegExp re;
+        QRegularExpression re;
+        QRegularExpressionMatch match;
         re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
-        if (re.indexIn(filename) >= 0)
-            fnameDisplay = re.cap(2);
+        if (filename.indexOf(re, 0, &match) >= 0)
+            fnameDisplay = match.captured(2);
         fEditorPane->setTabText(fEditorPane->currentIndex(), fnameDisplay);
     }
 }
@@ -1426,7 +1430,7 @@ void PlasmaShopMain::onDocClean()
 int main(int argc, char* argv[])
 {
     // Redirect libPlasma's debug stuff to PlasmaShop.log
-    QString logpath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString logpath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
     dir.mkpath(logpath);
     logpath += "/PlasmaShop.log";
