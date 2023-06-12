@@ -29,7 +29,6 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QStandardPaths>
-#include <QRegularExpression>
 #include <Debug/plDebug.h>
 
 #include "Main.h"
@@ -313,17 +312,10 @@ void PlasmaShopMain::loadFile(QString filename)
     }
 
     // Guess the filetype based on its extension
-    QString ext, fnameNoPath, fnameDisplay = filename;
-    QRegularExpression re;
-    QRegularExpressionMatch match;
-    re.setPattern(".*\\.([^\\.]*)");
-    if (filename.indexOf(re, 0, &match) >= 0)
-        ext = match.captured(1).toLower();
-    re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
-    if (filename.indexOf(re, 0, &match) >= 0) {
-        fnameNoPath = match.captured(2).toLower();
-        fnameDisplay = match.captured(2);
-    }
+    QFileInfo fileInfo(filename);
+    QString ext = fileInfo.suffix().toLower();
+    QString fnameDisplay = fileInfo.fileName();
+    QString fnameNoPath = fnameDisplay.toLower();
 
     DocumentType dtype = kDocUnknown;
     if (ext == "age" || ext == "cfg" || ext == "csv" || ext == "elf" ||
@@ -373,7 +365,7 @@ void PlasmaShopMain::loadFile(QString filename)
     } else {
         QMessageBox::critical(this, tr("Unsupported File Type"),
                               tr("Error: File %1 has an unsupported file type (%2)")
-                              .arg(fnameNoPath).arg(ext),
+                              .arg(fnameDisplay).arg(ext),
                               QMessageBox::Ok);
         return;
     }
@@ -426,7 +418,7 @@ void PlasmaShopMain::loadFile(QString filename)
     } else {
         QMessageBox::critical(this, tr("Oops"),
                               tr("No editor is currently available for %1")
-                              .arg(fnameNoPath), QMessageBox::Ok);
+                              .arg(fnameDisplay), QMessageBox::Ok);
     }
 }
 
@@ -678,15 +670,7 @@ void PlasmaShopMain::onSaveAs()
         return;
     QPlasmaDocument* doc = (QPlasmaDocument*)fEditorPane->currentWidget();
 
-    QString ext, fnameNoPath;
-    QRegularExpression re;
-    QRegularExpressionMatch match;
-    re.setPattern(".*\\.([^.]*)");
-    if (doc->filename().indexOf(re, 0, &match) >= 0)
-        ext = match.captured(1).toLower();
-    re.setPattern(".*[\\/]([^\\/]*)");
-    if (doc->filename().indexOf(re, 0, &match) >= 0)
-        fnameNoPath = match.captured(1).toLower();
+    QString ext = QFileInfo(doc->filename()).suffix().toLower();
 
     QString typeList;
     QString curFilter;
@@ -778,12 +762,7 @@ void PlasmaShopMain::onSaveAs()
         fDialogDir = dir.absolutePath();
 
         // Update the displayed filename for the file
-        QString fnameDisplay = filename;
-        QRegularExpression re;
-        QRegularExpressionMatch match;
-        re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
-        if (filename.indexOf(re, 0, &match) >= 0)
-            fnameDisplay = match.captured(2);
+        QString fnameDisplay = QFileInfo(filename).fileName();
         fEditorPane->setTabText(fEditorPane->currentIndex(), fnameDisplay);
     }
 }

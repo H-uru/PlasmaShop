@@ -69,10 +69,10 @@ int32_t QPlasmaRender::ObjectInfo::getList(DrawMode mode)
 const float RADS = 0.0174532925f;
 
 QPlasmaRender::QPlasmaRender(QWidget* parent)
-    : QOpenGLWidget(parent), fDrawMode(kDrawTextured),
-      fNavMode(kNavModel), fRotZ(), fRotX(), fModelDist(), fTexList()
+    : QOpenGLWidget(parent), fTexCount(), fDrawMode(kDrawTextured),
+      fNavMode(kNavModel), fRotZ(), fRotX(), fModelDist(), fStartDist(),
+      fTexList()
 {
-    // TODO: Do we need to adjust the default surface format?
 }
 
 QPlasmaRender::~QPlasmaRender()

@@ -23,7 +23,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QMessageBox>
-#include <QRegularExpression>
+#include <QFileInfo>
 
 QIcon QPlasmaDocument::GetDocIcon(const QString& filename)
 {
@@ -47,15 +47,9 @@ QIcon QPlasmaDocument::GetDocIcon(const QString& filename)
             return QIcon(":/img/db.png");
     }
 
-    QString ext, fnameNoPath;
-    QRegularExpression re;
-    QRegularExpressionMatch match;
-    re.setPattern(".*\\.([^\\.]*)");
-    if (filename.indexOf(re, 0, &match) >= 0)
-        ext = match.captured(1).toLower();
-    re.setPattern("(.*[\\\\\\/])?([^\\\\\\/]*)");
-    if (filename.indexOf(re, 0, &match) >= 0)
-        fnameNoPath = match.captured(2).toLower();
+    QFileInfo fileInfo(filename);
+    QString ext = fileInfo.suffix().toLower();
+    QString fnameNoPath = fileInfo.fileName().toLower();
 
     if (ext == "age")
         return QIcon(":/img/age.png");
