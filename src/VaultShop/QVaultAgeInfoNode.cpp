@@ -18,7 +18,7 @@
 
 #include <QGridLayout>
 #include <QSpacerItem>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 #include <Vault/plVaultNodeTypes.h>
 
 QVaultAgeInfoNode::QVaultAgeInfoNode(QWidget* parent)
@@ -35,7 +35,8 @@ QVaultAgeInfoNode::QVaultAgeInfoNode(QWidget* parent)
     fAgeUserDefinedName = new QLineEdit(this);
     fAgeDescription = new QLineEdit(this);
     fAgeInstanceGuid = new QLineEdit("0000000000000000", this);
-    fAgeInstanceGuid->setValidator(new QRegExpValidator(QRegExp("[0-9A-Fa-f]{16}"), fAgeInstanceGuid));
+    fAgeInstanceGuid->setValidator(new QRegularExpressionValidator(
+            QRegularExpression("[0-9A-Fa-f]{16}"), fAgeInstanceGuid));
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);

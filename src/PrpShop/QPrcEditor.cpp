@@ -72,9 +72,15 @@ QPrcEditor::QPrcEditor(plCreatable* pCre, QWidget* parent)
 QSize QPrcEditor::sizeHint() const
 {
     QSettings settings("PlasmaShop", "PlasmaShop");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 changed the values for this enum...
+    QFont::Weight weight = static_cast<QFont::Weight>(settings.value("SciFontWeight-qt6", QFont::Normal).toInt());
+#else
+    int weight = settings.value("SciFontWeight", QFont::Normal).toInt();
+#endif
+
     QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
-                   settings.value("SciFontSize", 10).toInt(),
-                   settings.value("SciFontWeight", QFont::Normal).toInt(),
+                   settings.value("SciFontSize", 10).toInt(), weight,
                    settings.value("SciFontItalic", false).toBool());
 
     QFontMetrics fm(textFont);
@@ -102,9 +108,14 @@ void QPrcEditor::loadPrcData()
 void QPrcEditor::updateSettings()
 {
     QSettings settings("PlasmaShop", "PlasmaShop");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 changed the values for this enum...
+    QFont::Weight weight = static_cast<QFont::Weight>(settings.value("SciFontWeight-qt6", QFont::Normal).toInt());
+#else
+    int weight = settings.value("SciFontWeight", QFont::Normal).toInt();
+#endif
     QFont textFont(settings.value("SciFont", PLAT_FONT).toString(),
-                   settings.value("SciFontSize", 10).toInt(),
-                   settings.value("SciFontWeight", QFont::Normal).toInt(),
+                   settings.value("SciFontSize", 10).toInt(), weight,
                    settings.value("SciFontItalic", false).toBool());
 
     fEditor->setFont(textFont);

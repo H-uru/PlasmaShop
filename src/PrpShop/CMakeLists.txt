@@ -139,10 +139,12 @@ if(WIN32)
     set(PrpShop_Sources ${PrpShop_Sources} res/PrpShop.rc)
 endif()
 
-find_package(Qt5OpenGL REQUIRED)
+if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGLWidgets)
+endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(PrpShop_RCC images.qrc)
+set(PrpShop_QRC images.qrc)
 
 include_directories("${PROJECT_SOURCE_DIR}/src/PrpShop")
 
@@ -152,8 +154,11 @@ find_package(OpenGL)
 set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
-               ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_RCC})
-target_link_libraries(PrpShop PSCommon Qt5::Core Qt5::Widgets Qt5::OpenGL)
+               ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_QRC})
+target_link_libraries(PrpShop PSCommon Qt::Core Qt::Widgets)
+if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+    target_link_libraries(PrpShop Qt::OpenGLWidgets)
+endif()
 target_link_libraries(PrpShop HSPlasma)
 target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
 

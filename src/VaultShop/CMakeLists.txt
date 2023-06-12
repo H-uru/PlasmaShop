@@ -37,11 +37,11 @@ set(VaultShop_Sources
 #endif()
 
 # generate rules for building source files from the resources
-qt5_add_resources(VaultShop_RCC images.qrc)
+set(VaultShop_QRC images.qrc)
 
 add_executable(VaultShop WIN32 MACOSX_BUNDLE
-               ${VaultShop_Sources} ${VaultShop_Headers} ${VaultShop_RCC})
-target_link_libraries(VaultShop PSCommon Qt5::Core Qt5::Widgets)
+               ${VaultShop_Sources} ${VaultShop_Headers} ${VaultShop_QRC})
+target_link_libraries(VaultShop PSCommon Qt::Core Qt::Widgets)
 target_link_libraries(VaultShop HSPlasma)
 
 if(APPLE)

@@ -17,7 +17,7 @@
 #ifndef _QPLASMARENDER_H
 #define _QPLASMARENDER_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QActionGroup>
 #include <Math/hsGeometry3.h>
 #include <PRP/KeyedObject/plKey.h>
@@ -25,7 +25,7 @@
 
 #include "QTrackball.h"
 
-class QPlasmaRender : public QGLWidget
+class QPlasmaRender : public QOpenGLWidget
 {
     Q_OBJECT
 

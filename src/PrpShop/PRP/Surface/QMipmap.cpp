@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <Util/plDDSurface.h>
 #include "QLinkLabel.h"
 #include "QPlasmaUtils.h"
@@ -446,7 +447,8 @@ static bool getJAlphaSurface(const plDDSurface& dds, plMipmap* tex)
 void QMipmap::onExportDDS()
 {
     plMipmap* tex = plMipmap::Convert(fCreatable);
-    QString filename = st2qstr(tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_");
+    QString filename = st2qstr(tex->getKey()->getName())
+                       .replace(QRegularExpression("[?:/\\*\"<>|]"), "_");
     filename = QFileDialog::getSaveFileName(this, tr("Export DDS"), getExportDir() + "/" + filename,
                                             "DDS Files (*.dds)");
     if (filename.isEmpty())
@@ -477,7 +479,8 @@ void QMipmap::onExportJPEG()
     QString exportDir = getExportDir();
 
     plMipmap* tex = plMipmap::Convert(fCreatable);
-    exportDir.append("/" + st2qstr(tex->getKey()->getName()).replace(QRegExp("[?:/\\*\"<>|]"), "_"));
+    exportDir.append("/" + st2qstr(tex->getKey()->getName())
+                           .replace(QRegularExpression("[?:/\\*\"<>|]"), "_"));
     QString filter = tex->isImageJPEG() ? "JPEG Files (*.jpg)" : "DDS Files (*.dds)";
     QString filename = QFileDialog::getSaveFileName(this, tr("Export JPEG Image"),
                                                     exportDir, filter);

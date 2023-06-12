@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.7)
 project(PlasmaShop)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_AUTOMOC TRUE)
+set(CMAKE_AUTORCC TRUE)
 
 if(POLICY CMP0071)
     # Don't run generated source files (bytes/python_*.cpp) through automoc
@@ -14,10 +15,22 @@ endif()
 
 find_package(HSPlasma REQUIRED)
 find_package(string_theory 2.0 REQUIRED)
-find_package(Qt5 5.8 REQUIRED COMPONENTS Core Gui Widgets)
-find_package(KF5SyntaxHighlighting REQUIRED)
 find_package(PythonInterp REQUIRED)
 
+if(NOT DEFINED QT_VERSION_MAJOR)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+endif()
+find_package(Qt${QT_VERSION_MAJOR} 5.10 REQUIRED COMPONENTS Core Widgets)
+if(Qt5_FOUND AND NOT TARGET Qt::Core)
+    # The version-generic targets were only added in Qt 5.15
+    foreach(_qt_lib Core Widgets)
+        add_library(Qt::${_qt_lib} INTERFACE IMPORTED)
+        set_target_properties(Qt::${_qt_lib} PROPERTIES
+                INTERFACE_LINK_LIBRARIES "Qt5::${_qt_lib}")
+    endforeach()
+endif()
+
+find_package(KF5SyntaxHighlighting REQUIRED)
 if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
     message(WARNING "KF5SyntaxHighlighting version 5.39.0 or later is required \
 in order to use custom highlighting rules.  KF5SyntaxHighlighting version \
@@ -61,7 +74,6 @@ endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 set(QTEXTPAD_WIDGET_ONLY ON)
-set(QT_VERSION_MAJOR 5)
 add_subdirectory(qtextpad)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qtextpad/lib")
 

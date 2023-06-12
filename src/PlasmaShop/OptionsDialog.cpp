@@ -157,7 +157,13 @@ OptionsDialog::OptionsDialog(QWidget* parent)
     QFont fnt;
     fnt.setFamily(settings.value("SciFont", PLAT_FONT).toString());
     fnt.setPointSize(settings.value("SciFontSize", 10).toInt());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 changed the values for this enum...
+    fnt.setWeight(static_cast<QFont::Weight>(
+                  settings.value("SciFontWeight-qt6", QFont::Normal).toInt()));
+#else
     fnt.setWeight(settings.value("SciFontWeight", QFont::Normal).toInt());
+#endif
     fnt.setItalic(settings.value("SciFontItalic", false).toBool());
     fSciFont->setFont(fnt);
 
@@ -211,7 +217,12 @@ void OptionsDialog::onSave()
     settings.setValue("SciTabWidth", fSciTabWidth->text().toInt());
     settings.setValue("SciFont", fSciFont->font().family());
     settings.setValue("SciFontSize", fSciFont->font().pointSize());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 changed the values for this enum...
+    settings.setValue("SciFontWeight-qt6", static_cast<int>(fSciFont->font().weight()));
+#else
     settings.setValue("SciFontWeight", fSciFont->font().weight());
+#endif
     settings.setValue("SciFontItalic", fSciFont->font().italic());
 
     accept();

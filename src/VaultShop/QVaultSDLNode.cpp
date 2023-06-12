@@ -170,7 +170,7 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
                 QDateTime dt;
                 QLocale locale = QLocale::system();
                 if (!((plSimpleStateVariable*)var)->getTimeStamp().atEpoch()) {
-                    dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
+                    dt.setSecsSinceEpoch(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
                     result += locale.toString(dt, QLocale::ShortFormat);
                 } else {
                     result += "N/A";
@@ -182,7 +182,7 @@ QString QSDLEditor::GetVarDisplay(plStateVariable* var)
                 QDateTime dt;
                 QLocale locale = QLocale::system();
                 if (!((plSimpleStateVariable*)var)->Time(i).atEpoch()) {
-                    dt.setTime_t(((plSimpleStateVariable*)var)->Time(i).getSecs());
+                    dt.setSecsSinceEpoch(((plSimpleStateVariable*)var)->Time(i).getSecs());
                     result += locale.toString(dt, QLocale::ShortFormat);
                 } else {
                     result += "N/A";
@@ -422,7 +422,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
     case plVarDescriptor::kAgeTimeOfDay:
         {
             QDateTime dt;
-            dt.setTime_t(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
+            dt.setSecsSinceEpoch(((plSimpleStateVariable*)var)->getTimeStamp().getSecs());
             fDTEdit->setDateTime(dt);
             fIntEdit->setValue(((plSimpleStateVariable*)var)->getTimeStamp().getMicros());
         }
@@ -430,7 +430,7 @@ void QSDLEditor::setVarCustomEdit(QTreeWidgetItem* item, int which)
     case plVarDescriptor::kTime:
         {
             QDateTime dt;
-            dt.setTime_t(((plSimpleStateVariable*)var)->Time(which).getSecs());
+            dt.setSecsSinceEpoch(((plSimpleStateVariable*)var)->Time(which).getSecs());
             fDTEdit->setDateTime(dt);
             fIntEdit->setValue(((plSimpleStateVariable*)var)->Time(which).getMicros());
         }
@@ -516,13 +516,13 @@ void QSDLEditor::saveVarCustomEdit(QTreeWidgetItem* item, int which)
     case plVarDescriptor::kAgeTimeOfDay:
         {
             plUnifiedTime ts;
-            ts.setSecs(fDTEdit->dateTime().toTime_t());
+            ts.setSecs(fDTEdit->dateTime().toSecsSinceEpoch());
             ts.setMicros(fIntEdit->value());
             ((plSimpleStateVariable*)var)->setTimeStamp(ts);
         }
         break;
     case plVarDescriptor::kTime:
-        ((plSimpleStateVariable*)var)->Time(which).setSecs(fDTEdit->dateTime().toTime_t());
+        ((plSimpleStateVariable*)var)->Time(which).setSecs(fDTEdit->dateTime().toSecsSinceEpoch());
         ((plSimpleStateVariable*)var)->Time(which).setMicros(fIntEdit->value());
         break;
     default:

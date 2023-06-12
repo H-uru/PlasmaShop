@@ -19,7 +19,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QSpacerItem>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 #include <QCompleter>
 #include <Vault/plVaultNodeTypes.h>
 
@@ -29,7 +29,9 @@ QVaultPlayerNode::QVaultPlayerNode(QWidget* parent)
     fPlayerName = new QLineEdit(this);
     fAvatarShape = new QLineEdit(this);
     fAccountUUID = new QLineEdit(this);
-    fAccountUUID->setValidator(new QRegExpValidator(QRegExp("[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"), fAccountUUID));
+    fAccountUUID->setValidator(new QRegularExpressionValidator(
+            QRegularExpression("[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"),
+            fAccountUUID));
 
     QStringList builtInAvatars;
     builtInAvatars << "Female" << "Male" << "DrWatson" << "Engberg" << "Kodama"
