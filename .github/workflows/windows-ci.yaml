@@ -42,11 +42,11 @@ jobs:
         id: cache-vcpkg
         uses: actions/cache@v3
         with:
-          path: C:\vcpkg\installed
+          path: ${{ github.workspace }}\vcpkg_installed
           key: |
-            vcpkg-triplet=${{ matrix.cfg.triplet }} vcpkg-response=${{ hashFiles('vcpkg.txt') }} vcpkg-rev=${{ steps.bootstrap-vcpkg.outputs.vcpkg-rev }}
+            vcpkg-triplet=${{ matrix.cfg.triplet }} vcpkg-response=${{ hashFiles('vcpkg.json') }} vcpkg-rev=${{ steps.bootstrap-vcpkg.outputs.vcpkg-rev }}
           restore-keys: |
-            vcpkg-triplet=${{ matrix.cfg.triplet }} vcpkg-response=${{ hashFiles('vcpkg.txt') }}
+            vcpkg-triplet=${{ matrix.cfg.triplet }} vcpkg-response=${{ hashFiles('vcpkg.json') }}
             vcpkg-triplet=${{ matrix.cfg.triplet }}
 
       - name: Upgrade Dependencies
@@ -112,25 +112,6 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
             -DBUILD_HTML_DOCS=OFF -DBUILD_MAN_DOCS=OFF -DBUILD_QTHELP_DOCS=OFF -DBUILD_TESTING=OFF `
             ${{ matrix.cfg.kf5_cmake_args }} ..
-          cmake --build . --config Release -j 2
-          cmake --build . --config Release --target INSTALL
-
-      - name: Checkout HSPlasma
-        uses: actions/checkout@v3
-        with:
-          repository: H-uru/libhsplasma
-          path: libhsplasma
-
-      - name: Build libHSPlasma
-        run: |
-          cd libhsplasma
-          mkdir build && cd build
-          cmake `
-            -G "${{ matrix.cfg.generator }}" -A ${{ matrix.cfg.cmake-arch }} `
-            -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake `
-            -DVCPKG_TARGET_TRIPLET=${{ matrix.cfg.triplet }} `
-            -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install `
-            -DENABLE_PYTHON=OFF -DENABLE_TOOLS=OFF -DENABLE_NET=OFF -DENABLE_PHYSX=OFF ..
           cmake --build . --config Release -j 2
           cmake --build . --config Release --target INSTALL
 
