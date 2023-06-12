@@ -4,6 +4,11 @@
   "version-string": "3.0",
   "description": "Swiss army knife for Plasma file hacking",
   "dependencies": [
+    {
+      "name": "libhsplasma",
+      "default-features": false,
+      "features": []
+    },
     "libjpeg-turbo",
     "libpng",
     "string-theory",
