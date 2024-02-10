@@ -1,8 +1,52 @@
-name: Windows-CI
+name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install -y libkf5syntaxhighlighting-dev ninja-build qtbase5-dev
+
+      - name: Checkout string_theory
+        uses: actions/checkout@v4
+        with:
+          repository: zrax/string_theory
+          path: string_theory
+
+      - name: Build string_theory
+        run: |
+          mkdir -p string_theory/build && cd string_theory/build
+          cmake -GNinja -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}/build_deps/prefix" \
+            -DCMAKE_BUILD_TYPE=Release -DST_BUILD_TESTS=OFF ..
+          cmake --build .
+          cmake --build . --target install
+
+      - name: Checkout HSPlasma
+        uses: actions/checkout@v4
+        with:
+          repository: H-uru/libhsplasma
+          path: libhsplasma
+      - name: Build HSPlasma
+        run: |
+          mkdir -p libhsplasma/build && cd libhsplasma/build
+          cmake -GNinja -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}/build_deps/prefix" \
+            -DENABLE_PYTHON=OFF -DENABLE_TOOLS=OFF -DENABLE_NET=OFF -DENABLE_PHYSX=OFF ..
+          cmake --build .
+          cmake --build . --target install
+
+      - name: Build PlasmaShop
+        run: |
+          mkdir build && cd build
+          cmake -GNinja -DCMAKE_PREFIX_PATH="${GITHUB_WORKSPACE}/build_deps/prefix" ..
+          cmake --build .
+
+  build-windows:
     runs-on: ${{ matrix.cfg.os }}
 
     strategy:
@@ -26,21 +70,21 @@ jobs:
             qt_arch: win64_msvc2019_64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Bootstrap vcpkg
         id: bootstrap-vcpkg
         run: |
-          cd C:\vcpkg
+          cd C:/vcpkg
           git pull
-          Write-Host "::set-output name=vcpkg-rev::$(git rev-parse HEAD)"
+          Write-Output "vcpkg-rev=$(git rev-parse HEAD)" >> $Env:GITHUB_OUTPUT
           ./bootstrap-vcpkg.bat
 
       - name: Restore Dependency Cache
         id: cache-vcpkg
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}\vcpkg_installed
           key: |
@@ -49,35 +93,23 @@ jobs:
             vcpkg-triplet=${{ matrix.cfg.triplet }} vcpkg-response=${{ hashFiles('vcpkg.json') }}
             vcpkg-triplet=${{ matrix.cfg.triplet }}
 
-      - name: Upgrade Dependencies
-        if: steps.cache-vcpkg.outputs.cache-hit == 'true'
-        run: |
-          vcpkg upgrade --no-dry-run --triplet ${{ matrix.cfg.triplet }}
-
       - name: Build Dependencies
         run: |
           vcpkg install --triplet ${{ matrix.cfg.triplet }}
           vcpkg list --x-full-desc
 
       # Qt5 takes roughly a thousand years to build, so we download it from elsewhere...
-      - name: Restore Qt Cache
-        id: cache-qt
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}\qt
-          key: os=${{ runner.os }} qt=${{ matrix.cfg.qt }} arch=${{ matrix.cfg.qt-arch }}
-
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           arch: ${{ matrix.cfg.qt-arch }}
           version: ${{ matrix.cfg.qt }}
           dir: ${{ github.workspace }}\qt
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          cache: true
 
       # KF5SyntaxHighlighting and ecm release in lock-step
       - name: Checkout ECM
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: KDE/extra-cmake-modules
           path: ecm
@@ -96,7 +128,7 @@ jobs:
 
       # Build KF5SyntaxHighlighting manually due to Qt dependency...
       - name: Checkout KF5SyntaxHighlighting
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: KDE/syntax-highlighting
           path: syntax-highlighting
@@ -136,7 +168,7 @@ jobs:
           }
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.cfg.cmake-arch }}-qt${{ matrix.cfg.qt }}
           path: install\bin
