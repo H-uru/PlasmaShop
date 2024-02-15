@@ -65,6 +65,14 @@ jobs:
             cmake-arch: x64
             triplet: x64-windows-static-md
             kf5: v5.106.0
+            kf5_cmake_args: ""
+            qt: 5.15.2
+            qt_arch: win64_msvc2019_64
+          - os: windows-2019
+            generator: Visual Studio 16 2019
+            cmake-arch: x64
+            triplet: x64-windows-static-md
+            kf5: v5.106.0
             kf5_cmake_args: "-DBUILD_WITH_QT6=ON"
             qt: 6.5.1
             qt_arch: win64_msvc2019_64
