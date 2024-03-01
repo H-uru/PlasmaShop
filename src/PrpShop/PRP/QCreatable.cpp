@@ -118,6 +118,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QLayerSDLAnimation.h"
 #include "PRP/Surface/QMaterial.h"
 #include "PRP/Surface/QMipmap.h"
+#include "PRP/Render/QSceneNode_Preview.h"
 #include "PRP/Render/QSceneObj_Preview.h"
 
 QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceType)
@@ -285,6 +286,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
     // Preview meta-types
     case kPreviewMipmap:
         return new QMipmap_Preview(pCre, parent);
+    case kPreviewSceneNode:
+        return new QSceneNode_Preview(pCre, parent);
     case kPreviewSceneObject:
         return new QSceneObj_Preview(pCre, parent);
 
