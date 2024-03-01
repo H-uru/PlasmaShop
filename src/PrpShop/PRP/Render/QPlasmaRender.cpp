@@ -227,6 +227,22 @@ void QPlasmaRender::mouseReleaseEvent(QMouseEvent* evt)
     }
 }
 
+void QPlasmaRender::addObject(plKey obj)
+{
+    fObjects[obj] = ObjectInfo();
+
+    plSceneObject* sceneObj = GET_KEY_OBJECT(obj, plSceneObject);
+    plCoordinateInterface* coord = GET_KEY_OBJECT(sceneObj->getCoordInterface(), plCoordinateInterface);
+    if (coord == nullptr) {
+        return;
+    }
+    for (auto childKey : coord->getChildren()) {
+        if (childKey->getType() == kSceneObject) {
+            addObject(std::move(childKey));
+        }
+    }
+}
+
 void QPlasmaRender::setView(const hsVector3& view, float angle)
 {
     fViewPos = view;

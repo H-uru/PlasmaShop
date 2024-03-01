@@ -92,7 +92,7 @@ public:
     QSize minimumSizeHint() const override { return QSize(50, 50); }
     QSize sizeHint() const override { return QSize(400, 400); }
 
-    void addObject(plKey obj) { fObjects[obj] = ObjectInfo(); }
+    void addObject(plKey obj);
     void setView(const hsVector3& view, float angle = 0.0f);
     void center(plKey obj, bool world);
     void build(NavigationMode navMode, DrawMode drawMode);
