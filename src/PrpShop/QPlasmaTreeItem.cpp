@@ -20,83 +20,98 @@
 QPlasmaTreeItem::QPlasmaTreeItem()
     : QTreeWidgetItem(kTypeNone)
 {
-    setIcon(0, QIcon(":/img/folder.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
-    : QTreeWidgetItem(kTypeKO), fObjKey(obj)
+    : QTreeWidgetItem(kTypeKO), fObjKey(std::move(obj))
 {
-    setText(0, pqFormatKeyName(obj));
-    setIcon(0, pqGetTypeIcon(obj->getType()));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
     : QTreeWidgetItem(kTypeAge), fHasBuiltIn(false), fHasTextures(false),
       fAge(age)
 {
-    setText(0, age);
-    setIcon(0, QIcon(":/img/age.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(plPageInfo* page)
     : QTreeWidgetItem(kTypePage), fPage(page)
 {
-    setText(0, st2qstr(page->getPage()));
-    setIcon(0, QIcon(":/img/page.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
     : QTreeWidgetItem(parent, kTypeNone)
 {
-    setIcon(0, QIcon(":/img/folder.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj))
 {
-    setText(0, pqFormatKeyName(obj));
-    setIcon(0, pqGetTypeIcon(obj->getType()));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age)
     : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
       fHasTextures(false), fAge(age)
 {
-    setText(0, age);
-    setIcon(0, QIcon(":/img/age.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page)
     : QTreeWidgetItem(parent, kTypePage), fPage(page)
 {
-    setText(0, st2qstr(page->getPage()));
-    setIcon(0, QIcon(":/img/page.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
     : QTreeWidgetItem(parent, kTypeNone)
 {
-    setIcon(0, QIcon(":/img/folder.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj))
 {
-    setText(0, pqFormatKeyName(obj));
-    setIcon(0, pqGetTypeIcon(obj->getType()));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
     : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
       fHasTextures(false), fAge(age)
 {
-    setText(0, age);
-    setIcon(0, QIcon(":/img/age.png"));
+    reinit();
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
     : QTreeWidgetItem(parent, kTypePage), fPage(page)
 {
-    setText(0, st2qstr(page->getPage()));
-    setIcon(0, QIcon(":/img/page.png"));
+    reinit();
+}
+
+void QPlasmaTreeItem::reinit()
+{
+    switch (type()) {
+        case kTypeNone:
+            setIcon(0, QIcon(":/img/folder.png"));
+            break;
+
+        case kTypeKO:
+            setText(0, pqFormatKeyName(fObjKey));
+            setIcon(0, pqGetTypeIcon(fObjKey->getType()));
+            break;
+
+        case kTypeAge:
+            setText(0, fAge);
+            setIcon(0, QIcon(":/img/age.png"));
+            break;
+
+        case kTypePage:
+            setText(0, st2qstr(fPage->getPage()));
+            setIcon(0, QIcon(":/img/page.png"));
+            break;
+    }
 }

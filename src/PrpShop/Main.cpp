@@ -1218,7 +1218,7 @@ void PrpShopMain::showObjectIDs(bool show)
                 QPlasmaTreeItem* typeNode = (QPlasmaTreeItem*)pageNode->child(t);
                 for (int o=0; o<typeNode->childCount(); o++) {
                     QPlasmaTreeItem* objectNode = (QPlasmaTreeItem*)typeNode->child(o);
-                    objectNode->setText(0, pqFormatKeyName(objectNode->obj()->getKey()));
+                    objectNode->reinit();
                 }
                 typeNode->sortChildren(0, Qt::AscendingOrder);
             }
