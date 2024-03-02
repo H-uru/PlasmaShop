@@ -29,6 +29,7 @@ private:
     plPageInfo* fPage;
     bool fHasBuiltIn, fHasTextures;
     QString fAge;
+    int32_t fSortId;
 
     QString fFilename;
 
@@ -56,6 +57,8 @@ public:
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
 
     void reinit();
+
+    bool operator<(const QTreeWidgetItem& other) const override;
 
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }

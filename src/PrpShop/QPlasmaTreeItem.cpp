@@ -114,27 +114,47 @@ void QPlasmaTreeItem::reinit()
 {
     switch (type()) {
         case kTypeNone:
+            fSortId = 0;
             setIcon(0, QIcon(":/img/folder.png"));
             break;
 
         case kTypeKO:
+            fSortId = s_showObjectIDs ? static_cast<int32_t>(fObjKey->getID()) : 0;
             setText(0, pqFormatKeyName(fObjKey));
             setIcon(0, pqGetTypeIcon(fObjKey->getType()));
             break;
 
         case kTypeClassType:
+            fSortId = s_showTypeIDs ? fClassType : 0;
             setText(0, pqGetFriendlyClassName(fClassType));
             setIcon(0, QIcon(":/img/folder.png"));
             break;
 
         case kTypeAge:
+            fSortId = 0;
             setText(0, fAge);
             setIcon(0, QIcon(":/img/age.png"));
             break;
 
         case kTypePage:
+            fSortId = 0;
             setText(0, st2qstr(fPage->getPage()));
             setIcon(0, QIcon(":/img/page.png"));
             break;
     }
+}
+
+bool QPlasmaTreeItem::operator<(const QTreeWidgetItem& other) const
+{
+    if (type() >= kTypeNone && type() < kMaxPlasmaTypes) {
+        // The other item is also one of ours,
+        // so try sorting numerically by ID.
+        auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
+        if (fSortId != otherPlasma.fSortId) {
+            return fSortId < otherPlasma.fSortId;
+        }
+    }
+    // If the other item doesn't belong to us or if the two IDs are equal,
+    // fall back to default sorting by text.
+    return QTreeWidgetItem::operator<(other);
 }

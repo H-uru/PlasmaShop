@@ -588,7 +588,7 @@ QString pqFormatKeyName(const plKey& obj)
 {
     if (s_showObjectIDs) {
         return QString("[%1] %2")
-            .arg(obj->getID(), 8, 16, QChar('0'))
+            .arg(obj->getID())
             .arg(st2qstr(obj->getName()));
     } else {
         return st2qstr(obj->getName());
