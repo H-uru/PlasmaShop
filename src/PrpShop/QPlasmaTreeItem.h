@@ -51,6 +51,8 @@ public:
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
 
+    void reinit();
+
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
     plPageInfo* page() const { return (type() == kTypePage) ? fPage : NULL; }
