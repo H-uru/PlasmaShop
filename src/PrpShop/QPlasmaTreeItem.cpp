@@ -110,6 +110,18 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
     reinit();
 }
 
+static QString pqFormatPageName(const plPageInfo* page)
+{
+    if (s_showAgePageIDs) {
+        return QString("[%1;%2] %3")
+            .arg(page->getLocation().getSeqPrefix())
+            .arg(page->getLocation().getPageNum())
+            .arg(st2qstr(page->getPage()));
+    } else {
+        return st2qstr(page->getPage());
+    }
+}
+
 void QPlasmaTreeItem::reinit()
 {
     switch (type()) {
@@ -137,8 +149,8 @@ void QPlasmaTreeItem::reinit()
             break;
 
         case kTypePage:
-            fSortId = 0;
-            setText(0, st2qstr(fPage->getPage()));
+            fSortId = s_showAgePageIDs ? static_cast<int32_t>(fPage->getLocation().unparse()) : 0;
+            setText(0, pqFormatPageName(fPage));
             setIcon(0, QIcon(":/img/page.png"));
             break;
     }

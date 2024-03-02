@@ -21,6 +21,7 @@
 #include <PRP/Object/plCoordinateInterface.h>
 #include <PRP/Object/plSceneObject.h>
 
+bool s_showAgePageIDs = false;
 bool s_showTypeIDs = false;
 bool s_showObjectIDs = false;
 

@@ -67,6 +67,7 @@ PrpShopMain::PrpShopMain()
     fActions[kFileSaveAs] = new QAction(tr("Sa&ve As..."), this);
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);
+    fActions[kToolsShowAgePageIDs] = new QAction(tr("Show &Age/Page IDs"), this);
     fActions[kToolsShowTypeIDs] = new QAction(tr("Show Type &IDs"), this);
     fActions[kToolsShowObjectIDs] = new QAction(tr("Show &Object IDs"), this);
     fActions[kToolsNewObject] = new QAction(tr("&New Object..."), this);
@@ -97,6 +98,8 @@ PrpShopMain::PrpShopMain()
     fActions[kWindowClose]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     fActions[kToolsProperties]->setCheckable(true);
     fActions[kToolsProperties]->setChecked(true);
+    fActions[kToolsShowAgePageIDs]->setCheckable(true);
+    fActions[kToolsShowAgePageIDs]->setChecked(false);
     fActions[kToolsShowTypeIDs]->setCheckable(true);
     fActions[kToolsShowTypeIDs]->setChecked(false);
     fActions[kToolsShowObjectIDs]->setCheckable(true);
@@ -114,6 +117,7 @@ PrpShopMain::PrpShopMain()
 
     QMenu* viewMenu = menuBar()->addMenu(tr("&Tools"));
     viewMenu->addAction(fActions[kToolsProperties]);
+    viewMenu->addAction(fActions[kToolsShowAgePageIDs]);
     viewMenu->addAction(fActions[kToolsShowTypeIDs]);
     viewMenu->addAction(fActions[kToolsShowObjectIDs]);
     viewMenu->addSeparator();
@@ -184,6 +188,8 @@ PrpShopMain::PrpShopMain()
             fPropertyDock, &QWidget::setVisible);
     connect(fPropertyDock, &QDockWidget::visibilityChanged,
             fActions[kToolsProperties], &QAction::setChecked);
+    connect(fActions[kToolsShowAgePageIDs], &QAction::toggled,
+            this, &PrpShopMain::showAgePageIDs);
     connect(fActions[kToolsShowTypeIDs], &QAction::toggled,
             this, &PrpShopMain::showTypeIDs);
     connect(fActions[kToolsShowObjectIDs], &QAction::toggled,
@@ -237,6 +243,8 @@ PrpShopMain::PrpShopMain()
     if (settings.contains("DialogDir"))
         fDialogDir = settings.value("DialogDir").toString();
 
+    fActions[kToolsShowAgePageIDs]->setChecked(
+            settings.value("ShowAgePageIDs", false).toBool());
     fActions[kToolsShowTypeIDs]->setChecked(
             settings.value("ShowTypeIDs", false).toBool());
     fActions[kToolsShowObjectIDs]->setChecked(
@@ -256,6 +264,7 @@ void PrpShopMain::closeEvent(QCloseEvent*)
     settings.setValue("WinState", saveState());
 
     settings.setValue("DialogDir", fDialogDir);
+    settings.setValue("ShowAgePageIDs", s_showAgePageIDs);
     settings.setValue("ShowTypeIDs", s_showTypeIDs);
     settings.setValue("ShowObjectIDs", s_showObjectIDs);
 }
@@ -1181,6 +1190,21 @@ void PrpShopMain::createNewObject()
 
         // And open it for convenience
         editCreatable(ko);
+    }
+}
+
+void PrpShopMain::showAgePageIDs(bool show)
+{
+    s_showAgePageIDs = show;
+
+    // Refresh the folder display for currently loaded pages
+    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+        for (int j=0; j<ageNode->childCount(); j++) {
+            QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
+            pageNode->reinit();
+        }
+        ageNode->sortChildren(0, Qt::AscendingOrder);
     }
 }
 
