@@ -15,6 +15,8 @@
  */
 
 #include "QPlasmaTreeItem.h"
+
+#include <string_theory/format>
 #include "QPlasmaUtils.h"
 
 QPlasmaTreeItem::QPlasmaTreeItem()
@@ -110,6 +112,15 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page)
     reinit();
 }
 
+static QString pqFormatPageName(const plPageInfo* page)
+{
+    if (s_showAgePageIDs) {
+        return st2qstr(ST::format("{} {}", page->getLocation().toString(), page->getPage()));
+    } else {
+        return st2qstr(page->getPage());
+    }
+}
+
 void QPlasmaTreeItem::reinit()
 {
     switch (type()) {
@@ -133,7 +144,7 @@ void QPlasmaTreeItem::reinit()
             break;
 
         case kTypePage:
-            setText(0, st2qstr(fPage->getPage()));
+            setText(0, pqFormatPageName(fPage));
             setIcon(0, QIcon(":/img/page.png"));
             break;
     }
@@ -146,6 +157,12 @@ bool QPlasmaTreeItem::operator<(const QTreeWidgetItem& other) const
         // sort class type folders by the numeric type ID.
         auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
         return fClassType < otherPlasma.fClassType;
+    } else if (s_showAgePageIDs && type() == kTypePage && other.type() == kTypePage) {
+        // If age/page IDs are shown,
+        // sort pages by their location
+        // (i. e. first by age ID, then by page ID).
+        auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
+        return fPage->getLocation() < otherPlasma.fPage->getLocation();
     } else if (type() != other.type()) {
         // Sort items of different types by their type,
         // i. e. group items of the same type together.
