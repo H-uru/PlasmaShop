@@ -600,19 +600,18 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
     if (pageItem == NULL)
         throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
 
-    QPlasmaTreeItem* folderItem = NULL;
-    QString typeName = pqGetFriendlyClassName(objType);
+    QPlasmaTreeItem* typeItem = nullptr;
     for (int i=0; i<pageItem->childCount(); i++) {
-        if (pageItem->child(i)->text(0) == typeName) {
-            folderItem = (QPlasmaTreeItem*)pageItem->child(i);
+        auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
+        if (child->classType() == objType) {
+            typeItem = child;
             break;
         }
     }
-    if (folderItem == NULL) {
-        folderItem = new QPlasmaTreeItem(pageItem);
-        folderItem->setText(0, typeName);
+    if (typeItem == nullptr) {
+        typeItem = new QPlasmaTreeItem(pageItem, objType);
     }
-    return folderItem;
+    return typeItem;
 }
 
 void PrpShopMain::closeWindows(const plLocation& loc)
@@ -1109,12 +1108,11 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     // Populate the type folders and actual objects
     std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
     for (size_t i=0; i<types.size(); i++) {
-        QPlasmaTreeItem* folder = new QPlasmaTreeItem(item);
-        folder->setText(0, pqGetFriendlyClassName(types[i]));
+        QPlasmaTreeItem* typeItem = new QPlasmaTreeItem(item, types[i]);
 
         std::vector<plKey> keys = fResMgr.getKeys(page->getLocation(), types[i], true);
         for (size_t j=0; j<keys.size(); j++)
-            new QPlasmaTreeItem(folder, keys[j]);
+            new QPlasmaTreeItem(typeItem, keys[j]);
     }
 
     item->setFilename(filename);
@@ -1197,8 +1195,7 @@ void PrpShopMain::showTypeIDs(bool show)
             QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
             for (int t=0; t<pageNode->childCount(); t++) {
                 QPlasmaTreeItem* typeNode = (QPlasmaTreeItem*)pageNode->child(t);
-                short type = ((QPlasmaTreeItem*)typeNode->child(0))->obj()->ClassIndex();
-                typeNode->setText(0, pqGetFriendlyClassName(type));
+                typeNode->reinit();
             }
             pageNode->sortChildren(0, Qt::AscendingOrder);
         }
