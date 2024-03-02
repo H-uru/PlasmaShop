@@ -26,7 +26,7 @@ QPlasmaTreeItem::QPlasmaTreeItem()
 QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
     : QTreeWidgetItem(kTypeKO), fObjKey(obj)
 {
-    setText(0, st2qstr(obj->getName()));
+    setText(0, pqFormatKeyName(obj));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
@@ -54,7 +54,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
     : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, st2qstr(obj->getName()));
+    setText(0, pqFormatKeyName(obj));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 
@@ -82,7 +82,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
     : QTreeWidgetItem(parent, kTypeKO), fObjKey(obj)
 {
-    setText(0, st2qstr(obj->getName()));
+    setText(0, pqFormatKeyName(obj));
     setIcon(0, pqGetTypeIcon(obj->getType()));
 }
 

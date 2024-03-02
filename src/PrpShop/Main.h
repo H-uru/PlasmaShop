@@ -74,7 +74,7 @@ private:
     {
         // Main Menu
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
-        kToolsProperties, kToolsShowTypeIDs, kToolsNewObject, kWindowPrev,
+        kToolsProperties, kToolsShowTypeIDs, kToolsShowObjectIDs, kToolsNewObject, kWindowPrev,
         kWindowNext, kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
 
         // Tree Context Menu
@@ -121,6 +121,7 @@ public slots:
     void treeContextMenu(const QPoint& pos);
     void createNewObject();
     void showTypeIDs(bool show);
+    void showObjectIDs(bool show);
     void closeWindows(const plLocation& loc);
 
     void treeClose();

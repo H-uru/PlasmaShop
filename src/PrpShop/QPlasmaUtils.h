@@ -21,10 +21,12 @@
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plCreatable.h>
+#include <PRP/KeyedObject/plKey.h>
 #include "QPlasma.h"
 #include "QNumerics.h"
 
 extern bool s_showTypeIDs;
+extern bool s_showObjectIDs;
 
 enum
 {
@@ -44,6 +46,7 @@ enum
 
 QIcon pqGetTypeIcon(int);
 QString pqGetFriendlyClassName(int);
+QString pqFormatKeyName(const plKey& obj);
 
 std::vector<short> pqGetValidKOTypes();
 bool pqIsValidKOType(short);

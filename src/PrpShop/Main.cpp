@@ -68,6 +68,7 @@ PrpShopMain::PrpShopMain()
     fActions[kFileExit] = new QAction(tr("E&xit"), this);
     fActions[kToolsProperties] = new QAction(tr("Show &Properties Pane"), this);
     fActions[kToolsShowTypeIDs] = new QAction(tr("Show Type &IDs"), this);
+    fActions[kToolsShowObjectIDs] = new QAction(tr("Show &Object IDs"), this);
     fActions[kToolsNewObject] = new QAction(tr("&New Object..."), this);
     fActions[kWindowPrev] = new QAction(tr("&Previous"), this);
     fActions[kWindowNext] = new QAction(tr("&Next"), this);
@@ -98,6 +99,8 @@ PrpShopMain::PrpShopMain()
     fActions[kToolsProperties]->setChecked(true);
     fActions[kToolsShowTypeIDs]->setCheckable(true);
     fActions[kToolsShowTypeIDs]->setChecked(false);
+    fActions[kToolsShowObjectIDs]->setCheckable(true);
+    fActions[kToolsShowObjectIDs]->setChecked(false);
 
     // Main Menus
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
@@ -112,6 +115,7 @@ PrpShopMain::PrpShopMain()
     QMenu* viewMenu = menuBar()->addMenu(tr("&Tools"));
     viewMenu->addAction(fActions[kToolsProperties]);
     viewMenu->addAction(fActions[kToolsShowTypeIDs]);
+    viewMenu->addAction(fActions[kToolsShowObjectIDs]);
     viewMenu->addSeparator();
     viewMenu->addAction(fActions[kToolsNewObject]);
 
@@ -182,6 +186,8 @@ PrpShopMain::PrpShopMain()
             fActions[kToolsProperties], &QAction::setChecked);
     connect(fActions[kToolsShowTypeIDs], &QAction::toggled,
             this, &PrpShopMain::showTypeIDs);
+    connect(fActions[kToolsShowObjectIDs], &QAction::toggled,
+            this, &PrpShopMain::showObjectIDs);
     connect(fActions[kToolsNewObject], &QAction::triggered,
             this, &PrpShopMain::createNewObject);
 
@@ -233,6 +239,8 @@ PrpShopMain::PrpShopMain()
 
     fActions[kToolsShowTypeIDs]->setChecked(
             settings.value("ShowTypeIDs", false).toBool());
+    fActions[kToolsShowObjectIDs]->setChecked(
+            settings.value("ShowObjectIDs", false).toBool());
 }
 
 void PrpShopMain::closeEvent(QCloseEvent*)
@@ -249,6 +257,7 @@ void PrpShopMain::closeEvent(QCloseEvent*)
 
     settings.setValue("DialogDir", fDialogDir);
     settings.setValue("ShowTypeIDs", s_showTypeIDs);
+    settings.setValue("ShowObjectIDs", s_showObjectIDs);
 }
 
 void PrpShopMain::dragEnterEvent(QDragEnterEvent* evt)
@@ -1192,6 +1201,27 @@ void PrpShopMain::showTypeIDs(bool show)
                 typeNode->setText(0, pqGetFriendlyClassName(type));
             }
             pageNode->sortChildren(0, Qt::AscendingOrder);
+        }
+    }
+}
+
+void PrpShopMain::showObjectIDs(bool show)
+{
+    s_showObjectIDs = show;
+
+    // Refresh the folder display for currently loaded pages
+    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
+        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+        for (int j=0; j<ageNode->childCount(); j++) {
+            QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
+            for (int t=0; t<pageNode->childCount(); t++) {
+                QPlasmaTreeItem* typeNode = (QPlasmaTreeItem*)pageNode->child(t);
+                for (int o=0; o<typeNode->childCount(); o++) {
+                    QPlasmaTreeItem* objectNode = (QPlasmaTreeItem*)typeNode->child(o);
+                    objectNode->setText(0, pqFormatKeyName(objectNode->obj()->getKey()));
+                }
+                typeNode->sortChildren(0, Qt::AscendingOrder);
+            }
         }
     }
 }
