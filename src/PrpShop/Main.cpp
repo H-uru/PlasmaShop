@@ -344,6 +344,7 @@ void PrpShopMain::setPropertyPage(PropWhich which)
             fLoadMaskQ[1] = new QSpinBox(group);
             fLoadMaskQ[0]->setRange(0, 255);
             fLoadMaskQ[1]->setRange(0, 255);
+            fObjId = new QLabel(group);
 
             fCloneIdBox = new QGroupBox(tr("Clone IDs"), group);
             fCloneIdBox->setCheckable(true);
@@ -364,7 +365,9 @@ void PrpShopMain::setPropertyPage(PropWhich which)
             layout->addWidget(new QLabel(tr("Load Mask:"), group), 2, 0);
             layout->addWidget(fLoadMaskQ[0], 2, 1);
             layout->addWidget(fLoadMaskQ[1], 2, 2);
-            layout->addWidget(fCloneIdBox, 3, 0, 1, 3);
+            layout->addWidget(new QLabel(tr("Object ID:"), group), 3, 0);
+            layout->addWidget(fObjId, 3, 1, 1, 2);
+            layout->addWidget(fCloneIdBox, 4, 0, 1, 3);
         }
         break;
     default:
@@ -408,6 +411,7 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fObjType->setText(item->obj()->ClassName());
         fLoadMaskQ[0]->setValue(item->obj()->getKey()->getLoadMask().getQuality(0));
         fLoadMaskQ[1]->setValue(item->obj()->getKey()->getLoadMask().getQuality(1));
+        fObjId->setText(QString("%1").arg(item->obj()->getKey()->getID()));
         fCloneId->setValue(item->obj()->getKey()->getCloneID());
         fClonePlayerId->setValue(item->obj()->getKey()->getClonePlayerID());
         fCloneIdBox->setChecked(fCloneId->value() != 0 || fClonePlayerId->value() != 0);

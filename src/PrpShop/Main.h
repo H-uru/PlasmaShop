@@ -57,6 +57,7 @@ private:
     QLineEdit* fObjName;
     QLabel* fObjType;
     QSpinBox* fLoadMaskQ[2];
+    QLabel* fObjId;
     QGroupBox* fCloneIdBox;
     QSpinBox* fCloneId;
     QSpinBox* fClonePlayerId;
