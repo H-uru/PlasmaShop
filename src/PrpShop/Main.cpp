@@ -595,10 +595,10 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
     plPageInfo* page = fResMgr.FindPage(loc);
     QPlasmaTreeItem* ageItem = NULL;
     QString ageName = st2qstr(page->getAge());
-    QString pageName = st2qstr(page->getPage());
     for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
-            ageItem = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+        auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
+        if (topLevelItem->age() == ageName) {
+            ageItem = topLevelItem;
             break;
         }
     }
@@ -607,8 +607,9 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
 
     QPlasmaTreeItem* pageItem = NULL;
     for (int i=0; i<ageItem->childCount(); i++) {
-        if (ageItem->child(i)->text(0) == pageName) {
-            pageItem = (QPlasmaTreeItem*)ageItem->child(i);
+        auto child = static_cast<QPlasmaTreeItem*>(ageItem->child(i));
+        if (child->page()->getLocation() == loc) {
+            pageItem = child;
             break;
         }
     }
@@ -1106,8 +1107,9 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
         // Find or create the Age folder
         QString ageName = st2qstr(page->getAge());
         for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-            if (fBrowserTree->topLevelItem(i)->text(0) == ageName) {
-                parent = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+            auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
+            if (topLevelItem->age() == ageName) {
+                parent = topLevelItem;
                 break;
             }
         }
