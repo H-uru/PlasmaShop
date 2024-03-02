@@ -113,6 +113,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Surface/QFadeOpacityMod.h"
 #include "PRP/Surface/QLayer.h"
 #include "PRP/Surface/QLayerAnimation.h"
+#include "PRP/Surface/QLayerAnimationBase.h"
 #include "PRP/Surface/QLayerLinkAnimation.h"
 #include "PRP/Surface/QLayerMovie.h"
 #include "PRP/Surface/QLayerSDLAnimation.h"
@@ -210,6 +211,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QLayer(pCre, parent);
     case kLayerAnimation:
         return new QLayerAnimation(pCre, parent);
+    case kLayerAnimationBase:
+        return new QLayerAnimationBase(pCre, parent);
     case kLayerAVI:
         return new QLayerMovie(pCre, parent);
     case kLayerBink:
