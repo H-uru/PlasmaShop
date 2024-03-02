@@ -57,6 +57,8 @@ public:
 
     void reinit();
 
+    bool operator<(const QTreeWidgetItem& other) const override;
+
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }

@@ -138,3 +138,23 @@ void QPlasmaTreeItem::reinit()
             break;
     }
 }
+
+bool QPlasmaTreeItem::operator<(const QTreeWidgetItem& other) const
+{
+    if (s_showTypeIDs && type() == kTypeClassType && other.type() == kTypeClassType) {
+        // If type IDs are shown,
+        // sort class type folders by the numeric type ID.
+        auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
+        return fClassType < otherPlasma.fClassType;
+    } else if (type() != other.type()) {
+        // Sort items of different types by their type,
+        // i. e. group items of the same type together.
+        // (This ensures a consistent sort order in case items of different types
+        // with special sorting behavior somehow end up in the same list.)
+        return type() < other.type();
+    } else {
+        // If both items have the same type, but the type has no special sorting behavior,
+        // fall back to default sorting by text.
+        return QTreeWidgetItem::operator<(other);
+    }
+}
