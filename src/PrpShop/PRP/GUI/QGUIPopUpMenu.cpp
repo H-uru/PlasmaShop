@@ -322,7 +322,7 @@ void QPopUpMenuItemDialog::init(pfGUIPopUpMenu::pfMenuItem* item, int idx)
     fItemIdx = idx;
     fName->setText(st2qstr(fItem->fName));
     fProcType->setCurrentIndex(fItem->fHandler == NULL ? 0 : fItem->fHandler->getType());
-    fSubMenuKey->setText(fItem->fSubMenu.Exists() ? st2qstr(fItem->fSubMenu->getName()) : tr("(Null)"));
+    fSubMenuKey->setText(fItem->fSubMenu.Exists() ? pqFormatKeyName(fItem->fSubMenu) : tr("(Null)"));
     fYOffsetToNext->setValue(fItem->fYOffsetToNext);
 }
 
@@ -365,7 +365,7 @@ void QPopUpMenuItemDialog::selectKey()
     dlg.init(PrpShopMain::ResManager(), fItem->fSubMenu);
     if (dlg.exec() == QDialog::Accepted) {
         fItem->fSubMenu = dlg.selection();
-        fSubMenuKey->setText(st2qstr(fItem->fSubMenu->getName()));
+        fSubMenuKey->setText(pqFormatKeyName(fItem->fSubMenu));
     } else {
         fItem->fSubMenu = plKey();
         fSubMenuKey->setText(tr("(Null)"));

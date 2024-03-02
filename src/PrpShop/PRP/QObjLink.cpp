@@ -57,7 +57,7 @@ void QCreatableLink::setKey(plKey key, bool updateText)
         fCreatable = key.isLoaded() ? key->getObj() : NULL;
         fObjLabel->setEnabled(true);
         if (updateText)
-            setText(st2qstr(key->getName()));
+            setText(pqFormatKeyName(key));
     } else {
         fCreatable = NULL;
         fObjLabel->setEnabled(false);

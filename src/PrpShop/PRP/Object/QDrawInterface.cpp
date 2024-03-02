@@ -39,7 +39,7 @@ QDrawableList::QDrawableList(plKey container, QWidget* parent)
 void QDrawableList::addKey(plKey key, int dkey)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(this,
-        QStringList() << QString("%1").arg(dkey) << st2qstr(key->getName()));
+        QStringList() << QString("%1").arg(dkey) << pqFormatKeyName(key));
     item->setIcon(1, pqGetTypeIcon(key->getType()));
     fKeys << key;
     fDrawKeys << dkey;
@@ -114,7 +114,7 @@ void QFindDrawKeyDialog::init(plResManager* mgr, const plLocation& loc)
     fKeyBox->clear();
     fKeys = fResMgr->getKeys(fLocation, kDrawableSpans);
     for (size_t i=0; i<fKeys.size(); i++)
-        fKeyBox->addItem(st2qstr(fKeys[i]->getName()));
+        fKeyBox->addItem(pqFormatKeyName(fKeys[i]));
     fDrawKey->setValue(0);
 }
 

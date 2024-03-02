@@ -506,7 +506,7 @@ void QWinSound::editEaxSettings()
 {
     QEaxSourceSettings* eaxDlg = new QEaxSourceSettings(&(plSound::Convert(fCreatable))->getEAXSettings());
     eaxDlg->setWindowTitle(tr("EAX Settings: %1")
-                           .arg(st2qstr(plSound::Convert(fCreatable)->getKey()->getName())));
+                           .arg(pqFormatKeyName(plSound::Convert(fCreatable)->getKey())));
     eaxDlg->show();
 }
 

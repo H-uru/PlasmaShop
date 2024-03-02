@@ -50,7 +50,7 @@ static QStringList makeParamItem(const plPythonParameter& param)
     else if (param.fValueType == plPythonParameter::kNone)
         row << "(None)";
     else if (param.fObjKey.Exists())
-        row << st2qstr(param.fObjKey->getName());
+        row << pqFormatKeyName(param.fObjKey);
     else
         row << "(None)";
     return row;
@@ -261,7 +261,7 @@ void QPythonParamDialog::init(const plPythonParameter& param)
     } else {
         fKey = param.fObjKey;
         if (fKey.Exists())
-            fKeyValue->setText(st2qstr(fKey->getName()));
+            fKeyValue->setText(pqFormatKeyName(fKey));
         else
             fKeyValue->setText("(None)");
     }
@@ -298,7 +298,7 @@ void QPythonParamDialog::selectKey()
     dlg.init(PrpShopMain::ResManager(), fKey);
     if (dlg.exec() == QDialog::Accepted) {
         fKey = dlg.selection();
-        fKeyValue->setText(st2qstr(fKey->getName()));
+        fKeyValue->setText(pqFormatKeyName(fKey));
     }
 }
 

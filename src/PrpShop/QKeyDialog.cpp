@@ -194,5 +194,5 @@ void QFindKeyDialog::typeSelected(int idx)
 
     fKeys = fResMgr->getKeys(fLocations[fLocationBox->currentIndex()], fTypes[idx]);
     for (size_t i=0; i<fKeys.size(); i++)
-        fKeyBox->addItem(st2qstr(fKeys[i]->getName()));
+        fKeyBox->addItem(pqFormatKeyName(fKeys[i]));
 }

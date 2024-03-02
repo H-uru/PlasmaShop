@@ -30,7 +30,7 @@ QCreatable::QCreatable(plCreatable* pCre, int type, QWidget* parent)
     hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable, false);
     if (ko != NULL && ko->getKey().Exists()) {
         setWindowTitle(pqGetFriendlyClassName(type) +
-                       ": " + st2qstr(ko->getKey()->getName()));
+                       ": " + pqFormatKeyName(ko->getKey()));
     } else {
         setWindowTitle(pqGetFriendlyClassName(type));
     }

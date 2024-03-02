@@ -48,7 +48,7 @@ QGUIRadioGroupCtrl::QGUIRadioGroupCtrl(plCreatable* pCre, QWidget* parent)
     for (size_t i=0; i<ctrl->getControls().size(); i++) {
         fControls->addKey(ctrl->getControls()[i]);
         fDefaultValue->addItem(pqGetTypeIcon(ctrl->getControls()[i]->getType()),
-                               st2qstr(ctrl->getControls()[i]->getName()));
+                               pqFormatKeyName(ctrl->getControls()[i]));
     }
     fDefaultValue->setCurrentIndex(ctrl->getDefaultValue());
 
@@ -81,7 +81,7 @@ void QGUIRadioGroupCtrl::saveDamage()
 
 void QGUIRadioGroupCtrl::controlAdded(plKey ctrl)
 {
-    fDefaultValue->addItem(pqGetTypeIcon(ctrl->getType()), st2qstr(ctrl->getName()));
+    fDefaultValue->addItem(pqGetTypeIcon(ctrl->getType()), pqFormatKeyName(ctrl));
 }
 
 void QGUIRadioGroupCtrl::controlRemoved(int which)
