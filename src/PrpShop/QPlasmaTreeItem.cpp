@@ -29,6 +29,12 @@ QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
     reinit();
 }
 
+QPlasmaTreeItem::QPlasmaTreeItem(short classType)
+    : QTreeWidgetItem(kTypeClassType), fClassType(classType)
+{
+    reinit();
+}
+
 QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
     : QTreeWidgetItem(kTypeAge), fHasBuiltIn(false), fHasTextures(false),
       fAge(age)
@@ -50,6 +56,12 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
     : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj))
+{
+    reinit();
+}
+
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, short classType)
+    : QTreeWidgetItem(parent, kTypeClassType), fClassType(classType)
 {
     reinit();
 }
@@ -79,6 +91,12 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
     reinit();
 }
 
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, short classType)
+    : QTreeWidgetItem(parent, kTypeClassType), fClassType(classType)
+{
+    reinit();
+}
+
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
     : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
       fHasTextures(false), fAge(age)
@@ -102,6 +120,11 @@ void QPlasmaTreeItem::reinit()
         case kTypeKO:
             setText(0, st2qstr(fObjKey->getName()));
             setIcon(0, pqGetTypeIcon(fObjKey->getType()));
+            break;
+
+        case kTypeClassType:
+            setText(0, pqGetFriendlyClassName(fClassType));
+            setIcon(0, QIcon(":/img/folder.png"));
             break;
 
         case kTypeAge:

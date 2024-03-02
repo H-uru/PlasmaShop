@@ -449,20 +449,13 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         menu.setDefaultAction(fActions[kTreeEdit]);
         fActions[kTreePreview]->setEnabled(pqCanPreviewType(item->obj()));
         fActions[kTreeViewTargets]->setEnabled(pqHasTargets(item->obj()));
-    } else {
+    } else if (item->type() == QPlasmaTreeItem::kTypeClassType) {
         menu.addAction(fActions[kTreeImport]);
-        if (item->childCount() != 0) {
-            QPlasmaTreeItem* child = (QPlasmaTreeItem*)item->child(0);
-            if (child->type() == QPlasmaTreeItem::kTypeKO) {
-                auto obj_type = child->obj()->getKey()->getType();
-                
-                menu.addAction(fActions[kTreeNewObject]);
-                fActions[kTreeNewObject]->setText(tr("New %1...").arg(
-                    pqGetFriendlyClassName(obj_type))
-                );
-                fActions[kTreeNewObject]->setEnabled(pqIsValidKOType(obj_type));
-            }
-        }
+        menu.addAction(fActions[kTreeNewObject]);
+        fActions[kTreeNewObject]->setText(tr("New %1...").arg(
+            pqGetFriendlyClassName(item->classType()))
+        );
+        fActions[kTreeNewObject]->setEnabled(pqIsValidKOType(item->classType()));
     }
     menu.exec(fBrowserTree->viewport()->mapToGlobal(pos));
 }
@@ -587,19 +580,18 @@ QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
     if (pageItem == NULL)
         throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
 
-    QPlasmaTreeItem* folderItem = NULL;
-    QString typeName = pqGetFriendlyClassName(objType);
+    QPlasmaTreeItem* typeItem = nullptr;
     for (int i=0; i<pageItem->childCount(); i++) {
-        if (pageItem->child(i)->text(0) == typeName) {
-            folderItem = (QPlasmaTreeItem*)pageItem->child(i);
+        auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
+        if (child->classType() == objType) {
+            typeItem = child;
             break;
         }
     }
-    if (folderItem == NULL) {
-        folderItem = new QPlasmaTreeItem(pageItem);
-        folderItem->setText(0, typeName);
+    if (typeItem == nullptr) {
+        typeItem = new QPlasmaTreeItem(pageItem, objType);
     }
-    return folderItem;
+    return typeItem;
 }
 
 void PrpShopMain::closeWindows(const plLocation& loc)
@@ -917,12 +909,13 @@ QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
         return item;
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         return fLoadedLocations.value(item->obj()->getKey()->getLocation(), NULL);
-    } else {
-        // Type folder
+    } else if (item->type() == QPlasmaTreeItem::kTypeClassType) {
         QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->parent();
         if (pageItem->type() != QPlasmaTreeItem::kTypePage)
             throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
         return pageItem;
+    } else {
+        return nullptr;
     }
 }
 
@@ -1096,12 +1089,11 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     // Populate the type folders and actual objects
     std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
     for (size_t i=0; i<types.size(); i++) {
-        QPlasmaTreeItem* folder = new QPlasmaTreeItem(item);
-        folder->setText(0, pqGetFriendlyClassName(types[i]));
+        QPlasmaTreeItem* typeItem = new QPlasmaTreeItem(item, types[i]);
 
         std::vector<plKey> keys = fResMgr.getKeys(page->getLocation(), types[i], true);
         for (size_t j=0; j<keys.size(); j++)
-            new QPlasmaTreeItem(folder, keys[j]);
+            new QPlasmaTreeItem(typeItem, keys[j]);
     }
 
     item->setFilename(filename);
@@ -1132,21 +1124,15 @@ void PrpShopMain::createNewObject()
             }
         } else if (item->type() == QPlasmaTreeItem::kTypePage) {
             dlg.init(&fResMgr, item->page()->getLocation());
+        } else if (item->type() == QPlasmaTreeItem::kTypeClassType) {
+            if (item->parent()->type() != QPlasmaTreeItem::kTypePage)
+                throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
+            dlg.init(&fResMgr, ((QPlasmaTreeItem*)item->parent())->page()->getLocation(), item->classType());
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
             dlg.init(&fResMgr, item->obj()->getKey()->getLocation(),
                      item->obj()->getKey()->getType());
         } else {
-            if (item->childCount() != 0) {
-                QPlasmaTreeItem* child = (QPlasmaTreeItem*)item->child(0);
-                if (child->type() != QPlasmaTreeItem::kTypeKO)
-                    throw hsBadParamException(__FILE__, __LINE__, "Got non-KO child");
-                dlg.init(&fResMgr, child->obj()->getKey()->getLocation(),
-                         child->obj()->getKey()->getType());
-            } else {
-                if (item->parent()->type() != QPlasmaTreeItem::kTypePage)
-                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
-                dlg.init(&fResMgr, ((QPlasmaTreeItem*)item->parent())->page()->getLocation());
-            }
+            dlg.init(&fResMgr);
         }
     } else {
         dlg.init(&fResMgr);
@@ -1184,8 +1170,7 @@ void PrpShopMain::showTypeIDs(bool show)
             QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
             for (int t=0; t<pageNode->childCount(); t++) {
                 QPlasmaTreeItem* typeNode = (QPlasmaTreeItem*)pageNode->child(t);
-                short type = ((QPlasmaTreeItem*)typeNode->child(0))->obj()->ClassIndex();
-                typeNode->setText(0, pqGetFriendlyClassName(type));
+                typeNode->reinit();
             }
             pageNode->sortChildren(0, Qt::AscendingOrder);
         }
