@@ -580,6 +580,12 @@ void PrpShopMain::treeDelete()
     QPlasmaTreeItem* folder = (QPlasmaTreeItem*)item->parent();
     delete item;
 
+    // Deleting an object may change the object IDs of other objects of the same type,
+    // so reinit all objects in the type folder to update their displayed IDs.
+    for (int i = 0; i < folder->childCount(); i++) {
+        static_cast<QPlasmaTreeItem*>(folder->child(i))->reinit();
+    }
+
     if (folder->childCount() == 0)
         delete folder;
 }
@@ -1035,6 +1041,7 @@ void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 void PrpShopMain::saveProps(QPlasmaTreeItem* item)
 {
     if (item != NULL) {
+        bool reinit = false;
         bool refreshTree = false;
         if (item->type() == QPlasmaTreeItem::kTypePage) {
             if (fAgeName->text() != st2qstr(item->page()->getAge())) {
@@ -1047,7 +1054,7 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
             }
             if (fPageName->text() != st2qstr(item->page()->getPage())) {
                 item->page()->setPage(qstr2st(fPageName->text()));
-                item->setText(0, fPageName->text());
+                reinit = true;
                 refreshTree = true;
             }
             if (fReleaseVersion->value() != (int)item->page()->getReleaseVersion())
@@ -1064,12 +1071,13 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 fLoadedLocations[loc] = fLoadedLocations[item->page()->getLocation()];
                 fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
                 fResMgr.ChangeLocation(item->page()->getLocation(), loc);
+                reinit = true;
             }
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
             if (item->obj() != NULL) {
                 if (fObjName->text() != st2qstr(item->obj()->getKey()->getName())) {
                     item->obj()->getKey()->setName(qstr2st(fObjName->text()));
-                    item->setText(0, fObjName->text());
+                    reinit = true;
                     refreshTree = true;
                 }
                 plLoadMask mask = item->obj()->getKey()->getLoadMask();
@@ -1078,6 +1086,9 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 if (fCloneIdBox->isChecked())
                     item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
             }
+        }
+        if (reinit) {
+            item->reinit();
         }
         if (refreshTree)
             fBrowserTree->sortItems(0, Qt::AscendingOrder);
