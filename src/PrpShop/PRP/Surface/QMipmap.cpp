@@ -22,6 +22,7 @@
 #include <QGridLayout>
 #include <QPainter>
 #include <QSettings>
+#include <QTabBar>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QRegularExpression>
@@ -134,31 +135,33 @@ QMipmap_Preview::QMipmap_Preview(plCreatable* pCre, QWidget* parent)
     fTexture = new QTextureBox(scroll);
     scroll->setWidget(fTexture);
 
-    QWidget* levelWidget = new QWidget(this);
-    QGridLayout* levelLayout = new QGridLayout(levelWidget);
-    levelLayout->setContentsMargins(4, 4, 4, 4);
-    levelLayout->setHorizontalSpacing(8);
-    QSpinBox* levelSel = new QSpinBox(levelWidget);
-    if (tex->getCompressionType() == plBitmap::kJPEGCompression)
-        levelSel->setRange(0, 0);
-    else
-        levelSel->setRange(0, tex->getNumLevels() - 1);
-    connect(levelSel, QOverload<int>::of(&QSpinBox::valueChanged),
+    QTabBar* levelSel = new QTabBar(this);
+    for (size_t level = 0; level < tex->getNumLevels(); level++) {
+        levelSel->insertTab(level, QString("%1x%2 (%3)")
+            .arg(tex->getLevelWidth(level))
+            .arg(tex->getLevelHeight(level))
+            .arg(level));
+    }
+    connect(levelSel, &QTabBar::currentChanged,
             this, &QMipmap_Preview::setLevel);
-    levelLayout->addWidget(new QLabel(tr("Level:"), levelWidget), 0, 0);
-    levelLayout->addWidget(levelSel, 0, 1);
-    levelSel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QLinkLabel* saveAsLink = new QLinkLabel(tr("Save As..."), levelWidget);
-    levelLayout->addWidget(saveAsLink, 1, 0, 1, 2);
+
+    QWidget* saveAsWidget = new QWidget(this);
+    QGridLayout* saveAsLayout = new QGridLayout(saveAsWidget);
+    saveAsLayout->setContentsMargins(4, 4, 4, 4);
+    saveAsLayout->setHorizontalSpacing(8);
+    QLinkLabel* saveAsLink = new QLinkLabel(tr("Save As..."), saveAsWidget);
+    saveAsLayout->addWidget(saveAsLink, 0, 0);
     connect(fTexture, &QTextureBox::textureChanged, saveAsLink, &QWidget::setEnabled);
     connect(saveAsLink, &QLinkLabel::activated, fTexture, &QTextureBox::saveAs);
+
     fTexture->setTexture(tex);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setVerticalSpacing(0);
-    layout->addWidget(levelWidget, 0, 0);
-    layout->addWidget(scroll, 1, 0);
+    layout->addWidget(levelSel, 0, 0);
+    layout->addWidget(saveAsWidget, 1, 0);
+    layout->addWidget(scroll, 2, 0);
 }
 
 void QMipmap_Preview::setLevel(int level)

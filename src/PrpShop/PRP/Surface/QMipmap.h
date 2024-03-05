@@ -21,7 +21,6 @@
 
 #include <PRP/Surface/plMipmap.h>
 #include <QImage>
-#include <QSpinBox>
 #include "PRP/QObjLink.h"
 #include "QBitmaskCheckBox.h"
 
