@@ -343,6 +343,8 @@ QMipmap::QMipmap(plCreatable* pCre, QWidget* parent)
 
 static void swapColorChannels(unsigned char* data, size_t size)
 {
+    Q_ASSERT(reinterpret_cast<uintptr_t>(data) % sizeof(unsigned int) == 0);
+
     unsigned int* dp = reinterpret_cast<unsigned int*>(data);
     for (size_t i=0; i<size; i += 4) {
         *dp = (*dp & 0xFF00FF00)
