@@ -439,6 +439,24 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         menu.addAction(fActions[kTreeEdit]);
         menu.addAction(fActions[kTreeEditPRC]);
+        QMenu* editAsMenu = menu.addMenu(tr("Edit A&s"));
+        editAsMenu->setEnabled(false);
+        for (short type : pqGetValidKOTypes()) {
+            if (item->obj()->ClassInstance(type)) {
+                if (type != item->obj()->ClassIndex()) {
+                    // Enable the Edit As submenu only if it has at least one "interesting" entry,
+                    // i. e. not just the default editor.
+                    editAsMenu->setEnabled(true);
+                }
+                editAsMenu->addAction(
+                    pqGetTypeIcon(type),
+                    pqGetFriendlyClassName(type),
+                    [this, item, type]() {
+                        editCreatable(item->obj(), type);
+                    }
+                );
+            }
+        }
         menu.addAction(fActions[kTreeEditHex]);
         menu.addAction(fActions[kTreePreview]);
         menu.addAction(fActions[kTreeViewTargets]);
