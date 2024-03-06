@@ -424,7 +424,7 @@ void QMipmap::onImportImage()
 
     importDir.append("/" + st2qstr(tex->getKey()->getName())
                            .replace(QRegularExpression("[?:/\\*\"<>|]"), "_"));
-    QString filter = tr("DDS Files (*.dds);;JPEG Files (*.jpg *.jpeg);;PNG Files (*.png)");
+    QString filter = tr("All Images (*.dds *.jpg *.jpeg *.png);;DDS Files (*.dds);;JPEG Files (*.jpg *.jpeg);;PNG Files (*.png)");
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Image"), importDir, filter);
 
     if (filename.isEmpty())
