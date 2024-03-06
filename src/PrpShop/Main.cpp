@@ -784,9 +784,9 @@ void PrpShopMain::openFiles()
 {
     QStringList files = QFileDialog::getOpenFileNames(this,
                             tr("Open File(s)"), fDialogDir,
-                            "All supported types (*.age *.prp);;"
+                            "All supported types (*.age *.prp *.prx);;"
                             "Age Files (*.age);;"
-                            "Page Files (*.prp)");
+                            "Page Files (*.prp *.prx)");
     QStringList filesIt = files;
     for (QStringList::Iterator it = filesIt.begin(); it != filesIt.end(); it++) {
         loadFile(*it);
@@ -852,7 +852,7 @@ void PrpShopMain::loadFile(QString filename)
                                QMessageBox::Ok, this);
             msgBox.exec();
         }
-    } else if (filename.endsWith(".prp", Qt::CaseInsensitive)) {
+    } else if (filename.endsWith(".prp", Qt::CaseInsensitive) || filename.endsWith(".prx", Qt::CaseInsensitive)) {
         try {
             plPageInfo* page = fResMgr.ReadPage(qstr2st(filename));
             QPlasmaTreeItem* pageItem = loadPage(page, filename);
