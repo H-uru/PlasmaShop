@@ -85,10 +85,8 @@ public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
 
 private slots:
-    void onExportDDS();
-    void onExportJPEG();
-    void onImportDDS();
-    void onImportJPEG();
+    void onExportImage();
+    void onImportImage();
 };
 
 QString getCompressionText(plBitmap* tex);
