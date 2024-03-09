@@ -443,18 +443,20 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         editAsMenu->setEnabled(false);
         for (short type : pqGetValidKOTypes()) {
             if (item->obj()->ClassInstance(type)) {
-                if (type != item->obj()->ClassIndex()) {
-                    // Enable the Edit As submenu only if it has at least one "interesting" entry,
-                    // i. e. not just the default editor.
-                    editAsMenu->setEnabled(true);
-                }
-                editAsMenu->addAction(
+                QAction* action = editAsMenu->addAction(
                     pqGetTypeIcon(type),
                     pqGetFriendlyClassName(type),
                     [this, item, type]() {
                         editCreatable(item->obj(), type);
                     }
                 );
+                if (type == item->obj()->ClassIndex()) {
+                    editAsMenu->setDefaultAction(action);
+                } else {
+                    // Enable the Edit As submenu only if it has at least one "interesting" entry,
+                    // i. e. not just the default editor.
+                    editAsMenu->setEnabled(true);
+                }
             }
         }
         menu.addAction(fActions[kTreeEditHex]);
