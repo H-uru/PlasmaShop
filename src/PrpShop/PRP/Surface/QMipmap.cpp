@@ -66,9 +66,8 @@ unsigned char* getTextureData(plMipmap *tex, size_t level=0)
         unsigned int* dp = (unsigned int*)imageData;
         for (size_t i = 0; i < size; i += 4) {
             //unsigned int alpha = doAlpha ? (*dp & 0xFF000000) : 0xFF000000;
-            *dp = (*dp & 0xFF000000)
+            *dp = (*dp & 0xFF00FF00)
                 | (*dp & 0x00FF0000) >> 16
-                | (*dp & 0x0000FF00)
                 | (*dp & 0x000000FF) << 16;
             dp++;
         }
