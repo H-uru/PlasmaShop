@@ -37,9 +37,9 @@ QPlasmaTreeItem::QPlasmaTreeItem(short classType)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(const QString& age)
+QPlasmaTreeItem::QPlasmaTreeItem(const QString& age, int ageSeqPrefix)
     : QTreeWidgetItem(kTypeAge), fHasBuiltIn(false), fHasTextures(false),
-      fAge(age)
+      fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }
@@ -68,9 +68,9 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, short classType)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix)
     : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
-      fHasTextures(false), fAge(age)
+      fHasTextures(false), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }
@@ -99,9 +99,9 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, short classType)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix)
     : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
-      fHasTextures(false), fAge(age)
+      fHasTextures(false), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }
@@ -118,6 +118,15 @@ static QString pqFormatPageName(const plPageInfo* page)
         return st2qstr(ST::format("{} {}", page->getLocation().toString(), page->getPage()));
     } else {
         return st2qstr(page->getPage());
+    }
+}
+
+static QString pqFormatAgeName(const QString& name, int seqPrefix)
+{
+    if (s_showAgePageIDs) {
+        return QString("<%1> %2").arg(seqPrefix).arg(name);
+    } else {
+        return name;
     }
 }
 
@@ -139,7 +148,7 @@ void QPlasmaTreeItem::reinit()
             break;
 
         case kTypeAge:
-            setText(0, fAge);
+            setText(0, pqFormatAgeName(fAge, fAgeSeqPrefix));
             setIcon(0, QIcon(":/img/age.png"));
             break;
 
@@ -163,6 +172,11 @@ bool QPlasmaTreeItem::operator<(const QTreeWidgetItem& other) const
         // (i. e. first by age ID, then by page ID).
         auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
         return fPage->getLocation() < otherPlasma.fPage->getLocation();
+    } else if (s_showAgePageIDs && type() == kTypeAge && other.type() == kTypeAge) {
+        // If age/page IDs are shown,
+        // sort ages by their ID (sequence prefix).
+        auto otherPlasma = static_cast<const QPlasmaTreeItem&>(other);
+        return fAgeSeqPrefix < otherPlasma.fAgeSeqPrefix;
     } else if (type() != other.type()) {
         // Sort items of different types by their type,
         // i. e. group items of the same type together.

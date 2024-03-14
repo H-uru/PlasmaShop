@@ -1084,7 +1084,7 @@ QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
             }
         }
         if (parent == NULL)
-            parent = new QPlasmaTreeItem(fBrowserTree, ageName);
+            parent = new QPlasmaTreeItem(fBrowserTree, ageName, page->getLocation().getSeqPrefix());
 
         // Treat BuiltIn and Textures PRPs specially:
         if (page->getLocation().getPageNum() == -1)
@@ -1174,7 +1174,7 @@ void PrpShopMain::showAgePageIDs(bool show)
 {
     s_showAgePageIDs = show;
 
-    // Refresh currently loaded pages
+    // Refresh currently loaded ages/pages
     for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
         QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
         for (int j=0; j<ageNode->childCount(); j++) {
@@ -1182,7 +1182,9 @@ void PrpShopMain::showAgePageIDs(bool show)
             pageNode->reinit();
         }
         ageNode->sortChildren(0, Qt::AscendingOrder);
+        ageNode->reinit();
     }
+    fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
 void PrpShopMain::showTypeIDs(bool show)
