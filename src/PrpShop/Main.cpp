@@ -564,25 +564,30 @@ void PrpShopMain::treeDelete()
         delete folder;
 }
 
-QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
+void PrpShopMain::addNewObjectToTree(const hsKeyedObject* ko)
 {
-    auto it = fLoadedLocations.find(loc);
+    // Look up the page item for the object's location
+    auto it = fLoadedLocations.find(ko->getKey()->getLocation());
     if (it == fLoadedLocations.end())
         throw hsBadParamException(__FILE__, __LINE__, "Cannot create path to a location that isn't loaded");
 
     QPlasmaTreeItem* pageItem = *it;
+    // Under the found page item, find or create class type item for the object's class
     QPlasmaTreeItem* typeItem = nullptr;
     for (int i=0; i<pageItem->childCount(); i++) {
         auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
-        if (child->classType() == objType) {
+        if (child->classType() == ko->ClassIndex()) {
             typeItem = child;
             break;
         }
     }
     if (typeItem == nullptr) {
-        typeItem = new QPlasmaTreeItem(pageItem, objType);
+        typeItem = new QPlasmaTreeItem(pageItem, ko->ClassIndex());
     }
-    return typeItem;
+
+    // Add the new object to the class type item
+    new QPlasmaTreeItem(typeItem, ko->getKey());
+    fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
 void PrpShopMain::closeWindows(const plLocation& loc)
@@ -621,9 +626,7 @@ void PrpShopMain::treeImport()
             fResMgr.MoveKey(ko->getKey(), loc);
 
             // Now add it to the tree
-            QPlasmaTreeItem* folderItem = ensurePath(loc, ko->ClassIndex());
-            new QPlasmaTreeItem(folderItem, ko->getKey());
-            fBrowserTree->sortItems(0, Qt::AscendingOrder);
+            addNewObjectToTree(ko);
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                tr("Error Importing File %1:\n%2").arg(*it).arg(ex.what()),
@@ -1148,9 +1151,7 @@ void PrpShopMain::createNewObject()
         fResMgr.AddObject(loc, ko);
 
         // Now add it to the tree
-        QPlasmaTreeItem* folderItem = ensurePath(loc, type);
-        new QPlasmaTreeItem(folderItem, ko->getKey());
-        fBrowserTree->sortItems(0, Qt::AscendingOrder);
+        addNewObjectToTree(ko);
 
         // And open it for convenience
         editCreatable(ko);

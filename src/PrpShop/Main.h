@@ -108,7 +108,7 @@ protected:
     void dropEvent(QDropEvent* evt) override;
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
     QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
-    QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
+    void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:
     void newPage();
