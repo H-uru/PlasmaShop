@@ -31,8 +31,6 @@ private:
     QString fAge;
     int fAgeSeqPrefix;
 
-    QString fFilename;
-
 public:
     enum ItemType
     {
@@ -80,9 +78,6 @@ public:
         if (type() == kTypeAge)
             fHasTextures = has;
     }
-
-    QString filename() const { return fFilename; }
-    void setFilename(const QString& filename) { fFilename = filename; }
 };
 
 #endif

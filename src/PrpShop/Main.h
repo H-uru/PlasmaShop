@@ -34,6 +34,13 @@
 
 class QCreatable;
 
+struct PrpShopLoadedPage
+{
+    QString fFilename;
+    plPageInfo* fPage;
+    QPlasmaTreeItem* fItem;
+};
+
 class PrpShopMain : public QMainWindow
 {
     Q_OBJECT
@@ -86,7 +93,7 @@ private:
 
     // libPlasma stuff
     plResManager fResMgr;
-    QHash<plLocation, QPlasmaTreeItem*> fLoadedLocations;
+    QHash<plLocation, PrpShopLoadedPage*> fLoadedLocations;
 
     // Magic for Creatable loading
     static PrpShopMain* sInstance;
@@ -106,8 +113,8 @@ protected:
     void closeEvent(QCloseEvent* evt) override;
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dropEvent(QDropEvent* evt) override;
-    QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
-    QPlasmaTreeItem* findPageForItem(QPlasmaTreeItem* item);
+    PrpShopLoadedPage* loadPage(plPageInfo* page, QString filename);
+    PrpShopLoadedPage* findPageForItem(QPlasmaTreeItem* item);
     void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:
