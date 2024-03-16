@@ -124,6 +124,7 @@ protected:
     void closeEvent(QCloseEvent* evt) override;
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dropEvent(QDropEvent* evt) override;
+    QPlasmaTreeItem* currentItem() const;
     PrpShopLoadedPage* loadPage(plPageInfo* page, QString filename);
     PrpShopLoadedPage* findPageForItem(QPlasmaTreeItem* item);
     void addNewObjectToTree(const hsKeyedObject* ko);

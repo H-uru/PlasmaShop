@@ -277,6 +277,11 @@ void PrpShopMain::dropEvent(QDropEvent* evt)
     }
 }
 
+QPlasmaTreeItem* PrpShopMain::currentItem() const
+{
+    return static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem());
+}
+
 void PrpShopMain::setPropertyPage(PropWhich which)
 {
     QWidget* group = NULL;
@@ -435,7 +440,7 @@ void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int)
 void PrpShopMain::treeContextMenu(const QPoint& pos)
 {
     fBrowserTree->setCurrentItem(fBrowserTree->itemAt(pos));
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL)
         return;
 
@@ -471,7 +476,7 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
 
 void PrpShopMain::treeClose()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL)
         return;
 
@@ -508,7 +513,7 @@ void PrpShopMain::treeClose()
 
 void PrpShopMain::treeEdit()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj());
@@ -516,7 +521,7 @@ void PrpShopMain::treeEdit()
 
 void PrpShopMain::treeEditPRC()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPRC_Type | item->obj()->ClassIndex());
@@ -524,7 +529,7 @@ void PrpShopMain::treeEditPRC()
 
 void PrpShopMain::treeEditHex()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     QCreatable *creWin = editCreatable(item->obj(), kHex_Type | item->obj()->ClassIndex());
@@ -540,14 +545,14 @@ void PrpShopMain::treeEditHex()
 
 void PrpShopMain::treePreview()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPreview_Type | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treeShowTargets() {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kTargets_Type | item->obj()->ClassIndex());
@@ -555,7 +560,7 @@ void PrpShopMain::treeShowTargets() {
 
 void PrpShopMain::treeDelete()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     fResMgr.DelObject(item->obj()->getKey());
@@ -604,7 +609,7 @@ void PrpShopMain::closeWindows(const plLocation& loc)
 
 void PrpShopMain::treeImport()
 {
-    PrpShopLoadedPage* loadedPage = findPageForItem(static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem()));
+    PrpShopLoadedPage* loadedPage = findPageForItem(currentItem());
     if (loadedPage == nullptr)
         return;
 
@@ -643,7 +648,7 @@ void PrpShopMain::treeImport()
 
 void PrpShopMain::treeExport()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
 
@@ -904,7 +909,7 @@ PrpShopLoadedPage* PrpShopMain::findPageForItem(QPlasmaTreeItem* item)
 
 void PrpShopMain::performSave()
 {
-    auto item = static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem());
+    QPlasmaTreeItem* item = currentItem();
     if (item == nullptr) {
         return;
     }
@@ -939,7 +944,7 @@ void PrpShopMain::performSaveAs()
         "Hex Isle Pages (*.prp)"
     };
 
-    auto pageItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem());
+    QPlasmaTreeItem* pageItem = currentItem();
     if (pageItem == nullptr || pageItem->type() != QPlasmaTreeItem::kTypePage)
         return;
 
@@ -998,7 +1003,7 @@ void PrpShopMain::performSaveAs()
 
 void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 {
-    saveProps((QPlasmaTreeItem*)fBrowserTree->currentItem());
+    saveProps(currentItem());
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::ConstIterator it;
     for (it = windows.constBegin(); it != windows.constEnd(); it++) {
@@ -1123,7 +1128,7 @@ void PrpShopMain::createNewObject()
     }
 
     QNewKeyDialog dlg(this);
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item != NULL) {
         if (item->type() == QPlasmaTreeItem::kTypeAge) {
             if (item->childCount() != 0) {
