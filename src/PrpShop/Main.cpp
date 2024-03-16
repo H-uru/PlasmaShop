@@ -566,30 +566,11 @@ void PrpShopMain::treeDelete()
 
 QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
 {
-    plPageInfo* page = fResMgr.FindPage(loc);
-    QPlasmaTreeItem* ageItem = NULL;
-    QString ageName = st2qstr(page->getAge());
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
-        if (topLevelItem->age() == ageName) {
-            ageItem = topLevelItem;
-            break;
-        }
-    }
-    if (ageItem == NULL)
-        throw hsBadParamException(__FILE__, __LINE__, "Invalid Age");
+    auto it = fLoadedLocations.find(loc);
+    if (it == fLoadedLocations.end())
+        throw hsBadParamException(__FILE__, __LINE__, "Cannot create path to a location that isn't loaded");
 
-    QPlasmaTreeItem* pageItem = NULL;
-    for (int i=0; i<ageItem->childCount(); i++) {
-        auto child = static_cast<QPlasmaTreeItem*>(ageItem->child(i));
-        if (child->page()->getLocation() == loc) {
-            pageItem = child;
-            break;
-        }
-    }
-    if (pageItem == NULL)
-        throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
-
+    QPlasmaTreeItem* pageItem = *it;
     QPlasmaTreeItem* typeItem = nullptr;
     for (int i=0; i<pageItem->childCount(); i++) {
         auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
