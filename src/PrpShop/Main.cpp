@@ -1017,6 +1017,7 @@ void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 void PrpShopMain::saveProps(QPlasmaTreeItem* item)
 {
     if (item != NULL) {
+        bool reinit = false;
         bool refreshTree = false;
         if (item->type() == QPlasmaTreeItem::kTypePage) {
             if (fAgeName->text() != st2qstr(item->page()->getAge())) {
@@ -1029,7 +1030,7 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
             }
             if (fPageName->text() != st2qstr(item->page()->getPage())) {
                 item->page()->setPage(qstr2st(fPageName->text()));
-                item->setText(0, fPageName->text());
+                reinit = true;
                 refreshTree = true;
             }
             if (fReleaseVersion->value() != (int)item->page()->getReleaseVersion())
@@ -1046,12 +1047,13 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 fLoadedLocations[loc] = fLoadedLocations[item->page()->getLocation()];
                 fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
                 fResMgr.ChangeLocation(item->page()->getLocation(), loc);
+                reinit = true;
             }
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
             if (item->obj() != NULL) {
                 if (fObjName->text() != st2qstr(item->obj()->getKey()->getName())) {
                     item->obj()->getKey()->setName(qstr2st(fObjName->text()));
-                    item->setText(0, fObjName->text());
+                    reinit = true;
                     refreshTree = true;
                 }
                 plLoadMask mask = item->obj()->getKey()->getLoadMask();
@@ -1060,6 +1062,10 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 if (fCloneIdBox->isChecked())
                     item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
             }
+        }
+        if (reinit) {
+            item->reinit();
+            item->parent()->sortChildren(0, Qt::AscendingOrder);
         }
         if (refreshTree)
             fBrowserTree->sortItems(0, Qt::AscendingOrder);
