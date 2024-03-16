@@ -107,7 +107,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dropEvent(QDropEvent* evt) override;
     QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
-    QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
+    QPlasmaTreeItem* findPageForItem(QPlasmaTreeItem* item);
     void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:

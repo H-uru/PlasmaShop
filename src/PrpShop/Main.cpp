@@ -602,7 +602,7 @@ void PrpShopMain::closeWindows(const plLocation& loc)
 
 void PrpShopMain::treeImport()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem();
+    QPlasmaTreeItem* pageItem = findPageForItem(static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem()));
     if (pageItem == NULL)
         return;
 
@@ -882,24 +882,12 @@ void PrpShopMain::loadFile(QString filename)
     fBrowserTree->sortItems(0, Qt::AscendingOrder);
 }
 
-QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
+QPlasmaTreeItem* PrpShopMain::findPageForItem(QPlasmaTreeItem* item)
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
     if (item == NULL)
         return NULL;
 
-    if (item->type() == QPlasmaTreeItem::kTypeAge) {
-        if (isSave) {
-            // Save all pages belonging to this age
-            for (int i=0; i<item->childCount(); i++) {
-                QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->child(i);
-                if (pageItem->type() != QPlasmaTreeItem::kTypePage)
-                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
-                saveFile(pageItem->page(), pageItem->filename());
-            }
-        }
-        return NULL;
-    } else if (item->type() == QPlasmaTreeItem::kTypePage) {
+    if (item->type() == QPlasmaTreeItem::kTypePage) {
         return item;
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         return fLoadedLocations.value(item->obj()->getKey()->getLocation(), NULL);
@@ -915,9 +903,25 @@ QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
 
 void PrpShopMain::performSave()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(true);
-    if (pageItem != NULL)
-        saveFile(pageItem->page(), pageItem->filename());
+    auto item = static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem());
+    if (item == nullptr) {
+        return;
+    }
+
+    if (item->type() == QPlasmaTreeItem::kTypeAge) {
+        // Save all pages belonging to this age
+        for (int i = 0; i < item->childCount(); i++) {
+            auto pageItem = static_cast<QPlasmaTreeItem*>(item->child(i));
+            if (pageItem->type() != QPlasmaTreeItem::kTypePage)
+                throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
+            saveFile(pageItem->page(), pageItem->filename());
+        }
+    } else {
+        // Find the page corresponding to this item and save it
+        QPlasmaTreeItem* pageItem = findPageForItem(item);
+        if (pageItem != nullptr)
+            saveFile(pageItem->page(), pageItem->filename());
+    }
 }
 
 void PrpShopMain::performSaveAs()
@@ -930,8 +934,8 @@ void PrpShopMain::performSaveAs()
         "Hex Isle Pages (*.prp)"
     };
 
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
-    if (pageItem == NULL)
+    auto pageItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->currentItem());
+    if (pageItem == nullptr || pageItem->type() != QPlasmaTreeItem::kTypePage)
         return;
 
     QString saveDir = pageItem->filename().isEmpty()
