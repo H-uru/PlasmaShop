@@ -490,6 +490,7 @@ void PrpShopMain::treeClose()
                 it++;
             }
         }
+        delete fLoadedAges.take(item->age());
         delete item;
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
         plLocation loc = item->page()->getLocation();
@@ -498,8 +499,10 @@ void PrpShopMain::treeClose()
         QPlasmaTreeItem* age = (QPlasmaTreeItem*)item->parent();
         delete item;
         fResMgr.UnloadPage(loc);
-        if (age->childCount() == 0)
+        if (age->childCount() == 0) {
+            delete fLoadedAges.take(age->age());
             delete age;
+        }
     }
 }
 
@@ -841,12 +844,11 @@ void PrpShopMain::loadFile(QString filename)
         try {
             plPageInfo* page = fResMgr.ReadPage(qstr2st(filename));
             PrpShopLoadedPage* loadedPage = loadPage(page, filename);
-            QPlasmaTreeItem* ageItem = (QPlasmaTreeItem*)loadedPage->fItem->parent();
 
             // Manually check for and load the BuiltIn and Textures PRPs
             QDir path(filename);
             path.cdUp(); // Get rid of the filename >.>
-            if (ageItem != NULL && !ageItem->hasTextures()) {
+            if (!loadedPage->fAge->fHasTextures) {
                 QString texPath = st2qstr(page->getAge());
                 if (fResMgr.getVer().isUru())
                     texPath += "_District";
@@ -855,7 +857,7 @@ void PrpShopMain::loadFile(QString filename)
                 if (QFile::exists(texPath))
                     loadPage(fResMgr.ReadPage(qstr2st(texPath)), texPath);
             }
-            if (ageItem != NULL && !ageItem->hasBuiltIn()) {
+            if (!loadedPage->fAge->fHasBuiltIn) {
                 QString biPath = st2qstr(page->getAge());
                 if (fResMgr.getVer().isUru())
                     biPath += "_District";
@@ -1068,7 +1070,6 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
 PrpShopLoadedPage* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 {
     // See if the page is already loaded -- if so, then we have reloaded it, and need to rebuild
-    QPlasmaTreeItem* parent = NULL;
     PrpShopLoadedPage* loadedPage = fLoadedLocations.value(page->getLocation());
     if (loadedPage != nullptr) {
         // Reuse the loaded page object and the tree item for the page,
@@ -1079,24 +1080,22 @@ PrpShopLoadedPage* PrpShopMain::loadPage(plPageInfo* page, QString filename)
     } else {
         // Find or create the Age folder
         QString ageName = st2qstr(page->getAge());
-        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-            auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
-            if (topLevelItem->age() == ageName) {
-                parent = topLevelItem;
-                break;
-            }
+        PrpShopLoadedAge* loadedAge = fLoadedAges.value(ageName);
+        if (loadedAge == nullptr) {
+            int seqPrefix = page->getLocation().getSeqPrefix();
+            auto ageItem = new QPlasmaTreeItem(fBrowserTree, ageName, seqPrefix);
+            loadedAge = new PrpShopLoadedAge {ageName, seqPrefix, false, false, ageItem};
+            fLoadedAges.insert(ageName, loadedAge);
         }
-        if (parent == NULL)
-            parent = new QPlasmaTreeItem(fBrowserTree, ageName, page->getLocation().getSeqPrefix());
 
         // Treat BuiltIn and Textures PRPs specially:
         if (page->getLocation().getPageNum() == -1)
-            parent->setHasTextures();
+            loadedAge->fHasTextures = true;
         else if (page->getLocation().getPageNum() == -2)
-            parent->setHasBuiltIn();
+            loadedAge->fHasBuiltIn = true;
 
         // And now the Page entry
-        loadedPage = new PrpShopLoadedPage {filename, page, new QPlasmaTreeItem(parent, page)};
+        loadedPage = new PrpShopLoadedPage {loadedAge, filename, page, new QPlasmaTreeItem(loadedAge->fItem, page)};
         fLoadedLocations.insert(page->getLocation(), loadedPage);
     }
 

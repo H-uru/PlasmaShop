@@ -38,8 +38,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(short classType)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(const QString& age, int ageSeqPrefix)
-    : QTreeWidgetItem(kTypeAge), fHasBuiltIn(false), fHasTextures(false),
-      fAge(age), fAgeSeqPrefix(ageSeqPrefix)
+    : QTreeWidgetItem(kTypeAge), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }
@@ -69,8 +68,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, short classType)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix)
-    : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
-      fHasTextures(false), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
+    : QTreeWidgetItem(parent, kTypeAge), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }
@@ -100,8 +98,7 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, short classType)
 }
 
 QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix)
-    : QTreeWidgetItem(parent, kTypeAge), fHasBuiltIn(false),
-      fHasTextures(false), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
+    : QTreeWidgetItem(parent, kTypeAge), fAge(age), fAgeSeqPrefix(ageSeqPrefix)
 {
     reinit();
 }

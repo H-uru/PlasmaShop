@@ -27,7 +27,6 @@ private:
     plKey fObjKey;
     short fClassType;
     plPageInfo* fPage;
-    bool fHasBuiltIn, fHasTextures;
     QString fAge;
     int fAgeSeqPrefix;
 
@@ -63,21 +62,6 @@ public:
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
     int ageSeqPrefix() const { return (type() == kTypeAge) ? fAgeSeqPrefix : INT_MIN; }
     plPageInfo* page() const { return (type() == kTypePage) ? fPage : NULL; }
-
-    bool hasBuiltIn() const { return (type() == kTypeAge) ? fHasBuiltIn : false; }
-    bool hasTextures() const { return (type() == kTypeAge) ? fHasTextures : false; }
-
-    void setHasBuiltIn(bool has=true)
-    {
-        if (type() == kTypeAge)
-            fHasBuiltIn = has;
-    }
-
-    void setHasTextures(bool has=true)
-    {
-        if (type() == kTypeAge)
-            fHasTextures = has;
-    }
 };
 
 #endif

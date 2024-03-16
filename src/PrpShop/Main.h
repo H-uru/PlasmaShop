@@ -34,8 +34,18 @@
 
 class QCreatable;
 
+struct PrpShopLoadedAge
+{
+    QString fAgeName;
+    int fSeqPrefix;
+    bool fHasBuiltIn;
+    bool fHasTextures;
+    QPlasmaTreeItem* fItem;
+};
+
 struct PrpShopLoadedPage
 {
+    PrpShopLoadedAge* fAge;
     QString fFilename;
     plPageInfo* fPage;
     QPlasmaTreeItem* fItem;
@@ -93,6 +103,7 @@ private:
 
     // libPlasma stuff
     plResManager fResMgr;
+    QHash<QString, PrpShopLoadedAge*> fLoadedAges;
     QHash<plLocation, PrpShopLoadedPage*> fLoadedLocations;
 
     // Magic for Creatable loading
