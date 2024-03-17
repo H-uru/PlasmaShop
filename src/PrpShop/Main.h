@@ -19,6 +19,7 @@
 
 #include <QMainWindow>
 #include <QMdiArea>
+#include <QTabWidget>
 #include <QTreeWidget>
 #include <QDockWidget>
 #include <QGroupBox>
@@ -40,7 +41,8 @@ struct PrpShopLoadedAge
     int fSeqPrefix;
     bool fHasBuiltIn;
     bool fHasTextures;
-    QPlasmaTreeItem* fItem;
+    QPlasmaTreeItem* fTypesItem;
+    QPlasmaTreeItem* fStructureItem;
 };
 
 struct PrpShopLoadedPage
@@ -48,7 +50,8 @@ struct PrpShopLoadedPage
     PrpShopLoadedAge* fAge;
     QString fFilename;
     plPageInfo* fPage;
-    QPlasmaTreeItem* fItem;
+    QPlasmaTreeItem* fTypesItem;
+    QPlasmaTreeItem* fStructureItem;
 };
 
 class PrpShopMain : public QMainWindow
@@ -59,7 +62,10 @@ private:
     QString fDialogDir;
     QMdiArea* fMdiArea;
     QDockWidget* fBrowserDock;
-    QTreeWidget* fBrowserTree;
+    QTabWidget* fBrowserTabs;
+    int fLastBrowserTabIndex;
+    QTreeWidget* fTypesTree;
+    QTreeWidget* fStructureTree;
 
     // Property Panel stuff
     enum PropWhich { kPropsNone, kPropsAge, kPropsPage, kPropsKO };
@@ -125,8 +131,10 @@ protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dropEvent(QDropEvent* evt) override;
     QPlasmaTreeItem* currentItem() const;
+    void rebuildStructureTree(PrpShopLoadedPage* loadedPage);
     PrpShopLoadedPage* loadPage(plPageInfo* page, QString filename);
     PrpShopLoadedPage* findPageForItem(QPlasmaTreeItem* item);
+    QPlasmaTreeItem* findObjectInTypesTree(const hsKeyedObject* ko);
     void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:
