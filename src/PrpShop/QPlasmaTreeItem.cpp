@@ -25,8 +25,8 @@ QPlasmaTreeItem::QPlasmaTreeItem()
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(plKey obj, bool objIsRepeated)
-    : QTreeWidgetItem(kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
+QPlasmaTreeItem::QPlasmaTreeItem(plKey obj, int objKind)
+    : QTreeWidgetItem(kTypeKO), fObjKey(std::move(obj)), fObjKind(objKind)
 {
     reinit();
 }
@@ -55,8 +55,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj, bool objIsRepeated)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj, int objKind)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjKind(objKind)
 {
     reinit();
 }
@@ -85,8 +85,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, bool objIsRepeated)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, int objKind)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjKind(objKind)
 {
     reinit();
 }
@@ -134,15 +134,28 @@ void QPlasmaTreeItem::reinit()
             setIcon(0, QIcon(":/img/folder.png"));
             break;
 
-        case kTypeKO: {
-            QString name = st2qstr(fObjKey->getName());
-            if (fObjIsRepeated) {
-                name += " (*)";
+        case kTypeKO:
+            switch (fObjKind) {
+                case kObjectByType:
+                    setText(0, st2qstr(fObjKey->getName()));
+                    break;
+
+                case kObjectStructure:
+                    setText(0, QString("%1: %2")
+                        .arg(pqGetFriendlyClassName(fObjKey->getType()))
+                        .arg(st2qstr(fObjKey->getName()))
+                    );
+                    break;
+
+                case kObjectStructureRepeated:
+                    setText(0, QString("%1: %2 (*)")
+                        .arg(pqGetFriendlyClassName(fObjKey->getType()))
+                        .arg(st2qstr(fObjKey->getName()))
+                    );
+                    break;
             }
-            setText(0, name);
             setIcon(0, pqGetTypeIcon(fObjKey->getType()));
             break;
-        }
 
         case kTypeClassType:
             setText(0, pqGetFriendlyClassName(fClassType));

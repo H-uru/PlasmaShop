@@ -25,7 +25,7 @@ class QPlasmaTreeItem : public QTreeWidgetItem
 {
 private:
     plKey fObjKey;
-    bool fObjIsRepeated;
+    int fObjKind;
     short fClassType;
     plPageInfo* fPage;
     QString fAge;
@@ -37,19 +37,23 @@ public:
         kTypeNone = QTreeWidgetItem::UserType, kTypeAge, kTypePage, kTypeClassType, kTypeKO,
         kMaxPlasmaTypes
     };
+    enum ObjectKind
+    {
+        kObjectByType, kObjectStructure, kObjectStructureRepeated,
+    };
 
     QPlasmaTreeItem();
-    QPlasmaTreeItem(plKey obj, bool objIsRepeated = false);
+    QPlasmaTreeItem(plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(short classType);
     QPlasmaTreeItem(const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(plPageInfo* page);
     QPlasmaTreeItem(QTreeWidget* parent);
-    QPlasmaTreeItem(QTreeWidget* parent, plKey obj, bool objIsRepeated = false);
+    QPlasmaTreeItem(QTreeWidget* parent, plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(QTreeWidget* parent, short classType);
     QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page);
     QPlasmaTreeItem(QTreeWidgetItem* parent);
-    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, bool objIsRepeated = false);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(QTreeWidgetItem* parent, short classType);
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
@@ -60,7 +64,7 @@ public:
 
     plKey key() const { return (type() == kTypeKO) ? fObjKey : plKey(); }
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
-    bool objIsRepeated() const { return type() == kTypeKO && fObjIsRepeated; }
+    int objKind() const { return (type() == kTypeKO) ? fObjKind : kObjectByType; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
     int ageSeqPrefix() const { return (type() == kTypeAge) ? fAgeSeqPrefix : INT_MIN; }

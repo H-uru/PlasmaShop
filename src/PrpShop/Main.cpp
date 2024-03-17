@@ -1184,7 +1184,7 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
     plLocation loc = loadedPage->fPage->getLocation();
     for (short type : fResMgr.getTypes(loc, true)) {
         for (const plKey& key : fResMgr.getKeys(loc, type, true)) {
-            objectItems.emplace(key, new QPlasmaTreeItem(key));
+            objectItems.emplace(key, new QPlasmaTreeItem(key, QPlasmaTreeItem::kObjectStructure));
         }
     }
 
@@ -1226,7 +1226,7 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
                     // Except if it's a lower-priority reference, don't add it at all,
                     // because they're generally not interesting enough.
                     if (prio == pqRefPriority::kDefault) {
-                        new QPlasmaTreeItem(item, contained, true);
+                        new QPlasmaTreeItem(item, contained, QPlasmaTreeItem::kObjectStructureRepeated);
                     }
                 } else {
                     // The contained object doesn't have a place in the tree yet,
@@ -1376,6 +1376,15 @@ void PrpShopMain::showAgePageIDs(bool show)
     }
 }
 
+static void recursivelyReinitChildren(QTreeWidgetItem* item)
+{
+    for (int i = 0; i < item->childCount(); i++) {
+        auto child = static_cast<QPlasmaTreeItem*>(item->child(i));
+        child->reinit();
+        recursivelyReinitChildren(child);
+    }
+}
+
 void PrpShopMain::showTypeIDs(bool show)
 {
     s_showTypeIDs = show;
@@ -1390,6 +1399,16 @@ void PrpShopMain::showTypeIDs(bool show)
                 typeNode->reinit();
             }
             pageNode->sortChildren(0, Qt::AscendingOrder);
+        }
+    }
+
+    // Objects in the structure tree contain type names, so recursively reinit them all...
+    for (int i = 0; i < fStructureTree->topLevelItemCount(); i++) {
+        auto ageNode = static_cast<QPlasmaTreeItem*>(fStructureTree->topLevelItem(i));
+        for (int j = 0; j < ageNode->childCount(); j++) {
+            QTreeWidgetItem* child = ageNode->child(j);
+            recursivelyReinitChildren(child);
+            child->sortChildren(0, Qt::AscendingOrder);
         }
     }
 }
