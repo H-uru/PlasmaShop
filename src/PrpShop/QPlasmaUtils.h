@@ -51,6 +51,25 @@ std::vector<short> pqGetValidKOTypes();
 bool pqIsValidKOType(short);
 bool pqCanPreviewType(plCreatable* pCre);
 bool pqHasTargets(plCreatable* c);
-std::vector<plKey> pqGetReferencedKeys(plCreatable* c);
+
+enum pqRefPriority
+{
+    // Default priority - include everything that doesn't fall into the categories below.
+    kDefault,
+    // Also include child objects that are often (but not always) also reachable via another route
+    // that makes more sense for the purposes of the structure tree.
+    // For example, a scene node has references to all scene objects in the page,
+    // but if a scene object has a parent coordinate interface,
+    // we would rather display it there instead of under the top-level scene node.
+    // Thus, the scene node's scene objects are only included starting with this priority.
+    kFlatChildren,
+    // Also include backreferences that are rarely interesting.
+    // For example, a scene object has a backreference to its scene node,
+    // and interfaces and modifiers have backreferences to the scene object to which they belong.
+    kBackRefs,
+    kMax,
+};
+
+std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority = pqRefPriority::kDefault);
 
 #endif

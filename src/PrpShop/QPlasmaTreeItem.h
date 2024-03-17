@@ -58,6 +58,7 @@ public:
 
     bool operator<(const QTreeWidgetItem& other) const override;
 
+    plKey key() const { return (type() == kTypeKO) ? fObjKey : plKey(); }
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
     bool objIsRepeated() const { return type() == kTypeKO && fObjIsRepeated; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }

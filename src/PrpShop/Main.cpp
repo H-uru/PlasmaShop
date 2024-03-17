@@ -1190,41 +1190,49 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
 
     // Find all objects referenced by other objects
     // and move their items under the item of the referencing object.
-    for (const auto& pair : objectItems) {
-        QPlasmaTreeItem* item = pair.second;
-        for (const plKey& contained : pqGetReferencedKeys(item->obj())) {
-            // Ignore null keys.
-            if (!contained.Exists()) {
-                continue;
-            }
-            auto it = objectItems.find(contained);
-            // Ignore keys from other pages for now.
-            if (it == objectItems.end()) {
-                continue;
-            }
-            QPlasmaTreeItem* containedItem = it->second;
-            bool repeated = false;
-            // Check if the contained object already has a place elsewhere in the tree.
-            if (containedItem->parent() != nullptr) {
-                repeated = true;
-            } else {
-                // Check if the contained object is a (possibly indirect) parent of the containing object.
-                // (For example, scene objects have a reference back to their scene node.)
-                for (QTreeWidgetItem* parent = item; parent != nullptr; parent = parent->parent()) {
-                    if (parent == containedItem) {
-                        repeated = true;
-                        break;
+    // Start with the default priority and add lower-priority references later
+    // so that objects are placed under high-priority referring objects where possible.
+    for (int prio = pqRefPriority::kDefault; prio < pqRefPriority::kMax; prio++) {
+        for (const auto& pair : objectItems) {
+            QPlasmaTreeItem* item = pair.second;
+            for (const plKey& contained : pqGetReferencedKeys(item->obj(), static_cast<pqRefPriority>(prio))) {
+                // Ignore null keys.
+                if (!contained.Exists()) {
+                    continue;
+                }
+                auto it = objectItems.find(contained);
+                // Ignore keys from other pages for now.
+                if (it == objectItems.end()) {
+                    continue;
+                }
+                QPlasmaTreeItem* containedItem = it->second;
+                bool repeated = false;
+                // Check if the contained object already has a place elsewhere in the tree.
+                if (containedItem->parent() != nullptr) {
+                    repeated = true;
+                } else {
+                    // Check if the contained object is a (possibly indirect) parent of the containing object.
+                    // (For example, scene objects have a reference back to their scene node.)
+                    for (QTreeWidgetItem* parent = item; parent != nullptr; parent = parent->parent()) {
+                        if (parent == containedItem) {
+                            repeated = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (repeated) {
-                // The contained object already appears elsewhere in the tree,
-                // so only add a placeholder here that has no further children.
-                new QPlasmaTreeItem(item, contained, true);
-            } else {
-                // The contained object doesn't have a place in the tree yet,
-                // so move it under this object.
-                item->addChild(containedItem);
+                if (repeated) {
+                    // The contained object already appears elsewhere in the tree.
+                    // so only add a placeholder here that has no further children.
+                    // Except if it's a lower-priority reference, don't add it at all,
+                    // because they're generally not interesting enough.
+                    if (prio == pqRefPriority::kDefault) {
+                        new QPlasmaTreeItem(item, contained, true);
+                    }
+                } else {
+                    // The contained object doesn't have a place in the tree yet,
+                    // so move it under this object.
+                    item->addChild(containedItem);
+                }
             }
         }
     }

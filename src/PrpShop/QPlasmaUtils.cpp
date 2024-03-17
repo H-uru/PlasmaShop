@@ -680,13 +680,15 @@ bool pqHasTargets(plCreatable* c)
     return c->ClassInstance(kModifier);
 }
 
-std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
+std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 {
     std::vector<plKey> keys;
 
     if (auto sceneNode = plSceneNode::Convert(c, false)) {
-        const auto& sceneObjects = sceneNode->getSceneObjects();
-        keys.insert(keys.begin(), sceneObjects.begin(), sceneObjects.end());
+        if (priority >= pqRefPriority::kFlatChildren) {
+            const auto& sceneObjects = sceneNode->getSceneObjects();
+            keys.insert(keys.begin(), sceneObjects.begin(), sceneObjects.end());
+        }
         const auto& poolObjects = sceneNode->getPoolObjects();
         keys.insert(keys.begin(), poolObjects.begin(), poolObjects.end());
     } else if (auto sceneObject = plSceneObject::Convert(c, false)) {
@@ -698,21 +700,27 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
         keys.insert(keys.begin(), interfaces.begin(), interfaces.end());
         const auto& modifiers = sceneObject->getModifiers();
         keys.insert(keys.begin(), modifiers.begin(), modifiers.end());
-        keys.emplace_back(sceneObject->getSceneNode());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(sceneObject->getSceneNode());
+        }
     } else if (auto material = hsGMaterial::Convert(c, false)) {
         const auto& layers = material->getLayers();
         keys.insert(keys.begin(), layers.begin(), layers.end());
         const auto& piggyBacks = material->getPiggyBacks();
         keys.insert(keys.begin(), piggyBacks.begin(), piggyBacks.end());
     } else if (auto objInterface = plObjInterface::Convert(c, false)) {
-        keys.emplace_back(objInterface->getOwner());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(objInterface->getOwner());
+        }
 
         if (auto audioInterface = plAudioInterface::Convert(c, false)) {
             keys.emplace_back(audioInterface->getAudible());
         } else if (auto coordinateInterface = plCoordinateInterface::Convert(c, false)) {
             const auto& children = coordinateInterface->getChildren();
             keys.insert(keys.begin(), children.begin(), children.end());
-            keys.emplace_back(coordinateInterface->getParent());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(coordinateInterface->getParent());
+            }
         } else if (auto drawInterface = plDrawInterface::Convert(c, false)) {
             for (size_t i = 0; i < drawInterface->getNumDrawables(); i++) {
                 keys.emplace_back(drawInterface->getDrawable(i));
@@ -725,10 +733,14 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
         keys.insert(keys.begin(), sounds.begin(), sounds.end());
-        keys.emplace_back(winAudible->getSceneNode());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(winAudible->getSceneNode());
+        }
     } else if (auto modifier = plModifier::Convert(c, false)) {
-        for (size_t i = 0; i < modifier->getTargetsCount(); i++) {
-            keys.emplace_back(modifier->getTarget(i));
+        if (priority >= pqRefPriority::kBackRefs) {
+            for (size_t i = 0; i < modifier->getTargetsCount(); i++) {
+                keys.emplace_back(modifier->getTarget(i));
+            }
         }
 
         // TODO plParticleSystem
