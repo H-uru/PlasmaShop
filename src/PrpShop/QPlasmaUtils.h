@@ -21,6 +21,7 @@
 #include <vector>
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plCreatable.h>
+#include <PRP/KeyedObject/plKey.h>
 #include "QPlasma.h"
 #include "QNumerics.h"
 
@@ -50,5 +51,6 @@ std::vector<short> pqGetValidKOTypes();
 bool pqIsValidKOType(short);
 bool pqCanPreviewType(plCreatable* pCre);
 bool pqHasTargets(plCreatable* c);
+std::vector<plKey> pqGetReferencedKeys(plCreatable* c);
 
 #endif

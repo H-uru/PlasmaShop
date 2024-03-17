@@ -669,3 +669,29 @@ bool pqHasTargets(plCreatable* c)
 {
     return c->ClassInstance(kModifier);
 }
+
+std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
+{
+    std::vector<plKey> keys;
+
+    if (auto sceneNode = plSceneNode::Convert(c, false)) {
+        const auto& sceneObjects = sceneNode->getSceneObjects();
+        keys.insert(keys.begin(), sceneObjects.begin(), sceneObjects.end());
+        const auto& poolObjects = sceneNode->getPoolObjects();
+        keys.insert(keys.begin(), poolObjects.begin(), poolObjects.end());
+    }
+
+    if (auto sceneObject = plSceneObject::Convert(c, false)) {
+        keys.emplace_back(sceneObject->getDrawInterface());
+        keys.emplace_back(sceneObject->getSimInterface());
+        keys.emplace_back(sceneObject->getCoordInterface());
+        keys.emplace_back(sceneObject->getAudioInterface());
+        const auto& interfaces = sceneObject->getInterfaces();
+        keys.insert(keys.begin(), interfaces.begin(), interfaces.end());
+        const auto& modifiers = sceneObject->getModifiers();
+        keys.insert(keys.begin(), modifiers.begin(), modifiers.end());
+        keys.emplace_back(sceneObject->getSceneNode());
+    }
+
+    return keys;
+}

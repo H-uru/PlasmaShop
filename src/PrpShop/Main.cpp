@@ -1178,11 +1178,63 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
 {
     qDeleteAll(loadedPage->fStructureItem->takeChildren());
 
+    // Collect all objects in this page and create tree items for them,
+    // but don't actually add them to the tree yet.
+    std::map<plKey, QPlasmaTreeItem*> objectItems;
     plLocation loc = loadedPage->fPage->getLocation();
     for (short type : fResMgr.getTypes(loc, true)) {
-        for (plKey key : fResMgr.getKeys(loc, type, true)) {
-            // TODO Actually build a tree structure (for now, add all objects as a flat list)
-            new QPlasmaTreeItem(loadedPage->fStructureItem, std::move(key));
+        for (const plKey& key : fResMgr.getKeys(loc, type, true)) {
+            objectItems.emplace(key, new QPlasmaTreeItem(key));
+        }
+    }
+
+    // Find all objects referenced by other objects
+    // and move their items under the item of the referencing object.
+    for (const auto& pair : objectItems) {
+        QPlasmaTreeItem* item = pair.second;
+        for (const plKey& contained : pqGetReferencedKeys(item->obj())) {
+            // Ignore null keys.
+            if (!contained.Exists()) {
+                continue;
+            }
+            auto it = objectItems.find(contained);
+            // Ignore keys from other pages for now.
+            if (it == objectItems.end()) {
+                continue;
+            }
+            QPlasmaTreeItem* containedItem = it->second;
+            bool repeated = false;
+            // Check if the contained object already has a place elsewhere in the tree.
+            if (containedItem->parent() != nullptr) {
+                repeated = true;
+            } else {
+                // Check if the contained object is a (possibly indirect) parent of the containing object.
+                // (For example, scene objects have a reference back to their scene node.)
+                for (QTreeWidgetItem* parent = item; parent != nullptr; parent = parent->parent()) {
+                    if (parent == containedItem) {
+                        repeated = true;
+                        break;
+                    }
+                }
+            }
+            if (repeated) {
+                // The contained object already appears elsewhere in the tree,
+                // so only add a placeholder here that has no further children.
+                new QPlasmaTreeItem(item, contained, true);
+            } else {
+                // The contained object doesn't have a place in the tree yet,
+                // so move it under this object.
+                item->addChild(containedItem);
+            }
+        }
+    }
+
+    // Find all objects that still don't have a place
+    // and add them as "top-level objects" under the page item.
+    for (const auto& pair : objectItems) {
+        QPlasmaTreeItem* item = pair.second;
+        if (item->parent() == nullptr) {
+            loadedPage->fStructureItem->addChild(item);
         }
     }
 }

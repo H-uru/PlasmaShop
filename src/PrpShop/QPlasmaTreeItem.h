@@ -25,6 +25,7 @@ class QPlasmaTreeItem : public QTreeWidgetItem
 {
 private:
     plKey fObjKey;
+    bool fObjIsRepeated;
     short fClassType;
     plPageInfo* fPage;
     QString fAge;
@@ -38,17 +39,17 @@ public:
     };
 
     QPlasmaTreeItem();
-    QPlasmaTreeItem(plKey obj);
+    QPlasmaTreeItem(plKey obj, bool objIsRepeated = false);
     QPlasmaTreeItem(short classType);
     QPlasmaTreeItem(const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(plPageInfo* page);
     QPlasmaTreeItem(QTreeWidget* parent);
-    QPlasmaTreeItem(QTreeWidget* parent, plKey obj);
+    QPlasmaTreeItem(QTreeWidget* parent, plKey obj, bool objIsRepeated = false);
     QPlasmaTreeItem(QTreeWidget* parent, short classType);
     QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page);
     QPlasmaTreeItem(QTreeWidgetItem* parent);
-    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, bool objIsRepeated = false);
     QPlasmaTreeItem(QTreeWidgetItem* parent, short classType);
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
@@ -58,6 +59,7 @@ public:
     bool operator<(const QTreeWidgetItem& other) const override;
 
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
+    bool objIsRepeated() const { return type() == kTypeKO && fObjIsRepeated; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
     int ageSeqPrefix() const { return (type() == kTypeAge) ? fAgeSeqPrefix : INT_MIN; }

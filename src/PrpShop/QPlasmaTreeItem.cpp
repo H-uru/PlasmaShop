@@ -25,8 +25,8 @@ QPlasmaTreeItem::QPlasmaTreeItem()
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(plKey obj)
-    : QTreeWidgetItem(kTypeKO), fObjKey(std::move(obj))
+QPlasmaTreeItem::QPlasmaTreeItem(plKey obj, bool objIsRepeated)
+    : QTreeWidgetItem(kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
 {
     reinit();
 }
@@ -55,8 +55,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj))
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidget* parent, plKey obj, bool objIsRepeated)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
 {
     reinit();
 }
@@ -85,8 +85,8 @@ QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent)
     reinit();
 }
 
-QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj)
-    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj))
+QPlasmaTreeItem::QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, bool objIsRepeated)
+    : QTreeWidgetItem(parent, kTypeKO), fObjKey(std::move(obj)), fObjIsRepeated(objIsRepeated)
 {
     reinit();
 }
@@ -134,10 +134,15 @@ void QPlasmaTreeItem::reinit()
             setIcon(0, QIcon(":/img/folder.png"));
             break;
 
-        case kTypeKO:
-            setText(0, st2qstr(fObjKey->getName()));
+        case kTypeKO: {
+            QString name = st2qstr(fObjKey->getName());
+            if (fObjIsRepeated) {
+                name += " (*)";
+            }
+            setText(0, name);
             setIcon(0, pqGetTypeIcon(fObjKey->getType()));
             break;
+        }
 
         case kTypeClassType:
             setText(0, pqGetFriendlyClassName(fClassType));
