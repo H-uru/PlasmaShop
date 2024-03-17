@@ -18,8 +18,18 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plSceneNode.h>
+#include <PRP/Audio/plAudible.h>
+#include <PRP/Camera/plCameraModifier.h>
+#include <PRP/Modifier/plModifier.h>
+#include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
+#include <PRP/Object/plDrawInterface.h>
+#include <PRP/Object/plObjInterface.h>
 #include <PRP/Object/plSceneObject.h>
+#include <PRP/Object/plSimulationInterface.h>
+#include <PRP/Surface/hsGMaterial.h>
+#include <PRP/Surface/plLayer.h>
+#include <PRP/Surface/plLayerInterface.h>
 
 bool s_showAgePageIDs = false;
 bool s_showTypeIDs = false;
@@ -679,9 +689,7 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
         keys.insert(keys.begin(), sceneObjects.begin(), sceneObjects.end());
         const auto& poolObjects = sceneNode->getPoolObjects();
         keys.insert(keys.begin(), poolObjects.begin(), poolObjects.end());
-    }
-
-    if (auto sceneObject = plSceneObject::Convert(c, false)) {
+    } else if (auto sceneObject = plSceneObject::Convert(c, false)) {
         keys.emplace_back(sceneObject->getDrawInterface());
         keys.emplace_back(sceneObject->getSimInterface());
         keys.emplace_back(sceneObject->getCoordInterface());
@@ -691,6 +699,56 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c)
         const auto& modifiers = sceneObject->getModifiers();
         keys.insert(keys.begin(), modifiers.begin(), modifiers.end());
         keys.emplace_back(sceneObject->getSceneNode());
+    } else if (auto material = hsGMaterial::Convert(c, false)) {
+        const auto& layers = material->getLayers();
+        keys.insert(keys.begin(), layers.begin(), layers.end());
+        const auto& piggyBacks = material->getPiggyBacks();
+        keys.insert(keys.begin(), piggyBacks.begin(), piggyBacks.end());
+    } else if (auto objInterface = plObjInterface::Convert(c, false)) {
+        keys.emplace_back(objInterface->getOwner());
+
+        if (auto audioInterface = plAudioInterface::Convert(c, false)) {
+            keys.emplace_back(audioInterface->getAudible());
+        } else if (auto coordinateInterface = plCoordinateInterface::Convert(c, false)) {
+            const auto& children = coordinateInterface->getChildren();
+            keys.insert(keys.begin(), children.begin(), children.end());
+            keys.emplace_back(coordinateInterface->getParent());
+        } else if (auto drawInterface = plDrawInterface::Convert(c, false)) {
+            for (size_t i = 0; i < drawInterface->getNumDrawables(); i++) {
+                keys.emplace_back(drawInterface->getDrawable(i));
+            }
+            const auto& regions = drawInterface->getRegions();
+            keys.insert(keys.begin(), regions.begin(), regions.end());
+        } else if (auto simulationInterface = plSimulationInterface::Convert(c, false)) {
+            keys.emplace_back(simulationInterface->getPhysical());
+        }
+    } else if (auto winAudible = plWinAudible::Convert(c, false)) {
+        const auto& sounds = winAudible->getSounds();
+        keys.insert(keys.begin(), sounds.begin(), sounds.end());
+        keys.emplace_back(winAudible->getSceneNode());
+    } else if (auto modifier = plModifier::Convert(c, false)) {
+        for (size_t i = 0; i < modifier->getTargetsCount(); i++) {
+            keys.emplace_back(modifier->getTarget(i));
+        }
+
+        // TODO plParticleSystem
+
+        if (auto cameraModifier = plCameraModifier::Convert(c, false)) {
+            keys.emplace_back(cameraModifier->getBrain());
+            for (const auto& trans : cameraModifier->getTrans()) {
+                keys.emplace_back(trans->getTransTo());
+            }
+            // TODO Recurse into the messages
+            for (size_t i = 0; i < cameraModifier->getMessageQueueSize(); i++) {
+                const auto& item = cameraModifier->getMessage(i);
+                keys.emplace_back(std::get<1>(item));
+            }
+        }
+    } else if (auto layerInterface = plLayerInterface::Convert(c, false)) {
+        keys.emplace_back(layerInterface->getUnderLay());
+        keys.emplace_back(layerInterface->getTexture());
+        keys.emplace_back(layerInterface->getVertexShader());
+        keys.emplace_back(layerInterface->getPixelShader());
     }
 
     return keys;
