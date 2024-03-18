@@ -36,6 +36,7 @@ bool s_showTypeIDs = false;
 
 enum
 {
+    kIcoUnknown,
     kIcoSceneObj, kIcoSceneNode, kIcoDraw, kIcoDraw2, kIcoSim, kIcoCoord,
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
     kIcoGUICheck, kIcoGUIClick, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2,
@@ -46,6 +47,7 @@ enum
 QIcon pqGetTypeIcon(int classType)
 {
     static QIcon s_icons[kNumIcons] = {
+        QIcon(":/img/unknown.png"),
         QIcon(":/img/sceneobj.png"), QIcon(":/img/scenenode.png"),
         QIcon(":/img/drawspans.png"), QIcon(":/img/drawspans2.png"),
         QIcon(":/img/sim.png"), QIcon(":/img/coords.png"),
@@ -141,7 +143,7 @@ QIcon pqGetTypeIcon(int classType)
     case kWin32LinkSound:
         return s_icons[kIcoSound];
     default:
-        return QIcon();
+        return s_icons[kIcoUnknown];
     }
 }
 
