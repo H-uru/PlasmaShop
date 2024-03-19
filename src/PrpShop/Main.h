@@ -134,7 +134,7 @@ protected:
     void rebuildStructureTree(PrpShopLoadedPage* loadedPage);
     PrpShopLoadedPage* loadPage(plPageInfo* page, QString filename);
     PrpShopLoadedPage* findPageForItem(QPlasmaTreeItem* item);
-    QPlasmaTreeItem* findObjectInTypesTree(const hsKeyedObject* ko);
+    QPlasmaTreeItem* findObjectInTypesTree(const plKey& key);
     void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:

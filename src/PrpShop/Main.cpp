@@ -447,12 +447,12 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fActions[kFileSaveAs]->setEnabled(true);
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         setPropertyPage(kPropsKO);
-        fObjName->setText(st2qstr(item->obj()->getKey()->getName()));
+        fObjName->setText(st2qstr(item->key()->getName()));
         fObjType->setText(item->obj()->ClassName());
-        fLoadMaskQ[0]->setValue(item->obj()->getKey()->getLoadMask().getQuality(0));
-        fLoadMaskQ[1]->setValue(item->obj()->getKey()->getLoadMask().getQuality(1));
-        fCloneId->setValue(item->obj()->getKey()->getCloneID());
-        fClonePlayerId->setValue(item->obj()->getKey()->getClonePlayerID());
+        fLoadMaskQ[0]->setValue(item->key()->getLoadMask().getQuality(0));
+        fLoadMaskQ[1]->setValue(item->key()->getLoadMask().getQuality(1));
+        fCloneId->setValue(item->key()->getCloneID());
+        fClonePlayerId->setValue(item->key()->getClonePlayerID());
         fCloneIdBox->setChecked(fCloneId->value() != 0 || fClonePlayerId->value() != 0);
     } else {
         setPropertyPage(kPropsNone);
@@ -575,8 +575,8 @@ void PrpShopMain::treeEditHex()
         QHexViewer *hexWin = qobject_cast<QHexViewer *>(creWin);
         Q_ASSERT(hexWin);
 
-        uint32_t offset = item->obj()->getKey()->getFileOff();
-        uint32_t size = item->obj()->getKey()->getObjSize();
+        uint32_t offset = item->key()->getFileOff();
+        uint32_t size = item->key()->getObjSize();
         hexWin->loadObject(findPageForItem(item)->fFilename, offset, size);
     }
 }
@@ -601,7 +601,7 @@ void PrpShopMain::treeDelete()
     QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
-    fResMgr.DelObject(item->obj()->getKey());
+    fResMgr.DelObject(item->key());
     PrpShopLoadedPage* loadedPage = findPageForItem(item);
 
     // Remove the deleted object from the types tree.
@@ -618,16 +618,16 @@ void PrpShopMain::treeDelete()
     rebuildStructureTree(loadedPage);
 }
 
-QPlasmaTreeItem* PrpShopMain::findObjectInTypesTree(const hsKeyedObject* ko)
+QPlasmaTreeItem* PrpShopMain::findObjectInTypesTree(const plKey& key)
 {
-    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(ko->getKey()->getLocation());
+    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(key->getLocation());
     QPlasmaTreeItem* pageItem = loadedPage->fTypesItem;
 
     // Under the found page item, find the class type item for the object's class.
     QPlasmaTreeItem* typeItem = nullptr;
     for (int i = 0; i < pageItem->childCount(); i++) {
         auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
-        if (child->classType() == ko->ClassIndex()) {
+        if (child->classType() == key->getType()) {
             typeItem = child;
             break;
         }
@@ -639,7 +639,7 @@ QPlasmaTreeItem* PrpShopMain::findObjectInTypesTree(const hsKeyedObject* ko)
     // Under the found class type item, find the object itself.
     for (int i = 0; i < typeItem->childCount(); i++) {
         auto child = static_cast<QPlasmaTreeItem*>(typeItem->child(i));
-        if (child->obj() == ko) {
+        if (child->key() == key) {
             return child;
         }
     }
@@ -732,7 +732,7 @@ void PrpShopMain::treeExport()
     if (item == NULL || item->obj() == NULL)
         return;
 
-    QString fnfix = st2qstr(item->obj()->getKey()->getName())
+    QString fnfix = st2qstr(item->key()->getName())
                     .replace(QRegularExpression("[?:/\\*\"<>|]"), "_");
     QString genPath = tr("%1/[%2]%3.po").arg(fDialogDir)
                                         .arg(item->obj()->ClassName())
@@ -978,7 +978,7 @@ PrpShopLoadedPage* PrpShopMain::findPageForItem(QPlasmaTreeItem* item)
     if (item->type() == QPlasmaTreeItem::kTypePage) {
         return fLoadedLocations.value(item->page()->getLocation());
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
-        return fLoadedLocations.value(item->obj()->getKey()->getLocation(), NULL);
+        return fLoadedLocations.value(item->key()->getLocation(), NULL);
     } else if (item->type() == QPlasmaTreeItem::kTypeClassType) {
         QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->parent();
         if (pageItem->type() != QPlasmaTreeItem::kTypePage)
@@ -1142,7 +1142,7 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
             }
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
             if (item->obj() != NULL) {
-                plKey key = item->obj()->getKey();
+                plKey key = item->key();
                 if (fObjName->text() != st2qstr(key->getName())) {
                     key->setName(qstr2st(fObjName->text()));
                     reinit = true;
@@ -1157,7 +1157,7 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                 if (reinit) {
                     // We need to reinit the item in both trees,
                     // so it's not enough to just do item->reinit().
-                    QPlasmaTreeItem* typesObjectItem = findObjectInTypesTree(item->obj());
+                    QPlasmaTreeItem* typesObjectItem = findObjectInTypesTree(key);
                     if (typesObjectItem != nullptr) {
                         typesObjectItem->reinit();
                     }
@@ -1328,8 +1328,7 @@ void PrpShopMain::createNewObject()
                 throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
             dlg.init(&fResMgr, ((QPlasmaTreeItem*)item->parent())->page()->getLocation(), item->classType());
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
-            dlg.init(&fResMgr, item->obj()->getKey()->getLocation(),
-                     item->obj()->getKey()->getType());
+            dlg.init(&fResMgr, item->key()->getLocation(), item->key()->getType());
         } else {
             dlg.init(&fResMgr);
         }
