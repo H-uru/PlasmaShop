@@ -18,8 +18,15 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plSceneNode.h>
+#include <PRP/Animation/plViewFaceModifier.h>
 #include <PRP/Audio/plAudible.h>
+#include <PRP/Audio/plSound.h>
 #include <PRP/Camera/plCameraModifier.h>
+#include <PRP/ConditionalObject/plActivatorConditionalObject.h>
+#include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
+#include <PRP/ConditionalObject/plBooleanConditionalObject.h>
+#include <PRP/Modifier/plLogicModBase.h>
+#include <PRP/Modifier/plLogicModifier.h>
 #include <PRP/Modifier/plModifier.h>
 #include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
@@ -27,8 +34,11 @@
 #include <PRP/Object/plObjInterface.h>
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Object/plSimulationInterface.h>
+#include <PRP/Physics/plDetectorModifier.h>
+#include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plLayer.h>
+#include <PRP/Surface/plLayerAnimation.h>
 #include <PRP/Surface/plLayerInterface.h>
 
 bool s_showAgePageIDs = false;
@@ -757,12 +767,54 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                 const auto& item = cameraModifier->getMessage(i);
                 keys.emplace_back(std::get<1>(item));
             }
+        } else if (auto detectorModifier = plDetectorModifier::Convert(c, false)) {
+            const auto& receivers = detectorModifier->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+            keys.emplace_back(detectorModifier->getRemoteMod());
+            keys.emplace_back(detectorModifier->getProxy());
+        } else if (auto viewFaceModifier = plViewFaceModifier::Convert(c, false)) {
+            keys.emplace_back(viewFaceModifier->getFaceObj());
+        } else if (auto logicModBase = plLogicModBase::Convert(c, false)) {
+            // TODO Recurse into the messages
+            if (auto logicModifier = plLogicModifier::Convert(c, false)) {
+                const auto& conditions = logicModifier->getConditions();
+                keys.insert(keys.begin(), conditions.begin(), conditions.end());
+                if (priority >= pqRefPriority::kBackRefs) {
+                    keys.emplace_back(logicModifier->getParent());
+                }
+            }
         }
+    } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
+        const auto& children = andConditionalObject->getChildren();
+        keys.insert(keys.begin(), children.begin(), children.end());
+    } else if (auto orConditionalObject = plORConditionalObject::Convert(c, false)) {
+        const auto& children = orConditionalObject->getChildren();
+        keys.insert(keys.begin(), children.begin(), children.end());
+    } else if (auto activatorConditionalObject = plActivatorConditionalObject::Convert(c, false)) {
+        const auto& activators = activatorConditionalObject->getActivators();
+        keys.insert(keys.begin(), activators.begin(), activators.end());
+    } else if (auto animationEventConditionalObject = plAnimationEventConditionalObject::Convert(c, false)) {
+        keys.emplace_back(animationEventConditionalObject->getTarget());
+    } else if (auto genericPhysical = plGenericPhysical::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(genericPhysical->getObject());
+            keys.emplace_back(genericPhysical->getSceneNode());
+        }
+        keys.emplace_back(genericPhysical->getSubWorld());
+        keys.emplace_back(genericPhysical->getSoundGroup());
     } else if (auto layerInterface = plLayerInterface::Convert(c, false)) {
         keys.emplace_back(layerInterface->getUnderLay());
         keys.emplace_back(layerInterface->getTexture());
         keys.emplace_back(layerInterface->getVertexShader());
         keys.emplace_back(layerInterface->getPixelShader());
+
+        if (auto layerAnimation = plLayerAnimation::Convert(c, false)) {
+            // TODO Recurse into plAnimTimeConvert and its messages
+        }
+    } else if (auto sound = plSound::Convert(c, false)) {
+        keys.emplace_back(sound->getSoftRegion());
+        keys.emplace_back(sound->getSoftOcclusionRegion());
+        keys.emplace_back(sound->getDataBuffer());
     }
 
     return keys;
