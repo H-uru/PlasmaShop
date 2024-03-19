@@ -25,6 +25,7 @@
 #include <PRP/ConditionalObject/plActivatorConditionalObject.h>
 #include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
+#include <PRP/Geometry/plDrawableSpans.h>
 #include <PRP/Modifier/plLogicModBase.h>
 #include <PRP/Modifier/plLogicModifier.h>
 #include <PRP/Modifier/plModifier.h>
@@ -40,6 +41,7 @@
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
 #include <PRP/Surface/plLayerInterface.h>
+#include <set>
 
 bool s_showAgePageIDs = false;
 bool s_showTypeIDs = false;
@@ -735,7 +737,23 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             }
         } else if (auto drawInterface = plDrawInterface::Convert(c, false)) {
             for (size_t i = 0; i < drawInterface->getNumDrawables(); i++) {
-                keys.emplace_back(drawInterface->getDrawable(i));
+                const plKey& drawableSpansKey = drawInterface->getDrawable(i);
+                keys.emplace_back(drawableSpansKey);
+                if (drawableSpansKey.Exists() && drawableSpansKey.isLoaded()) {
+                    if (auto drawableSpans = plDrawableSpans::Convert(drawableSpansKey->getObj(), false)) {
+                        const auto& materials = drawableSpans->getMaterials();
+                        const plDISpanIndex& spanIndex = drawableSpans->getDIIndex(drawInterface->getDrawableKey(i));
+                        for (auto icicleIndex : spanIndex.fIndices) {
+                            plIcicle* icicle = drawableSpans->getIcicle(icicleIndex);
+                            keys.emplace_back(materials[icicle->getMaterialIdx()]);
+                            keys.emplace_back(icicle->getFogEnvironment());
+                            const auto& permaLights = icicle->getPermaLights();
+                            keys.insert(keys.begin(), permaLights.begin(), permaLights.end());
+                            const auto& permaProjs = icicle->getPermaProjs();
+                            keys.insert(keys.begin(), permaProjs.begin(), permaProjs.end());
+                        }
+                    }
+                }
             }
             const auto& regions = drawInterface->getRegions();
             keys.insert(keys.begin(), regions.begin(), regions.end());
@@ -815,6 +833,14 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         keys.emplace_back(sound->getSoftRegion());
         keys.emplace_back(sound->getSoftOcclusionRegion());
         keys.emplace_back(sound->getDataBuffer());
+    } else if (auto drawableSpans = plDrawableSpans::Convert(c, false)) {
+        if (priority >= pqRefPriority::kFlatChildren) {
+            // First put the materials, etc. under the plDrawInterfaces that actually use them,
+            // but also leave them here to allow accessing otherwise unused ones.
+            const auto& materials = drawableSpans->getMaterials();
+            keys.insert(keys.begin(), materials.begin(), materials.end());
+        }
+        // TODO Recurse into the spans
     }
 
     return keys;
