@@ -226,26 +226,9 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeExport], &QAction::triggered, this, &PrpShopMain::treeExport);
     connect(fActions[kTreeNewObject], &QAction::triggered, this, &PrpShopMain::createNewObject);
 
-    connect(fBrowserTabs, &QTabWidget::currentChanged, this, [this](auto index) {
-        auto previousTree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(fLastBrowserTabIndex));
-        QTreeWidgetItem* previous = previousTree == nullptr ? nullptr : previousTree->currentItem();
-        treeItemChanged(currentItem(), previous);
-        fLastBrowserTabIndex = index;
-    });
-
-    connect(fTypesTree, &QTreeWidget::currentItemChanged,
-            this, &PrpShopMain::treeItemChanged);
-    connect(fTypesTree, &QTreeWidget::itemActivated,
-            this, &PrpShopMain::treeItemActivated);
-    connect(fTypesTree, &QTreeWidget::customContextMenuRequested,
-            this, &PrpShopMain::treeContextMenu);
-
-    connect(fStructureTree, &QTreeWidget::currentItemChanged,
-            this, &PrpShopMain::treeItemChanged);
-    connect(fStructureTree, &QTreeWidget::itemActivated,
-            this, &PrpShopMain::treeItemActivated);
-    connect(fStructureTree, &QTreeWidget::customContextMenuRequested,
-            this, &PrpShopMain::treeContextMenu);
+    connect(fBrowserTabs, &QTabWidget::currentChanged, this, &PrpShopMain::browserTabChanged);
+    // Connect all relevant signals for the initial tab.
+    browserTabChanged(fBrowserTabs->currentIndex());
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -309,6 +292,35 @@ QPlasmaTreeItem* PrpShopMain::currentItem() const
         return nullptr;
     }
     return static_cast<QPlasmaTreeItem*>(tree->currentItem());
+}
+
+void PrpShopMain::browserTabChanged(int index)
+{
+    auto previousTree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(fLastBrowserTabIndex));
+    QTreeWidgetItem* previous = nullptr;
+    if (previousTree != nullptr) {
+        previous = previousTree->currentItem();
+        // Disconnect all signals from the tree that we are switching away from.
+        disconnect(previousTree, &QTreeWidget::currentItemChanged, this, nullptr);
+        disconnect(previousTree, &QTreeWidget::itemActivated, this, nullptr);
+        disconnect(previousTree, &QTreeWidget::customContextMenuRequested, this, nullptr);
+    }
+
+    auto currentTree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(index));
+    QTreeWidgetItem* current = nullptr;
+    if (currentTree != nullptr) {
+        current = currentTree->currentItem();
+        // Connect relevant signals to the tree that we are switching to.
+        connect(currentTree, &QTreeWidget::currentItemChanged, this, &PrpShopMain::treeItemChanged);
+        connect(currentTree, &QTreeWidget::itemActivated, this, &PrpShopMain::treeItemActivated);
+        connect(currentTree, &QTreeWidget::customContextMenuRequested, this, &PrpShopMain::treeContextMenu);
+    }
+
+    // Manually handle the switch from one tree to the other
+    // as if it was a selection change within a single tree.
+    treeItemChanged(current, previous);
+    // Remember the now current tab for use when the next tab change happens.
+    fLastBrowserTabIndex = index;
 }
 
 void PrpShopMain::setPropertyPage(PropWhich which)

@@ -142,6 +142,7 @@ public slots:
     void openFiles();
     void performSave();
     void performSaveAs();
+    void browserTabChanged(int index);
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeItemActivated(QTreeWidgetItem* item, int column);
     void treeContextMenu(const QPoint& pos);
