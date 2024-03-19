@@ -742,13 +742,23 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                 if (drawableSpansKey.Exists() && drawableSpansKey.isLoaded()) {
                     if (auto drawableSpans = plDrawableSpans::Convert(drawableSpansKey->getObj(), false)) {
                         const auto& materials = drawableSpans->getMaterials();
-                        const plDISpanIndex& spanIndex = drawableSpans->getDIIndex(drawInterface->getDrawableKey(i));
+                        int drawableKey = drawInterface->getDrawableKey(i);
+                        if (drawableKey < 0 || drawableKey >= drawableSpans->getNumDIIndices()) {
+                            continue;
+                        }
+                        const plDISpanIndex& spanIndex = drawableSpans->getDIIndex(drawableKey);
                         if ((spanIndex.fFlags & plDISpanIndex::kMatrixOnly) != 0) {
                             continue;
                         }
                         for (auto icicleIndex : spanIndex.fIndices) {
+                            if (icicleIndex >= drawableSpans->getNumSpans()) {
+                                continue;
+                            }
                             plIcicle* icicle = drawableSpans->getIcicle(icicleIndex);
-                            keys.emplace_back(materials[icicle->getMaterialIdx()]);
+                            unsigned int materialIdx = icicle->getMaterialIdx();
+                            if (materialIdx < materials.size()) {
+                                keys.emplace_back(materials[materialIdx]);
+                            }
                             keys.emplace_back(icicle->getFogEnvironment());
                             const auto& permaLights = icicle->getPermaLights();
                             keys.insert(keys.begin(), permaLights.begin(), permaLights.end());
