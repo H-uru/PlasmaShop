@@ -743,6 +743,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                     if (auto drawableSpans = plDrawableSpans::Convert(drawableSpansKey->getObj(), false)) {
                         const auto& materials = drawableSpans->getMaterials();
                         const plDISpanIndex& spanIndex = drawableSpans->getDIIndex(drawInterface->getDrawableKey(i));
+                        if ((spanIndex.fFlags & plDISpanIndex::kMatrixOnly) != 0) {
+                            continue;
+                        }
                         for (auto icicleIndex : spanIndex.fIndices) {
                             plIcicle* icicle = drawableSpans->getIcicle(icicleIndex);
                             keys.emplace_back(materials[icicle->getMaterialIdx()]);
