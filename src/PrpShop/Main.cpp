@@ -322,6 +322,19 @@ void PrpShopMain::setPropertyPage(PropWhich which)
         delete item;
     }
 
+    fAgeName = nullptr;
+    fPageName = nullptr;
+    fReleaseVersion = nullptr;
+    fSeqPrefix = nullptr;
+    fSeqSuffix = nullptr;
+    fObjName = nullptr;
+    fObjType = nullptr;
+    fLoadMaskQ[0] = nullptr;
+    fLoadMaskQ[1] = nullptr;
+    fCloneIdBox = nullptr;
+    fCloneId = nullptr;
+    fClonePlayerId = nullptr;
+
     switch (which) {
     case kPropsAge:
         {
