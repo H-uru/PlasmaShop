@@ -18,17 +18,27 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plSceneNode.h>
+#include <PRP/Animation/plLineFollowMod.h>
 #include <PRP/Animation/plViewFaceModifier.h>
 #include <PRP/Audio/plAudible.h>
 #include <PRP/Audio/plSound.h>
+#include <PRP/Avatar/plAGMasterMod.h>
+#include <PRP/Camera/plCameraBrain.h>
 #include <PRP/Camera/plCameraModifier.h>
 #include <PRP/ConditionalObject/plActivatorConditionalObject.h>
 #include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
+#include <PRP/Geometry/plOccluder.h>
+#include <PRP/GUI/pfGUIDialogMod.h>
+#include <PRP/Light/plLightInfo.h>
+#include <PRP/Modifier/plAxisAnimModifier.h>
+#include <PRP/Modifier/plFollowMod.h>
 #include <PRP/Modifier/plLogicModBase.h>
 #include <PRP/Modifier/plLogicModifier.h>
 #include <PRP/Modifier/plModifier.h>
+#include <PRP/Modifier/plPostEffectMod.h>
+#include <PRP/Modifier/plResponderModifier.h>
 #include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
 #include <PRP/Object/plDrawInterface.h>
@@ -37,6 +47,8 @@
 #include <PRP/Object/plSimulationInterface.h>
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
+#include <PRP/Physics/plObjectInVolumeDetector.h>
+#include <PRP/Region/plSoftVolume.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
@@ -775,6 +787,23 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.insert(keys.begin(), regions.begin(), regions.end());
         } else if (auto simulationInterface = plSimulationInterface::Convert(c, false)) {
             keys.emplace_back(simulationInterface->getPhysical());
+        } else if (auto lightInfo = plLightInfo::Convert(c, false)) {
+            const auto& visRegions = lightInfo->getVisRegions();
+            keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+            keys.emplace_back(lightInfo->getProjection());
+            keys.emplace_back(lightInfo->getSoftVolume());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(lightInfo->getSceneNode());
+            }
+        } else if (auto occluder = plOccluder::Convert(c, false)) {
+            const auto& visRegions = occluder->getVisRegions();
+            keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(occluder->getSceneNode());
+            }
+        } else if (auto softVolumeComplex = plSoftVolumeComplex::Convert(c, false)) {
+            const auto& subVolumes = softVolumeComplex->getSubVolumes();
+            keys.insert(keys.begin(), subVolumes.begin(), subVolumes.end());
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
@@ -806,6 +835,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.insert(keys.begin(), receivers.begin(), receivers.end());
             keys.emplace_back(detectorModifier->getRemoteMod());
             keys.emplace_back(detectorModifier->getProxy());
+
+            if (auto cameraRegionDetector = plCameraRegionDetector::Convert(c, false)) {
+                // TODO Recurse into the messages
+            }
         } else if (auto viewFaceModifier = plViewFaceModifier::Convert(c, false)) {
             keys.emplace_back(viewFaceModifier->getFaceObj());
         } else if (auto logicModBase = plLogicModBase::Convert(c, false)) {
@@ -816,6 +849,38 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                 if (priority >= pqRefPriority::kBackRefs) {
                     keys.emplace_back(logicModifier->getParent());
                 }
+            }
+        } else if (auto agMasterMod = plAGMasterMod::Convert(c, false)) {
+            const auto& privateAnims = agMasterMod->getPrivateAnims();
+            keys.insert(keys.begin(), privateAnims.begin(), privateAnims.end());
+            const auto& eoaKeys = agMasterMod->getEoaKeys();
+            keys.insert(keys.begin(), eoaKeys.begin(), eoaKeys.end());
+            keys.emplace_back(agMasterMod->getMsgForwarder());
+        } else if (auto lineFollowMod = plLineFollowMod::Convert(c, false)) {
+            keys.emplace_back(lineFollowMod->getPathParent());
+            keys.emplace_back(lineFollowMod->getRefObj());
+            const auto& stereizers = lineFollowMod->getStereizers();
+            keys.insert(keys.begin(), stereizers.begin(), stereizers.end());
+        } else if (auto postEffectMod = plPostEffectMod::Convert(c, false)) {
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(postEffectMod->getNodeKey());
+            }
+        } else if (auto responderModifier = plResponderModifier::Convert(c, false)) {
+            // TODO Recurse into the messages
+        } else if (auto axisAnimModifier = plAxisAnimModifier::Convert(c, false)) {
+            keys.emplace_back(axisAnimModifier->getXAnim());
+            keys.emplace_back(axisAnimModifier->getYAnim());
+            keys.emplace_back(axisAnimModifier->getNotificationKey());
+            // TODO Recurse into the message
+        } else if (auto followMod = plFollowMod::Convert(c, false)) {
+            keys.emplace_back(followMod->getLeader());
+        } else if (auto guiDialogMod = pfGUIDialogMod::Convert(c, false)) {
+            keys.emplace_back(guiDialogMod->getRenderMod());
+            const auto& controls = guiDialogMod->getControls();
+            keys.insert(keys.begin(), controls.begin(), controls.end());
+            keys.emplace_back(guiDialogMod->getProcReceiver());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(guiDialogMod->getSceneNode());
             }
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
@@ -844,6 +909,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 
         if (auto layerAnimation = plLayerAnimation::Convert(c, false)) {
             // TODO Recurse into plAnimTimeConvert and its messages
+
+            if (auto layerLinkAnimation = plLayerLinkAnimation::Convert(c, false)) {
+                keys.emplace_back(layerLinkAnimation->getLinkKey());
+            }
         }
     } else if (auto sound = plSound::Convert(c, false)) {
         keys.emplace_back(sound->getSoftRegion());
@@ -857,6 +926,13 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.insert(keys.begin(), materials.begin(), materials.end());
         }
         // TODO Recurse into the spans
+    } else if (auto cameraBrain1 = plCameraBrain1::Convert(c, false)) {
+        keys.emplace_back(cameraBrain1->getSubject());
+        keys.emplace_back(cameraBrain1->getRail());
+
+        if (auto cameraBrain1Fixed = plCameraBrain1_Fixed::Convert(c, false)) {
+            keys.emplace_back(cameraBrain1Fixed->getTargetPoint());
+        }
     }
 
     return keys;
