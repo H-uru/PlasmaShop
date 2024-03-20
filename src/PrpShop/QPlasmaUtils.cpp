@@ -920,7 +920,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             // TODO Recurse into plAnimTimeConvert and its messages
 
             if (auto layerLinkAnimation = plLayerLinkAnimation::Convert(c, false)) {
-                keys.emplace_back(layerLinkAnimation->getLinkKey());
+                if (priority >= pqRefPriority::kBackRefs) {
+                    keys.emplace_back(layerLinkAnimation->getLinkKey());
+                }
             }
         }
     } else if (auto sound = plSound::Convert(c, false)) {
