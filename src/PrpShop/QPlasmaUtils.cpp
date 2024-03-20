@@ -45,6 +45,7 @@
 #include <PRP/Object/plObjInterface.h>
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Object/plSimulationInterface.h>
+#include <PRP/Particle/plParticleSystem.h>
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Physics/plObjectInVolumeDetector.h>
@@ -818,9 +819,17 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             }
         }
 
-        // TODO plParticleSystem
-
-        if (auto cameraModifier = plCameraModifier::Convert(c, false)) {
+        if (auto particleSystem = plParticleSystem::Convert(c, false)) {
+            keys.emplace_back(particleSystem->getMaterial());
+            const auto& forces = particleSystem->getForces();
+            keys.insert(keys.begin(), forces.begin(), forces.end());
+            const auto& effects = particleSystem->getEffects();
+            keys.insert(keys.begin(), effects.begin(), effects.end());
+            const auto& constraints = particleSystem->getConstraints();
+            keys.insert(keys.begin(), constraints.begin(), constraints.end());
+            const auto& permaLights = particleSystem->getPermaLights();
+            keys.insert(keys.begin(), permaLights.begin(), permaLights.end());
+        } else if (auto cameraModifier = plCameraModifier::Convert(c, false)) {
             keys.emplace_back(cameraModifier->getBrain());
             for (const auto& trans : cameraModifier->getTrans()) {
                 keys.emplace_back(trans->getTransTo());
