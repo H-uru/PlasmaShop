@@ -23,6 +23,7 @@
 #include <PRP/Audio/plAudible.h>
 #include <PRP/Audio/plSound.h>
 #include <PRP/Avatar/plAGMasterMod.h>
+#include <PRP/Avatar/plSittingModifier.h>
 #include <PRP/Camera/plCameraBrain.h>
 #include <PRP/Camera/plCameraModifier.h>
 #include <PRP/ConditionalObject/plActivatorConditionalObject.h>
@@ -30,14 +31,22 @@
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
 #include <PRP/Geometry/plOccluder.h>
+#include <PRP/GUI/pfGUIButtonMod.h>
+#include <PRP/GUI/pfGUIControlMod.h>
 #include <PRP/GUI/pfGUIDialogMod.h>
+#include <PRP/GUI/pfGUIKnobCtrl.h>
+#include <PRP/GUI/pfGUIListBoxMod.h>
+#include <PRP/GUI/pfGUIUpDownPairMod.h>
 #include <PRP/Light/plLightInfo.h>
+#include <PRP/Message/plMsgForwarder.h>
 #include <PRP/Modifier/plAxisAnimModifier.h>
+#include <PRP/Modifier/plExcludeRegionModifier.h>
 #include <PRP/Modifier/plFollowMod.h>
 #include <PRP/Modifier/plLogicModBase.h>
 #include <PRP/Modifier/plLogicModifier.h>
 #include <PRP/Modifier/plModifier.h>
 #include <PRP/Modifier/plPostEffectMod.h>
+#include <PRP/Modifier/plPythonFileMod.h>
 #include <PRP/Modifier/plResponderModifier.h>
 #include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
@@ -891,6 +900,39 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             if (priority >= pqRefPriority::kBackRefs) {
                 keys.emplace_back(guiDialogMod->getSceneNode());
             }
+        } else if (auto pythonFileMod = plPythonFileMod::Convert(c, false)) {
+            const auto& receivers = pythonFileMod->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+            for (const auto& parameter : pythonFileMod->getParameters()) {
+                keys.emplace_back(parameter.fObjKey);
+            }
+        } else if (auto guiControlMod = pfGUIControlMod::Convert(c, false)) {
+            keys.emplace_back(guiControlMod->getDynTextMap());
+            keys.emplace_back(guiControlMod->getDynTextLayer());
+            keys.emplace_back(guiControlMod->getProxy());
+            keys.emplace_back(guiControlMod->getSkin());
+            
+            if (auto guiButtonMod = pfGUIButtonMod::Convert(c, false)) {
+                const auto& animationKeys = guiButtonMod->getAnimationKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+                const auto& mouseOverAnimKeys = guiButtonMod->getMouseOverKeys();
+                keys.insert(keys.begin(), mouseOverAnimKeys.begin(), mouseOverAnimKeys.end());
+                keys.emplace_back(guiButtonMod->getDraggable());
+            } else if (auto guiListBoxMod = pfGUIListBoxMod::Convert(c, false)) {
+                keys.emplace_back(guiListBoxMod->getScrollCtrl());
+            } else if (auto guiUpDownPairMod = pfGUIUpDownPairMod::Convert(c, false)) {
+                keys.emplace_back(guiUpDownPairMod->getUpControl());
+                keys.emplace_back(guiUpDownPairMod->getDownControl());
+            } else if (auto guiKnobCtrl = pfGUIKnobCtrl::Convert(c, false)) {
+                const auto& animationKeys = guiKnobCtrl->getAnimationKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+            }
+        } else if (auto excludeRegionModifier = plExcludeRegionModifier::Convert(c, false)) {
+            const auto& safePoints = excludeRegionModifier->getSafePoints();
+            keys.insert(keys.begin(), safePoints.begin(), safePoints.end());
+        } else if (auto sittingModifier = plSittingModifier::Convert(c, false)) {
+            const auto& notifyKeys = sittingModifier->getNotifyKeys();
+            keys.insert(keys.begin(), notifyKeys.begin(), notifyKeys.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -944,6 +986,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         if (auto cameraBrain1Fixed = plCameraBrain1_Fixed::Convert(c, false)) {
             keys.emplace_back(cameraBrain1Fixed->getTargetPoint());
         }
+    } else if (auto msgForwarder = plMsgForwarder::Convert(c, false)) {
+        const auto& forwardKeys = msgForwarder->getForwardKeys();
+        keys.insert(keys.begin(), forwardKeys.begin(), forwardKeys.end());
     }
 
     return keys;
