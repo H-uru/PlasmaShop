@@ -23,6 +23,7 @@
 #include <PRP/Audio/plAudible.h>
 #include <PRP/Audio/plSound.h>
 #include <PRP/Avatar/plAGMasterMod.h>
+#include <PRP/Avatar/plAvatarClothing.h>
 #include <PRP/Avatar/plClothingItem.h>
 #include <PRP/Avatar/plSittingModifier.h>
 #include <PRP/Camera/plCameraBrain.h>
@@ -1001,6 +1002,12 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         for (size_t level = 0; level < plClothingItem::kNumLODLevels; level++) {
             keys.emplace_back(clothingItem->getMesh(level));
         }
+    } else if (auto clothingOutfit = plClothingOutfit::Convert(c, false)) {
+        keys.emplace_back(clothingOutfit->getBase());
+        keys.emplace_back(clothingOutfit->getTargetTexture());
+        keys.emplace_back(clothingOutfit->getMaterial());
+    } else if (auto clothingBase = plClothingBase::Convert(c, false)) {
+        keys.emplace_back(clothingBase->getBaseTexture());
     }
 
     return keys;
