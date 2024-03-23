@@ -46,6 +46,7 @@
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <PRP/GUI/pfGUIListBoxMod.h>
 #include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
+#include <PRP/GUI/pfGUIPopUpMenu.h>
 #include <PRP/GUI/pfGUIProgressCtrl.h>
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <PRP/GUI/pfGUISkin.h>
@@ -79,6 +80,7 @@
 #include <PRP/Region/plHardRegion.h>
 #include <PRP/Region/plSimpleRegionSensor.h>
 #include <PRP/Region/plSoftVolume.h>
+#include <PRP/Region/plVisRegion.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plDynaDecalMgr.h>
 #include <PRP/Surface/plDynaRippleMgr.h>
@@ -850,6 +852,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto hardRegionComplex = plHardRegionComplex::Convert(c, false)) {
             const auto& subRegions = hardRegionComplex->getSubRegions();
             keys.insert(keys.begin(), subRegions.begin(), subRegions.end());
+        } else if (auto visRegion = plVisRegion::Convert(c, false)) {
+            keys.emplace_back(visRegion->getRegion());
+            keys.emplace_back(visRegion->getVisMgr());
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
@@ -937,6 +942,15 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(guiDialogMod->getProcReceiver());
             if (priority >= pqRefPriority::kBackRefs) {
                 keys.emplace_back(guiDialogMod->getSceneNode());
+            }
+
+            if (auto guiPopUpMenu = pfGUIPopUpMenu::Convert(c, false)) {
+                for (size_t i = 0; i < guiPopUpMenu->getNumItems(); i++) {
+                    keys.emplace_back(guiPopUpMenu->getItem(i).fSubMenu);
+                }
+                keys.emplace_back(guiPopUpMenu->getSkin());
+                keys.emplace_back(guiPopUpMenu->getOriginContext());
+                keys.emplace_back(guiPopUpMenu->getOriginAnchor());
             }
         } else if (auto pythonFileMod = plPythonFileMod::Convert(c, false)) {
             const auto& receivers = pythonFileMod->getReceivers();
