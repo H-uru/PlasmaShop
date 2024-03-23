@@ -21,6 +21,7 @@
 #include <PRP/Animation/plLineFollowMod.h>
 #include <PRP/Animation/plViewFaceModifier.h>
 #include <PRP/Audio/plAudible.h>
+#include <PRP/Audio/plEAXListenerMod.h>
 #include <PRP/Audio/plSound.h>
 #include <PRP/Avatar/plAGMasterMod.h>
 #include <PRP/Avatar/plArmatureEffects.h>
@@ -979,6 +980,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             for (size_t i = 0; i < plVehicleModifier::kNumWheels; i++) {
                 keys.emplace_back(vehicleModifier->getWheel(i).fWheelObj);
             }
+        } else if (auto eaxListenerMod = plEAXListenerMod::Convert(c, false)) {
+            keys.emplace_back(eaxListenerMod->getSoftRegion());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
