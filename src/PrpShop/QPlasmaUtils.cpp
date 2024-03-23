@@ -808,6 +808,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             }
             const auto& regions = drawInterface->getRegions();
             keys.insert(keys.begin(), regions.begin(), regions.end());
+
+            if (auto instanceDrawInterface = plInstanceDrawInterface::Convert(c, false)) {
+                keys.emplace_back(instanceDrawInterface->getDrawable());
+            }
         } else if (auto simulationInterface = plSimulationInterface::Convert(c, false)) {
             keys.emplace_back(simulationInterface->getPhysical());
         } else if (auto lightInfo = plLightInfo::Convert(c, false)) {
