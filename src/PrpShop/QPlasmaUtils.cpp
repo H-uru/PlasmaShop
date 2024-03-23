@@ -44,6 +44,7 @@
 #include <PRP/GUI/pfGUIDynDisplayCtrl.h>
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <PRP/GUI/pfGUIListBoxMod.h>
+#include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <PRP/GUI/pfGUISkin.h>
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
@@ -68,15 +69,21 @@
 #include <PRP/Object/plSimulationInterface.h>
 #include <PRP/Particle/plParticleEffect.h>
 #include <PRP/Particle/plParticleSystem.h>
+#include <PRP/Physics/plCollisionDetector.h>
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Physics/plObjectInVolumeDetector.h>
 #include <PRP/Physics/plVehicleModifier.h>
+#include <PRP/Region/plSimpleRegionSensor.h>
 #include <PRP/Region/plSoftVolume.h>
 #include <PRP/Surface/hsGMaterial.h>
+#include <PRP/Surface/plDynaDecalMgr.h>
+#include <PRP/Surface/plDynamicEnvMap.h>
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
 #include <PRP/Surface/plLayerInterface.h>
+#include <PRP/Surface/plPrintShape.h>
+#include <PRP/Surface/plWaveSet.h>
 #include <set>
 
 bool s_showAgePageIDs = false;
@@ -832,6 +839,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto softVolumeComplex = plSoftVolumeComplex::Convert(c, false)) {
             const auto& subVolumes = softVolumeComplex->getSubVolumes();
             keys.insert(keys.begin(), subVolumes.begin(), subVolumes.end());
+        } else if (auto activePrintShape = plActivePrintShape::Convert(c, false)) {
+            for (size_t i = 0; i < activePrintShape->getNumDecalMgrs(); i++) {
+                keys.emplace_back(activePrintShape->getDecalMgr(i));
+            }
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
@@ -874,6 +885,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 
             if (auto cameraRegionDetector = plCameraRegionDetector::Convert(c, false)) {
                 // TODO Recurse into the messages
+            } else if (auto subworldRegionDetector = plSubworldRegionDetector::Convert(c, false)) {
+                keys.emplace_back(subworldRegionDetector->getSubworld());
             }
         } else if (auto viewFaceModifier = plViewFaceModifier::Convert(c, false)) {
             keys.emplace_back(viewFaceModifier->getFaceObj());
@@ -957,6 +970,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                 keys.insert(keys.begin(), layers.begin(), layers.end());
                 const auto& materials = guiDynDisplayCtrl->getMaterials();
                 keys.insert(keys.begin(), materials.begin(), materials.end());
+            } else if (auto guiMultiLineEditCtrl = pfGUIMultiLineEditCtrl::Convert(c, false)) {
+                keys.emplace_back(guiMultiLineEditCtrl->getScrollCtrl());
             }
         } else if (auto excludeRegionModifier = plExcludeRegionModifier::Convert(c, false)) {
             const auto& safePoints = excludeRegionModifier->getSafePoints();
@@ -982,6 +997,17 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             }
         } else if (auto eaxListenerMod = plEAXListenerMod::Convert(c, false)) {
             keys.emplace_back(eaxListenerMod->getSoftRegion());
+        } else if (auto waveSet7 = plWaveSet7::Convert(c, false)) {
+            const auto& shores = waveSet7->getShores();
+            keys.insert(keys.begin(), shores.begin(), shores.end());
+            const auto& decals = waveSet7->getDecals();
+            keys.insert(keys.begin(), decals.begin(), decals.end());
+            const auto& buoys = waveSet7->getBuoys();
+            keys.insert(keys.begin(), buoys.begin(), buoys.end());
+            keys.emplace_back(waveSet7->getEnvMap());
+            keys.emplace_back(waveSet7->getRefObj());
+        } else if (auto simpleRegionSensor = plSimpleRegionSensor::Convert(c, false)) {
+            // TODO Recurse into the messages
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -1074,6 +1100,22 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
     } else if (auto armatureEffectFootSound = plArmatureEffectFootSound::Convert(c, false)) {
         const auto& mods = armatureEffectFootSound->getMods();
         keys.insert(keys.begin(), mods.begin(), mods.end());
+    } else if (auto dynaDecalMgr = plDynaDecalMgr::Convert(c, false)) {
+        keys.emplace_back(dynaDecalMgr->getMatPreShade());
+        keys.emplace_back(dynaDecalMgr->getMatRTShade());
+        for (size_t i = 0; i < dynaDecalMgr->getNumTargets(); i++) {
+            keys.emplace_back(dynaDecalMgr->getTarget(i));
+        }
+        for (size_t i = 0; i < dynaDecalMgr->getNumPartyObjects(); i++) {
+            keys.emplace_back(dynaDecalMgr->getPartyObject(i));
+        }
+        for (size_t i = 0; i < dynaDecalMgr->getNumNotifies(); i++) {
+            keys.emplace_back(dynaDecalMgr->getNotify(i));
+        }
+    } else if (auto dynamicEnvMap = plDynamicEnvMap::Convert(c, false)) {
+        keys.emplace_back(dynamicEnvMap->getRootNode());
+        const auto& visRegions = dynamicEnvMap->getVisRegions();
+        keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
     }
 
     return keys;
