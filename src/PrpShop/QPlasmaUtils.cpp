@@ -93,6 +93,7 @@
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
 #include <PRP/Surface/plLayerInterface.h>
+#include <PRP/Surface/plMipmap.h>
 #include <PRP/Surface/plPrintShape.h>
 #include <PRP/Surface/plWaveSet.h>
 #include <set>
@@ -1180,6 +1181,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         if (priority >= pqRefPriority::kBackRefs) {
             keys.emplace_back(clusterGroup->getSceneNode());
         }
+    } else if (auto lodMipmap = plLODMipmap::Convert(c, false)) {
+        keys.emplace_back(lodMipmap->getBase());
     }
 
     return keys;
