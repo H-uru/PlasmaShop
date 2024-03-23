@@ -23,6 +23,7 @@
 #include <PRP/Audio/plAudible.h>
 #include <PRP/Audio/plSound.h>
 #include <PRP/Avatar/plAGMasterMod.h>
+#include <PRP/Avatar/plArmatureEffects.h>
 #include <PRP/Avatar/plAvatarClothing.h>
 #include <PRP/Avatar/plClothingItem.h>
 #include <PRP/Avatar/plMultistageBehMod.h>
@@ -1052,6 +1053,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         }
     } else if (auto sharedMesh = plSharedMesh::Convert(c, false)) {
         keys.emplace_back(sharedMesh->getMorphSet());
+    } else if (auto armatureEffectsMgr = plArmatureEffectsMgr::Convert(c, false)) {
+        const auto& effects = armatureEffectsMgr->getEffects();
+        keys.insert(keys.begin(), effects.begin(), effects.end());
     }
 
     return keys;
