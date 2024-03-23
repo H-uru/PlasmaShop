@@ -34,6 +34,7 @@
 #include <PRP/ConditionalObject/plActivatorConditionalObject.h>
 #include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
+#include <PRP/Geometry/plClusterGroup.h>
 #include <PRP/Geometry/plDrawableSpans.h>
 #include <PRP/Geometry/plMorphSequence.h>
 #include <PRP/Geometry/plOccluder.h>
@@ -51,6 +52,7 @@
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <PRP/GUI/pfGUISkin.h>
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
+#include <PRP/GUI/plImageLibMod.h>
 #include <PRP/Light/plLightInfo.h>
 #include <PRP/Message/plMsgForwarder.h>
 #include <PRP/Modifier/plAnimEventModifier.h>
@@ -76,6 +78,7 @@
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Physics/plObjectInVolumeDetector.h>
+#include <PRP/Physics/plPhysicalSndGroup.h>
 #include <PRP/Physics/plVehicleModifier.h>
 #include <PRP/Region/plHardRegion.h>
 #include <PRP/Region/plRelevanceRegion.h>
@@ -1038,6 +1041,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto morphSequence = plMorphSequence::Convert(c, false)) {
             const auto& sharedMeshes = morphSequence->getSharedMeshes();
             keys.insert(keys.begin(), sharedMeshes.begin(), sharedMeshes.end());
+        } else if (auto imageLibMod = plImageLibMod::Convert(c, false)) {
+            const auto& images = imageLibMod->getImages();
+            keys.insert(keys.begin(), images.begin(), images.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -1145,11 +1151,27 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 
         if (auto dynaRippleVSMgr = plDynaRippleVSMgr::Convert(c, false)) {
             keys.emplace_back(dynaRippleVSMgr->getWaveSet());
+        } else if (auto dynaTorpedoVSMgr = plDynaTorpedoVSMgr::Convert(c, false)) {
+            keys.emplace_back(dynaTorpedoVSMgr->getWaveSet());
         }
     } else if (auto dynamicEnvMap = plDynamicEnvMap::Convert(c, false)) {
         keys.emplace_back(dynamicEnvMap->getRootNode());
         const auto& visRegions = dynamicEnvMap->getVisRegions();
         keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+    } else if (auto physicalSndGroup = plPhysicalSndGroup::Convert(c, false)) {
+        const auto& impactSounds = physicalSndGroup->getImpactSounds();
+        keys.insert(keys.begin(), impactSounds.begin(), impactSounds.end());
+        const auto& slideSounds = physicalSndGroup->getSlideSounds();
+        keys.insert(keys.begin(), slideSounds.begin(), slideSounds.end());
+    } else if (auto clusterGroup = plClusterGroup::Convert(c, false)) {
+        keys.emplace_back(clusterGroup->getMaterial());
+        const auto& regions = clusterGroup->getRegions();
+        keys.insert(keys.begin(), regions.begin(), regions.end());
+        const auto& lights = clusterGroup->getLights();
+        keys.insert(keys.begin(), lights.begin(), lights.end());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(clusterGroup->getSceneNode());
+        }
     }
 
     return keys;
