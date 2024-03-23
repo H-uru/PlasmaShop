@@ -45,6 +45,7 @@
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
 #include <PRP/Light/plLightInfo.h>
 #include <PRP/Message/plMsgForwarder.h>
+#include <PRP/Modifier/plAnimEventModifier.h>
 #include <PRP/Modifier/plAxisAnimModifier.h>
 #include <PRP/Modifier/plExcludeRegionModifier.h>
 #include <PRP/Modifier/plFollowMod.h>
@@ -954,6 +955,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.insert(keys.begin(), notifyKeys.begin(), notifyKeys.end());
         } else if (auto multistageBehMod = plMultistageBehMod::Convert(c, false)) {
             const auto& receivers = multistageBehMod->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+        } else if (auto animEventModifier = plAnimEventModifier::Convert(c, false)) {
+            const auto& receivers = animEventModifier->getReceivers();
             keys.insert(keys.begin(), receivers.begin(), receivers.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
