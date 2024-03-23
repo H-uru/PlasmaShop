@@ -59,6 +59,7 @@
 #include <PRP/Modifier/plAxisAnimModifier.h>
 #include <PRP/Modifier/plExcludeRegionModifier.h>
 #include <PRP/Modifier/plFollowMod.h>
+#include <PRP/Modifier/plGameMarkerModifier.h>
 #include <PRP/Modifier/plInterfaceInfoModifier.h>
 #include <PRP/Modifier/plLogicModBase.h>
 #include <PRP/Modifier/plLogicModifier.h>
@@ -1044,6 +1045,13 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto imageLibMod = plImageLibMod::Convert(c, false)) {
             const auto& images = imageLibMod->getImages();
             keys.insert(keys.begin(), images.begin(), images.end());
+        } else if (auto gameMarkerModifier = plGameMarkerModifier::Convert(c, false)) {
+            keys.emplace_back(gameMarkerModifier->getGreenAnimKey());
+            keys.emplace_back(gameMarkerModifier->getRedAnimKey());
+            keys.emplace_back(gameMarkerModifier->getOpenAnimKey());
+            keys.emplace_back(gameMarkerModifier->getBounceAnimKey());
+
+            // TODO Look up sound indices in the corresponding plWinAudible
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
