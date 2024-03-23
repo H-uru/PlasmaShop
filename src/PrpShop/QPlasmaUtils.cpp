@@ -1068,6 +1068,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
     } else if (auto armatureEffectsMgr = plArmatureEffectsMgr::Convert(c, false)) {
         const auto& effects = armatureEffectsMgr->getEffects();
         keys.insert(keys.begin(), effects.begin(), effects.end());
+    } else if (auto armatureEffectFootSound = plArmatureEffectFootSound::Convert(c, false)) {
+        const auto& mods = armatureEffectFootSound->getMods();
+        keys.insert(keys.begin(), mods.begin(), mods.end());
     }
 
     return keys;
