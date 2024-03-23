@@ -70,6 +70,7 @@
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Physics/plObjectInVolumeDetector.h>
+#include <PRP/Physics/plVehicleModifier.h>
 #include <PRP/Region/plSoftVolume.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plLayer.h>
@@ -967,6 +968,13 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto interfaceInfoModifier = plInterfaceInfoModifier::Convert(c, false)) {
             const auto& intfKeys = interfaceInfoModifier->getIntfKeys();
             keys.insert(keys.begin(), intfKeys.begin(), intfKeys.end());
+        } else if (auto vehicleModifier = plVehicleModifier::Convert(c, false)) {
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(vehicleModifier->getRoot());
+            }
+            for (size_t i = 0; i < plVehicleModifier::kNumWheels; i++) {
+                keys.emplace_back(vehicleModifier->getWheel(i).fWheelObj);
+            }
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
