@@ -46,6 +46,7 @@
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <PRP/GUI/pfGUIListBoxMod.h>
 #include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
+#include <PRP/GUI/pfGUIProgressCtrl.h>
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <PRP/GUI/pfGUISkin.h>
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
@@ -79,6 +80,7 @@
 #include <PRP/Region/plSoftVolume.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plDynaDecalMgr.h>
+#include <PRP/Surface/plDynaRippleMgr.h>
 #include <PRP/Surface/plDynamicEnvMap.h>
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
@@ -973,6 +975,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
                 keys.insert(keys.begin(), materials.begin(), materials.end());
             } else if (auto guiMultiLineEditCtrl = pfGUIMultiLineEditCtrl::Convert(c, false)) {
                 keys.emplace_back(guiMultiLineEditCtrl->getScrollCtrl());
+            } else if (auto guiProgressCtrl = pfGUIProgressCtrl::Convert(c, false)) {
+                const auto& animationKeys = guiProgressCtrl->getAnimKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
             }
         } else if (auto excludeRegionModifier = plExcludeRegionModifier::Convert(c, false)) {
             const auto& safePoints = excludeRegionModifier->getSafePoints();
@@ -1115,6 +1120,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         }
         for (size_t i = 0; i < dynaDecalMgr->getNumNotifies(); i++) {
             keys.emplace_back(dynaDecalMgr->getNotify(i));
+        }
+
+        if (auto dynaRippleVSMgr = plDynaRippleVSMgr::Convert(c, false)) {
+            keys.emplace_back(dynaRippleVSMgr->getWaveSet());
         }
     } else if (auto dynamicEnvMap = plDynamicEnvMap::Convert(c, false)) {
         keys.emplace_back(dynamicEnvMap->getRootNode());
