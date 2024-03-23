@@ -35,6 +35,7 @@
 #include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
+#include <PRP/Geometry/plMorphSequence.h>
 #include <PRP/Geometry/plOccluder.h>
 #include <PRP/Geometry/plSharedMesh.h>
 #include <PRP/GUI/pfGUIButtonMod.h>
@@ -1008,6 +1009,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(waveSet7->getRefObj());
         } else if (auto simpleRegionSensor = plSimpleRegionSensor::Convert(c, false)) {
             // TODO Recurse into the messages
+        } else if (auto morphSequence = plMorphSequence::Convert(c, false)) {
+            const auto& sharedMeshes = morphSequence->getSharedMeshes();
+            keys.insert(keys.begin(), sharedMeshes.begin(), sharedMeshes.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
