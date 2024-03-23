@@ -34,6 +34,7 @@
 #include <PRP/ConditionalObject/plBooleanConditionalObject.h>
 #include <PRP/Geometry/plDrawableSpans.h>
 #include <PRP/Geometry/plOccluder.h>
+#include <PRP/Geometry/plSharedMesh.h>
 #include <PRP/GUI/pfGUIButtonMod.h>
 #include <PRP/GUI/pfGUICheckBoxCtrl.h>
 #include <PRP/GUI/pfGUIControlMod.h>
@@ -42,6 +43,7 @@
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <PRP/GUI/pfGUIListBoxMod.h>
 #include <PRP/GUI/pfGUIRadioGroupCtrl.h>
+#include <PRP/GUI/pfGUISkin.h>
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
 #include <PRP/Light/plLightInfo.h>
 #include <PRP/Message/plMsgForwarder.h>
@@ -49,6 +51,7 @@
 #include <PRP/Modifier/plAxisAnimModifier.h>
 #include <PRP/Modifier/plExcludeRegionModifier.h>
 #include <PRP/Modifier/plFollowMod.h>
+#include <PRP/Modifier/plInterfaceInfoModifier.h>
 #include <PRP/Modifier/plLogicModBase.h>
 #include <PRP/Modifier/plLogicModifier.h>
 #include <PRP/Modifier/plModifier.h>
@@ -61,6 +64,7 @@
 #include <PRP/Object/plObjInterface.h>
 #include <PRP/Object/plSceneObject.h>
 #include <PRP/Object/plSimulationInterface.h>
+#include <PRP/Particle/plParticleEffect.h>
 #include <PRP/Particle/plParticleSystem.h>
 #include <PRP/Physics/plDetectorModifier.h>
 #include <PRP/Physics/plGenericPhysical.h>
@@ -959,6 +963,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto animEventModifier = plAnimEventModifier::Convert(c, false)) {
             const auto& receivers = animEventModifier->getReceivers();
             keys.insert(keys.begin(), receivers.begin(), receivers.end());
+        } else if (auto interfaceInfoModifier = plInterfaceInfoModifier::Convert(c, false)) {
+            const auto& intfKeys = interfaceInfoModifier->getIntfKeys();
+            keys.insert(keys.begin(), intfKeys.begin(), intfKeys.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -1037,6 +1044,14 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         keys.emplace_back(clothingOutfit->getMaterial());
     } else if (auto clothingBase = plClothingBase::Convert(c, false)) {
         keys.emplace_back(clothingBase->getBaseTexture());
+    } else if (auto guiSkin = pfGUISkin::Convert(c, false)) {
+        keys.emplace_back(guiSkin->getTexture());
+    } else if (auto particleCollisionEffect = plParticleCollisionEffect::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(particleCollisionEffect->getSceneObj());
+        }
+    } else if (auto sharedMesh = plSharedMesh::Convert(c, false)) {
+        keys.emplace_back(sharedMesh->getMorphSet());
     }
 
     return keys;
