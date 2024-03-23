@@ -78,6 +78,7 @@
 #include <PRP/Physics/plObjectInVolumeDetector.h>
 #include <PRP/Physics/plVehicleModifier.h>
 #include <PRP/Region/plHardRegion.h>
+#include <PRP/Region/plRelevanceRegion.h>
 #include <PRP/Region/plSimpleRegionSensor.h>
 #include <PRP/Region/plSoftVolume.h>
 #include <PRP/Region/plVisRegion.h>
@@ -855,6 +856,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto visRegion = plVisRegion::Convert(c, false)) {
             keys.emplace_back(visRegion->getRegion());
             keys.emplace_back(visRegion->getVisMgr());
+        } else if (auto relevanceRegion = plRelevanceRegion::Convert(c, false)) {
+            keys.emplace_back(relevanceRegion->getRegion());
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
