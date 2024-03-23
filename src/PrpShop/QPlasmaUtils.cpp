@@ -76,6 +76,7 @@
 #include <PRP/Physics/plGenericPhysical.h>
 #include <PRP/Physics/plObjectInVolumeDetector.h>
 #include <PRP/Physics/plVehicleModifier.h>
+#include <PRP/Region/plHardRegion.h>
 #include <PRP/Region/plSimpleRegionSensor.h>
 #include <PRP/Region/plSoftVolume.h>
 #include <PRP/Surface/hsGMaterial.h>
@@ -846,6 +847,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             for (size_t i = 0; i < activePrintShape->getNumDecalMgrs(); i++) {
                 keys.emplace_back(activePrintShape->getDecalMgr(i));
             }
+        } else if (auto hardRegionComplex = plHardRegionComplex::Convert(c, false)) {
+            const auto& subRegions = hardRegionComplex->getSubRegions();
+            keys.insert(keys.begin(), subRegions.begin(), subRegions.end());
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
