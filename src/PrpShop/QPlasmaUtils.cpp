@@ -25,6 +25,7 @@
 #include <PRP/Avatar/plAGMasterMod.h>
 #include <PRP/Avatar/plAvatarClothing.h>
 #include <PRP/Avatar/plClothingItem.h>
+#include <PRP/Avatar/plMultistageBehMod.h>
 #include <PRP/Avatar/plSittingModifier.h>
 #include <PRP/Camera/plCameraBrain.h>
 #include <PRP/Camera/plCameraModifier.h>
@@ -34,10 +35,13 @@
 #include <PRP/Geometry/plDrawableSpans.h>
 #include <PRP/Geometry/plOccluder.h>
 #include <PRP/GUI/pfGUIButtonMod.h>
+#include <PRP/GUI/pfGUICheckBoxCtrl.h>
 #include <PRP/GUI/pfGUIControlMod.h>
 #include <PRP/GUI/pfGUIDialogMod.h>
+#include <PRP/GUI/pfGUIDynDisplayCtrl.h>
 #include <PRP/GUI/pfGUIKnobCtrl.h>
 #include <PRP/GUI/pfGUIListBoxMod.h>
+#include <PRP/GUI/pfGUIRadioGroupCtrl.h>
 #include <PRP/GUI/pfGUIUpDownPairMod.h>
 #include <PRP/Light/plLightInfo.h>
 #include <PRP/Message/plMsgForwarder.h>
@@ -928,6 +932,19 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             } else if (auto guiKnobCtrl = pfGUIKnobCtrl::Convert(c, false)) {
                 const auto& animationKeys = guiKnobCtrl->getAnimationKeys();
                 keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+            } else if (auto guiCheckBoxCtrl = pfGUICheckBoxCtrl::Convert(c, false)) {
+                const auto& animKeys = guiCheckBoxCtrl->getAnimKeys();
+                keys.insert(keys.begin(), animKeys.begin(), animKeys.end());
+            } else if (auto guiRadioGroupCtrl = pfGUIRadioGroupCtrl::Convert(c, false)) {
+                const auto& controls = guiRadioGroupCtrl->getControls();
+                keys.insert(keys.begin(), controls.begin(), controls.end());
+            } else if (auto guiDynDisplayCtrl = pfGUIDynDisplayCtrl::Convert(c, false)) {
+                const auto& textMaps = guiDynDisplayCtrl->getTextMaps();
+                keys.insert(keys.begin(), textMaps.begin(), textMaps.end());
+                const auto& layers = guiDynDisplayCtrl->getLayers();
+                keys.insert(keys.begin(), layers.begin(), layers.end());
+                const auto& materials = guiDynDisplayCtrl->getMaterials();
+                keys.insert(keys.begin(), materials.begin(), materials.end());
             }
         } else if (auto excludeRegionModifier = plExcludeRegionModifier::Convert(c, false)) {
             const auto& safePoints = excludeRegionModifier->getSafePoints();
@@ -935,6 +952,9 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         } else if (auto sittingModifier = plSittingModifier::Convert(c, false)) {
             const auto& notifyKeys = sittingModifier->getNotifyKeys();
             keys.insert(keys.begin(), notifyKeys.begin(), notifyKeys.end());
+        } else if (auto multistageBehMod = plMultistageBehMod::Convert(c, false)) {
+            const auto& receivers = multistageBehMod->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -987,6 +1007,11 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 
         if (auto cameraBrain1Fixed = plCameraBrain1_Fixed::Convert(c, false)) {
             keys.emplace_back(cameraBrain1Fixed->getTargetPoint());
+
+            if (auto cameraBrain1Circle = plCameraBrain1_Circle::Convert(c, false)) {
+                keys.emplace_back(cameraBrain1Circle->getCenterObject());
+                keys.emplace_back(cameraBrain1Circle->getPOAObject());
+            }
         }
     } else if (auto msgForwarder = plMsgForwarder::Convert(c, false)) {
         const auto& forwardKeys = msgForwarder->getForwardKeys();
