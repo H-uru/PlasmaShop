@@ -18,6 +18,7 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plSceneNode.h>
+#include <PRP/Animation/pfObjectFlocker.h>
 #include <PRP/Animation/plLineFollowMod.h>
 #include <PRP/Animation/plViewFaceModifier.h>
 #include <PRP/Audio/plAudible.h>
@@ -28,6 +29,7 @@
 #include <PRP/Avatar/plArmatureMod.h>
 #include <PRP/Avatar/plAvatarClothing.h>
 #include <PRP/Avatar/plClothingItem.h>
+#include <PRP/Avatar/plLadderModifier.h>
 #include <PRP/Avatar/plMultistageBehMod.h>
 #include <PRP/Avatar/plSittingModifier.h>
 #include <PRP/Camera/plCameraBrain.h>
@@ -86,11 +88,13 @@
 #include <PRP/Region/plRelevanceRegion.h>
 #include <PRP/Region/plSimpleRegionSensor.h>
 #include <PRP/Region/plSoftVolume.h>
+#include <PRP/Region/plSwimRegion.h>
 #include <PRP/Region/plVisRegion.h>
 #include <PRP/Surface/hsGMaterial.h>
 #include <PRP/Surface/plDynaDecalMgr.h>
 #include <PRP/Surface/plDynaRippleMgr.h>
 #include <PRP/Surface/plDynamicEnvMap.h>
+#include <PRP/Surface/plGrassShaderMod.h>
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plLayerAnimation.h>
 #include <PRP/Surface/plLayerInterface.h>
@@ -864,6 +868,10 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(visRegion->getVisMgr());
         } else if (auto relevanceRegion = plRelevanceRegion::Convert(c, false)) {
             keys.emplace_back(relevanceRegion->getRegion());
+        } else if (auto swimCircularCurrentRegion = plSwimCircularCurrentRegion::Convert(c, false)) {
+            keys.emplace_back(swimCircularCurrentRegion->getCurrentObj());
+        } else if (auto swimStraightCurrentRegion = plSwimStraightCurrentRegion::Convert(c, false)) {
+            keys.emplace_back(swimStraightCurrentRegion->getCurrentObj());
         }
     } else if (auto winAudible = plWinAudible::Convert(c, false)) {
         const auto& sounds = winAudible->getSounds();
@@ -1076,6 +1084,18 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(gameMarkerModifier->getBounceAnimKey());
 
             // TODO Look up sound indices in the corresponding plWinAudible
+        } else if (auto objectFlocker = pfObjectFlocker::Convert(c, false)) {
+            keys.emplace_back(objectFlocker->getBoidKey());
+        } else if (auto grassShaderMod = plGrassShaderMod::Convert(c, false)) {
+            keys.emplace_back(grassShaderMod->getMaterial());
+        } else if (auto ladderModifier = plLadderModifier::Convert(c, false)) {
+            keys.emplace_back(ladderModifier->getTopLogic());
+            keys.emplace_back(ladderModifier->getBottomLogic());
+            keys.emplace_back(ladderModifier->getMainLogic());
+            keys.emplace_back(ladderModifier->getExitTop());
+            keys.emplace_back(ladderModifier->getExitBottom());
+            keys.emplace_back(ladderModifier->getTopPos());
+            keys.emplace_back(ladderModifier->getBottomPos());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
@@ -1206,6 +1226,16 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
         }
     } else if (auto lodMipmap = plLODMipmap::Convert(c, false)) {
         keys.emplace_back(lodMipmap->getBase());
+    } else if (auto dynamicCamMap = plDynamicCamMap::Convert(c, false)) {
+        const auto& visRegions = dynamicCamMap->getVisRegions();
+        keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+        const auto& targetNodes = dynamicCamMap->getTargetNodes();
+        keys.insert(keys.begin(), targetNodes.begin(), targetNodes.end());
+        const auto& matLayers = dynamicCamMap->getMatLayers();
+        keys.insert(keys.begin(), matLayers.begin(), matLayers.end());
+        keys.emplace_back(dynamicCamMap->getCamera());
+        keys.emplace_back(dynamicCamMap->getRootNode());
+        keys.emplace_back(dynamicCamMap->getDisableTexture());
     }
 
     return keys;
