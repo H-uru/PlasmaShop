@@ -25,6 +25,7 @@
 #include <PRP/Audio/plSound.h>
 #include <PRP/Avatar/plAGMasterMod.h>
 #include <PRP/Avatar/plArmatureEffects.h>
+#include <PRP/Avatar/plArmatureMod.h>
 #include <PRP/Avatar/plAvatarClothing.h>
 #include <PRP/Avatar/plClothingItem.h>
 #include <PRP/Avatar/plMultistageBehMod.h>
@@ -925,6 +926,28 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             const auto& eoaKeys = agMasterMod->getEoaKeys();
             keys.insert(keys.begin(), eoaKeys.begin(), eoaKeys.end());
             keys.emplace_back(agMasterMod->getMsgForwarder());
+
+            if (auto armatureModBase = plArmatureModBase::Convert(c, false)) {
+                const auto& meshes = armatureModBase->getMeshes();
+                keys.insert(keys.begin(), meshes.begin(), meshes.end());
+                if (priority >= pqRefPriority::kFlatChildren) {
+                    // The bones should all also appear somewhere under the meshes.
+                    for (const auto& unusedBone : armatureModBase->getUnusedBones()) {
+                        keys.insert(keys.begin(), unusedBone.begin(), unusedBone.end());
+                    }
+                }
+                // TODO Recurse into the brains (does it really matter for PRPs though?)
+                keys.emplace_back(armatureModBase->getDetector());
+
+                if (auto armatureMod = plArmatureMod::Convert(c, false)) {
+                    if (priority >= pqRefPriority::kBackRefs) {
+                        // This should always be one of the meshes from the earlier vector.
+                        keys.emplace_back(armatureMod->getDefaultMesh());
+                    }
+                    keys.emplace_back(armatureMod->getClothingOutfit());
+                    keys.emplace_back(armatureMod->getEffects());
+                }
+            }
         } else if (auto lineFollowMod = plLineFollowMod::Convert(c, false)) {
             keys.emplace_back(lineFollowMod->getPathParent());
             keys.emplace_back(lineFollowMod->getRefObj());
