@@ -69,6 +69,7 @@
 #include <PRP/Modifier/plModifier.h>
 #include <PRP/Modifier/plPostEffectMod.h>
 #include <PRP/Modifier/plPythonFileMod.h>
+#include <PRP/Modifier/plRandomSoundMod.h>
 #include <PRP/Modifier/plResponderModifier.h>
 #include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
@@ -754,6 +755,26 @@ bool pqHasTargets(plCreatable* c)
     return c->ClassInstance(kModifier);
 }
 
+static plWinAudible* pqGetAudibleForModifier(plSingleModifier* modifier)
+{
+    if (modifier->getTargetsCount() == 0) {
+        return nullptr;
+    }
+    const plKey& sceneObjectKey = modifier->getTarget(0);
+    if (!sceneObjectKey.Exists()) {
+        return nullptr;
+    }
+    auto sceneObject = plSceneObject::Convert(sceneObjectKey->getObj(), false);
+    if (sceneObject == nullptr || !sceneObject->getAudioInterface().Exists()) {
+        return nullptr;
+    }
+    auto audioInterface = plAudioInterface::Convert(sceneObject->getAudioInterface()->getObj(), false);
+    if (audioInterface == nullptr || !audioInterface->getAudible().Exists()) {
+        return nullptr;
+    }
+    return plWinAudible::Convert(audioInterface->getAudible()->getObj());
+}
+
 std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
 {
     std::vector<plKey> keys;
@@ -961,6 +982,21 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(lineFollowMod->getRefObj());
             const auto& stereizers = lineFollowMod->getStereizers();
             keys.insert(keys.begin(), stereizers.begin(), stereizers.end());
+        } else if (auto randomSoundMod = plRandomSoundMod::Convert(c, false)) {
+            if (plWinAudible* winAudible = pqGetAudibleForModifier(randomSoundMod)) {
+                const auto& sounds = winAudible->getSounds();
+                for (const auto& group : randomSoundMod->getGroups()) {
+                    if (group.getGroupedIdx() == -1) {
+                        for (const auto index : group.getIndices()) {
+                            if (index < sounds.size()) {
+                                keys.emplace_back(sounds[index]);
+                            }
+                        }
+                    } else if (group.getGroupedIdx() >= 0 && group.getGroupedIdx() < sounds.size()) {
+                        keys.emplace_back(sounds[group.getGroupedIdx()]);
+                    }
+                }
+            }
         } else if (auto postEffectMod = plPostEffectMod::Convert(c, false)) {
             if (priority >= pqRefPriority::kBackRefs) {
                 keys.emplace_back(postEffectMod->getNodeKey());
@@ -1083,7 +1119,15 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(gameMarkerModifier->getOpenAnimKey());
             keys.emplace_back(gameMarkerModifier->getBounceAnimKey());
 
-            // TODO Look up sound indices in the corresponding plWinAudible
+            if (plWinAudible* winAudible = pqGetAudibleForModifier(gameMarkerModifier)) {
+                const auto& sounds = winAudible->getSounds();
+                if (gameMarkerModifier->getPlaceSoundIdx() < sounds.size()) {
+                    keys.emplace_back(sounds[gameMarkerModifier->getPlaceSoundIdx()]);
+                }
+                if (gameMarkerModifier->getHitSoundIdx() < sounds.size()) {
+                    keys.emplace_back(sounds[gameMarkerModifier->getHitSoundIdx()]);
+                }
+            }
         } else if (auto objectFlocker = pfObjectFlocker::Convert(c, false)) {
             keys.emplace_back(objectFlocker->getBoidKey());
         } else if (auto grassShaderMod = plGrassShaderMod::Convert(c, false)) {
