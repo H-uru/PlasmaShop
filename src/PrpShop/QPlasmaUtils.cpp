@@ -1096,6 +1096,8 @@ std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
             keys.emplace_back(ladderModifier->getExitBottom());
             keys.emplace_back(ladderModifier->getTopPos());
             keys.emplace_back(ladderModifier->getBottomPos());
+        } else if (auto eaxReverbEffect = plEAXReverbEffect::Convert(c, false)) {
+            keys.emplace_back(eaxReverbEffect->getSoftRegion());
         }
     } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
         const auto& children = andConditionalObject->getChildren();
