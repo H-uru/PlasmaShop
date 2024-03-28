@@ -1262,12 +1262,42 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
         }
     }
 
-    // Find all objects that still don't have a place
-    // and add them as "top-level objects" under the page item.
+    // Handle objects that still don't have a place.
     for (const auto& pair : objectItems) {
         QPlasmaTreeItem* item = pair.second;
         if (item->parent() == nullptr) {
-            loadedPage->fStructureItem->addChild(item);
+            plKey key = item->key();
+            // Check if perhaps this is a localized object,
+            // i. e. with a language tag in the key name.
+            ST::string name = key->getName();
+            ST_ssize_t underscore = name.find_last('_');
+            QPlasmaTreeItem* englishItem = nullptr;
+            if (underscore >= 0 && underscore + 4 <= name.size()) {
+                // The name looks like it may contain a language tag.
+                // Try replacing it with "_eng" and see if a corresponding key exists.
+                ST::string englishName = ST::format("{}_eng{}", name.left(underscore), name.substr(underscore + 4));
+                for (const plKey& k : fResMgr.getKeys(loc, key->getType())) {
+                    if (k->getName() == englishName) {
+                        auto it = objectItems.find(k);
+                        if (it != objectItems.end()) {
+                            englishItem = it->second;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (englishItem != nullptr) {
+                // Add this localized object under its corresponding English object.
+                // (The English object is what gets referenced from other objects,
+                // so this integrates the non-English object into the overall structure.)
+                englishItem->addChild(item);
+            } else {
+                // Add it as a "top-level object" under the page item.
+                // Normally, only the scene node or a top-level scene object should end up here,
+                // but some pages also contain other "loose" unused objects.
+                loadedPage->fStructureItem->addChild(item);
+            }
         }
     }
 }
