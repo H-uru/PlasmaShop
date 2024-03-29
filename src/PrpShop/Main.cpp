@@ -1276,12 +1276,16 @@ void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
                 // The name looks like it may contain a language tag.
                 // Try replacing it with "_eng" and see if a corresponding key exists.
                 ST::string englishName = ST::format("{}_eng{}", name.left(underscore), name.substr(underscore + 4));
-                for (const plKey& k : fResMgr.getKeys(loc, key->getType())) {
-                    if (k->getName() == englishName) {
-                        auto it = objectItems.find(k);
-                        if (it != objectItems.end()) {
-                            englishItem = it->second;
-                            break;
+                // Check that the language tag isn't already "_eng",
+                // otherwise this would try to make the item a child of itself!
+                if (englishName != name) {
+                    for (const plKey& k : fResMgr.getKeys(loc, key->getType())) {
+                        if (k->getName() == englishName) {
+                            auto it = objectItems.find(k);
+                            if (it != objectItems.end()) {
+                                englishItem = it->second;
+                                break;
+                            }
                         }
                     }
                 }
