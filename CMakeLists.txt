@@ -30,11 +30,11 @@ if(Qt5_FOUND AND NOT TARGET Qt::Core)
     endforeach()
 endif()
 
-find_package(KF5SyntaxHighlighting REQUIRED)
-if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
-    message(WARNING "KF5SyntaxHighlighting version 5.39.0 or later is required \
-in order to use custom highlighting rules.  KF5SyntaxHighlighting version \
-${KF5SyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
+find_package(KF${QT_VERSION_MAJOR}SyntaxHighlighting REQUIRED)
+if(KF${QT_VERSION_MAJOR}SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
+    message(WARNING "KSyntaxHighlighting version 5.39.0 or later is required \
+in order to use custom highlighting rules.  KSyntaxHighlighting version \
+${KFSyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
     add_definitions("-DKSYN_NO_CUSTOM_RULES_SUPPORT")
 endif()
 

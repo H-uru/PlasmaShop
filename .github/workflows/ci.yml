@@ -115,7 +115,7 @@ jobs:
           dir: ${{ github.workspace }}\qt
           cache: true
 
-      # KF5SyntaxHighlighting and ecm release in lock-step
+      # KSyntaxHighlighting and ecm release in lock-step
       - name: Checkout ECM
         uses: actions/checkout@v4
         with:
@@ -134,15 +134,15 @@ jobs:
           cmake --build . --config Release -j 2
           cmake --build . --config Release --target INSTALL
 
-      # Build KF5SyntaxHighlighting manually due to Qt dependency...
-      - name: Checkout KF5SyntaxHighlighting
+      # Build KSyntaxHighlighting manually due to Qt dependency...
+      - name: Checkout KSyntaxHighlighting
         uses: actions/checkout@v4
         with:
           repository: KDE/syntax-highlighting
           path: syntax-highlighting
           ref: ${{ matrix.cfg.kf5 }}
 
-      - name: Build KF5SyntaxHighlighting
+      - name: Build KSyntaxHighlighting
         run: |
           cd syntax-highlighting
           mkdir build && cd build
