@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.14)
 project(PlasmaShop)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -74,8 +74,13 @@ endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 set(QTEXTPAD_WIDGET_ONLY ON)
-add_subdirectory(qtextpad)
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qtextpad/lib")
+include(FetchContent)
+FetchContent_Declare(qtextpad
+    GIT_REPOSITORY https://github.com/zrax/qtextpad.git
+    GIT_TAG 1.11
+)
+FetchContent_MakeAvailable(qtextpad)
+include_directories("${qtextpad_SOURCE_DIR}/lib")
 
 add_subdirectory(src)
 
