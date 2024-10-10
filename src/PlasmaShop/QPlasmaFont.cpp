@@ -43,6 +43,9 @@ QPlasmaCharWidget::QPlasmaCharWidget(QWidget* parent)
 
 void QPlasmaCharWidget::reloadFont()
 {
+    if (!fFont)
+        return;
+
     // Recompute layout
     const QSize viewportSize = viewport()->size();
     fCharsPerLine = std::max<int>(viewportSize.width() / (fFont->getWidth() + 1), 1);
@@ -53,7 +56,7 @@ void QPlasmaCharWidget::reloadFont()
     verticalScrollBar()->setSingleStep(fFont->getMaxCharHeight() / 2);
 }
 
-static QImage::Format fontImageFormat(plFont* font)
+static QImage::Format fontImageFormat(const plFont* font)
 {
     switch (font->getBPP()) {
     case 1:
@@ -67,6 +70,24 @@ static QImage::Format fontImageFormat(plFont* font)
     }
 }
 
+static QImage characterImage(const plFont* font, size_t stride,
+                             QImage::Format format, size_t idx)
+{
+    Q_ASSERT(font);
+
+    const plFont::plCharacter& ch = font->getCharacter(idx);
+    if (ch.getHeight() == 0 && ch.getOffset() == 0)
+        return QImage();
+
+    QImage cimg(font->getGlyph(idx), font->getWidth(), ch.getHeight(),
+                stride, format);
+    if (font->getBPP() == 1) {
+        // This is actually 1-bit alpha, but QImage doesn't have a format for that.
+        cimg.setColorTable({ qRgba(0, 0, 0, 0), qRgba(0, 0, 0, 255) });
+    }
+    return std::move(cimg).convertToFormat(QImage::Format_ARGB32_Premultiplied);
+}
+
 void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(viewport());
@@ -77,7 +98,8 @@ void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
 
     painter.setPen(pal.color(QPalette::Midlight));
 
-    const size_t stride = fFont->getStride();
+    const auto stride = fFont->getStride();
+    const auto format = fontImageFormat(fFont);
     for (size_t c = 0; c < fFont->getNumCharacters(); ++c) {
         QRect rGlyph((c % fCharsPerLine) * (fFont->getWidth() + 1),
                      (c / fCharsPerLine) * (fFont->getMaxCharHeight() + 1),
@@ -87,10 +109,9 @@ void QPlasmaCharWidget::paintEvent(QPaintEvent* event)
         if (static_cast<int>(c) == fSelected && hasFocus())
             painter.fillRect(rGlyph, pal.color(QPalette::Highlight));
 
-        const plFont::plCharacter& ch = fFont->getCharacter(c);
-        QImage cimg(fFont->getGlyph(c), fFont->getWidth(), ch.getHeight(),
-                    stride, fontImageFormat(fFont));
-        painter.drawImage(rGlyph.topLeft(), cimg);
+        QImage cimg = characterImage(fFont, stride, format, c);
+        if (!cimg.isNull())
+            painter.drawImage(rGlyph.topLeft(), cimg);
         painter.drawLine(rGlyph.right() + 1, rGlyph.top(),
                          rGlyph.right() + 1, rGlyph.bottom() + 1);
         painter.drawLine(rGlyph.left(), rGlyph.bottom() + 1,
@@ -155,6 +176,8 @@ QPlasmaCharRender::QPlasmaCharRender(QWidget* parent)
 
 void QPlasmaCharRender::reloadFont()
 {
+    if (!fFont)
+        return;
     setFixedSize(fFont->getWidth() * 3, fFont->getMaxCharHeight() * 3);
 }
 
@@ -178,9 +201,6 @@ void QPlasmaCharRender::paintEvent(QPaintEvent* event)
     const int basePos = fFont->getMaxCharHeight() * 2;
     painter.drawLine(0, basePos, width(), basePos);
 
-    if (ch.getHeight() == 0)
-        return;
-
     const qreal adjustedWidth = -ch.getLeftKern() + fFont->getWidth() + ch.getRightKern();
     const qreal startX = (width() - (adjustedWidth * 2)) / 2;
 
@@ -190,11 +210,12 @@ void QPlasmaCharRender::paintEvent(QPaintEvent* event)
     painter.drawLine(QPointF(startX + (fFont->getWidth() + ch.getRightKern()) * 2, 0),
                      QPointF(startX + (fFont->getWidth() + ch.getRightKern()) * 2, height()));
 
-    QImage cimg(fFont->getGlyph(fCharIdx), fFont->getWidth(), ch.getHeight(),
-                stride, fontImageFormat(fFont));
-    QRectF destRect(0, 0, fFont->getWidth() * 2, ch.getHeight() * 2);
-    destRect.translate(startX, basePos - ch.getBaseline() * 2);
-    painter.drawImage(destRect, cimg);
+    QImage cimg = characterImage(fFont, stride, fontImageFormat(fFont), fCharIdx);
+    if (!cimg.isNull()) {
+        QRectF destRect(0, 0, fFont->getWidth() * 2, ch.getHeight() * 2);
+        destRect.translate(startX, basePos - ch.getBaseline() * 2);
+        painter.drawImage(destRect, cimg);
+    }
 }
 
 
