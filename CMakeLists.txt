@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.14)
 project(PlasmaShop)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -30,11 +30,11 @@ if(Qt5_FOUND AND NOT TARGET Qt::Core)
     endforeach()
 endif()
 
-find_package(KF5SyntaxHighlighting REQUIRED)
-if(KF5SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
-    message(WARNING "KF5SyntaxHighlighting version 5.39.0 or later is required \
-in order to use custom highlighting rules.  KF5SyntaxHighlighting version \
-${KF5SyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
+find_package(KF${QT_VERSION_MAJOR}SyntaxHighlighting REQUIRED)
+if(KF${QT_VERSION_MAJOR}SyntaxHighlighting_VERSION VERSION_LESS "5.39.0")
+    message(WARNING "KSyntaxHighlighting version 5.39.0 or later is required \
+in order to use custom highlighting rules.  KSyntaxHighlighting version \
+${KFSyntaxHighlighting_VERSION} was detected, so these rules will be unavailable.")
     add_definitions("-DKSYN_NO_CUSTOM_RULES_SUPPORT")
 endif()
 
@@ -74,8 +74,13 @@ endif()
 add_definitions(-DPLASMASHOP_VERSION="${PlasmaShop_VERSION}")
 
 set(QTEXTPAD_WIDGET_ONLY ON)
-add_subdirectory(qtextpad)
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/qtextpad/lib")
+include(FetchContent)
+FetchContent_Declare(qtextpad
+    GIT_REPOSITORY https://github.com/zrax/qtextpad.git
+    GIT_TAG 1.11
+)
+FetchContent_MakeAvailable(qtextpad)
+include_directories("${qtextpad_SOURCE_DIR}/lib")
 
 add_subdirectory(src)
 
