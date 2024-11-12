@@ -52,13 +52,11 @@ static void setExportDir(const QString& filename)
 
 unsigned char* getTextureData(plMipmap *tex, size_t level=0)
 {
-    unsigned char *imageData;
-
     if (level >= tex->getNumLevels())
         level = tex->getNumLevels() - 1;
 
     size_t size = tex->GetUncompressedSize(level);
-    imageData = new unsigned char[size];
+    unsigned char* imageData = new unsigned char[size];
     tex->DecompressImage(level, imageData, size);
 
     if (tex->getCompressionType() == plMipmap::kDirectXCompression) {
@@ -353,7 +351,7 @@ void QMipmap::onExportImage() {
     if (filename.isEmpty())
         return;
 
-    QString file_ext = QFileInfo(filename).suffix();
+    QString file_ext = QFileInfo(filename).suffix().toLower();
     if (file_ext == "dds") {
         hsFileStream S;
         if (!S.open(qstr2st(filename), fmCreate)) {
@@ -373,8 +371,7 @@ void QMipmap::onExportImage() {
             QMessageBox::critical(this, tr("Error exporting DDS"),
                                   QString::fromUtf8(ex.what()), QMessageBox::Ok);
         }
-    }
-    else if (file_ext == "jpg" || file_ext == "jpeg") {
+    } else if (file_ext == "jpg" || file_ext == "jpeg") {
         hsFileStream S;
         if (!S.open(qstr2st(filename), fmCreate)) {
             QMessageBox::critical(this, tr("Error exporting JPEG"),
@@ -387,14 +384,11 @@ void QMipmap::onExportImage() {
             S.write(tex->getJpegSize(), tex->getJpegImage());
         } else {
             size_t image_size = tex->GetUncompressedSize(0);
-            auto image_data = new unsigned char[image_size];
-            tex->DecompressImage(0, image_data, image_size);
-            plJPEG::CompressJPEG(&S, (void*)(image_data), image_size, tex->getWidth(), tex->getHeight(), tex->getBPP());
-            delete[] image_data;
+            auto image_data = std::make_unique<unsigned char[]>(image_size);
+            tex->DecompressImage(0, image_data.get(), image_size);
+            plJPEG::CompressJPEG(&S, image_data.get(), image_size, tex->getWidth(), tex->getHeight(), tex->getBPP());
         }
-        S.close();
-    }
-    else if (file_ext == "png") {
+    } else if (file_ext == "png") {
         hsFileStream S;
         if (!S.open(qstr2st(filename), fmCreate)) {
             QMessageBox::critical(this, tr("Error exporting PNG"),
@@ -410,7 +404,6 @@ void QMipmap::onExportImage() {
             QMessageBox::critical(this, tr("Error exporting PNG"),
                                   QString::fromUtf8(ex.what()), QMessageBox::Ok);
         }
-        S.close();
     }
 
     setExportDir(filename);
@@ -438,28 +431,21 @@ void QMipmap::onImportImage()
     }
 
     try {
-        QString file_ext = QFileInfo(filename).suffix();
+        QString file_ext = QFileInfo(filename).suffix().toLower();
         if (file_ext == "dds") {
             plDDSurface dds;
             dds.read(&S);
-            plMipmap* newTex = dds.createMipmap();
-            tex->CopyFrom(newTex);
-            delete newTex;
+            std::unique_ptr<plMipmap> newTex(dds.createMipmap());
+            tex->CopyFrom(newTex.get());
+        } else if (file_ext == "jpg" || file_ext == "jpeg") {
+            std::unique_ptr<plMipmap> newTex(plJPEG::DecompressJPEG(&S));
+            tex->CopyFrom(newTex.get());
+        } else if (file_ext == "png") {
+            std::unique_ptr<plMipmap> newTex(plPNG::DecompressPNG(&S));
+            tex->CopyFrom(newTex.get());
         }
-        else if (file_ext == "jpg" || file_ext == "jpeg") {
-            plMipmap* newTex = plJPEG::DecompressJPEG(&S);
-            tex->CopyFrom(newTex);
-            delete newTex;
-        }
-        else if (file_ext == "png") {
-            plMipmap* newTex = plPNG::DecompressPNG(&S);
-            tex->CopyFrom(newTex);
-            delete newTex;
-        }
-    }
-    catch (hsException& ex) {
+    } catch (hsException& ex) {
         QMessageBox::critical(this, tr("Error importing image"),
             QString::fromUtf8(ex.what()), QMessageBox::Ok);
     }
-    S.close();
 }
