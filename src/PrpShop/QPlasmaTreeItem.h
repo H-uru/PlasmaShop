@@ -25,34 +25,45 @@ class QPlasmaTreeItem : public QTreeWidgetItem
 {
 private:
     plKey fObjKey;
+    short fClassType;
     plPageInfo* fPage;
     bool fHasBuiltIn, fHasTextures;
     QString fAge;
+    int fAgeSeqPrefix;
 
     QString fFilename;
 
 public:
     enum ItemType
     {
-        kTypeNone = QTreeWidgetItem::UserType, kTypeAge, kTypePage, kTypeKO,
+        kTypeNone = QTreeWidgetItem::UserType, kTypeAge, kTypePage, kTypeClassType, kTypeKO,
         kMaxPlasmaTypes
     };
 
     QPlasmaTreeItem();
     QPlasmaTreeItem(plKey obj);
-    QPlasmaTreeItem(const QString& age);
+    QPlasmaTreeItem(short classType);
+    QPlasmaTreeItem(const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(plPageInfo* page);
     QPlasmaTreeItem(QTreeWidget* parent);
     QPlasmaTreeItem(QTreeWidget* parent, plKey obj);
-    QPlasmaTreeItem(QTreeWidget* parent, const QString& age);
+    QPlasmaTreeItem(QTreeWidget* parent, short classType);
+    QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page);
     QPlasmaTreeItem(QTreeWidgetItem* parent);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj);
-    QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, short classType);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
 
+    void reinit();
+
+    bool operator<(const QTreeWidgetItem& other) const override;
+
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
+    short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
+    int ageSeqPrefix() const { return (type() == kTypeAge) ? fAgeSeqPrefix : INT_MIN; }
     plPageInfo* page() const { return (type() == kTypePage) ? fPage : NULL; }
 
     bool hasBuiltIn() const { return (type() == kTypeAge) ? fHasBuiltIn : false; }
