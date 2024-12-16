@@ -15,7 +15,6 @@ endif()
 
 find_package(HSPlasma REQUIRED)
 find_package(string_theory 2.0 REQUIRED)
-find_package(PythonInterp REQUIRED)
 
 if(NOT DEFINED QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
