@@ -19,10 +19,10 @@ find_package(string_theory 2.0 REQUIRED)
 if(NOT DEFINED QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} 5.10 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt${QT_VERSION_MAJOR} 5.10 REQUIRED COMPONENTS Core Widgets OpenGL)
 if(Qt5_FOUND AND NOT TARGET Qt::Core)
     # The version-generic targets were only added in Qt 5.15
-    foreach(_qt_lib Core Widgets)
+    foreach(_qt_lib Core Widgets OpenGL)
         add_library(Qt::${_qt_lib} INTERFACE IMPORTED)
         set_target_properties(Qt::${_qt_lib} PROPERTIES
                 INTERFACE_LINK_LIBRARIES "Qt5::${_qt_lib}")

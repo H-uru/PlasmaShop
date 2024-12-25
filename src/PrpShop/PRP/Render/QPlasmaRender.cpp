@@ -16,9 +16,6 @@
 
 #include "QPlasmaRender.h"
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
 #include <Debug/plDebug.h>
 #include <PRP/Surface/plLayer.h>
 #include <PRP/Surface/plCubicEnvironmap.h>
@@ -116,6 +113,8 @@ QActionGroup* QPlasmaRender::createViewActions()
 
 void QPlasmaRender::initializeGL()
 {
+    initializeOpenGLFunctions();
+
     glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -139,7 +138,17 @@ void QPlasmaRender::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)width/(float)height, 0.001f, 20000.0f);
+
+    // Below is essentially the implementation of
+    // gluPerspective(45.0f, (float)width/(float)height, 0.001f, 20000.0f);
+
+    GLdouble xmin, xmax, ymin, ymax;
+    ymax = 0.001f; // * tan(45.f degrees) which == 1
+    ymin = -ymax;
+    xmin = ymin * ((float)width/(float)height);
+    xmax = ymax * ((float)width/(float)height);
+
+    glFrustum(xmin, xmax, ymin, ymax, 0.001f, 20000.0f);
 }
 
 void QPlasmaRender::paintGL()
