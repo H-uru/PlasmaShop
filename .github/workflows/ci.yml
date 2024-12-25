@@ -12,7 +12,12 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libkf5syntaxhighlighting-dev ninja-build qtbase5-dev
+          sudo apt-get install -y \
+              libjpeg-turbo8-dev \
+              libkf5syntaxhighlighting-dev \
+              libpng-dev \
+              ninja-build \
+              qtbase5-dev
 
       - name: Checkout string_theory
         uses: actions/checkout@v4
