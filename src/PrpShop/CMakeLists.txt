@@ -153,16 +153,13 @@ include_directories("${PROJECT_SOURCE_DIR}/src/PrpShop")
 # QtOpenGL dependencies (maybe the Qt OpenGL cmake stuff is broken, but I had
 # to copy this here from Qt4ConfigDependentSettings.cmake)
 find_package(OpenGL)
-set(QT_QTOPENGL_LIB_DEPENDENCIES ${OPENGL_glu_LIBRARY} ${OPENGL_gl_LIBRARY})
 
 add_executable(PrpShop WIN32 MACOSX_BUNDLE
                ${PrpShop_Sources} ${PrpShop_Headers} ${PrpShop_QRC})
-target_link_libraries(PrpShop PSCommon Qt::Core Qt::Widgets)
+target_link_libraries(PrpShop PSCommon HSPlasma OpenGL::GL Qt::Core Qt::Widgets Qt::OpenGL)
 if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
     target_link_libraries(PrpShop Qt::OpenGLWidgets)
 endif()
-target_link_libraries(PrpShop HSPlasma)
-target_link_libraries(PrpShop ${QT_QTOPENGL_LIB_DEPENDENCIES})
 
 if(APPLE)
     set(MACOSX_BUNDLE true)

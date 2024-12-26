@@ -25,7 +25,7 @@
 
 #include "QTrackball.h"
 
-class QPlasmaRender : public QOpenGLWidget
+class QPlasmaRender : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
