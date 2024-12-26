@@ -73,8 +73,8 @@ private:
     {
         // Main Menu
         kFileNewPage, kFileOpen, kFileSave, kFileSaveAs, kFileExit,
-        kToolsProperties, kToolsShowTypeIDs, kToolsNewObject, kWindowPrev,
-        kWindowNext, kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
+        kToolsProperties, kToolsShowAgePageIDs, kToolsShowTypeIDs, kToolsNewObject,
+        kWindowPrev, kWindowNext, kWindowTile, kWindowCascade, kWindowClose, kWindowCloseAll,
 
         // Tree Context Menu
         kTreeClose, kTreeEdit, kTreeEditPRC, kTreeEditHex, kTreePreview,
@@ -119,6 +119,7 @@ public slots:
     void treeItemActivated(QTreeWidgetItem* item, int column);
     void treeContextMenu(const QPoint& pos);
     void createNewObject();
+    void showAgePageIDs(bool show);
     void showTypeIDs(bool show);
     void closeWindows(const plLocation& loc);
 
