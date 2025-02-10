@@ -50,18 +50,18 @@ static void setExportDir(const QString& filename)
     settings.setValue("ExportDir", dir.absolutePath());
 }
 
-unsigned char* getTextureData(plMipmap *tex, size_t level=0)
+std::unique_ptr<unsigned char[]> getTextureData(plMipmap *tex, size_t level=0)
 {
     if (level >= tex->getNumLevels())
         level = tex->getNumLevels() - 1;
 
     size_t size = tex->GetUncompressedSize(level);
-    unsigned char* imageData = new unsigned char[size];
-    tex->DecompressImage(level, imageData, size);
+    auto imageData = std::make_unique<unsigned char[]>(size);
+    tex->DecompressImage(level, imageData.get(), size);
 
     if (tex->getCompressionType() == plMipmap::kDirectXCompression) {
         // Manipulate the data from RGBA to BGRA
-        unsigned int* dp = (unsigned int*)imageData;
+        unsigned int* dp = (unsigned int*)imageData.get();
         for (size_t i = 0; i < size; i += 4) {
             //unsigned int alpha = doAlpha ? (*dp & 0xFF000000) : 0xFF000000;
             *dp = (*dp & 0xFF00FF00)
@@ -78,13 +78,11 @@ unsigned char* getTextureData(plMipmap *tex, size_t level=0)
 QTextureBox::~QTextureBox()
 {
     delete fImage;
-    delete[] fImageData;
 }
 
 void QTextureBox::setTexture(plMipmap* tex, int level)
 {
     delete fImage;
-    delete[] fImageData;
 
     if (tex == NULL) {
         fImage = NULL;
@@ -103,7 +101,7 @@ void QTextureBox::setTexture(plMipmap* tex, int level)
     }
 
     fImageData = getTextureData(tex, level);
-    fImage = new QImage(fImageData, tex->getLevelWidth(level),
+    fImage = new QImage(fImageData.get(), tex->getLevelWidth(level),
                         tex->getLevelHeight(level), QImage::Format_ARGB32);
     resize(tex->getLevelWidth(level), tex->getLevelHeight(level));
     update();
@@ -399,7 +397,7 @@ void QMipmap::onExportImage() {
 
         try {
             auto imageData = getTextureData(tex);
-            plPNG::CompressPNG(&S, imageData, tex->GetUncompressedSize(0), tex->getLevelWidth(0), tex->getLevelHeight(0), tex->getBPP());
+            plPNG::CompressPNG(&S, imageData.get(), tex->GetUncompressedSize(0), tex->getLevelWidth(0), tex->getLevelHeight(0), tex->getBPP());
         } catch (hsException& ex) {
             QMessageBox::critical(this, tr("Error exporting PNG"),
                                   QString::fromUtf8(ex.what()), QMessageBox::Ok);

@@ -30,7 +30,7 @@ class QTextureBox : public QWidget
 
 protected:
     QImage* fImage;
-    unsigned char* fImageData;
+    std::unique_ptr<unsigned char[]> fImageData;
 
 public:
     QTextureBox(QWidget* parent = NULL)
