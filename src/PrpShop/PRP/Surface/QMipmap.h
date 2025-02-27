@@ -30,7 +30,7 @@ class QTextureBox : public QWidget
 
 protected:
     QImage* fImage;
-    unsigned char* fImageData;
+    std::unique_ptr<unsigned char[]> fImageData;
 
 public:
     QTextureBox(QWidget* parent = NULL)
@@ -85,10 +85,8 @@ public:
     QMipmap(plCreatable* pCre, QWidget* parent = NULL);
 
 private slots:
-    void onExportDDS();
-    void onExportJPEG();
-    void onImportDDS();
-    void onImportJPEG();
+    void onExportImage();
+    void onImportImage();
 };
 
 QString getCompressionText(plBitmap* tex);
