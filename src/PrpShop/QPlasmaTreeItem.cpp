@@ -156,6 +156,10 @@ void QPlasmaTreeItem::reinit()
             setText(0, pqFormatPageName(fPage));
             setIcon(0, QIcon(":/img/page.png"));
             break;
+
+        default:
+            setText(0, QString("[Error: unhandled item type %1]").arg(type()));
+            setIcon(0, QIcon());
     }
 }
 
