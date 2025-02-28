@@ -24,6 +24,7 @@
 #include "QPlasma.h"
 #include "QNumerics.h"
 
+extern bool s_showAgePageIDs;
 extern bool s_showTypeIDs;
 
 enum
