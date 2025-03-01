@@ -19,45 +19,18 @@
 
 #include "PRP/QCreatable.h"
 
-#include <PRP/Surface/plLayerAnimation.h>
 #include "PRP/QObjLink.h"
-#include "PRP/QMatrix44.h"
-#include "QColorEdit.h"
 
 class QLayerAnimation : public QCreatable
 {
     Q_OBJECT
 
 protected:
-    QCreatableLink* fSynchObjLink;
-    QCreatableLink* fBaseLayer;
-    QControllerLink* fPreshade;
-    QControllerLink* fRuntime;
-    QControllerLink* fAmbient;
-    QControllerLink* fSpecular;
-    QControllerLink* fOpacity;
-    QControllerLink* fTransform;
+    QCreatableLink* fLayerAnimBaseLink;
     QCreatableLink* fAnimTimeConvert;
 
 public:
     QLayerAnimation(plCreatable* pCre, QWidget* parent = NULL);
-
-protected slots:
-    void setBaseLayer();
-    void unsetBaseLayer();
-
-    void newPreshade(short type);
-    void newRuntime(short type);
-    void newAmbient(short type);
-    void newSpecular(short type);
-    void newOpacity(short type);
-    void newTransform(short type);
-    void delPreshade();
-    void delRuntime();
-    void delAmbient();
-    void delSpecular();
-    void delOpacity();
-    void delTransform();
 };
 
 #endif
