@@ -52,6 +52,7 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
     QAction* delObjItem = menu.addAction(tr("Remove Object"));
     menu.addSeparator();
     QAction* openMatItem = menu.addAction(tr("Open Materials"));
+    QAction* openIcicle = menu.addAction(tr("Open Icicles"));
 
     if (currentItem() == NULL)
         delObjItem->setEnabled(false);
@@ -75,6 +76,14 @@ void QDrawableList::contextMenuEvent(QContextMenuEvent* evt)
             plIcicle* ice = dspans->getIcicle(dis.fIndices[i]);
             hsKeyedObject* mat = mgr->getObject(mats[ice->getMaterialIdx()]);
             PrpShopMain::Instance()->editCreatable(mat);
+        }
+    } else if (sel == openIcicle) {
+        plResManager* mgr = PrpShopMain::ResManager();
+        int idx = indexOfTopLevelItem(currentItem());
+        plDrawableSpans* dspans = plDrawableSpans::Convert(mgr->getObject(fKeys[idx]));
+        plDISpanIndex dis = dspans->getDIIndex(fDrawKeys[idx]);
+        for (size_t i = 0; i < dis.fIndices.size(); i++) {
+            PrpShopMain::Instance()->editCreatable(dspans, kSpan_Type | dis.fIndices[i]);
         }
     }
 }

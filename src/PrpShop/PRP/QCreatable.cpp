@@ -27,7 +27,11 @@ QCreatable::QCreatable(plCreatable* pCre, int type, QWidget* parent)
     QIcon ico = pqGetTypeIcon(type);
     if (!ico.isNull())
         setWindowIcon(ico);
-    hsKeyedObject* ko = hsKeyedObject::Convert(fCreatable, false);
+
+    hsKeyedObject* ko = NULL;
+    if (type != kSpan_Type)
+        ko = hsKeyedObject::Convert(fCreatable, false);
+
     if (ko != NULL && ko->getKey().Exists()) {
         setWindowTitle(pqGetFriendlyClassName(type) +
                        ": " + st2qstr(ko->getKey()->getName()));
@@ -75,6 +79,7 @@ void QCreatable::closeEvent(QCloseEvent*)
 #include "PRP/Avatar/QMultistageBehMod.h"
 #include "PRP/Avatar/QAvLadderMod.h"
 #include "PRP/Avatar/QSeekPointMod.h"
+#include "PRP/Geometry/QIcicle.h"
 #include "PRP/GUI/QGUIButtonMod.h"
 #include "PRP/GUI/QGUICheckBoxCtrl.h"
 #include "PRP/GUI/QGUIClickMapCtrl.h"
@@ -133,6 +138,12 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
 
     if ((type & kHex_Type) != 0)
         return new QHexViewer(pCre, parent);
+
+    if ((type & kSpan_Type) != 0) {
+        // pCre is a plDrawableSpan object
+        // type is kSpanType ORed with the index of the icicle we want
+        return new QIcicle(pCre, type & ~kSpan_Type, parent);
+    }
 
     switch (type) {
     // Keyed Object types

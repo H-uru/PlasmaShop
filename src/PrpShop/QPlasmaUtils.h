@@ -34,6 +34,7 @@ enum
     kTargets_Type = 0x4000,
     kRESERVED_Type = 0x8000,    // 0x8000 is reserved for null keyed objects
     kHex_Type = 0x10000,
+    kSpan_Type = 0x20000,
     kRealType_Mask = 0x8FFF,
 
     kPreviewSceneNode = kPreview_Type | kSceneNode,
