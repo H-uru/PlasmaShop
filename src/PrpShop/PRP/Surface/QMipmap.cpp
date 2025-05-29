@@ -50,8 +50,9 @@ static void setExportDir(const QString& filename)
     settings.setValue("ExportDir", dir.absolutePath());
 }
 
-std::unique_ptr<unsigned char[]> getTextureData(plMipmap *tex, size_t level=0)
+static std::unique_ptr<unsigned char[]> getTextureData(plMipmap *tex, size_t level=0)
 {
+    Q_ASSERT(tex->getNumLevels() > 0);
     if (level >= tex->getNumLevels())
         level = tex->getNumLevels() - 1;
 
@@ -363,8 +364,6 @@ void QMipmap::onExportImage() {
             plDDSurface dds;
             dds.setFromMipmap(tex);
             dds.write(&S);
-
-            S.close();
         } catch (hsException& ex) {
             QMessageBox::critical(this, tr("Error exporting DDS"),
                                   QString::fromUtf8(ex.what()), QMessageBox::Ok);
