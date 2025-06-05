@@ -346,6 +346,9 @@ void QPlasmaRender::build(NavigationMode navMode, DrawMode drawMode)
             for (size_t idx=0; idx<di.fIndices.size(); idx++) {
                 plIcicle* ice = (plIcicle*)span->getSpan(di.fIndices[idx]);
                 hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
+                if (!mat)
+                    continue;
+
                 for (size_t lay = 0; lay < mat->getLayers().size(); lay++) {
                     if (fLayers.find(mat->getLayers()[lay]) == fLayers.end()) {
                         fLayers[mat->getLayers()[lay]] = LayerInfo(fTexCount, 0);
@@ -619,6 +622,9 @@ void QPlasmaRender::compileObject(plKey key, DrawMode mode)
             }
 
             hsGMaterial* mat = hsGMaterial::Convert(span->getMaterials()[ice->getMaterialIdx()]->getObj());
+            if (!mat)
+                continue;
+
             for (size_t lay = 0; lay < mat->getLayers().size(); lay++) {
             //size_t lay = 0 ; {
                 plLayerInterface* layer = plLayerInterface::Convert(mat->getLayers()[lay]->getObj());
