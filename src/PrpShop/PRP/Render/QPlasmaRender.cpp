@@ -28,7 +28,9 @@
 #include <cmath>
 #include "QPlasmaUtils.h"
 
-PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
+#ifndef HAVE_GLCOMPRESSEDTEXIMAGE2DARB
+    PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB = NULL;
+#endif
 
 void QPlasmaRender::ObjectInfo::setList(DrawMode mode, int32_t value)
 {
@@ -121,8 +123,10 @@ void QPlasmaRender::initializeGL()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+#ifndef HAVE_GLCOMPRESSEDTEXIMAGE2DARB
     if (glCompressedTexImage2DARB == NULL)
         glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)context()->getProcAddress("glCompressedTexImage2DARB");
+#endif
 
     fTexList = new GLuint[fTexCount];
     glGenTextures(fTexCount, fTexList);
