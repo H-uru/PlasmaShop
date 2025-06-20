@@ -1227,6 +1227,9 @@ int main(int argc, char* argv[])
     plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
+#ifdef Q_OS_MAC
+    app.setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#endif
     PrpShopMain mainWnd;
     mainWnd.show();
     for (int i=1; i<argc; i++)

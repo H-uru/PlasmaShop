@@ -770,6 +770,9 @@ int main(int argc, char* argv[])
     plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
+#ifdef Q_OS_MAC
+    app.setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#endif
     VaultShopMain mainWnd;
     if (argc > 1 && QFile::exists(argv[1]))
         mainWnd.loadGame(argv[1]);

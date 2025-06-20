@@ -1416,6 +1416,9 @@ int main(int argc, char* argv[])
     plDebug::InitFile(plDebug::kDLAll, logpath.toUtf8().constData());
 
     QApplication app(argc, argv);
+#ifdef Q_OS_MAC
+    app.setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#endif
 
     // Set this at the very beginning, so it can be re-used in case the
     // application's CWD changes
