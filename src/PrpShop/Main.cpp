@@ -32,6 +32,7 @@
 #include <QMimeData>
 #include <QStandardPaths>
 #include <QRegularExpression>
+#include <QOpenGLWidget>
 #include <Debug/plDebug.h>
 #include <ResManager/plFactory.h>
 #include <PRP/Surface/plMipmap.h>
@@ -59,6 +60,11 @@ PrpShopMain::PrpShopMain()
     setWindowTitle("PrpShop " PLASMASHOP_VERSION);
     setWindowIcon(QIcon(":/res/PrpShop.svg"));
     setDockOptions(QMainWindow::AnimatedDocks);
+
+    // Qt HACK : Create a dummy OpenGL widget to ensure an OpenGL surface is used.
+    // This prevents the application window from being destroyed and recreated
+    // when the first OpenGL widget is added to the window.
+    (new QOpenGLWidget(this))->hide();
 
     // Set up actions
     fActions[kFileNewPage] = new QAction(qStdIcon("document-new"), tr("New &Page"), this);
