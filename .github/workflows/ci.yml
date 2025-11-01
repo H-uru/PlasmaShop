@@ -58,30 +58,30 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - os: windows-2019
-            generator: Visual Studio 16 2019
+          - os: windows-2022
+            generator: Visual Studio 17 2022
             cmake-arch: Win32
             triplet: x86-windows-static-md
             kf5: v5.116.0
             qt: 5.15.2
             kf5_cmake_args: ""
             qt-arch: win32_msvc2019
-          - os: windows-2019
-            generator: Visual Studio 16 2019
+          - os: windows-2022
+            generator: Visual Studio 17 2022
             cmake-arch: x64
             triplet: x64-windows-static-md
             kf5: v5.116.0
             kf5_cmake_args: ""
             qt: 5.15.2
-            qt_arch: win64_msvc2019_64
-          - os: windows-2019
-            generator: Visual Studio 16 2019
+            qt-arch: win64_msvc2019_64
+          - os: windows-2022
+            generator: Visual Studio 17 2022
             cmake-arch: x64
             triplet: x64-windows-static-md
             kf5: v6.6.0
             kf5_cmake_args: "-DBUILD_WITH_QT6=ON"
             qt: 6.5.3
-            qt_arch: win64_msvc2019_64
+            qt-arch: win64_msvc2019_64
 
     steps:
       - uses: actions/checkout@v4
