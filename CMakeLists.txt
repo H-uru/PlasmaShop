@@ -37,6 +37,14 @@ ${KFSyntaxHighlighting_VERSION} was detected, so these rules will be unavailable
     add_definitions("-DKSYN_NO_CUSTOM_RULES_SUPPORT")
 endif()
 
+try_compile(HAVE_GLCOMPRESSEDTEXIMAGE2DARB ${PROJECT_BINARY_DIR}
+            ${PROJECT_SOURCE_DIR}/cmake/check_glCompressedTexImage2DARB.cpp
+            CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=$<TARGET_PROPERTY:Qt::OpenGL,INCLUDE_DIRECTORIES>"
+            LINK_LIBRARIES Qt::OpenGL)
+if(HAVE_GLCOMPRESSEDTEXIMAGE2DARB)
+    add_definitions("-DHAVE_GLCOMPRESSEDTEXIMAGE2DARB")
+endif()
+
 if(MSVC)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
     # Fix <windows.h> doing stupid stuff to QDateTime's header
