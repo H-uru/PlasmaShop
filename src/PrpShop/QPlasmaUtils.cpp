@@ -80,6 +80,8 @@ QIcon pqGetTypeIcon(int classType)
         return s_icons[kIcoLayer];
     case kLayerAnimation:
         return s_icons[kIcoLayer];
+    case kLayerAnimationBase:
+        return s_icons[kIcoLayer];
     case kLayerDepth:
         return s_icons[kIcoLayer];
     case kLayerSDLAnimation:
@@ -596,7 +598,7 @@ std::vector<short> pqGetValidKOTypes()
         kGUIEditBoxMod, kGUIKnobCtrl, kGUIListBoxMod, kGUIMenuItem,
         kGUIMultiLineEditCtrl, kGUIPopUpMenu, kGUIProgressCtrl,
         kGUIRadioGroupCtrl, kGUISkin, kGUITextBoxMod, kGUIUpDownPairMod,
-        kImageLibMod, kInterfaceInfoModifier, kLayer, kLayerAnimation,
+        kImageLibMod, kInterfaceInfoModifier, kLayer, kLayerAnimation, kLayerAnimationBase,
         kLayerAVI, kLayerBink, kLayerDepth, kLayerLinkAnimation, kLayerMovie,
         kLayerSDLAnimation, kGMaterial, kMaintainersMarkerModifier, kMipmap,
         kMsgForwarder, kMultistageBehMod, kOneShotMod, kPanicLinkRegion,

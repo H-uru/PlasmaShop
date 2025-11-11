@@ -56,6 +56,7 @@ set(PrpShop_Headers
     PRP/Surface/QFadeOpacityMod.h
     PRP/Surface/QLayer.h
     PRP/Surface/QLayerAnimation.h
+    PRP/Surface/QLayerAnimationBase.h
     PRP/Surface/QLayerLinkAnimation.h
     PRP/Surface/QLayerMovie.h
     PRP/Surface/QLayerSDLAnimation.h
@@ -128,6 +129,7 @@ set(PrpShop_Sources
     PRP/Surface/QFadeOpacityMod.cpp
     PRP/Surface/QLayer.cpp
     PRP/Surface/QLayerAnimation.cpp
+    PRP/Surface/QLayerAnimationBase.cpp
     PRP/Surface/QLayerLinkAnimation.cpp
     PRP/Surface/QLayerMovie.cpp
     PRP/Surface/QLayerSDLAnimation.cpp
