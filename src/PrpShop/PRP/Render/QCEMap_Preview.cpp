@@ -50,10 +50,17 @@ QCEMap_Preview::QCEMap_Preview(plCreatable* pCre, QWidget* parent)
 
 const QImage QCEMap_Preview::buildCubeMapTexture(plCubicEnvironmap* obj) const
 {
-    plMipmap* frontFace = obj->getFace(plCubicEnvironmap::kFrontFace);
-    QImage cubemap(frontFace->getWidth() * 3, frontFace->getHeight() * 2, QImage::Format_ARGB32);
+    // Find the size of the largest face for the cubemap atlas
+    uint32_t face_size = 0;
+    for (int i = plCubicEnvironmap::kLeftFace; i < plCubicEnvironmap::kNumFaces; i++) {
+        plMipmap* face = obj->getFace(i);
+        if (face)
+            face_size = std::max({face_size, face->getWidth(), face->getHeight()});
+    }
 
+    QImage cubemap(face_size * 3, face_size * 2, QImage::Format_ARGB32);
     QPainter painter(&cubemap);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
     for (int i = plCubicEnvironmap::kLeftFace; i < plCubicEnvironmap::kNumFaces; i++) {
         auto face_num = QPlasmaCubicRender::FaceOrdering[i];
         plMipmap* face = obj->getFace(face_num);
@@ -73,10 +80,10 @@ const QImage QCEMap_Preview::buildCubeMapTexture(plCubicEnvironmap* obj) const
             }
             face_image = face_image.transformed(QTransform().rotate(face_rotation));
 
-            // Copy the face image into the correct position in the cubemap
-            int x = (i % 3) * face->getHeight();
-            int y = (i / 3) * face->getWidth();
-            painter.drawImage(QRect(x, y, face_image.width(), face_image.height()), face_image, QRect(0, 0, face_image.width(), face_image.height()));
+            // Copy the face image into the correct position in the cubemap, resizing if necessary
+            int x = (i % 3) * face_size;
+            int y = (i / 3) * face_size;
+            painter.drawImage(QRect(x, y, face_size, face_size), face_image, QRect(0, 0, face_image.width(), face_image.height()));
         }
     }
     painter.end();
