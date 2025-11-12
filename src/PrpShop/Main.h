@@ -19,6 +19,7 @@
 
 #include <QMainWindow>
 #include <QMdiArea>
+#include <QTabWidget>
 #include <QTreeWidget>
 #include <QDockWidget>
 #include <QGroupBox>
@@ -34,6 +35,25 @@
 
 class QCreatable;
 
+struct PrpShopLoadedAge
+{
+    QString fAgeName;
+    int fSeqPrefix;
+    bool fHasBuiltIn;
+    bool fHasTextures;
+    QPlasmaTreeItem* fTypesItem;
+    QPlasmaTreeItem* fStructureItem;
+};
+
+struct PrpShopLoadedPage
+{
+    PrpShopLoadedAge* fAge;
+    QString fFilename;
+    plPageInfo* fPage;
+    QPlasmaTreeItem* fTypesItem;
+    QPlasmaTreeItem* fStructureItem;
+};
+
 class PrpShopMain : public QMainWindow
 {
     Q_OBJECT
@@ -42,7 +62,10 @@ private:
     QString fDialogDir;
     QMdiArea* fMdiArea;
     QDockWidget* fBrowserDock;
-    QTreeWidget* fBrowserTree;
+    QTabWidget* fBrowserTabs;
+    int fLastBrowserTabIndex;
+    QTreeWidget* fTypesTree;
+    QTreeWidget* fStructureTree;
 
     // Property Panel stuff
     enum PropWhich { kPropsNone, kPropsAge, kPropsPage, kPropsKO };
@@ -86,7 +109,8 @@ private:
 
     // libPlasma stuff
     plResManager fResMgr;
-    QHash<plLocation, QPlasmaTreeItem*> fLoadedLocations;
+    QHash<QString, PrpShopLoadedAge*> fLoadedAges;
+    QHash<plLocation, PrpShopLoadedPage*> fLoadedLocations;
 
     // Magic for Creatable loading
     static PrpShopMain* sInstance;
@@ -106,15 +130,19 @@ protected:
     void closeEvent(QCloseEvent* evt) override;
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dropEvent(QDropEvent* evt) override;
-    QPlasmaTreeItem* loadPage(plPageInfo* page, QString filename);
-    QPlasmaTreeItem* findCurrentPageItem(bool isSave = false);
-    QPlasmaTreeItem* ensurePath(const plLocation& loc, short objType);
+    QPlasmaTreeItem* currentItem() const;
+    void rebuildStructureTree(PrpShopLoadedPage* loadedPage);
+    PrpShopLoadedPage* loadPage(plPageInfo* page, QString filename);
+    PrpShopLoadedPage* findPageForItem(QPlasmaTreeItem* item);
+    QPlasmaTreeItem* findObjectInTypesTree(const plKey& key);
+    void addNewObjectToTree(const hsKeyedObject* ko);
 
 public slots:
     void newPage();
     void openFiles();
     void performSave();
     void performSaveAs();
+    void browserTabChanged(int index);
     void treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void treeItemActivated(QTreeWidgetItem* item, int column);
     void treeContextMenu(const QPoint& pos);
