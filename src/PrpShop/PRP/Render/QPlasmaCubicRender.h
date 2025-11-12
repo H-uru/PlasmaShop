@@ -22,6 +22,7 @@
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
+#include <QQuaternion>
 
 #include <PRP/Surface/plCubicEnvironmap.h>
 
