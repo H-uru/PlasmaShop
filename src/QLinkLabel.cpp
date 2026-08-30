@@ -23,9 +23,9 @@ void QLinkLabel::init()
     lblFont.setUnderline(true);
     setFont(lblFont);
 
+    setForegroundRole(QPalette::Link);
     QPalette lblPal = palette();
-    lblPal.setColor(QPalette::Active, QPalette::WindowText, QColor(0, 0, 255));
-    lblPal.setColor(QPalette::Inactive, QPalette::WindowText, QColor(0, 0, 255));
+    lblPal.setColor(QPalette::Disabled, QPalette::Link, QColor(160, 160, 160));
     setPalette(lblPal);
 
     setCursor(Qt::PointingHandCursor);
