@@ -163,8 +163,6 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QDynamicTextMap(pCre, parent);
     case kFadeOpacityMod:
         return new QFadeOpacityMod(pCre, parent);
-    case kInterfaceInfoModifier:
-        return new QInterfaceInfoModifier(pCre, parent);
     case kGMaterial:
         return new QMaterial(pCre, parent);
     case kGUIButtonMod:
@@ -207,6 +205,8 @@ QCreatable* pqMakeCreatableForm(plCreatable* pCre, QWidget* parent, int forceTyp
         return new QGUIUpDownPairMod(pCre, parent);
     case kImageLibMod:
         return new QImageLibMod(pCre, parent);
+    case kInterfaceInfoModifier:
+        return new QInterfaceInfoModifier(pCre, parent);
     case kLayer:
         return new QLayer(pCre, parent);
     case kLayerAnimation:
