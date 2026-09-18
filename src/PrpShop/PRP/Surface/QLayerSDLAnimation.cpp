@@ -27,7 +27,7 @@ QLayerSDLAnimation::QLayerSDLAnimation(plCreatable* pCre, QWidget* parent)
 
     fLayerAnimLink = new QCreatableLink(this, false);
     fLayerAnimLink->setCreatable(lay, tr("Layer Animation Properties"));
-    fLayerAnimLink->setForceType(kLayerAnimation);
+    fLayerAnimLink->setForceType(kLayerAnimationBase);
 
     fVarName = new QLineEdit(this);
     fVarName->setText(st2qstr(lay->getVarName()));
