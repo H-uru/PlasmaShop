@@ -155,16 +155,27 @@ PrpShopMain::PrpShopMain()
     // Object Browser
     fBrowserDock = new QDockWidget(tr("Object Browser"), this);
     fBrowserDock->setObjectName("BrowserDock");
-    fBrowserTree = new QTreeWidget(fBrowserDock);
-    fBrowserDock->setWidget(fBrowserTree);
+    fBrowserTabs = new QTabWidget(fBrowserDock);
+    fBrowserTabs->addAction(fActions[kWindowClose]);
+    fBrowserDock->setWidget(fBrowserTabs);
     fBrowserDock->setAllowedAreas(Qt::LeftDockWidgetArea |
                                   Qt::RightDockWidgetArea);
     fBrowserDock->setFeatures(QDockWidget::DockWidgetMovable |
                               QDockWidget::DockWidgetFloatable);
-    fBrowserTree->setUniformRowHeights(true);
-    fBrowserTree->setHeaderHidden(true);
-    fBrowserTree->setContextMenuPolicy(Qt::CustomContextMenu);
-    fBrowserTree->addAction(fActions[kWindowClose]);
+    fLastBrowserTabIndex = -1;
+
+    fTypesTree = new QTreeWidget(fBrowserTabs);
+    fBrowserTabs->addTab(fTypesTree, "Types");
+    fTypesTree->setUniformRowHeights(true);
+    fTypesTree->setHeaderHidden(true);
+    fTypesTree->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    fStructureTree = new QTreeWidget(fBrowserTabs);
+    fBrowserTabs->addTab(fStructureTree, "Structure");
+    fStructureTree->setUniformRowHeights(true);
+    fStructureTree->setHeaderHidden(true);
+    fStructureTree->setContextMenuPolicy(Qt::CustomContextMenu);
+
     addDockWidget(Qt::LeftDockWidgetArea, fBrowserDock);
 
     // Property Pane
@@ -221,12 +232,9 @@ PrpShopMain::PrpShopMain()
     connect(fActions[kTreeExport], &QAction::triggered, this, &PrpShopMain::treeExport);
     connect(fActions[kTreeNewObject], &QAction::triggered, this, &PrpShopMain::createNewObject);
 
-    connect(fBrowserTree, &QTreeWidget::currentItemChanged,
-            this, &PrpShopMain::treeItemChanged);
-    connect(fBrowserTree, &QTreeWidget::itemActivated,
-            this, &PrpShopMain::treeItemActivated);
-    connect(fBrowserTree, &QTreeWidget::customContextMenuRequested,
-            this, &PrpShopMain::treeContextMenu);
+    connect(fBrowserTabs, &QTabWidget::currentChanged, this, &PrpShopMain::browserTabChanged);
+    // Connect all relevant signals for the initial tab.
+    browserTabChanged(fBrowserTabs->currentIndex());
 
     // Load UI Settings
     QSettings settings("PlasmaShop", "PrpShop");
@@ -283,6 +291,44 @@ void PrpShopMain::dropEvent(QDropEvent* evt)
     }
 }
 
+QPlasmaTreeItem* PrpShopMain::currentItem() const
+{
+    auto tree = qobject_cast<QTreeWidget*>(fBrowserTabs->currentWidget());
+    if (tree == nullptr) {
+        return nullptr;
+    }
+    return static_cast<QPlasmaTreeItem*>(tree->currentItem());
+}
+
+void PrpShopMain::browserTabChanged(int index)
+{
+    auto previousTree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(fLastBrowserTabIndex));
+    QTreeWidgetItem* previous = nullptr;
+    if (previousTree != nullptr) {
+        previous = previousTree->currentItem();
+        // Disconnect all signals from the tree that we are switching away from.
+        disconnect(previousTree, &QTreeWidget::currentItemChanged, this, nullptr);
+        disconnect(previousTree, &QTreeWidget::itemActivated, this, nullptr);
+        disconnect(previousTree, &QTreeWidget::customContextMenuRequested, this, nullptr);
+    }
+
+    auto currentTree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(index));
+    QTreeWidgetItem* current = nullptr;
+    if (currentTree != nullptr) {
+        current = currentTree->currentItem();
+        // Connect relevant signals to the tree that we are switching to.
+        connect(currentTree, &QTreeWidget::currentItemChanged, this, &PrpShopMain::treeItemChanged);
+        connect(currentTree, &QTreeWidget::itemActivated, this, &PrpShopMain::treeItemActivated);
+        connect(currentTree, &QTreeWidget::customContextMenuRequested, this, &PrpShopMain::treeContextMenu);
+    }
+
+    // Manually handle the switch from one tree to the other
+    // as if it was a selection change within a single tree.
+    treeItemChanged(current, previous);
+    // Remember the now current tab for use when the next tab change happens.
+    fLastBrowserTabIndex = index;
+}
+
 void PrpShopMain::setPropertyPage(PropWhich which)
 {
     QWidget* group = NULL;
@@ -293,6 +339,19 @@ void PrpShopMain::setPropertyPage(PropWhich which)
         delete item->widget();
         delete item;
     }
+
+    fAgeName = nullptr;
+    fPageName = nullptr;
+    fReleaseVersion = nullptr;
+    fSeqPrefix = nullptr;
+    fSeqSuffix = nullptr;
+    fObjName = nullptr;
+    fObjType = nullptr;
+    fLoadMaskQ[0] = nullptr;
+    fLoadMaskQ[1] = nullptr;
+    fCloneIdBox = nullptr;
+    fCloneId = nullptr;
+    fClonePlayerId = nullptr;
 
     switch (which) {
     case kPropsAge:
@@ -419,12 +478,12 @@ void PrpShopMain::treeItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pre
         fActions[kFileSaveAs]->setEnabled(true);
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
         setPropertyPage(kPropsKO);
-        fObjName->setText(st2qstr(item->obj()->getKey()->getName()));
+        fObjName->setText(st2qstr(item->key()->getName()));
         fObjType->setText(item->obj()->ClassName());
-        fLoadMaskQ[0]->setValue(item->obj()->getKey()->getLoadMask().getQuality(0));
-        fLoadMaskQ[1]->setValue(item->obj()->getKey()->getLoadMask().getQuality(1));
-        fCloneId->setValue(item->obj()->getKey()->getCloneID());
-        fClonePlayerId->setValue(item->obj()->getKey()->getClonePlayerID());
+        fLoadMaskQ[0]->setValue(item->key()->getLoadMask().getQuality(0));
+        fLoadMaskQ[1]->setValue(item->key()->getLoadMask().getQuality(1));
+        fCloneId->setValue(item->key()->getCloneID());
+        fClonePlayerId->setValue(item->key()->getClonePlayerID());
         fCloneIdBox->setChecked(fCloneId->value() != 0 || fClonePlayerId->value() != 0);
     } else {
         setPropertyPage(kPropsNone);
@@ -440,8 +499,12 @@ void PrpShopMain::treeItemActivated(QTreeWidgetItem* item, int)
 
 void PrpShopMain::treeContextMenu(const QPoint& pos)
 {
-    fBrowserTree->setCurrentItem(fBrowserTree->itemAt(pos));
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    auto tree = qobject_cast<QTreeWidget*>(fBrowserTabs->currentWidget());
+    if (tree == nullptr) {
+        return;
+    }
+    tree->setCurrentItem(tree->itemAt(pos));
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL)
         return;
 
@@ -472,46 +535,54 @@ void PrpShopMain::treeContextMenu(const QPoint& pos)
         );
         fActions[kTreeNewObject]->setEnabled(pqIsValidKOType(item->classType()));
     }
-    menu.exec(fBrowserTree->viewport()->mapToGlobal(pos));
+    menu.exec(tree->viewport()->mapToGlobal(pos));
 }
 
 void PrpShopMain::treeClose()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL)
         return;
 
     // Make sure no windows are open with objects we want to unload...
 
     if (item->type() == QPlasmaTreeItem::kTypeAge) {
-        QHash<plLocation, QPlasmaTreeItem*>::Iterator it;
-        for (it = fLoadedLocations.begin(); it != fLoadedLocations.end(); ) {
-            if (st2qstr((*it)->page()->getAge()) == item->age()) {
-                const plLocation& loc = (*it)->page()->getLocation();
+        for (auto it = fLoadedLocations.begin(); it != fLoadedLocations.end();) {
+            PrpShopLoadedPage* loadedPage = *it;
+            if (st2qstr(loadedPage->fPage->getAge()) == item->age()) {
+                const plLocation& loc = loadedPage->fPage->getLocation();
                 closeWindows(loc);
-                fResMgr.UnloadPage(loc);
                 it = fLoadedLocations.erase(it);
+                delete loadedPage;
+                fResMgr.UnloadPage(loc);
             } else {
                 it++;
             }
         }
-        delete item;
+        PrpShopLoadedAge* loadedAge = fLoadedAges.take(item->age());
+        delete loadedAge->fTypesItem;
+        delete loadedAge->fStructureItem;
+        delete loadedAge;
     } else if (item->type() == QPlasmaTreeItem::kTypePage) {
         plLocation loc = item->page()->getLocation();
         closeWindows(loc);
-        QPlasmaTreeItem* age = (QPlasmaTreeItem*)item->parent();
-        delete item;
-        QHash<plLocation, QPlasmaTreeItem*>::Iterator it = fLoadedLocations.find(loc);
-        fLoadedLocations.erase(it);
+        PrpShopLoadedPage* loadedPage = fLoadedLocations.take(loc);
+        PrpShopLoadedAge* loadedAge = loadedPage->fAge;
+        delete loadedPage->fTypesItem;
+        delete loadedPage->fStructureItem;
+        delete loadedPage;
         fResMgr.UnloadPage(loc);
-        if (age->childCount() == 0)
-            delete age;
+        if (loadedAge->fTypesItem->childCount() == 0) {
+            delete loadedAge->fTypesItem;
+            delete loadedAge->fStructureItem;
+            delete loadedAge;
+        }
     }
 }
 
 void PrpShopMain::treeEdit()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj());
@@ -519,7 +590,7 @@ void PrpShopMain::treeEdit()
 
 void PrpShopMain::treeEditPRC()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPRC_Type | item->obj()->ClassIndex());
@@ -527,7 +598,7 @@ void PrpShopMain::treeEditPRC()
 
 void PrpShopMain::treeEditHex()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     QCreatable *creWin = editCreatable(item->obj(), kHex_Type | item->obj()->ClassIndex());
@@ -535,23 +606,22 @@ void PrpShopMain::treeEditHex()
         QHexViewer *hexWin = qobject_cast<QHexViewer *>(creWin);
         Q_ASSERT(hexWin);
 
-        QPlasmaTreeItem* parent = (QPlasmaTreeItem*)item->parent()->parent();
-        uint32_t offset = item->obj()->getKey()->getFileOff();
-        uint32_t size = item->obj()->getKey()->getObjSize();
-        hexWin->loadObject(parent->filename(), offset, size);
+        uint32_t offset = item->key()->getFileOff();
+        uint32_t size = item->key()->getObjSize();
+        hexWin->loadObject(findPageForItem(item)->fFilename, offset, size);
     }
 }
 
 void PrpShopMain::treePreview()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kPreview_Type | item->obj()->ClassIndex());
 }
 
 void PrpShopMain::treeShowTargets() {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
     editCreatable(item->obj(), kTargets_Type | item->obj()->ClassIndex());
@@ -559,55 +629,83 @@ void PrpShopMain::treeShowTargets() {
 
 void PrpShopMain::treeDelete()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
-    fResMgr.DelObject(item->obj()->getKey());
-    QPlasmaTreeItem* folder = (QPlasmaTreeItem*)item->parent();
-    delete item;
+    fResMgr.DelObject(item->key());
+    PrpShopLoadedPage* loadedPage = findPageForItem(item);
 
+    // Remove the deleted object from the types tree.
+    QPlasmaTreeItem* folder = (QPlasmaTreeItem*)loadedPage->fTypesItem->parent();
+    delete loadedPage->fTypesItem;
+
+    // If this was the last object of this type in this page,
+    // also remove the entire class type folder from the types tree.
     if (folder->childCount() == 0)
         delete folder;
+
+    // Deleting an object might change the structure significantly,
+    // so we have to fully rebuild the structure tree for this page.
+    rebuildStructureTree(loadedPage);
 }
 
-QPlasmaTreeItem* PrpShopMain::ensurePath(const plLocation& loc, short objType)
+QPlasmaTreeItem* PrpShopMain::findObjectInTypesTree(const plKey& key)
 {
-    plPageInfo* page = fResMgr.FindPage(loc);
-    QPlasmaTreeItem* ageItem = NULL;
-    QString ageName = st2qstr(page->getAge());
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
-        if (topLevelItem->age() == ageName) {
-            ageItem = topLevelItem;
-            break;
-        }
-    }
-    if (ageItem == NULL)
-        throw hsBadParamException(__FILE__, __LINE__, "Invalid Age");
+    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(key->getLocation());
+    QPlasmaTreeItem* pageItem = loadedPage->fTypesItem;
 
-    QPlasmaTreeItem* pageItem = NULL;
-    for (int i=0; i<ageItem->childCount(); i++) {
-        auto child = static_cast<QPlasmaTreeItem*>(ageItem->child(i));
-        if (child->page()->getLocation() == loc) {
-            pageItem = child;
-            break;
-        }
-    }
-    if (pageItem == NULL)
-        throw hsBadParamException(__FILE__, __LINE__, "Invalid Page");
-
+    // Under the found page item, find the class type item for the object's class.
     QPlasmaTreeItem* typeItem = nullptr;
-    for (int i=0; i<pageItem->childCount(); i++) {
+    for (int i = 0; i < pageItem->childCount(); i++) {
         auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
-        if (child->classType() == objType) {
+        if (child->classType() == key->getType()) {
             typeItem = child;
             break;
         }
     }
     if (typeItem == nullptr) {
-        typeItem = new QPlasmaTreeItem(pageItem, objType);
+        return nullptr;
     }
-    return typeItem;
+
+    // Under the found class type item, find the object itself.
+    for (int i = 0; i < typeItem->childCount(); i++) {
+        auto child = static_cast<QPlasmaTreeItem*>(typeItem->child(i));
+        if (child->key() == key) {
+            return child;
+        }
+    }
+    return nullptr;
+}
+
+void PrpShopMain::addNewObjectToTree(const hsKeyedObject* ko)
+{
+    // Look up the loaded page for the object's location
+    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(ko->getKey()->getLocation());
+    if (loadedPage == nullptr)
+        throw hsBadParamException(__FILE__, __LINE__, "Cannot create path to a location that isn't loaded");
+
+    QPlasmaTreeItem* pageItem = loadedPage->fTypesItem;
+    // Under the found page item, find or create class type item for the object's class
+    QPlasmaTreeItem* typeItem = nullptr;
+    for (int i=0; i<pageItem->childCount(); i++) {
+        auto child = static_cast<QPlasmaTreeItem*>(pageItem->child(i));
+        if (child->classType() == ko->ClassIndex()) {
+            typeItem = child;
+            break;
+        }
+    }
+    if (typeItem == nullptr) {
+        typeItem = new QPlasmaTreeItem(pageItem, ko->ClassIndex());
+    }
+
+    // Add the new object to the class type item
+    new QPlasmaTreeItem(typeItem, ko->getKey());
+    fTypesTree->sortItems(0, Qt::AscendingOrder);
+
+    // If the object already has references to other objects (e. g. if it was imported),
+    // then adding the object might change the structure significantly,
+    // so we have to fully rebuild the structure tree for this page.
+    rebuildStructureTree(loadedPage);
 }
 
 void PrpShopMain::closeWindows(const plLocation& loc)
@@ -622,8 +720,8 @@ void PrpShopMain::closeWindows(const plLocation& loc)
 
 void PrpShopMain::treeImport()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem();
-    if (pageItem == NULL)
+    PrpShopLoadedPage* loadedPage = findPageForItem(currentItem());
+    if (loadedPage == nullptr)
         return;
 
     QStringList files = QFileDialog::getOpenFileNames(this,
@@ -642,13 +740,11 @@ void PrpShopMain::treeImport()
             }
             // The key is already added to the ResMgr, but we need to ensure
             // its location is correctly updated
-            plLocation loc = pageItem->page()->getLocation();
+            plLocation loc = loadedPage->fPage->getLocation();
             fResMgr.MoveKey(ko->getKey(), loc);
 
             // Now add it to the tree
-            QPlasmaTreeItem* folderItem = ensurePath(loc, ko->ClassIndex());
-            new QPlasmaTreeItem(folderItem, ko->getKey());
-            fBrowserTree->sortItems(0, Qt::AscendingOrder);
+            addNewObjectToTree(ko);
         } catch (std::exception& ex) {
             QMessageBox msgBox(QMessageBox::Critical, tr("Error"),
                                tr("Error Importing File %1:\n%2").arg(*it).arg(ex.what()),
@@ -663,11 +759,11 @@ void PrpShopMain::treeImport()
 
 void PrpShopMain::treeExport()
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item == NULL || item->obj() == NULL)
         return;
 
-    QString fnfix = st2qstr(item->obj()->getKey()->getName())
+    QString fnfix = st2qstr(item->key()->getName())
                     .replace(QRegularExpression("[?:/\\*\"<>|]"), "_");
     QString genPath = tr("%1/[%2]%3.po").arg(fDialogDir)
                                         .arg(item->obj()->ClassName())
@@ -785,7 +881,8 @@ void PrpShopMain::newPage()
         filename += "_District";
     filename += "_" + dlg_pageName->text();
     loadPage(page, filename);
-    fBrowserTree->sortItems(0, Qt::AscendingOrder);
+    fTypesTree->sortItems(0, Qt::AscendingOrder);
+    fStructureTree->sortItems(0, Qt::AscendingOrder);
 }
 
 void PrpShopMain::openFiles()
@@ -863,13 +960,12 @@ void PrpShopMain::loadFile(QString filename)
     } else if (filename.endsWith(".prp", Qt::CaseInsensitive) || filename.endsWith(".prx", Qt::CaseInsensitive)) {
         try {
             plPageInfo* page = fResMgr.ReadPage(qstr2st(filename));
-            QPlasmaTreeItem* pageItem = loadPage(page, filename);
-            QPlasmaTreeItem* ageItem = (QPlasmaTreeItem*)pageItem->parent();
+            PrpShopLoadedPage* loadedPage = loadPage(page, filename);
 
             // Manually check for and load the BuiltIn and Textures PRPs
             QDir path(filename);
             path.cdUp(); // Get rid of the filename >.>
-            if (ageItem != NULL && !ageItem->hasTextures()) {
+            if (!loadedPage->fAge->fHasTextures) {
                 QString texPath = st2qstr(page->getAge());
                 if (fResMgr.getVer().isUru())
                     texPath += "_District";
@@ -878,7 +974,7 @@ void PrpShopMain::loadFile(QString filename)
                 if (QFile::exists(texPath))
                     loadPage(fResMgr.ReadPage(qstr2st(texPath)), texPath);
             }
-            if (ageItem != NULL && !ageItem->hasBuiltIn()) {
+            if (!loadedPage->fAge->fHasBuiltIn) {
                 QString biPath = st2qstr(page->getAge());
                 if (fResMgr.getVer().isUru())
                     biPath += "_District";
@@ -901,35 +997,24 @@ void PrpShopMain::loadFile(QString filename)
     }
 
     fResMgr.SetPageUnloadFunc(prevCallback);
-    fBrowserTree->sortItems(0, Qt::AscendingOrder);
+    fTypesTree->sortItems(0, Qt::AscendingOrder);
+    fStructureTree->sortItems(0, Qt::AscendingOrder);
 }
 
-QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
+PrpShopLoadedPage* PrpShopMain::findPageForItem(QPlasmaTreeItem* item)
 {
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
     if (item == NULL)
         return NULL;
 
-    if (item->type() == QPlasmaTreeItem::kTypeAge) {
-        if (isSave) {
-            // Save all pages belonging to this age
-            for (int i=0; i<item->childCount(); i++) {
-                QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->child(i);
-                if (pageItem->type() != QPlasmaTreeItem::kTypePage)
-                    throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
-                saveFile(pageItem->page(), pageItem->filename());
-            }
-        }
-        return NULL;
-    } else if (item->type() == QPlasmaTreeItem::kTypePage) {
-        return item;
+    if (item->type() == QPlasmaTreeItem::kTypePage) {
+        return fLoadedLocations.value(item->page()->getLocation());
     } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
-        return fLoadedLocations.value(item->obj()->getKey()->getLocation(), NULL);
+        return fLoadedLocations.value(item->key()->getLocation(), NULL);
     } else if (item->type() == QPlasmaTreeItem::kTypeClassType) {
         QPlasmaTreeItem* pageItem = (QPlasmaTreeItem*)item->parent();
         if (pageItem->type() != QPlasmaTreeItem::kTypePage)
             throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
-        return pageItem;
+        return fLoadedLocations.value(pageItem->page()->getLocation());
     } else {
         return nullptr;
     }
@@ -937,9 +1022,29 @@ QPlasmaTreeItem* PrpShopMain::findCurrentPageItem(bool isSave)
 
 void PrpShopMain::performSave()
 {
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(true);
-    if (pageItem != NULL)
-        saveFile(pageItem->page(), pageItem->filename());
+    QPlasmaTreeItem* item = currentItem();
+    if (item == nullptr) {
+        return;
+    }
+
+    if (item->type() == QPlasmaTreeItem::kTypeAge) {
+        // Save all pages belonging to this age
+        for (int i = 0; i < item->childCount(); i++) {
+            auto pageItem = static_cast<QPlasmaTreeItem*>(item->child(i));
+            if (pageItem->type() != QPlasmaTreeItem::kTypePage)
+                throw hsBadParamException(__FILE__, __LINE__, "Got non-page child");
+            PrpShopLoadedPage* loadedPage = findPageForItem(item);
+            if (loadedPage != nullptr) {
+                saveFile(loadedPage->fPage, loadedPage->fFilename);
+            }
+        }
+    } else {
+        // Find the page corresponding to this item and save it
+        PrpShopLoadedPage* loadedPage = findPageForItem(item);
+        if (loadedPage != nullptr) {
+            saveFile(loadedPage->fPage, loadedPage->fFilename);
+        }
+    }
 }
 
 void PrpShopMain::performSaveAs()
@@ -952,13 +1057,15 @@ void PrpShopMain::performSaveAs()
         "Hex Isle Pages (*.prp)"
     };
 
-    QPlasmaTreeItem* pageItem = findCurrentPageItem(false);
-    if (pageItem == NULL)
+    QPlasmaTreeItem* pageItem = currentItem();
+    if (pageItem == nullptr || pageItem->type() != QPlasmaTreeItem::kTypePage)
         return;
 
-    QString saveDir = pageItem->filename().isEmpty()
+    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(pageItem->page()->getLocation());
+
+    QString saveDir = loadedPage->fFilename.isEmpty()
                     ? fDialogDir
-                    : pageItem->filename();
+                    : loadedPage->fFilename;
     QString selFormat;
     switch (fResMgr.getVer()) {
     case PlasmaVer::pvPrime:
@@ -1009,7 +1116,7 @@ void PrpShopMain::performSaveAs()
 
 void PrpShopMain::saveFile(plPageInfo* page, QString filename)
 {
-    saveProps((QPlasmaTreeItem*)fBrowserTree->currentItem());
+    saveProps(currentItem());
     QList<QMdiSubWindow*> windows = fMdiArea->subWindowList();
     QList<QMdiSubWindow*>::ConstIterator it;
     for (it = windows.constBegin(); it != windows.constEnd(); it++) {
@@ -1026,21 +1133,25 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
         bool reinit = false;
         bool refreshTree = false;
         if (item->type() == QPlasmaTreeItem::kTypePage) {
-            if (fAgeName->text() != st2qstr(item->page()->getAge())) {
-                item->page()->setAge(qstr2st(fAgeName->text()));
-                fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
-                QPlasmaTreeItem* stale = item;
-                item = loadPage(item->page(), item->filename());
-                delete stale;
+            PrpShopLoadedPage* loadedPage = fLoadedLocations.value(item->page()->getLocation());
+            if (loadedPage == nullptr) {
+                // This generally happens while closing a page.
+                // A currentItemChanged signal is emitted when the page item is removed from the tree,
+                // which happens after the corresponding fLoadedLocations entry has already been removed.
+                return;
+            }
+            if (fAgeName->text() != st2qstr(loadedPage->fPage->getAge())) {
+                loadedPage->fPage->setAge(qstr2st(fAgeName->text()));
+                loadPage(loadedPage->fPage, loadedPage->fFilename);
                 refreshTree = true;
             }
-            if (fPageName->text() != st2qstr(item->page()->getPage())) {
-                item->page()->setPage(qstr2st(fPageName->text()));
+            if (fPageName->text() != st2qstr(loadedPage->fPage->getPage())) {
+                loadedPage->fPage->setPage(qstr2st(fPageName->text()));
                 reinit = true;
                 refreshTree = true;
             }
-            if (fReleaseVersion->value() != (int)item->page()->getReleaseVersion())
-                item->page()->setReleaseVersion(fReleaseVersion->value());
+            if (fReleaseVersion->value() != (int)loadedPage->fPage->getReleaseVersion())
+                loadedPage->fPage->setReleaseVersion(fReleaseVersion->value());
             plLocation loc;
             loc.setSeqPrefix(fSeqPrefix->value());
             loc.setPageNum(fSeqSuffix->value());
@@ -1049,78 +1160,208 @@ void PrpShopMain::saveProps(QPlasmaTreeItem* item)
                        | (fLocationFlags[kLocItinerant]->isChecked() ? plLocation::kItinerant : 0)
                        | (fLocationFlags[kLocReserved]->isChecked() ? plLocation::kReserved : 0)
                        | (fLocationFlags[kLocBuiltIn]->isChecked() ? plLocation::kBuiltIn : 0));
-            if (loc != item->page()->getLocation()) {
-                fLoadedLocations[loc] = fLoadedLocations[item->page()->getLocation()];
-                fLoadedLocations.erase(fLoadedLocations.find(item->page()->getLocation()));
-                fResMgr.ChangeLocation(item->page()->getLocation(), loc);
+            if (loc != loadedPage->fPage->getLocation()) {
+                fLoadedLocations.insert(loc, fLoadedLocations.take(loadedPage->fPage->getLocation()));
+                fResMgr.ChangeLocation(loadedPage->fPage->getLocation(), loc);
                 reinit = true;
+            }
+            if (reinit) {
+                loadedPage->fTypesItem->reinit();
+                loadedPage->fTypesItem->parent()->sortChildren(0, Qt::AscendingOrder);
+                loadedPage->fStructureItem->reinit();
+                loadedPage->fStructureItem->parent()->sortChildren(0, Qt::AscendingOrder);
             }
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
             if (item->obj() != NULL) {
-                if (fObjName->text() != st2qstr(item->obj()->getKey()->getName())) {
-                    item->obj()->getKey()->setName(qstr2st(fObjName->text()));
+                plKey key = item->key();
+                if (fObjName->text() != st2qstr(key->getName())) {
+                    key->setName(qstr2st(fObjName->text()));
                     reinit = true;
                     refreshTree = true;
                 }
-                plLoadMask mask = item->obj()->getKey()->getLoadMask();
+                plLoadMask mask = key->getLoadMask();
                 mask.setQuality(fLoadMaskQ[0]->value(), fLoadMaskQ[1]->value());
-                item->obj()->getKey()->setLoadMask(mask);
+                key->setLoadMask(mask);
                 if (fCloneIdBox->isChecked())
-                    item->obj()->getKey()->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
+                    key->setCloneIDs(fCloneId->value(), fClonePlayerId->value());
+
+                if (reinit) {
+                    // We need to reinit the item in both trees,
+                    // so it's not enough to just do item->reinit().
+                    QPlasmaTreeItem* typesObjectItem = findObjectInTypesTree(key);
+                    if (typesObjectItem != nullptr) {
+                        typesObjectItem->reinit();
+                    }
+                    // Finding the object in the structure tree is too annoying,
+                    // so just rebuild the entire thing, lol.
+                    rebuildStructureTree(findPageForItem(item));
+                }
             }
         }
-        if (reinit) {
-            item->reinit();
-            item->parent()->sortChildren(0, Qt::AscendingOrder);
+        if (refreshTree) {
+            fTypesTree->sortItems(0, Qt::AscendingOrder);
+            fStructureTree->sortItems(0, Qt::AscendingOrder);
         }
-        if (refreshTree)
-            fBrowserTree->sortItems(0, Qt::AscendingOrder);
     }
 }
 
-QPlasmaTreeItem* PrpShopMain::loadPage(plPageInfo* page, QString filename)
+void PrpShopMain::rebuildStructureTree(PrpShopLoadedPage* loadedPage)
+{
+    qDeleteAll(loadedPage->fStructureItem->takeChildren());
+
+    // Collect all objects in this page and create tree items for them,
+    // but don't actually add them to the tree yet.
+    std::map<plKey, QPlasmaTreeItem*> objectItems;
+    plLocation loc = loadedPage->fPage->getLocation();
+    for (short type : fResMgr.getTypes(loc, true)) {
+        for (const plKey& key : fResMgr.getKeys(loc, type, true)) {
+            objectItems.emplace(key, new QPlasmaTreeItem(key, QPlasmaTreeItem::kObjectStructure));
+        }
+    }
+
+    // Find all objects referenced by other objects
+    // and move their items under the item of the referencing object.
+    // Start with the default priority and add lower-priority references later
+    // so that objects are placed under high-priority referring objects where possible.
+    for (int prio = pqRefPriority::kDefault; prio < pqRefPriority::kMax; prio++) {
+        for (const auto& pair : objectItems) {
+            QPlasmaTreeItem* item = pair.second;
+            for (const plKey& contained : pqGetReferencedKeys(item->obj(), static_cast<pqRefPriority>(prio))) {
+                // Ignore null keys.
+                if (!contained.Exists()) {
+                    continue;
+                }
+                auto it = objectItems.find(contained);
+                // Ignore keys from other pages for now.
+                if (it == objectItems.end()) {
+                    continue;
+                }
+                QPlasmaTreeItem* containedItem = it->second;
+                bool repeated = false;
+                // Check if the contained object already has a place elsewhere in the tree.
+                if (containedItem->parent() != nullptr) {
+                    repeated = true;
+                } else {
+                    // Check if the contained object is a (possibly indirect) parent of the containing object.
+                    // (For example, scene objects have a reference back to their scene node.)
+                    for (QTreeWidgetItem* parent = item; parent != nullptr; parent = parent->parent()) {
+                        if (parent == containedItem) {
+                            repeated = true;
+                            break;
+                        }
+                    }
+                }
+                if (repeated) {
+                    // The contained object already appears elsewhere in the tree.
+                    // so only add a placeholder here that has no further children.
+                    // Except if it's a lower-priority reference, don't add it at all,
+                    // because they're generally not interesting enough.
+                    if (prio == pqRefPriority::kDefault) {
+                        new QPlasmaTreeItem(item, contained, QPlasmaTreeItem::kObjectStructureRepeated);
+                    }
+                } else {
+                    // The contained object doesn't have a place in the tree yet,
+                    // so move it under this object.
+                    item->addChild(containedItem);
+                }
+            }
+        }
+    }
+
+    // Handle objects that still don't have a place.
+    for (const auto& pair : objectItems) {
+        QPlasmaTreeItem* item = pair.second;
+        if (item->parent() == nullptr) {
+            plKey key = item->key();
+            // Check if perhaps this is a localized object,
+            // i. e. with a language tag in the key name.
+            ST::string name = key->getName();
+            ST_ssize_t underscore = name.find_last('_');
+            QPlasmaTreeItem* englishItem = nullptr;
+            if (underscore >= 0 && underscore + 4 <= name.size()) {
+                // The name looks like it may contain a language tag.
+                // Try replacing it with "_eng" and see if a corresponding key exists.
+                ST::string englishName = ST::format("{}_eng{}", name.left(underscore), name.substr(underscore + 4));
+                // Check that the language tag isn't already "_eng",
+                // otherwise this would try to make the item a child of itself!
+                if (englishName != name) {
+                    for (const plKey& k : fResMgr.getKeys(loc, key->getType())) {
+                        if (k->getName() == englishName) {
+                            auto it = objectItems.find(k);
+                            if (it != objectItems.end()) {
+                                englishItem = it->second;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (englishItem != nullptr) {
+                // Add this localized object under its corresponding English object.
+                // (The English object is what gets referenced from other objects,
+                // so this integrates the non-English object into the overall structure.)
+                englishItem->addChild(item);
+            } else {
+                // Add it as a "top-level object" under the page item.
+                // Normally, only the scene node or a top-level scene object should end up here,
+                // but some pages also contain other "loose" unused objects.
+                loadedPage->fStructureItem->addChild(item);
+            }
+        }
+    }
+}
+
+PrpShopLoadedPage* PrpShopMain::loadPage(plPageInfo* page, QString filename)
 {
     // See if the page is already loaded -- if so, then we have reloaded it, and need to rebuild
-    QPlasmaTreeItem* parent = NULL;
-    QPlasmaTreeItem* item = fLoadedLocations.value(page->getLocation(), NULL);
-    if (item != NULL) {
-        qDeleteAll(item->takeChildren());
+    PrpShopLoadedPage* loadedPage = fLoadedLocations.value(page->getLocation());
+    if (loadedPage != nullptr) {
+        // Reuse the loaded page object and the tree item for the page,
+        // but remove all existing children of the tree item
+        qDeleteAll(loadedPage->fTypesItem->takeChildren());
+        qDeleteAll(loadedPage->fStructureItem->takeChildren());
+        loadedPage->fFilename = filename;
+        loadedPage->fPage = page;
     } else {
         // Find or create the Age folder
         QString ageName = st2qstr(page->getAge());
-        for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-            auto topLevelItem = static_cast<QPlasmaTreeItem*>(fBrowserTree->topLevelItem(i));
-            if (topLevelItem->age() == ageName) {
-                parent = topLevelItem;
-                break;
-            }
+        PrpShopLoadedAge* loadedAge = fLoadedAges.value(ageName);
+        if (loadedAge == nullptr) {
+            int seqPrefix = page->getLocation().getSeqPrefix();
+            auto typesAgeItem = new QPlasmaTreeItem(fTypesTree, ageName, seqPrefix);
+            auto structureAgeItem = new QPlasmaTreeItem(fStructureTree, ageName, seqPrefix);
+            loadedAge = new PrpShopLoadedAge {ageName, seqPrefix, false, false, typesAgeItem, structureAgeItem};
+            fLoadedAges.insert(ageName, loadedAge);
         }
-        if (parent == NULL)
-            parent = new QPlasmaTreeItem(fBrowserTree, ageName, page->getLocation().getSeqPrefix());
 
         // Treat BuiltIn and Textures PRPs specially:
         if (page->getLocation().getPageNum() == -1)
-            parent->setHasTextures();
+            loadedAge->fHasTextures = true;
         else if (page->getLocation().getPageNum() == -2)
-            parent->setHasBuiltIn();
+            loadedAge->fHasBuiltIn = true;
 
         // And now the Page entry
-        item = new QPlasmaTreeItem(parent, page);
-        fLoadedLocations[page->getLocation()] = item;
+        auto typesPageItem = new QPlasmaTreeItem(loadedAge->fTypesItem, page);
+        auto structurePageItem = new QPlasmaTreeItem(loadedAge->fStructureItem, page);
+        loadedPage = new PrpShopLoadedPage {loadedAge, filename, page, typesPageItem, structurePageItem};
+        fLoadedLocations.insert(page->getLocation(), loadedPage);
     }
 
     // Populate the type folders and actual objects
     std::vector<short> types = fResMgr.getTypes(page->getLocation(), true);
     for (size_t i=0; i<types.size(); i++) {
-        QPlasmaTreeItem* typeItem = new QPlasmaTreeItem(item, types[i]);
+        auto typeItem = new QPlasmaTreeItem(loadedPage->fTypesItem, types[i]);
 
         std::vector<plKey> keys = fResMgr.getKeys(page->getLocation(), types[i], true);
         for (size_t j=0; j<keys.size(); j++)
             new QPlasmaTreeItem(typeItem, keys[j]);
     }
 
-    item->setFilename(filename);
-    return item;
+    // Build the structure tree
+    rebuildStructureTree(loadedPage);
+
+    return loadedPage;
 }
 
 void PrpShopMain::createNewObject()
@@ -1134,7 +1375,7 @@ void PrpShopMain::createNewObject()
     }
 
     QNewKeyDialog dlg(this);
-    QPlasmaTreeItem* item = (QPlasmaTreeItem*)fBrowserTree->currentItem();
+    QPlasmaTreeItem* item = currentItem();
     if (item != NULL) {
         if (item->type() == QPlasmaTreeItem::kTypeAge) {
             if (item->childCount() != 0) {
@@ -1152,8 +1393,7 @@ void PrpShopMain::createNewObject()
                 throw hsBadParamException(__FILE__, __LINE__, "Got non-page parent");
             dlg.init(&fResMgr, ((QPlasmaTreeItem*)item->parent())->page()->getLocation(), item->classType());
         } else if (item->type() == QPlasmaTreeItem::kTypeKO) {
-            dlg.init(&fResMgr, item->obj()->getKey()->getLocation(),
-                     item->obj()->getKey()->getType());
+            dlg.init(&fResMgr, item->key()->getLocation(), item->key()->getType());
         } else {
             dlg.init(&fResMgr);
         }
@@ -1173,9 +1413,7 @@ void PrpShopMain::createNewObject()
         fResMgr.AddObject(loc, ko);
 
         // Now add it to the tree
-        QPlasmaTreeItem* folderItem = ensurePath(loc, type);
-        new QPlasmaTreeItem(folderItem, ko->getKey());
-        fBrowserTree->sortItems(0, Qt::AscendingOrder);
+        addNewObjectToTree(ko);
 
         // And open it for convenience
         editCreatable(ko);
@@ -1187,16 +1425,28 @@ void PrpShopMain::showAgePageIDs(bool show)
     s_showAgePageIDs = show;
 
     // Refresh currently loaded ages/pages
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
-        for (int j=0; j<ageNode->childCount(); j++) {
-            QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
-            pageNode->reinit();
+    for (int w = 0; w < fBrowserTabs->count(); w++) {
+        auto tree = qobject_cast<QTreeWidget*>(fBrowserTabs->widget(w));
+        for (int i = 0; i < tree->topLevelItemCount(); i++) {
+            QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)tree->topLevelItem(i);
+            for (int j = 0; j < ageNode->childCount(); j++) {
+                QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
+                pageNode->reinit();
+            }
+            ageNode->sortChildren(0, Qt::AscendingOrder);
+            ageNode->reinit();
         }
-        ageNode->sortChildren(0, Qt::AscendingOrder);
-        ageNode->reinit();
+        tree->sortItems(0, Qt::AscendingOrder);
     }
-    fBrowserTree->sortItems(0, Qt::AscendingOrder);
+}
+
+static void recursivelyReinitChildren(QTreeWidgetItem* item)
+{
+    for (int i = 0; i < item->childCount(); i++) {
+        auto child = static_cast<QPlasmaTreeItem*>(item->child(i));
+        child->reinit();
+        recursivelyReinitChildren(child);
+    }
 }
 
 void PrpShopMain::showTypeIDs(bool show)
@@ -1204,8 +1454,8 @@ void PrpShopMain::showTypeIDs(bool show)
     s_showTypeIDs = show;
 
     // Refresh the folder display for currently loaded pages
-    for (int i=0; i<fBrowserTree->topLevelItemCount(); i++) {
-        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fBrowserTree->topLevelItem(i);
+    for (int i=0; i<fTypesTree->topLevelItemCount(); i++) {
+        QPlasmaTreeItem* ageNode = (QPlasmaTreeItem*)fTypesTree->topLevelItem(i);
         for (int j=0; j<ageNode->childCount(); j++) {
             QPlasmaTreeItem* pageNode = (QPlasmaTreeItem*)ageNode->child(j);
             for (int t=0; t<pageNode->childCount(); t++) {
@@ -1213,6 +1463,16 @@ void PrpShopMain::showTypeIDs(bool show)
                 typeNode->reinit();
             }
             pageNode->sortChildren(0, Qt::AscendingOrder);
+        }
+    }
+
+    // Objects in the structure tree contain type names, so recursively reinit them all...
+    for (int i = 0; i < fStructureTree->topLevelItemCount(); i++) {
+        auto ageNode = static_cast<QPlasmaTreeItem*>(fStructureTree->topLevelItem(i));
+        for (int j = 0; j < ageNode->childCount(); j++) {
+            QTreeWidgetItem* child = ageNode->child(j);
+            recursivelyReinitChildren(child);
+            child->sortChildren(0, Qt::AscendingOrder);
         }
     }
 }

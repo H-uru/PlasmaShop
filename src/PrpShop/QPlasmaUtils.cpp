@@ -18,14 +18,98 @@
 #include "QPlasmaUtils.h"
 #include <ResManager/pdUnifiedTypeMap.h>
 #include <PRP/plSceneNode.h>
+#include <PRP/Animation/pfObjectFlocker.h>
+#include <PRP/Animation/plLineFollowMod.h>
+#include <PRP/Animation/plViewFaceModifier.h>
+#include <PRP/Audio/plAudible.h>
+#include <PRP/Audio/plEAXListenerMod.h>
+#include <PRP/Audio/plSound.h>
+#include <PRP/Avatar/plAGMasterMod.h>
+#include <PRP/Avatar/plArmatureEffects.h>
+#include <PRP/Avatar/plArmatureMod.h>
+#include <PRP/Avatar/plAvatarClothing.h>
+#include <PRP/Avatar/plClothingItem.h>
+#include <PRP/Avatar/plLadderModifier.h>
+#include <PRP/Avatar/plMultistageBehMod.h>
+#include <PRP/Avatar/plSittingModifier.h>
+#include <PRP/Camera/plCameraBrain.h>
+#include <PRP/Camera/plCameraModifier.h>
+#include <PRP/ConditionalObject/plActivatorConditionalObject.h>
+#include <PRP/ConditionalObject/plAnimationEventConditionalObject.h>
+#include <PRP/ConditionalObject/plBooleanConditionalObject.h>
+#include <PRP/Geometry/plClusterGroup.h>
+#include <PRP/Geometry/plDrawableSpans.h>
+#include <PRP/Geometry/plMorphSequence.h>
+#include <PRP/Geometry/plOccluder.h>
+#include <PRP/Geometry/plSharedMesh.h>
+#include <PRP/GUI/pfGUIButtonMod.h>
+#include <PRP/GUI/pfGUICheckBoxCtrl.h>
+#include <PRP/GUI/pfGUIControlMod.h>
+#include <PRP/GUI/pfGUIDialogMod.h>
+#include <PRP/GUI/pfGUIDynDisplayCtrl.h>
+#include <PRP/GUI/pfGUIKnobCtrl.h>
+#include <PRP/GUI/pfGUIListBoxMod.h>
+#include <PRP/GUI/pfGUIMultiLineEditCtrl.h>
+#include <PRP/GUI/pfGUIPopUpMenu.h>
+#include <PRP/GUI/pfGUIProgressCtrl.h>
+#include <PRP/GUI/pfGUIRadioGroupCtrl.h>
+#include <PRP/GUI/pfGUISkin.h>
+#include <PRP/GUI/pfGUIUpDownPairMod.h>
+#include <PRP/GUI/plImageLibMod.h>
+#include <PRP/Light/plLightInfo.h>
+#include <PRP/Message/plMsgForwarder.h>
+#include <PRP/Modifier/plAnimEventModifier.h>
+#include <PRP/Modifier/plAxisAnimModifier.h>
+#include <PRP/Modifier/plExcludeRegionModifier.h>
+#include <PRP/Modifier/plFollowMod.h>
+#include <PRP/Modifier/plGameMarkerModifier.h>
+#include <PRP/Modifier/plInterfaceInfoModifier.h>
+#include <PRP/Modifier/plLogicModBase.h>
+#include <PRP/Modifier/plLogicModifier.h>
+#include <PRP/Modifier/plModifier.h>
+#include <PRP/Modifier/plPostEffectMod.h>
+#include <PRP/Modifier/plPythonFileMod.h>
+#include <PRP/Modifier/plRandomSoundMod.h>
+#include <PRP/Modifier/plResponderModifier.h>
+#include <PRP/Object/plAudioInterface.h>
 #include <PRP/Object/plCoordinateInterface.h>
+#include <PRP/Object/plDrawInterface.h>
+#include <PRP/Object/plObjInterface.h>
 #include <PRP/Object/plSceneObject.h>
+#include <PRP/Object/plSimulationInterface.h>
+#include <PRP/Particle/plParticleEffect.h>
+#include <PRP/Particle/plParticleSystem.h>
+#include <PRP/Physics/plCollisionDetector.h>
+#include <PRP/Physics/plDetectorModifier.h>
+#include <PRP/Physics/plGenericPhysical.h>
+#include <PRP/Physics/plObjectInVolumeDetector.h>
+#include <PRP/Physics/plPhysicalSndGroup.h>
+#include <PRP/Physics/plVehicleModifier.h>
+#include <PRP/Region/plHardRegion.h>
+#include <PRP/Region/plRelevanceRegion.h>
+#include <PRP/Region/plSimpleRegionSensor.h>
+#include <PRP/Region/plSoftVolume.h>
+#include <PRP/Region/plSwimRegion.h>
+#include <PRP/Region/plVisRegion.h>
+#include <PRP/Surface/hsGMaterial.h>
+#include <PRP/Surface/plDynaDecalMgr.h>
+#include <PRP/Surface/plDynaRippleMgr.h>
+#include <PRP/Surface/plDynamicEnvMap.h>
+#include <PRP/Surface/plGrassShaderMod.h>
+#include <PRP/Surface/plLayer.h>
+#include <PRP/Surface/plLayerAnimation.h>
+#include <PRP/Surface/plLayerInterface.h>
+#include <PRP/Surface/plMipmap.h>
+#include <PRP/Surface/plPrintShape.h>
+#include <PRP/Surface/plWaveSet.h>
+#include <set>
 
 bool s_showAgePageIDs = false;
 bool s_showTypeIDs = false;
 
 enum
 {
+    kIcoUnknown,
     kIcoSceneObj, kIcoSceneNode, kIcoDraw, kIcoDraw2, kIcoSim, kIcoCoord,
     kIcoSound, kIcoLayer, kIcoMaterial, kIcoImg, kIcoPython, kIcoGUIButton,
     kIcoGUICheck, kIcoGUIClick, kIcoGUIDialog, kIcoGUIEdit, kIcoGUIEdit2,
@@ -36,6 +120,7 @@ enum
 QIcon pqGetTypeIcon(int classType)
 {
     static QIcon s_icons[kNumIcons] = {
+        QIcon(":/img/unknown.png"),
         QIcon(":/img/sceneobj.png"), QIcon(":/img/scenenode.png"),
         QIcon(":/img/drawspans.png"), QIcon(":/img/drawspans2.png"),
         QIcon(":/img/sim.png"), QIcon(":/img/coords.png"),
@@ -131,7 +216,7 @@ QIcon pqGetTypeIcon(int classType)
     case kWin32LinkSound:
         return s_icons[kIcoSound];
     default:
-        return QIcon();
+        return s_icons[kIcoUnknown];
     }
 }
 
@@ -668,4 +753,536 @@ bool pqCanPreviewType(plCreatable* pCre)
 bool pqHasTargets(plCreatable* c)
 {
     return c->ClassInstance(kModifier);
+}
+
+static plWinAudible* pqGetAudibleForModifier(plSingleModifier* modifier)
+{
+    if (modifier->getTargetsCount() == 0) {
+        return nullptr;
+    }
+    const plKey& sceneObjectKey = modifier->getTarget(0);
+    if (!sceneObjectKey.Exists()) {
+        return nullptr;
+    }
+    auto sceneObject = plSceneObject::Convert(sceneObjectKey->getObj(), false);
+    if (sceneObject == nullptr || !sceneObject->getAudioInterface().Exists()) {
+        return nullptr;
+    }
+    auto audioInterface = plAudioInterface::Convert(sceneObject->getAudioInterface()->getObj(), false);
+    if (audioInterface == nullptr || !audioInterface->getAudible().Exists()) {
+        return nullptr;
+    }
+    return plWinAudible::Convert(audioInterface->getAudible()->getObj());
+}
+
+std::vector<plKey> pqGetReferencedKeys(plCreatable* c, pqRefPriority priority)
+{
+    std::vector<plKey> keys;
+
+    if (auto sceneNode = plSceneNode::Convert(c, false)) {
+        if (priority >= pqRefPriority::kFlatChildren) {
+            const auto& sceneObjects = sceneNode->getSceneObjects();
+            keys.insert(keys.begin(), sceneObjects.begin(), sceneObjects.end());
+            const auto& poolObjects = sceneNode->getPoolObjects();
+            keys.insert(keys.begin(), poolObjects.begin(), poolObjects.end());
+        }
+    } else if (auto sceneObject = plSceneObject::Convert(c, false)) {
+        keys.emplace_back(sceneObject->getDrawInterface());
+        keys.emplace_back(sceneObject->getSimInterface());
+        keys.emplace_back(sceneObject->getCoordInterface());
+        keys.emplace_back(sceneObject->getAudioInterface());
+        const auto& interfaces = sceneObject->getInterfaces();
+        keys.insert(keys.begin(), interfaces.begin(), interfaces.end());
+        const auto& modifiers = sceneObject->getModifiers();
+        keys.insert(keys.begin(), modifiers.begin(), modifiers.end());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(sceneObject->getSceneNode());
+        }
+    } else if (auto material = hsGMaterial::Convert(c, false)) {
+        const auto& layers = material->getLayers();
+        keys.insert(keys.begin(), layers.begin(), layers.end());
+        const auto& piggyBacks = material->getPiggyBacks();
+        keys.insert(keys.begin(), piggyBacks.begin(), piggyBacks.end());
+    } else if (auto objInterface = plObjInterface::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(objInterface->getOwner());
+        }
+
+        if (auto audioInterface = plAudioInterface::Convert(c, false)) {
+            keys.emplace_back(audioInterface->getAudible());
+        } else if (auto coordinateInterface = plCoordinateInterface::Convert(c, false)) {
+            const auto& children = coordinateInterface->getChildren();
+            keys.insert(keys.begin(), children.begin(), children.end());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(coordinateInterface->getParent());
+            }
+        } else if (auto drawInterface = plDrawInterface::Convert(c, false)) {
+            for (size_t i = 0; i < drawInterface->getNumDrawables(); i++) {
+                const plKey& drawableSpansKey = drawInterface->getDrawable(i);
+                keys.emplace_back(drawableSpansKey);
+                if (!drawableSpansKey.Exists() || !drawableSpansKey.isLoaded()) {
+                    continue;
+                }
+                auto drawableSpans = plDrawableSpans::Convert(drawableSpansKey->getObj(), false);
+                if (drawableSpans == nullptr) {
+                    continue;
+                }
+                const auto& materials = drawableSpans->getMaterials();
+                int drawableKey = drawInterface->getDrawableKey(i);
+                if (drawableKey < 0 || drawableKey >= drawableSpans->getNumDIIndices()) {
+                    continue;
+                }
+                const plDISpanIndex& spanIndex = drawableSpans->getDIIndex(drawableKey);
+                if ((spanIndex.fFlags & plDISpanIndex::kMatrixOnly) != 0) {
+                    continue;
+                }
+                for (auto icicleIndex : spanIndex.fIndices) {
+                    if (icicleIndex >= drawableSpans->getNumSpans()) {
+                        continue;
+                    }
+                    plIcicle* icicle = drawableSpans->getIcicle(icicleIndex);
+                    unsigned int materialIdx = icicle->getMaterialIdx();
+                    if (materialIdx < materials.size()) {
+                        keys.emplace_back(materials[materialIdx]);
+                    }
+                    keys.emplace_back(icicle->getFogEnvironment());
+                    const auto& permaLights = icicle->getPermaLights();
+                    keys.insert(keys.begin(), permaLights.begin(), permaLights.end());
+                    const auto& permaProjs = icicle->getPermaProjs();
+                    keys.insert(keys.begin(), permaProjs.begin(), permaProjs.end());
+                }
+            }
+            const auto& regions = drawInterface->getRegions();
+            keys.insert(keys.begin(), regions.begin(), regions.end());
+
+            if (auto instanceDrawInterface = plInstanceDrawInterface::Convert(c, false)) {
+                keys.emplace_back(instanceDrawInterface->getDrawable());
+            }
+        } else if (auto simulationInterface = plSimulationInterface::Convert(c, false)) {
+            keys.emplace_back(simulationInterface->getPhysical());
+        } else if (auto lightInfo = plLightInfo::Convert(c, false)) {
+            const auto& visRegions = lightInfo->getVisRegions();
+            keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+            keys.emplace_back(lightInfo->getProjection());
+            keys.emplace_back(lightInfo->getSoftVolume());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(lightInfo->getSceneNode());
+            }
+        } else if (auto occluder = plOccluder::Convert(c, false)) {
+            const auto& visRegions = occluder->getVisRegions();
+            keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(occluder->getSceneNode());
+            }
+        } else if (auto softVolumeComplex = plSoftVolumeComplex::Convert(c, false)) {
+            const auto& subVolumes = softVolumeComplex->getSubVolumes();
+            keys.insert(keys.begin(), subVolumes.begin(), subVolumes.end());
+        } else if (auto activePrintShape = plActivePrintShape::Convert(c, false)) {
+            for (size_t i = 0; i < activePrintShape->getNumDecalMgrs(); i++) {
+                keys.emplace_back(activePrintShape->getDecalMgr(i));
+            }
+        } else if (auto hardRegionComplex = plHardRegionComplex::Convert(c, false)) {
+            const auto& subRegions = hardRegionComplex->getSubRegions();
+            keys.insert(keys.begin(), subRegions.begin(), subRegions.end());
+        } else if (auto visRegion = plVisRegion::Convert(c, false)) {
+            keys.emplace_back(visRegion->getRegion());
+            keys.emplace_back(visRegion->getVisMgr());
+        } else if (auto relevanceRegion = plRelevanceRegion::Convert(c, false)) {
+            keys.emplace_back(relevanceRegion->getRegion());
+        } else if (auto swimCircularCurrentRegion = plSwimCircularCurrentRegion::Convert(c, false)) {
+            keys.emplace_back(swimCircularCurrentRegion->getCurrentObj());
+        } else if (auto swimStraightCurrentRegion = plSwimStraightCurrentRegion::Convert(c, false)) {
+            keys.emplace_back(swimStraightCurrentRegion->getCurrentObj());
+        }
+    } else if (auto winAudible = plWinAudible::Convert(c, false)) {
+        const auto& sounds = winAudible->getSounds();
+        keys.insert(keys.begin(), sounds.begin(), sounds.end());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(winAudible->getSceneNode());
+        }
+    } else if (auto modifier = plModifier::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            for (size_t i = 0; i < modifier->getTargetsCount(); i++) {
+                keys.emplace_back(modifier->getTarget(i));
+            }
+        }
+
+        if (auto particleSystem = plParticleSystem::Convert(c, false)) {
+            keys.emplace_back(particleSystem->getMaterial());
+            const auto& forces = particleSystem->getForces();
+            keys.insert(keys.begin(), forces.begin(), forces.end());
+            const auto& effects = particleSystem->getEffects();
+            keys.insert(keys.begin(), effects.begin(), effects.end());
+            const auto& constraints = particleSystem->getConstraints();
+            keys.insert(keys.begin(), constraints.begin(), constraints.end());
+            const auto& permaLights = particleSystem->getPermaLights();
+            keys.insert(keys.begin(), permaLights.begin(), permaLights.end());
+        } else if (auto cameraModifier = plCameraModifier::Convert(c, false)) {
+            keys.emplace_back(cameraModifier->getBrain());
+            for (const auto& trans : cameraModifier->getTrans()) {
+                keys.emplace_back(trans->getTransTo());
+            }
+            // TODO Recurse into the messages
+            for (size_t i = 0; i < cameraModifier->getMessageQueueSize(); i++) {
+                const auto& item = cameraModifier->getMessage(i);
+                keys.emplace_back(std::get<1>(item));
+            }
+        } else if (auto detectorModifier = plDetectorModifier::Convert(c, false)) {
+            const auto& receivers = detectorModifier->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+            keys.emplace_back(detectorModifier->getRemoteMod());
+            keys.emplace_back(detectorModifier->getProxy());
+
+            if (auto cameraRegionDetector = plCameraRegionDetector::Convert(c, false)) {
+                // TODO Recurse into the messages
+            } else if (auto subworldRegionDetector = plSubworldRegionDetector::Convert(c, false)) {
+                keys.emplace_back(subworldRegionDetector->getSubworld());
+            }
+        } else if (auto viewFaceModifier = plViewFaceModifier::Convert(c, false)) {
+            keys.emplace_back(viewFaceModifier->getFaceObj());
+        } else if (auto logicModBase = plLogicModBase::Convert(c, false)) {
+            // TODO Recurse into the messages
+            if (auto logicModifier = plLogicModifier::Convert(c, false)) {
+                const auto& conditions = logicModifier->getConditions();
+                keys.insert(keys.begin(), conditions.begin(), conditions.end());
+                if (priority >= pqRefPriority::kBackRefs) {
+                    keys.emplace_back(logicModifier->getParent());
+                }
+            }
+        } else if (auto agMasterMod = plAGMasterMod::Convert(c, false)) {
+            const auto& privateAnims = agMasterMod->getPrivateAnims();
+            keys.insert(keys.begin(), privateAnims.begin(), privateAnims.end());
+            const auto& eoaKeys = agMasterMod->getEoaKeys();
+            keys.insert(keys.begin(), eoaKeys.begin(), eoaKeys.end());
+            keys.emplace_back(agMasterMod->getMsgForwarder());
+
+            if (auto armatureModBase = plArmatureModBase::Convert(c, false)) {
+                const auto& meshes = armatureModBase->getMeshes();
+                keys.insert(keys.begin(), meshes.begin(), meshes.end());
+                if (priority >= pqRefPriority::kFlatChildren) {
+                    // The bones should all also appear somewhere under the meshes.
+                    for (const auto& unusedBone : armatureModBase->getUnusedBones()) {
+                        keys.insert(keys.begin(), unusedBone.begin(), unusedBone.end());
+                    }
+                }
+                // TODO Recurse into the brains (does it really matter for PRPs though?)
+                keys.emplace_back(armatureModBase->getDetector());
+
+                if (auto armatureMod = plArmatureMod::Convert(c, false)) {
+                    if (priority >= pqRefPriority::kBackRefs) {
+                        // This should always be one of the meshes from the earlier vector.
+                        keys.emplace_back(armatureMod->getDefaultMesh());
+                    }
+                    keys.emplace_back(armatureMod->getClothingOutfit());
+                    keys.emplace_back(armatureMod->getEffects());
+                }
+            }
+        } else if (auto lineFollowMod = plLineFollowMod::Convert(c, false)) {
+            keys.emplace_back(lineFollowMod->getPathParent());
+            keys.emplace_back(lineFollowMod->getRefObj());
+            const auto& stereizers = lineFollowMod->getStereizers();
+            keys.insert(keys.begin(), stereizers.begin(), stereizers.end());
+        } else if (auto randomSoundMod = plRandomSoundMod::Convert(c, false)) {
+            if (plWinAudible* winAudible = pqGetAudibleForModifier(randomSoundMod)) {
+                const auto& sounds = winAudible->getSounds();
+                for (const auto& group : randomSoundMod->getGroups()) {
+                    if (group.getGroupedIdx() == -1) {
+                        for (const auto index : group.getIndices()) {
+                            if (index < sounds.size()) {
+                                keys.emplace_back(sounds[index]);
+                            }
+                        }
+                    } else if (group.getGroupedIdx() >= 0 && group.getGroupedIdx() < sounds.size()) {
+                        keys.emplace_back(sounds[group.getGroupedIdx()]);
+                    }
+                }
+            }
+        } else if (auto postEffectMod = plPostEffectMod::Convert(c, false)) {
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(postEffectMod->getNodeKey());
+            }
+        } else if (auto responderModifier = plResponderModifier::Convert(c, false)) {
+            // TODO Recurse into the messages
+        } else if (auto axisAnimModifier = plAxisAnimModifier::Convert(c, false)) {
+            keys.emplace_back(axisAnimModifier->getXAnim());
+            keys.emplace_back(axisAnimModifier->getYAnim());
+            keys.emplace_back(axisAnimModifier->getNotificationKey());
+            // TODO Recurse into the message
+        } else if (auto followMod = plFollowMod::Convert(c, false)) {
+            keys.emplace_back(followMod->getLeader());
+        } else if (auto guiDialogMod = pfGUIDialogMod::Convert(c, false)) {
+            keys.emplace_back(guiDialogMod->getRenderMod());
+            const auto& controls = guiDialogMod->getControls();
+            keys.insert(keys.begin(), controls.begin(), controls.end());
+            keys.emplace_back(guiDialogMod->getProcReceiver());
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(guiDialogMod->getSceneNode());
+            }
+
+            if (auto guiPopUpMenu = pfGUIPopUpMenu::Convert(c, false)) {
+                for (size_t i = 0; i < guiPopUpMenu->getNumItems(); i++) {
+                    keys.emplace_back(guiPopUpMenu->getItem(i).fSubMenu);
+                }
+                keys.emplace_back(guiPopUpMenu->getSkin());
+                keys.emplace_back(guiPopUpMenu->getOriginContext());
+                keys.emplace_back(guiPopUpMenu->getOriginAnchor());
+            }
+        } else if (auto pythonFileMod = plPythonFileMod::Convert(c, false)) {
+            const auto& receivers = pythonFileMod->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+            for (const auto& parameter : pythonFileMod->getParameters()) {
+                keys.emplace_back(parameter.fObjKey);
+            }
+        } else if (auto guiControlMod = pfGUIControlMod::Convert(c, false)) {
+            keys.emplace_back(guiControlMod->getDynTextMap());
+            keys.emplace_back(guiControlMod->getDynTextLayer());
+            keys.emplace_back(guiControlMod->getProxy());
+            keys.emplace_back(guiControlMod->getSkin());
+            
+            if (auto guiButtonMod = pfGUIButtonMod::Convert(c, false)) {
+                const auto& animationKeys = guiButtonMod->getAnimationKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+                const auto& mouseOverAnimKeys = guiButtonMod->getMouseOverKeys();
+                keys.insert(keys.begin(), mouseOverAnimKeys.begin(), mouseOverAnimKeys.end());
+                keys.emplace_back(guiButtonMod->getDraggable());
+            } else if (auto guiListBoxMod = pfGUIListBoxMod::Convert(c, false)) {
+                keys.emplace_back(guiListBoxMod->getScrollCtrl());
+            } else if (auto guiUpDownPairMod = pfGUIUpDownPairMod::Convert(c, false)) {
+                keys.emplace_back(guiUpDownPairMod->getUpControl());
+                keys.emplace_back(guiUpDownPairMod->getDownControl());
+            } else if (auto guiKnobCtrl = pfGUIKnobCtrl::Convert(c, false)) {
+                const auto& animationKeys = guiKnobCtrl->getAnimationKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+            } else if (auto guiCheckBoxCtrl = pfGUICheckBoxCtrl::Convert(c, false)) {
+                const auto& animKeys = guiCheckBoxCtrl->getAnimKeys();
+                keys.insert(keys.begin(), animKeys.begin(), animKeys.end());
+            } else if (auto guiRadioGroupCtrl = pfGUIRadioGroupCtrl::Convert(c, false)) {
+                const auto& controls = guiRadioGroupCtrl->getControls();
+                keys.insert(keys.begin(), controls.begin(), controls.end());
+            } else if (auto guiDynDisplayCtrl = pfGUIDynDisplayCtrl::Convert(c, false)) {
+                const auto& textMaps = guiDynDisplayCtrl->getTextMaps();
+                keys.insert(keys.begin(), textMaps.begin(), textMaps.end());
+                const auto& layers = guiDynDisplayCtrl->getLayers();
+                keys.insert(keys.begin(), layers.begin(), layers.end());
+                const auto& materials = guiDynDisplayCtrl->getMaterials();
+                keys.insert(keys.begin(), materials.begin(), materials.end());
+            } else if (auto guiMultiLineEditCtrl = pfGUIMultiLineEditCtrl::Convert(c, false)) {
+                keys.emplace_back(guiMultiLineEditCtrl->getScrollCtrl());
+            } else if (auto guiProgressCtrl = pfGUIProgressCtrl::Convert(c, false)) {
+                const auto& animationKeys = guiProgressCtrl->getAnimKeys();
+                keys.insert(keys.begin(), animationKeys.begin(), animationKeys.end());
+            }
+        } else if (auto excludeRegionModifier = plExcludeRegionModifier::Convert(c, false)) {
+            const auto& safePoints = excludeRegionModifier->getSafePoints();
+            keys.insert(keys.begin(), safePoints.begin(), safePoints.end());
+        } else if (auto sittingModifier = plSittingModifier::Convert(c, false)) {
+            const auto& notifyKeys = sittingModifier->getNotifyKeys();
+            keys.insert(keys.begin(), notifyKeys.begin(), notifyKeys.end());
+        } else if (auto multistageBehMod = plMultistageBehMod::Convert(c, false)) {
+            const auto& receivers = multistageBehMod->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+        } else if (auto animEventModifier = plAnimEventModifier::Convert(c, false)) {
+            const auto& receivers = animEventModifier->getReceivers();
+            keys.insert(keys.begin(), receivers.begin(), receivers.end());
+        } else if (auto interfaceInfoModifier = plInterfaceInfoModifier::Convert(c, false)) {
+            const auto& intfKeys = interfaceInfoModifier->getIntfKeys();
+            keys.insert(keys.begin(), intfKeys.begin(), intfKeys.end());
+        } else if (auto vehicleModifier = plVehicleModifier::Convert(c, false)) {
+            if (priority >= pqRefPriority::kBackRefs) {
+                keys.emplace_back(vehicleModifier->getRoot());
+            }
+            for (size_t i = 0; i < plVehicleModifier::kNumWheels; i++) {
+                keys.emplace_back(vehicleModifier->getWheel(i).fWheelObj);
+            }
+        } else if (auto eaxListenerMod = plEAXListenerMod::Convert(c, false)) {
+            keys.emplace_back(eaxListenerMod->getSoftRegion());
+        } else if (auto waveSet7 = plWaveSet7::Convert(c, false)) {
+            const auto& shores = waveSet7->getShores();
+            keys.insert(keys.begin(), shores.begin(), shores.end());
+            const auto& decals = waveSet7->getDecals();
+            keys.insert(keys.begin(), decals.begin(), decals.end());
+            const auto& buoys = waveSet7->getBuoys();
+            keys.insert(keys.begin(), buoys.begin(), buoys.end());
+            keys.emplace_back(waveSet7->getEnvMap());
+            keys.emplace_back(waveSet7->getRefObj());
+        } else if (auto simpleRegionSensor = plSimpleRegionSensor::Convert(c, false)) {
+            // TODO Recurse into the messages
+        } else if (auto morphSequence = plMorphSequence::Convert(c, false)) {
+            const auto& sharedMeshes = morphSequence->getSharedMeshes();
+            keys.insert(keys.begin(), sharedMeshes.begin(), sharedMeshes.end());
+        } else if (auto imageLibMod = plImageLibMod::Convert(c, false)) {
+            const auto& images = imageLibMod->getImages();
+            keys.insert(keys.begin(), images.begin(), images.end());
+        } else if (auto gameMarkerModifier = plGameMarkerModifier::Convert(c, false)) {
+            keys.emplace_back(gameMarkerModifier->getGreenAnimKey());
+            keys.emplace_back(gameMarkerModifier->getRedAnimKey());
+            keys.emplace_back(gameMarkerModifier->getOpenAnimKey());
+            keys.emplace_back(gameMarkerModifier->getBounceAnimKey());
+
+            if (plWinAudible* winAudible = pqGetAudibleForModifier(gameMarkerModifier)) {
+                const auto& sounds = winAudible->getSounds();
+                if (gameMarkerModifier->getPlaceSoundIdx() < sounds.size()) {
+                    keys.emplace_back(sounds[gameMarkerModifier->getPlaceSoundIdx()]);
+                }
+                if (gameMarkerModifier->getHitSoundIdx() < sounds.size()) {
+                    keys.emplace_back(sounds[gameMarkerModifier->getHitSoundIdx()]);
+                }
+            }
+        } else if (auto objectFlocker = pfObjectFlocker::Convert(c, false)) {
+            keys.emplace_back(objectFlocker->getBoidKey());
+        } else if (auto grassShaderMod = plGrassShaderMod::Convert(c, false)) {
+            keys.emplace_back(grassShaderMod->getMaterial());
+        } else if (auto ladderModifier = plLadderModifier::Convert(c, false)) {
+            keys.emplace_back(ladderModifier->getTopLogic());
+            keys.emplace_back(ladderModifier->getBottomLogic());
+            keys.emplace_back(ladderModifier->getMainLogic());
+            keys.emplace_back(ladderModifier->getExitTop());
+            keys.emplace_back(ladderModifier->getExitBottom());
+            keys.emplace_back(ladderModifier->getTopPos());
+            keys.emplace_back(ladderModifier->getBottomPos());
+        } else if (auto eaxReverbEffect = plEAXReverbEffect::Convert(c, false)) {
+            keys.emplace_back(eaxReverbEffect->getSoftRegion());
+        }
+    } else if (auto andConditionalObject = plANDConditionalObject::Convert(c, false)) {
+        const auto& children = andConditionalObject->getChildren();
+        keys.insert(keys.begin(), children.begin(), children.end());
+    } else if (auto orConditionalObject = plORConditionalObject::Convert(c, false)) {
+        const auto& children = orConditionalObject->getChildren();
+        keys.insert(keys.begin(), children.begin(), children.end());
+    } else if (auto activatorConditionalObject = plActivatorConditionalObject::Convert(c, false)) {
+        const auto& activators = activatorConditionalObject->getActivators();
+        keys.insert(keys.begin(), activators.begin(), activators.end());
+    } else if (auto animationEventConditionalObject = plAnimationEventConditionalObject::Convert(c, false)) {
+        keys.emplace_back(animationEventConditionalObject->getTarget());
+    } else if (auto genericPhysical = plGenericPhysical::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(genericPhysical->getObject());
+            keys.emplace_back(genericPhysical->getSceneNode());
+        }
+        keys.emplace_back(genericPhysical->getSubWorld());
+        keys.emplace_back(genericPhysical->getSoundGroup());
+    } else if (auto layerInterface = plLayerInterface::Convert(c, false)) {
+        keys.emplace_back(layerInterface->getUnderLay());
+        keys.emplace_back(layerInterface->getTexture());
+        keys.emplace_back(layerInterface->getVertexShader());
+        keys.emplace_back(layerInterface->getPixelShader());
+
+        if (auto layerAnimation = plLayerAnimation::Convert(c, false)) {
+            // TODO Recurse into plAnimTimeConvert and its messages
+
+            if (auto layerLinkAnimation = plLayerLinkAnimation::Convert(c, false)) {
+                if (priority >= pqRefPriority::kBackRefs) {
+                    keys.emplace_back(layerLinkAnimation->getLinkKey());
+                }
+            }
+        }
+    } else if (auto sound = plSound::Convert(c, false)) {
+        keys.emplace_back(sound->getSoftRegion());
+        keys.emplace_back(sound->getSoftOcclusionRegion());
+        keys.emplace_back(sound->getDataBuffer());
+    } else if (auto drawableSpans = plDrawableSpans::Convert(c, false)) {
+        if (priority >= pqRefPriority::kFlatChildren) {
+            // First put the materials, etc. under the plDrawInterfaces that actually use them,
+            // but also leave them here to allow accessing otherwise unused ones.
+            const auto& materials = drawableSpans->getMaterials();
+            keys.insert(keys.begin(), materials.begin(), materials.end());
+        }
+        // TODO Recurse into the spans
+    } else if (auto cameraBrain1 = plCameraBrain1::Convert(c, false)) {
+        keys.emplace_back(cameraBrain1->getSubject());
+        keys.emplace_back(cameraBrain1->getRail());
+
+        if (auto cameraBrain1Fixed = plCameraBrain1_Fixed::Convert(c, false)) {
+            keys.emplace_back(cameraBrain1Fixed->getTargetPoint());
+
+            if (auto cameraBrain1Circle = plCameraBrain1_Circle::Convert(c, false)) {
+                keys.emplace_back(cameraBrain1Circle->getCenterObject());
+                keys.emplace_back(cameraBrain1Circle->getPOAObject());
+            }
+        }
+    } else if (auto msgForwarder = plMsgForwarder::Convert(c, false)) {
+        const auto& forwardKeys = msgForwarder->getForwardKeys();
+        keys.insert(keys.begin(), forwardKeys.begin(), forwardKeys.end());
+    } else if (auto clothingItem = plClothingItem::Convert(c, false)) {
+        for (size_t i = 0; i < clothingItem->getNumElements(); i++) {
+            for (size_t layer = 0; layer < plClothingItem::kLayerMax; layer++) {
+                keys.emplace_back(clothingItem->getElementTexture(i, layer));
+            }
+        }
+        keys.emplace_back(clothingItem->getIcon());
+        keys.emplace_back(clothingItem->getAccessory());
+        for (size_t level = 0; level < plClothingItem::kNumLODLevels; level++) {
+            keys.emplace_back(clothingItem->getMesh(level));
+        }
+    } else if (auto clothingOutfit = plClothingOutfit::Convert(c, false)) {
+        keys.emplace_back(clothingOutfit->getBase());
+        keys.emplace_back(clothingOutfit->getTargetTexture());
+        keys.emplace_back(clothingOutfit->getMaterial());
+    } else if (auto clothingBase = plClothingBase::Convert(c, false)) {
+        keys.emplace_back(clothingBase->getBaseTexture());
+    } else if (auto guiSkin = pfGUISkin::Convert(c, false)) {
+        keys.emplace_back(guiSkin->getTexture());
+    } else if (auto particleCollisionEffect = plParticleCollisionEffect::Convert(c, false)) {
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(particleCollisionEffect->getSceneObj());
+        }
+    } else if (auto sharedMesh = plSharedMesh::Convert(c, false)) {
+        keys.emplace_back(sharedMesh->getMorphSet());
+    } else if (auto armatureEffectsMgr = plArmatureEffectsMgr::Convert(c, false)) {
+        const auto& effects = armatureEffectsMgr->getEffects();
+        keys.insert(keys.begin(), effects.begin(), effects.end());
+    } else if (auto armatureEffectFootSound = plArmatureEffectFootSound::Convert(c, false)) {
+        const auto& mods = armatureEffectFootSound->getMods();
+        keys.insert(keys.begin(), mods.begin(), mods.end());
+    } else if (auto dynaDecalMgr = plDynaDecalMgr::Convert(c, false)) {
+        keys.emplace_back(dynaDecalMgr->getMatPreShade());
+        keys.emplace_back(dynaDecalMgr->getMatRTShade());
+        for (size_t i = 0; i < dynaDecalMgr->getNumTargets(); i++) {
+            keys.emplace_back(dynaDecalMgr->getTarget(i));
+        }
+        for (size_t i = 0; i < dynaDecalMgr->getNumPartyObjects(); i++) {
+            keys.emplace_back(dynaDecalMgr->getPartyObject(i));
+        }
+        for (size_t i = 0; i < dynaDecalMgr->getNumNotifies(); i++) {
+            keys.emplace_back(dynaDecalMgr->getNotify(i));
+        }
+
+        if (auto dynaRippleVSMgr = plDynaRippleVSMgr::Convert(c, false)) {
+            keys.emplace_back(dynaRippleVSMgr->getWaveSet());
+        } else if (auto dynaTorpedoVSMgr = plDynaTorpedoVSMgr::Convert(c, false)) {
+            keys.emplace_back(dynaTorpedoVSMgr->getWaveSet());
+        }
+    } else if (auto dynamicEnvMap = plDynamicEnvMap::Convert(c, false)) {
+        keys.emplace_back(dynamicEnvMap->getRootNode());
+        const auto& visRegions = dynamicEnvMap->getVisRegions();
+        keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+    } else if (auto physicalSndGroup = plPhysicalSndGroup::Convert(c, false)) {
+        const auto& impactSounds = physicalSndGroup->getImpactSounds();
+        keys.insert(keys.begin(), impactSounds.begin(), impactSounds.end());
+        const auto& slideSounds = physicalSndGroup->getSlideSounds();
+        keys.insert(keys.begin(), slideSounds.begin(), slideSounds.end());
+    } else if (auto clusterGroup = plClusterGroup::Convert(c, false)) {
+        keys.emplace_back(clusterGroup->getMaterial());
+        const auto& regions = clusterGroup->getRegions();
+        keys.insert(keys.begin(), regions.begin(), regions.end());
+        const auto& lights = clusterGroup->getLights();
+        keys.insert(keys.begin(), lights.begin(), lights.end());
+        if (priority >= pqRefPriority::kBackRefs) {
+            keys.emplace_back(clusterGroup->getSceneNode());
+        }
+    } else if (auto lodMipmap = plLODMipmap::Convert(c, false)) {
+        keys.emplace_back(lodMipmap->getBase());
+    } else if (auto dynamicCamMap = plDynamicCamMap::Convert(c, false)) {
+        const auto& visRegions = dynamicCamMap->getVisRegions();
+        keys.insert(keys.begin(), visRegions.begin(), visRegions.end());
+        const auto& targetNodes = dynamicCamMap->getTargetNodes();
+        keys.insert(keys.begin(), targetNodes.begin(), targetNodes.end());
+        const auto& matLayers = dynamicCamMap->getMatLayers();
+        keys.insert(keys.begin(), matLayers.begin(), matLayers.end());
+        keys.emplace_back(dynamicCamMap->getCamera());
+        keys.emplace_back(dynamicCamMap->getRootNode());
+        keys.emplace_back(dynamicCamMap->getDisableTexture());
+    }
+
+    return keys;
 }

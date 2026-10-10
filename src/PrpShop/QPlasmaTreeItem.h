@@ -25,13 +25,11 @@ class QPlasmaTreeItem : public QTreeWidgetItem
 {
 private:
     plKey fObjKey;
+    int fObjKind;
     short fClassType;
     plPageInfo* fPage;
-    bool fHasBuiltIn, fHasTextures;
     QString fAge;
     int fAgeSeqPrefix;
-
-    QString fFilename;
 
 public:
     enum ItemType
@@ -39,19 +37,23 @@ public:
         kTypeNone = QTreeWidgetItem::UserType, kTypeAge, kTypePage, kTypeClassType, kTypeKO,
         kMaxPlasmaTypes
     };
+    enum ObjectKind
+    {
+        kObjectByType, kObjectStructure, kObjectStructureRepeated,
+    };
 
     QPlasmaTreeItem();
-    QPlasmaTreeItem(plKey obj);
+    QPlasmaTreeItem(plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(short classType);
     QPlasmaTreeItem(const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(plPageInfo* page);
     QPlasmaTreeItem(QTreeWidget* parent);
-    QPlasmaTreeItem(QTreeWidget* parent, plKey obj);
+    QPlasmaTreeItem(QTreeWidget* parent, plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(QTreeWidget* parent, short classType);
     QPlasmaTreeItem(QTreeWidget* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidget* parent, plPageInfo* page);
     QPlasmaTreeItem(QTreeWidgetItem* parent);
-    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj);
+    QPlasmaTreeItem(QTreeWidgetItem* parent, plKey obj, int objKind = kObjectByType);
     QPlasmaTreeItem(QTreeWidgetItem* parent, short classType);
     QPlasmaTreeItem(QTreeWidgetItem* parent, const QString& age, int ageSeqPrefix);
     QPlasmaTreeItem(QTreeWidgetItem* parent, plPageInfo* page);
@@ -60,29 +62,13 @@ public:
 
     bool operator<(const QTreeWidgetItem& other) const override;
 
+    plKey key() const { return (type() == kTypeKO) ? fObjKey : plKey(); }
     hsKeyedObject* obj() const { return (type() == kTypeKO) ? fObjKey->getObj() : NULL; }
+    int objKind() const { return (type() == kTypeKO) ? fObjKind : kObjectByType; }
     short classType() const { return (type() == kTypeClassType) ? fClassType : static_cast<short>(0x8000); }
     QString age() const { return (type() == kTypeAge) ? fAge : QString(); }
     int ageSeqPrefix() const { return (type() == kTypeAge) ? fAgeSeqPrefix : INT_MIN; }
     plPageInfo* page() const { return (type() == kTypePage) ? fPage : NULL; }
-
-    bool hasBuiltIn() const { return (type() == kTypeAge) ? fHasBuiltIn : false; }
-    bool hasTextures() const { return (type() == kTypeAge) ? fHasTextures : false; }
-
-    void setHasBuiltIn(bool has=true)
-    {
-        if (type() == kTypeAge)
-            fHasBuiltIn = has;
-    }
-
-    void setHasTextures(bool has=true)
-    {
-        if (type() == kTypeAge)
-            fHasTextures = has;
-    }
-
-    QString filename() const { return fFilename; }
-    void setFilename(const QString& filename) { fFilename = filename; }
 };
 
 #endif
